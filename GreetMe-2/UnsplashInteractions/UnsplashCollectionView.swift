@@ -34,7 +34,7 @@ struct UnsplashCollectionView: View {
     var searchParam: SearchParameter
     @State private var imageObjects: [CoverImageObject] = []
 
-    @State private var segueToWriteNote = false
+    @State private var segueToConfirmFrontCover = false
     @State private var picCount: Int!
     @State private var searchText: String!
     
@@ -42,7 +42,7 @@ struct UnsplashCollectionView: View {
     @State public var chosenPhotographer: String!
     @State public var chosenUserName: String!
     @State public var chosenDownloadLocation: String!
-    @State public var chosenObject: CoverImageObject!
+    @State var chosenObject: CoverImageObject!
 
     let columns = [GridItem(.fixed(150)),GridItem(.fixed(150))]
     var body: some View {
@@ -72,12 +72,11 @@ struct UnsplashCollectionView: View {
         .padding(.horizontal)
         .frame(maxHeight: 600)
         .onAppear {getUnsplashPhotos()}
-        .sheet(isPresented: $segueToWriteNote) {ConfirmFrontCoverView(coverImageObject: chosenObject)}
-        //.sheet(item: $chosenImage) {_ in ConfirmFrontCoverView(coverImage: chosenImage)}
+        .sheet(isPresented: $segueToConfirmFrontCover) {ConfirmFrontCoverView(chosenObject: $chosenObject)}
         }
     
     func handleTap(index: Int) {
-        segueToWriteNote = true
+        segueToConfirmFrontCover = true
         chosenImage = imageObjects[index].coverImage
         chosenPhotographer = imageObjects[index].coverImagePhotographer
         chosenUserName = imageObjects[index].coverImageUserName

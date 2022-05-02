@@ -13,6 +13,9 @@ struct CollageOneView: View {
     @State private var showingImagePicker = false
     @State private var image: Image?
     @State private var chosenImage: UIImage?
+    @State private var segueToWriteNote = false
+    //@Binding var collageImage: CollageImage!
+
 
     var body: some View {
         NavigationView {
@@ -26,6 +29,11 @@ struct CollageOneView: View {
                 .navigationTitle("Select 1 Photo")
                 .onChange(of: chosenImage) { _ in loadImage()}
                 .sheet(isPresented: $showingImagePicker) { ImagePicker(image: $chosenImage)}
+            
+            Button("Confirm Collage for Inside Cover") {
+                segueToWriteNote  = true
+                //collageImage = CollageImage.init(collageImage: <#T##Image#>)
+            }.padding(.bottom, 30).sheet(isPresented: $segueToWriteNote ) {WriteNoteView()}
             }
         }
     

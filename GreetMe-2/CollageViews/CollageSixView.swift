@@ -19,6 +19,8 @@ struct CollageSixView: View {
     @State private var chosenImageB: UIImage?
     @State private var chosenImageC: UIImage?
     @State private var chosenImageD: UIImage?
+    @State private var segueToWriteNote = false
+
 
     var body: some View {
         VStack(spacing: 0) {
@@ -61,7 +63,14 @@ struct CollageSixView: View {
                     .onChange(of: chosenImageD) { _ in loadImage(chosenImage: chosenImageD)}
                     .sheet(isPresented: $showingImagePicker) { ImagePicker(image: $chosenImageD)}
                     }.frame(width: 150, height: 150)
-        }.frame(width: 300, height: 300)}
+        }.frame(width: 300, height: 300)
+        
+        Button("Confirm Collage for Inside Cover") {
+            segueToWriteNote  = true
+
+        }.padding(.bottom, 30).sheet(isPresented: $segueToWriteNote ) {WriteNoteView()}
+        
+    }
         
         
         

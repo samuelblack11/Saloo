@@ -19,6 +19,8 @@ struct CollageFourView: View {
     @State private var chosenImageA: UIImage?
     @State private var chosenImageB: UIImage?
     @State private var chosenImageC: UIImage?
+    @State private var segueToWriteNote = false
+
     var body: some View {
 
         HStack(spacing: 0) {
@@ -53,7 +55,15 @@ struct CollageFourView: View {
                 .navigationTitle("Select 1 Photo")
                 .onChange(of: chosenImageC) { _ in loadImage(chosenImage: chosenImageC)}
                 .sheet(isPresented: $showingImagePicker) { ImagePicker(image: $chosenImageC)}
-        }.frame(width: 300, height: 300)}
+        }.frame(width: 300, height: 300)
+        
+        Button("Confirm Collage for Inside Cover") {
+            segueToWriteNote  = true
+
+        }.padding(.bottom, 30).sheet(isPresented: $segueToWriteNote ) {WriteNoteView()}
+        
+        
+    }
 
     func loadImage(chosenImage: UIImage?) {
         guard let chosenImage = chosenImage else {return print("loadImage() failed....")}

@@ -16,6 +16,7 @@ struct CollageTwoView: View {
     @State private var imageNumber: Int?
     @State private var chosenImageA: UIImage?
     @State private var chosenImageB: UIImage?
+    @State private var segueToWriteNote = false
 
     var body: some View {
         VStack(spacing: 0) {
@@ -38,7 +39,15 @@ struct CollageTwoView: View {
                 .navigationTitle("Select 1 Photo")
                 .onChange(of: chosenImageB) { _ in loadImage(chosenImage: chosenImageB)}
                 .sheet(isPresented: $showingImagePicker) { ImagePicker(image: $chosenImageB)}
-                }.frame(width: 250, height: 300)}
+                }.frame(width: 250, height: 300)
+        
+        Button("Confirm Collage for Inside Cover") {
+            segueToWriteNote  = true
+
+        }.padding(.bottom, 30).sheet(isPresented: $segueToWriteNote ) {WriteNoteView()}
+        
+        
+    }
     
     func loadImage(chosenImage: UIImage?) {
         guard let chosenImage = chosenImage else {return print("loadImage() failed....")}

@@ -8,6 +8,11 @@
 import Foundation
 import SwiftUI
 
+struct CollageImage {
+    let collageImage: Image
+}
+
+
 struct CollageStyleMenu: View {
     let columns = [GridItem(.fixed(150)),GridItem(.fixed(150))]
     
