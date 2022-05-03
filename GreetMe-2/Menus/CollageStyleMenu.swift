@@ -12,8 +12,10 @@ struct CollageImage {
     let collageImage: Image
 }
 
-
 struct CollageStyleMenu: View {
+    
+    @Binding var collageImage: CollageImage!
+
     let columns = [GridItem(.fixed(150)),GridItem(.fixed(150))]
     
     let onePhotoView: some View = VStack { Rectangle().fill(Color.gray).frame(width: 150, height: 150).padding(.vertical) }
@@ -60,6 +62,9 @@ struct CollageStyleMenu: View {
     @State private var collageFour = false
     @State private var collageFive = false
     @State private var collageSix = false
+    @Binding var chosenObject: CoverImageObject!
+    @Binding var noteField: NoteField!
+
 
     var body: some View {
         NavigationView {
@@ -76,17 +81,11 @@ struct CollageStyleMenu: View {
             .padding(.horizontal)
             .frame(maxHeight: 800)
         }
-        .sheet(isPresented: $collageOne) {CollageOneView()}
-        .sheet(isPresented: $collageTwo) {CollageTwoView()}
-        .sheet(isPresented: $collageThree) {CollageThreeView()}
-        .sheet(isPresented: $collageFour) {CollageFourView()}
-        .sheet(isPresented: $collageFive) {CollageFiveView()}
-        .sheet(isPresented: $collageSix) {CollageSixView()}
-    }
-}
-
-struct CollageStyleMenu_Previews: PreviewProvider {
-    static var previews: some View {
-        CollageStyleMenu()
+        .sheet(isPresented: $collageOne) {CollageOneView(collageImage: $collageImage, chosenObject: $chosenObject, noteField: $noteField)}
+        .sheet(isPresented: $collageTwo) {CollageTwoView(collageImage: $collageImage, chosenObject: $chosenObject, noteField: $noteField)}
+        .sheet(isPresented: $collageThree) {CollageThreeView(collageImage: $collageImage, chosenObject: $chosenObject, noteField: $noteField)}
+        .sheet(isPresented: $collageFour) {CollageFourView(collageImage: $collageImage, chosenObject: $chosenObject, noteField: $noteField)}
+        .sheet(isPresented: $collageFive) {CollageFiveView(collageImage: $collageImage, chosenObject: $chosenObject, noteField: $noteField)}
+        .sheet(isPresented: $collageSix) {CollageSixView(collageImage: $collageImage, chosenObject: $chosenObject, noteField: $noteField)}
     }
 }

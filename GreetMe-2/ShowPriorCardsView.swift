@@ -19,9 +19,3 @@ struct ShowPriorCardsView: View {
         }
     }
 }
-
-struct ShowPriorCardsView_Previews: PreviewProvider {
-    static var previews: some View {
-        CollageOneView()
-    }
-}

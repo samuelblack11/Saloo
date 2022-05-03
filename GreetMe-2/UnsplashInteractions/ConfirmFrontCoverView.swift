@@ -12,17 +12,19 @@ struct ConfirmFrontCoverView: View {
     
     // https://stackoverflow.com/questions/61237660/toggling-state-variables-using-ontapgesture-in-swiftui
     // https://developer.apple.com/documentation/swiftui/link
-    @Binding var chosenObject: CoverImageObject!
     @State var frontCoverImage: Image!
     @State var frontCoverPhotographer: String!
     @State var frontCoverUserName: String!
     @State private var segueToCollageMenu = false
+    @Binding var chosenObject: CoverImageObject!
+    @Binding var collageImage: CollageImage!
+    @Binding var noteField: NoteField!
 
 
     var body: some View {
         VStack {
             chosenObject.coverImage.resizable().frame(width: 250, height: 250).padding(.top, 50)
-            HStack(spacing: 0) {
+            VStack(spacing: 0) {
                 Text("Photo By ")
                 
                 Link(String(chosenObject.coverImagePhotographer), destination: URL(string: "https://unsplash.com/@\(chosenObject.coverImageUserName)")!)
@@ -32,7 +34,7 @@ struct ConfirmFrontCoverView: View {
             Spacer()
             Button("Confirm Image for Front Cover") {
                 segueToCollageMenu = true
-            }.padding(.bottom, 10).sheet(isPresented: $segueToCollageMenu) {CollageStyleMenu()}
+            }.padding(.bottom, 10).sheet(isPresented: $segueToCollageMenu) {CollageStyleMenu(collageImage: $collageImage, chosenObject: $chosenObject, noteField: $noteField)}
             Text("(Attribution Will Be Included on Back Cover)").font(.system(size: 12)).padding(.bottom, 20)
         }
             

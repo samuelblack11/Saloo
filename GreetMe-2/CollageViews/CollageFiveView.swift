@@ -20,6 +20,11 @@ struct CollageFiveView: View {
     @State private var chosenImageB: UIImage?
     @State private var chosenImageC: UIImage?
     @State private var segueToWriteNote = false
+    @Binding var collageImage: CollageImage!
+    @Binding var chosenObject: CoverImageObject!
+    @Binding var noteField: NoteField!
+
+
 
     
     var body: some View {
@@ -61,7 +66,7 @@ struct CollageFiveView: View {
         Button("Confirm Collage for Inside Cover") {
             segueToWriteNote  = true
 
-        }.padding(.bottom, 30).sheet(isPresented: $segueToWriteNote ) {WriteNoteView()}
+        }.padding(.bottom, 30).sheet(isPresented: $segueToWriteNote ) {WriteNoteView(chosenObject: $chosenObject, collageImage: $collageImage, noteField: $noteField)}
         
         
     }
@@ -75,8 +80,4 @@ struct CollageFiveView: View {
     }
     
 }
-struct CollageFiveView_Previews: PreviewProvider {
-    static var previews: some View {
-        CollageFiveView()
-    }
-}
+

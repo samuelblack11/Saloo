@@ -14,9 +14,7 @@ struct SearchParameter {
 
 struct OccassionsMenu: View {
     @State private var presentUCV = false
-    
 
-    
     var body: some View {
         // NavigationView combines display styling of UINavigationBar and VC stack behavior of UINavigationController.
         // Hold cmd + ctrl, then click space bar to show emoji menu
@@ -89,11 +87,5 @@ struct OccassionsMenu: View {
         .font(.headline)
         .listStyle(GroupedListStyle())
         }
-    }
-}
-
-struct OccassionsMenu_Previews: PreviewProvider {
-    static var previews: some View {
-        OccassionsMenu()
     }
 }

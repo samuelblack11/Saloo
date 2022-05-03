@@ -20,6 +20,11 @@ struct CollageSixView: View {
     @State private var chosenImageC: UIImage?
     @State private var chosenImageD: UIImage?
     @State private var segueToWriteNote = false
+    @Binding var collageImage: CollageImage!
+    @Binding var chosenObject: CoverImageObject!
+    @Binding var noteField: NoteField!
+
+
 
 
     var body: some View {
@@ -68,7 +73,7 @@ struct CollageSixView: View {
         Button("Confirm Collage for Inside Cover") {
             segueToWriteNote  = true
 
-        }.padding(.bottom, 30).sheet(isPresented: $segueToWriteNote ) {WriteNoteView()}
+        }.padding(.bottom, 30).sheet(isPresented: $segueToWriteNote ) {WriteNoteView(chosenObject: $chosenObject, collageImage: $collageImage, noteField: $noteField)}
         
     }
         
@@ -82,10 +87,4 @@ struct CollageSixView: View {
             if imageNumber == 4 {imageD = Image(uiImage: chosenImage)}
         }
 
-}
-
-struct CollageSixView_Previews: PreviewProvider {
-    static var previews: some View {
-        CollageSixView()
-    }
 }

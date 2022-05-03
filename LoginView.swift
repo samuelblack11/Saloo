@@ -12,6 +12,9 @@ struct LoginView: View {
     
     @State private var signInSuccess = false
     @State private var signInFailure = false
+    @Binding var chosenObject: CoverImageObject!
+    @Binding var collageImage: CollageImage!
+    @Binding var noteField: NoteField!
     
     var body: some View {
         NavigationView {
@@ -46,12 +49,5 @@ struct LoginView: View {
         .alert(isPresented: $signInSuccess) {
             Alert(title: Text("Login Failed"), message: Text("Please Try Again"), dismissButton: .default(Text("Dismiss")))
             }
-    }
-}
-    
-
-struct LoginView_Previews: PreviewProvider {
-    static var previews: some View {
-        LoginView()
     }
 }

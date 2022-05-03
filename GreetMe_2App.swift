@@ -11,6 +11,7 @@ import SwiftUI
 struct GreetMe_2App: App {
     let persistenceController = PersistenceController.shared
 
+
     var body: some Scene {
         WindowGroup {
             //LoginView()
@@ -26,4 +27,10 @@ struct GreetMe_2App: App {
                 .environment(\.managedObjectContext, persistenceController.container.viewContext)
         }
     }
+}
+
+struct bindingVariables {
+    var chosenObject: CoverImageObject!
+    var collageImage: CollageImage!
+    var noteField: NoteField!
 }

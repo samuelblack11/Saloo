@@ -12,6 +12,7 @@ struct MenuView: View {
     
     @State private var createNew = false
     @State private var showPrior = false
+
      
     var body: some View {
         NavigationView {

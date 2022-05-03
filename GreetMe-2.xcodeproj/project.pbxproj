@@ -84,8 +84,8 @@
 				260F68EA281DBD7A002E864B /* CollageOneView.swift */,
 				260F68F0281DBDA2002E864B /* CollageTwoView.swift */,
 				260F68F2281DBDA7002E864B /* CollageThreeView.swift */,
-				260F68E6281DBD68002E864B /* CollageFiveView.swift */,
 				260F68E8281DBD75002E864B /* CollageFourView.swift */,
+				260F68E6281DBD68002E864B /* CollageFiveView.swift */,
 				260F68EC281DBD8D002E864B /* CollageSixView.swift */,
 			);
 			path = CollageViews;

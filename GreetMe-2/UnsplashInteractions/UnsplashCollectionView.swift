@@ -43,6 +43,8 @@ struct UnsplashCollectionView: View {
     @State public var chosenUserName: String!
     @State public var chosenDownloadLocation: String!
     @State var chosenObject: CoverImageObject!
+    @State var collageImage: CollageImage!
+    @State var noteField: NoteField!
 
     let columns = [GridItem(.fixed(150)),GridItem(.fixed(150))]
     var body: some View {
@@ -72,7 +74,7 @@ struct UnsplashCollectionView: View {
         .padding(.horizontal)
         .frame(maxHeight: 600)
         .onAppear {getUnsplashPhotos()}
-        .sheet(isPresented: $segueToConfirmFrontCover) {ConfirmFrontCoverView(chosenObject: $chosenObject)}
+        .sheet(isPresented: $segueToConfirmFrontCover) {ConfirmFrontCoverView(chosenObject: $chosenObject, collageImage: $collageImage, noteField: $noteField)}
         }
     
     func handleTap(index: Int) {
