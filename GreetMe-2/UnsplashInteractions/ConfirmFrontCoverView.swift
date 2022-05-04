@@ -20,7 +20,6 @@ struct ConfirmFrontCoverView: View {
     @Binding var collageImage: CollageImage!
     @Binding var noteField: NoteField!
 
-
     var body: some View {
         VStack {
             chosenObject.coverImage.resizable().frame(width: 250, height: 250).padding(.top, 50)
@@ -34,11 +33,17 @@ struct ConfirmFrontCoverView: View {
             Spacer()
             Button("Confirm Image for Front Cover") {
                 segueToCollageMenu = true
+                
+                PhotoAPI.pingDownloadURL(downloadLocation: chosenObject.downloadLocation, completionHandler: { (response, error) in
+                    if response != nil {
+                        debugPrint("Ping Success!.......")
+                        debugPrint(response)
+                        }
+                    if response == nil {
+                        debugPrint("Ping Failed!.......")}})
+                
             }.padding(.bottom, 10).sheet(isPresented: $segueToCollageMenu) {CollageStyleMenu(collageImage: $collageImage, chosenObject: $chosenObject, noteField: $noteField)}
             Text("(Attribution Will Be Included on Back Cover)").font(.system(size: 12)).padding(.bottom, 20)
         }
-            
-}
-    
-
+    }
 }

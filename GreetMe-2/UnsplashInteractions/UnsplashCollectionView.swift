@@ -58,18 +58,10 @@ struct UnsplashCollectionView: View {
                             .resizable()
                             .frame(width: 125, height: 125)
                 }.onTapGesture {
-                    PhotoAPI.pingDownloadURL(downloadLocation: imageObjects[photoObj.index].downloadLocation, completionHandler: { (response, error) in
-                        if response != nil {
-                            debugPrint("Ping Success!.......")
-                            debugPrint(response)
-                            }
-                        if response == nil {
-                            debugPrint("Ping Failed!.......")}})
                     handleTap(index: photoObj.index)
-                }}}        .navigationTitle("Choose Front Cover")
-
-
-            } }
+                }}}.navigationTitle("Choose Front Cover")
+            }
+        }
         .font(.headline)
         .padding(.horizontal)
         .frame(maxHeight: 600)
