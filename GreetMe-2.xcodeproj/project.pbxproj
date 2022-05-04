@@ -33,6 +33,8 @@
 		26AD8127281F05160069C3F0 /* WriteNoteView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26AD8126281F05160069C3F0 /* WriteNoteView.swift */; };
 		26AD8129281F05310069C3F0 /* FinalizeCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26AD8128281F05310069C3F0 /* FinalizeCardView.swift */; };
 		26AD812B281F119A0069C3F0 /* ConfirmFrontCoverView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26AD812A281F119A0069C3F0 /* ConfirmFrontCoverView.swift */; };
+		26E63AF028233797007DB9C3 /* Card+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26E63AEE28233797007DB9C3 /* Card+CoreDataClass.swift */; };
+		26E63AF128233797007DB9C3 /* Card+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26E63AEF28233797007DB9C3 /* Card+CoreDataProperties.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -64,6 +66,8 @@
 		26AD8126281F05160069C3F0 /* WriteNoteView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WriteNoteView.swift; sourceTree = "<group>"; };
 		26AD8128281F05310069C3F0 /* FinalizeCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FinalizeCardView.swift; sourceTree = "<group>"; };
 		26AD812A281F119A0069C3F0 /* ConfirmFrontCoverView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfirmFrontCoverView.swift; sourceTree = "<group>"; };
+		26E63AEE28233797007DB9C3 /* Card+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Card+CoreDataClass.swift"; sourceTree = "<group>"; };
+		26E63AEF28233797007DB9C3 /* Card+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Card+CoreDataProperties.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -126,8 +130,6 @@
 				260F68F9281DBE61002E864B /* PhotoAPI.swift */,
 				260F68F6281DBDD2002E864B /* UnsplashCollectionView.swift */,
 				26AD812A281F119A0069C3F0 /* ConfirmFrontCoverView.swift */,
-				26AD8126281F05160069C3F0 /* WriteNoteView.swift */,
-				26AD8128281F05310069C3F0 /* FinalizeCardView.swift */,
 			);
 			path = UnsplashInteractions;
 			sourceTree = "<group>";
@@ -144,6 +146,8 @@
 		26A72173281DB8D500ADAE44 = {
 			isa = PBXGroup;
 			children = (
+				26E63AEE28233797007DB9C3 /* Card+CoreDataClass.swift */,
+				26E63AEF28233797007DB9C3 /* Card+CoreDataProperties.swift */,
 				26A7217F281DB8D500ADAE44 /* GreetMe_2App.swift */,
 				260F6906281DC0E3002E864B /* LoginView.swift */,
 				26A7217E281DB8D500ADAE44 /* GreetMe-2 */,
@@ -166,9 +170,11 @@
 				260F6902281DBF41002E864B /* Model */,
 				260F6901281DBF28002E864B /* Menus */,
 				260F68F8281DBDED002E864B /* CollageViews */,
+				260F6904281DBFAB002E864B /* UnsplashInteractions */,
+				26AD8126281F05160069C3F0 /* WriteNoteView.swift */,
+				26AD8128281F05310069C3F0 /* FinalizeCardView.swift */,
 				262C3ED4281E226F00F07C01 /* ShowPriorCardsView.swift */,
 				260F6903281DBF55002E864B /* Responses */,
-				260F6904281DBFAB002E864B /* UnsplashInteractions */,
 				260F6905281DC024002E864B /* Other */,
 				26A72185281DB8D900ADAE44 /* Preview Content */,
 			);
@@ -254,6 +260,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				260F68F7281DBDD2002E864B /* UnsplashCollectionView.swift in Sources */,
+				26E63AF028233797007DB9C3 /* Card+CoreDataClass.swift in Sources */,
 				260F68FE281DBEBD002E864B /* PingDownloadResponse.swift in Sources */,
 				260F68EF281DBD93002E864B /* CollageStyleMenu.swift in Sources */,
 				260F68ED281DBD8D002E864B /* CollageSixView.swift in Sources */,
@@ -277,6 +284,7 @@
 				260F6907281DC0E3002E864B /* LoginView.swift in Sources */,
 				260F68FC281DBEA0002E864B /* UnsplashResponse.swift in Sources */,
 				26A72180281DB8D500ADAE44 /* GreetMe_2App.swift in Sources */,
+				26E63AF128233797007DB9C3 /* Card+CoreDataProperties.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

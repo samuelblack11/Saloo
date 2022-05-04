@@ -8,21 +8,19 @@
 import Foundation
 import SwiftUI
 
-struct Card {
-    var card: Image
-    var coverImage: Image
-    var collage: Image
-    var date: Date
-    //var message: TextField
-    var occassion: String
-    var recipient: String
-}
+
+//https://medium.com/swiftui-made-easy/activity-view-controller-in-swiftui-593fddadee79
 
 struct FinalizeCardView: View {
     
+    var card: Card!
     @Binding var chosenObject: CoverImageObject!
     @Binding var collageImage: CollageImage!
     @Binding var noteField: NoteField!
+    
+    //@Binding var cardForExport: Data!
+    @State private var showActivityController = false
+    @State var activityItemsArray: [Any] = []
     
     var eCard: some View {
         HStack(spacing: 1) {
@@ -37,7 +35,7 @@ struct FinalizeCardView: View {
     
     
     var cardForPrint: some View {
-        VStack {
+        VStack(spacing: 1) {
         HStack(spacing: 0) {
             //upside down collage
             collageImage.collageImage.resizable().frame(width: (UIScreen.screenWidth/3)-10, height: (UIScreen.screenWidth/3))
@@ -51,16 +49,16 @@ struct FinalizeCardView: View {
                 Image(systemName: "greetingcard.fill")
                     .foregroundColor(.blue)
                     //.imageScale(.medium)
-                    .font(.system(size: 30))
+                    .font(.system(size: 48))
                 Spacer()
-                Text("Front Cover By ").font(.system(size: 8))
-                Link(String(chosenObject.coverImagePhotographer), destination: URL(string: "https://unsplash.com/@\(chosenObject.coverImageUserName)")!).font(.system(size: 8))
+                Text("Front Cover By ").font(.system(size: 4))
+                Link(String(chosenObject.coverImagePhotographer), destination: URL(string: "https://unsplash.com/@\(chosenObject.coverImageUserName)")!).font(.system(size: 4))
                 HStack(spacing: 0) {
-                Text("On ").font(.system(size: 8))
-                Link("Unsplash", destination: URL(string: "https://unsplash.com")!).font(.system(size: 8))
+                Text("On ").font(.system(size: 4))
+                Link("Unsplash", destination: URL(string: "https://unsplash.com")!).font(.system(size: 4))
                 }.padding(.bottom,10)
-                Text("Greeting Card by").font(.system(size: 12))
-                Text("GreetMe Inc.").font(.system(size: 12))
+                Text("Greeting Card by").font(.system(size: 6))
+                Text("GreetMe Inc.").font(.system(size: 6)).padding(.bottom,10)
             }.frame(width: (UIScreen.screenWidth/3)-10, height: (UIScreen.screenWidth/3))
             // Front Cover
             chosenObject.coverImage.resizable().frame(width: (UIScreen.screenWidth/3)-10, height: (UIScreen.screenWidth/3))
@@ -71,29 +69,50 @@ struct FinalizeCardView: View {
     var body: some View {
         VStack(spacing: 0) {
             Spacer()
-            Text("Your eCard will be stored like this:")
+            Text("Your eCard will be stored like this:").padding(.bottom, 5)
             eCard
             Spacer()
-            Text("And will be printed like this:")
+            Text("And will be printed like this:").padding(.bottom, 5)
             cardForPrint
             Spacer()
             HStack {
+                Button("Save Your Card") {
+                    //save to core data
+                    //let coreCard = Card2.init(card: Image(uiImage: eCard.snapshot()), coverImage: chosenObject.coverImage, collage: collageImage.collageImage, date: Date.now, occassion: noteField.cardName, recipient: noteField.recipient)
+                    
+                    //let card = Card(context:)
+                    card.card = Image(uiImage: eCard.snapshot())
+                    card.collage = collageImage.collageImage
+                    card.coverImage = chosenObject.coverImage
+                    card.date = Date.now
+                    card.message = noteField.noteText
+                    card.occassion = noteField.cardName
+                    card.recipient = noteField.recipient
+                    card.timestamp = Data.now
+                    
+                    
+                    
+                }
+                
+                
+                
+                
                 Spacer()
-                Button(action: {
-                    //https://stackoverflow.com/questions/56533564/showing-uiactivityviewcontroller-in-swiftui
-                    let shareController = UIActivityViewController(activityItems: [prepCardForExport()], applicationActivities: nil)
-                    if let vc = UIApplication.shared.windows.first?.rootViewController{
-                    shareController.popoverPresentationController?.sourceView = vc.view
-                    //Setup share activity position on screen on bottom center
-                    shareController.popoverPresentationController?.sourceRect = CGRect(x: UIScreen.main.bounds.width / 2, y: UIScreen.main.bounds.height, width: 0, height: 0)
-                    shareController.popoverPresentationController?.permittedArrowDirections = UIPopoverArrowDirection.down
-                    vc.present(shareController, animated: true, completion: nil)
-                    }
-                }) {Text("Export Card for Print")}
+                Button("Export Card for Print") {
+                    showActivityController = true
+                    print("*****")
+                    print(cardForPrint.snapshot())
+                    print("*****")
+                    print(prepCardForExport())
+                    let cardForExport = prepCardForExport()
+                    //print(cardForExport!)
+                    activityItemsArray.append(cardForExport)
+                }.sheet(isPresented: $showActivityController) {
+                    ActivityView(activityItems: $activityItemsArray, applicationActivities: nil)
+                }
             }
         }
     }
-    
     
     func prepCardForExport() -> Data {
         
@@ -119,12 +138,7 @@ struct FinalizeCardView: View {
         })
         return data
     }
-    
-    
-    
-    
-    
-    
+        
 }
 
 // https://stackoverflow.com/questions/57727107/how-to-get-the-iphones-screen-width-in-swiftui
@@ -133,3 +147,16 @@ extension UIScreen{
    static let screenHeight = UIScreen.main.bounds.size.height
    static let screenSize = UIScreen.main.bounds.size
 }
+    
+    struct ActivityView: UIViewControllerRepresentable {
+       @Binding var activityItems: [Any]
+       let applicationActivities: [UIActivity]?
+       func makeUIViewController(context: UIViewControllerRepresentableContext<ActivityView>) -> UIActivityViewController {
+          UIActivityViewController(activityItems: activityItems,
+                                applicationActivities: applicationActivities)
+       }
+       func updateUIViewController(_ uiViewController: UIActivityViewController,
+                                   context: UIViewControllerRepresentableContext<ActivityView>) {}
+       }
+
+
