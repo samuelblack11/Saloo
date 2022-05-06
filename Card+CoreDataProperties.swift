@@ -20,7 +20,7 @@ extension Card {
     @NSManaged public var collage: Data?
     @NSManaged public var coverImage: Data?
     @NSManaged public var date: Date?
-    @NSManaged public var message: Data?
+    @NSManaged public var message: String?
     @NSManaged public var occassion: String?
     @NSManaged public var recipient: String?
     @NSManaged public var timestamp: Date?

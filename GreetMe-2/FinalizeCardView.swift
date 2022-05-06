@@ -7,6 +7,7 @@
 
 import Foundation
 import SwiftUI
+import CoreData
 
 
 //https://medium.com/swiftui-made-easy/activity-view-controller-in-swiftui-593fddadee79
@@ -25,11 +26,11 @@ struct FinalizeCardView: View {
     var eCard: some View {
         HStack(spacing: 1) {
             // Front Cover
-            chosenObject.coverImage.resizable().frame(width: (UIScreen.screenWidth/3)-2, height: (UIScreen.screenWidth/3))
+            Image(uiImage: chosenObject.coverImage).resizable().frame(width: (UIScreen.screenWidth/3)-2, height: (UIScreen.screenWidth/3))
             //upside down message
             Text(noteField.noteText).frame(width: (UIScreen.screenWidth/3)-10, height: (UIScreen.screenWidth/3))
             //upside down collage
-            collageImage.collageImage.resizable().frame(width: (UIScreen.screenWidth/3)-2, height: (UIScreen.screenWidth/3))
+            Image(uiImage: collageImage.collageImage).resizable().frame(width: (UIScreen.screenWidth/3)-2, height: (UIScreen.screenWidth/3))
         }
     }
     
@@ -38,7 +39,7 @@ struct FinalizeCardView: View {
         VStack(spacing: 1) {
         HStack(spacing: 0) {
             //upside down collage
-            collageImage.collageImage.resizable().frame(width: (UIScreen.screenWidth/3)-10, height: (UIScreen.screenWidth/3))
+            Image(uiImage: collageImage.collageImage).resizable().frame(width: (UIScreen.screenWidth/3)-10, height: (UIScreen.screenWidth/3))
             //upside down message
             Text(noteField.noteText).frame(width: (UIScreen.screenWidth/3)-10, height: (UIScreen.screenWidth/3)).font(.system(size: 12))
             }.rotationEffect(Angle(degrees: 180))
@@ -61,7 +62,7 @@ struct FinalizeCardView: View {
                 Text("GreetMe Inc.").font(.system(size: 6)).padding(.bottom,10)
             }.frame(width: (UIScreen.screenWidth/3)-10, height: (UIScreen.screenWidth/3))
             // Front Cover
-            chosenObject.coverImage.resizable().frame(width: (UIScreen.screenWidth/3)-10, height: (UIScreen.screenWidth/3))
+            Image(uiImage: chosenObject.coverImage).resizable().frame(width: (UIScreen.screenWidth/3)-10, height: (UIScreen.screenWidth/3))
             }
         }
     }
@@ -78,25 +79,23 @@ struct FinalizeCardView: View {
             HStack {
                 Button("Save Your Card") {
                     //save to core data
-                    //let coreCard = Card2.init(card: Image(uiImage: eCard.snapshot()), coverImage: chosenObject.coverImage, collage: collageImage.collageImage, date: Date.now, occassion: noteField.cardName, recipient: noteField.recipient)
                     
-                    //let card = Card(context:)
-                    card.card = Image(uiImage: eCard.snapshot())
-                    card.collage = collageImage.collageImage
-                    card.coverImage = chosenObject.coverImage
+                    let card = Card(context: DataController.shared.viewContext)
+                    card.card = eCard.snapshot().pngData()
+                    card.collage = collageImage.collageImage.pngData()
+                    card.coverImage = chosenObject.coverImage.pngData()
                     card.date = Date.now
                     card.message = noteField.noteText
                     card.occassion = noteField.cardName
                     card.recipient = noteField.recipient
-                    card.timestamp = Data.now
-                    
-                    
-                    
+                    self.saveContext()
+                    print("Saved card to Core Data")
+                    // https://stackoverflow.com/questions/1134289/cocoa-core-data-efficient-way-to-count-entities
+                    // Print Count of Cards Saved
+                    let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "Card")
+                    let count = try! DataController.shared.viewContext.count(for: fetchRequest)
+                    print("\(count) Cards Saved")  
                 }
-                
-                
-                
-                
                 Spacer()
                 Button("Export Card for Print") {
                     showActivityController = true
@@ -138,6 +137,17 @@ struct FinalizeCardView: View {
         })
         return data
     }
+    
+    func saveContext() {
+        if PersistenceController.shared.container.viewContext.hasChanges {
+            do {
+                try PersistenceController.shared.container.viewContext.save()
+            } catch {
+                print("An error occurred while saving: \(error)")
+            }
+        }
+    }
+    
         
 }
 

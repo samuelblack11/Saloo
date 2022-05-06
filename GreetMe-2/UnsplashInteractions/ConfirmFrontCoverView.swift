@@ -22,7 +22,7 @@ struct ConfirmFrontCoverView: View {
 
     var body: some View {
         VStack {
-            chosenObject.coverImage.resizable().frame(width: 250, height: 250).padding(.top, 50)
+            Image(uiImage: chosenObject.coverImage).resizable().frame(width: 250, height: 250).padding(.top, 50)
             VStack(spacing: 0) {
                 Text("Photo By ")
                 

@@ -9,7 +9,7 @@ import Foundation
 import SwiftUI
 
 struct CollageImage {
-    let collageImage: Image
+    let collageImage: UIImage
 }
 
 struct CollageStyleMenu: View {

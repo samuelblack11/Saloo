@@ -41,7 +41,7 @@ struct CollageOneView: View {
             let theSnapShot = collageOneView.snapshot()
             print("********")
             print(theSnapShot)
-            collageImage = CollageImage.init(collageImage: Image(uiImage: theSnapShot))
+            collageImage = CollageImage.init(collageImage: theSnapShot)
             }.padding(.bottom, 30).sheet(isPresented: $segueToWriteNote ) {WriteNoteView(chosenObject: $chosenObject, collageImage: $collageImage, noteField: $noteField)
             }
         }

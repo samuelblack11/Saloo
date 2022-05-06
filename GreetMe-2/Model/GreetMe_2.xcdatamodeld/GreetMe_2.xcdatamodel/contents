@@ -5,12 +5,11 @@
         <attribute name="collage" optional="YES" attributeType="Binary"/>
         <attribute name="coverImage" optional="YES" attributeType="Binary"/>
         <attribute name="date" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
-        <attribute name="message" optional="YES" attributeType="Binary"/>
+        <attribute name="message" optional="YES" attributeType="String"/>
         <attribute name="occassion" optional="YES" attributeType="String"/>
         <attribute name="recipient" optional="YES" attributeType="String"/>
-        <attribute name="timestamp" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
     </entity>
     <elements>
-        <element name="Card" positionX="-63" positionY="-18" width="128" height="149"/>
+        <element name="Card" positionX="-63" positionY="-18" width="128" height="134"/>
     </elements>
 </model>

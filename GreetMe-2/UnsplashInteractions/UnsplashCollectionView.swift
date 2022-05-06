@@ -16,7 +16,7 @@ import SwiftUI
 
 struct CoverImageObject: Identifiable, Hashable {
     let id = UUID()
-    let coverImage: Image
+    let coverImage: UIImage
     let coverImagePhotographer: String
     let coverImageUserName: String
     let downloadLocation: String
@@ -38,7 +38,7 @@ struct UnsplashCollectionView: View {
     @State private var picCount: Int!
     @State private var searchText: String!
     
-    @State public var chosenImage: Image!
+    @State public var chosenImage: UIImage!
     @State public var chosenPhotographer: String!
     @State public var chosenUserName: String!
     @State public var chosenDownloadLocation: String!
@@ -54,7 +54,7 @@ struct UnsplashCollectionView: View {
                     ForEach(imageObjects, id: \.self.id) {photoObj in
                     VStack(spacing: 0) {
                         //Text("Hello")
-                        photoObj.coverImage
+                        Image(uiImage: photoObj.coverImage)
                             .resizable()
                             .frame(width: 125, height: 125)
                 }.onTapGesture {
@@ -91,7 +91,10 @@ struct UnsplashCollectionView: View {
                             let thisPicture = picture.urls.small
                             let imageURL = URL(string: thisPicture!)
                             let thisPhotoData = try? Data(contentsOf: imageURL!)
-                            let image = Image(uiImage: UIImage(data: thisPhotoData!)!)
+                            let image = UIImage(data: thisPhotoData!)!
+
+                            
+                            //let image = Image(uiImage: UIImage(data: thisPhotoData!)!)
                             
                             let newObj = CoverImageObject.init(coverImage: image, coverImagePhotographer: picture.user.name!, coverImageUserName: picture.user.username!, downloadLocation: picture.links.download_location!, index: imageObjects.count)
                             imageObjects.append(newObj)
