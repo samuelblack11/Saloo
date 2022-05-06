@@ -9,8 +9,8 @@ import SwiftUI
 
 @main
 struct GreetMe_2App: App {
-    let persistenceController = PersistenceController.shared
-
+    //let persistenceController = PersistenceController.shared
+    let dataController = DataController.shared
 
     var body: some Scene {
         WindowGroup {
@@ -24,7 +24,7 @@ struct GreetMe_2App: App {
             //CollageFourView()
             //CollageFiveView()
             //CollageSixView()
-                .environment(\.managedObjectContext, persistenceController.container.viewContext)
+                .environment(\.managedObjectContext, dataController.container.viewContext)
         }
     }
 }

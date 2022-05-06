@@ -139,16 +139,14 @@ struct FinalizeCardView: View {
     }
     
     func saveContext() {
-        if PersistenceController.shared.container.viewContext.hasChanges {
+        if DataController.shared.container.viewContext.hasChanges {
             do {
-                try PersistenceController.shared.container.viewContext.save()
+                try DataController.shared.container.viewContext.save()
             } catch {
                 print("An error occurred while saving: \(error)")
             }
         }
-    }
-    
-        
+    }   
 }
 
 // https://stackoverflow.com/questions/57727107/how-to-get-the-iphones-screen-width-in-swiftui

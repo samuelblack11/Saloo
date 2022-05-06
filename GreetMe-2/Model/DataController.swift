@@ -35,10 +35,15 @@ class DataController {
     }
     
     init() {
-        container = NSPersistentContainer(name: "Greeting")
+        container = NSPersistentContainer(name: "GreetMe_2")
+        container.loadPersistentStores { storeDescription, error in
+            if let error = error {
+                print("Unresolved error \(error)")
+            }
+        }
         backgroundContext = container.newBackgroundContext()
-
     }
+    
     // https://www.hackingwithswift.com/read/38/3/adding-core-data-to-our-project-nspersistentcontainer
     func load() {
         container.loadPersistentStores { storeDescription, error in
