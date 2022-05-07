@@ -42,10 +42,9 @@ struct CollageOneView: View {
             print("********")
             print(theSnapShot)
             collageImage = CollageImage.init(collageImage: theSnapShot)
-            }.padding(.bottom, 30).sheet(isPresented: $segueToWriteNote ) {WriteNoteView(chosenObject: $chosenObject, collageImage: $collageImage, noteField: $noteField)
-            }
+            }.padding(.bottom, 30).sheet(isPresented: $segueToWriteNote ) {WriteNoteView(chosenObject: $chosenObject, collageImage: $collageImage, noteField: $noteField)}
         }
-}
+    }
     
     func loadImage() {
         guard let chosenImage = chosenImage else {return print("loadImage() failed....")}

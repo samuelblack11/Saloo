@@ -53,7 +53,7 @@ struct OccassionsMenu: View {
                 Text("Mother's Day 🌸").onTapGesture {
                     presentUCV = true
                 }.sheet(isPresented: $presentUCV) {
-                    let mDaySearch = SearchParameter.init(searchText: "Flowers")
+                    let mDaySearch = SearchParameter.init(searchText: "floral")
                     UnsplashCollectionView(searchParam: mDaySearch)
                 }
                 Text("Memorial Day 🎗")

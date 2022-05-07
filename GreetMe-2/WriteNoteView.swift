@@ -24,13 +24,32 @@ struct WriteNoteView: View {
     @Binding var chosenObject: CoverImageObject!
     @Binding var collageImage: CollageImage!
     @Binding var noteField: NoteField!
+    @State private var selectedFont = "Papyrus"
+    let allFontNames = UIFont.familyNames
+      .flatMap { UIFont.fontNames(forFamilyName: $0) }
+    
+    
+    var fonts = ["Zapfino","Papyrus","American-Typewriter-Bold"]
+    var fontMenu: some View {
+        HStack {
+            Text("Choose Font Here:  ").padding(.leading, 5).font(Font.custom(selectedFont, size: 12))
+            Picker("", selection: $selectedFont) {
+                ForEach(fonts, id:\.self) { fontType in
+                    Text(fontType).font(Font.custom(fontType, size: 12))
+                }
+            }
+            Spacer()
+        }
+    }
+
     
     var body: some View {
         // https://www.hackingwithswift.com/quick-start/swiftui/how-to-read-text-from-a-textfield
-        TextField("Write Your Note Here", text: $message)
+        TextField("Write Your Note Here", text: $message).font(Font.custom(selectedFont, size: 12))
         Spacer()
-        TextField("Recipient", text: $recipient).frame(height:35)
-        TextField("Name Your Card", text: $cardName).frame(height:35)
+        fontMenu.frame(height: 65)
+        TextField("Recipient", text: $recipient).padding(.leading, 5).frame(height:35)
+        TextField("Name Your Card", text: $cardName).padding(.leading, 5).frame(height:35)
 
         Button("Confirm Note") {
             segueToFinalize  = true

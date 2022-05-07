@@ -28,7 +28,7 @@ struct FinalizeCardView: View {
             // Front Cover
             Image(uiImage: chosenObject.coverImage).resizable().frame(width: (UIScreen.screenWidth/3)-2, height: (UIScreen.screenWidth/3))
             //upside down message
-            Text(noteField.noteText).frame(width: (UIScreen.screenWidth/3)-10, height: (UIScreen.screenWidth/3))
+            Text(noteField.noteText).frame(width: (UIScreen.screenWidth/3)-10, height: (UIScreen.screenWidth/3)).font(.system(size: 4))
             //upside down collage
             Image(uiImage: collageImage.collageImage).resizable().frame(width: (UIScreen.screenWidth/3)-2, height: (UIScreen.screenWidth/3))
         }
@@ -37,11 +37,15 @@ struct FinalizeCardView: View {
     
     var cardForPrint: some View {
         VStack(spacing: 1) {
-        HStack(spacing: 0) {
+        HStack {
             //upside down collage
-            Image(uiImage: collageImage.collageImage).resizable().frame(width: (UIScreen.screenWidth/3)-10, height: (UIScreen.screenWidth/3))
+            HStack {
+                Image(uiImage: collageImage.collageImage).resizable().frame(width: (UIScreen.screenWidth/5)-10, height: (UIScreen.screenWidth/5),alignment: .center)
+                }.frame(width: (UIScreen.screenWidth/3)-10, height: (UIScreen.screenWidth/3))
             //upside down message
-            Text(noteField.noteText).frame(width: (UIScreen.screenWidth/3)-10, height: (UIScreen.screenWidth/3)).font(.system(size: 12))
+            Text(noteField.noteText).frame(width: (UIScreen.screenWidth/3)-30).font(.system(size: 4)).font(Font.custom("Papyrus", size: 4))
+                
+                .padding(EdgeInsets(top: 0, leading: 5, bottom: 0, trailing: 5))
             }.rotationEffect(Angle(degrees: 180))
         // Front Cover & Back Cover
         HStack(spacing: 0) {
@@ -55,8 +59,8 @@ struct FinalizeCardView: View {
                 Text("Front Cover By ").font(.system(size: 4))
                 Link(String(chosenObject.coverImagePhotographer), destination: URL(string: "https://unsplash.com/@\(chosenObject.coverImageUserName)")!).font(.system(size: 4))
                 HStack(spacing: 0) {
-                Text("On ").font(.system(size: 4))
-                Link("Unsplash", destination: URL(string: "https://unsplash.com")!).font(.system(size: 4))
+                    Text("On ").font(.system(size: 4))
+                    Link("Unsplash", destination: URL(string: "https://unsplash.com")!).font(.system(size: 4))
                 }.padding(.bottom,10)
                 Text("Greeting Card by").font(.system(size: 6))
                 Text("GreetMe Inc.").font(.system(size: 6)).padding(.bottom,10)

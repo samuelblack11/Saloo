@@ -24,57 +24,63 @@ struct CollageSixView: View {
     @Binding var chosenObject: CoverImageObject!
     @Binding var noteField: NoteField!
 
-
+    var collageSixView: some View {
+            VStack(spacing: 0) {
+                HStack(spacing: 0) {
+                    ZStack {
+                        Rectangle().fill(.secondary)
+                        Text("Tap to select a picture").foregroundColor(.white).font(.headline)
+                        imageA?.resizable()}
+                        .onTapGesture {showingImagePicker = true; imageNumber = 1}
+                        .frame(width: 150, height: 150)
+                        .onChange(of: chosenImageA) { _ in loadImage(chosenImage: chosenImageA)}
+                        .sheet(isPresented: $showingImagePicker) { ImagePicker(image: $chosenImageA)}
+                    Divider()
+                    ZStack {
+                        Rectangle().fill(.secondary)
+                        Text("Tap to select a picture").foregroundColor(.white).font(.headline)
+                        imageB?.resizable()}
+                        .onTapGesture {showingImagePicker = true; imageNumber = 2}
+                        .frame(width: 150, height: 150)
+                        .onChange(of: chosenImageB) { _ in loadImage(chosenImage: chosenImageB)}
+                        .sheet(isPresented: $showingImagePicker) { ImagePicker(image: $chosenImageB)}
+                        }.frame(width: 150, height: 150)
+                    Divider()
+                    HStack(spacing: 0) {
+                        ZStack {
+                        Rectangle().fill(.secondary)
+                        Text("Tap to select a picture").foregroundColor(.white).font(.headline)
+                        imageC?.resizable()}
+                        .onTapGesture {showingImagePicker = true; imageNumber = 3}
+                        .frame(width: 150, height: 150)
+                        .onChange(of: chosenImageC) { _ in loadImage(chosenImage: chosenImageC)}
+                        .sheet(isPresented: $showingImagePicker) { ImagePicker(image: $chosenImageC)}
+                    Divider()
+                    ZStack {
+                        Rectangle().fill(.secondary)
+                        Text("Tap to select a picture").foregroundColor(.white).font(.headline)
+                        imageD?.resizable()}
+                        .onTapGesture {showingImagePicker = true; imageNumber = 4}
+                        .frame(width: 150, height: 150)
+                        .onChange(of: chosenImageD) { _ in loadImage(chosenImage: chosenImageD)}
+                        .sheet(isPresented: $showingImagePicker) { ImagePicker(image: $chosenImageD)}
+                        }.frame(width: 150, height: 150)
+            }.frame(width: 300, height: 300)
+    }
 
 
     var body: some View {
-        VStack(spacing: 0) {
-            HStack(spacing: 0) {
-                ZStack {
-                    Rectangle().fill(.secondary)
-                    Text("Tap to select a picture").foregroundColor(.white).font(.headline)
-                    imageA?.resizable()}
-                    .onTapGesture {showingImagePicker = true; imageNumber = 1}
-                    .frame(width: 150, height: 150)
-                    .onChange(of: chosenImageA) { _ in loadImage(chosenImage: chosenImageA)}
-                    .sheet(isPresented: $showingImagePicker) { ImagePicker(image: $chosenImageA)}
-                Divider()
-                ZStack {
-                    Rectangle().fill(.secondary)
-                    Text("Tap to select a picture").foregroundColor(.white).font(.headline)
-                    imageB?.resizable()}
-                    .onTapGesture {showingImagePicker = true; imageNumber = 2}
-                    .frame(width: 150, height: 150)
-                    .onChange(of: chosenImageB) { _ in loadImage(chosenImage: chosenImageB)}
-                    .sheet(isPresented: $showingImagePicker) { ImagePicker(image: $chosenImageB)}
-                    }.frame(width: 150, height: 150)
-                Divider()
-                HStack(spacing: 0) {
-                    ZStack {
-                    Rectangle().fill(.secondary)
-                    Text("Tap to select a picture").foregroundColor(.white).font(.headline)
-                    imageC?.resizable()}
-                    .onTapGesture {showingImagePicker = true; imageNumber = 3}
-                    .frame(width: 150, height: 150)
-                    .onChange(of: chosenImageC) { _ in loadImage(chosenImage: chosenImageC)}
-                    .sheet(isPresented: $showingImagePicker) { ImagePicker(image: $chosenImageC)}
-                Divider()
-                ZStack {
-                    Rectangle().fill(.secondary)
-                    Text("Tap to select a picture").foregroundColor(.white).font(.headline)
-                    imageD?.resizable()}
-                    .onTapGesture {showingImagePicker = true; imageNumber = 4}
-                    .frame(width: 150, height: 150)
-                    .onChange(of: chosenImageD) { _ in loadImage(chosenImage: chosenImageD)}
-                    .sheet(isPresented: $showingImagePicker) { ImagePicker(image: $chosenImageD)}
-                    }.frame(width: 150, height: 150)
-        }.frame(width: 300, height: 300)
-        
-        Button("Confirm Collage for Inside Cover") {
-            segueToWriteNote  = true
-
-        }.padding(.bottom, 30).sheet(isPresented: $segueToWriteNote ) {WriteNoteView(chosenObject: $chosenObject, collageImage: $collageImage, noteField: $noteField)}
-        
+        VStack {
+            collageSixView
+            Spacer()
+            Button("Confirm Collage for Inside Cover") {
+                segueToWriteNote  = true
+                let theSnapShot = collageSixView.snapshot()
+                print("********")
+                print(theSnapShot)
+                collageImage = CollageImage.init(collageImage: theSnapShot)
+            }.padding(.bottom, 30).sheet(isPresented: $segueToWriteNote ) {WriteNoteView(chosenObject: $chosenObject, collageImage: $collageImage, noteField: $noteField)}
+        }
     }
         
         

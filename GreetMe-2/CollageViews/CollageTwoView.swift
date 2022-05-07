@@ -20,36 +20,47 @@ struct CollageTwoView: View {
     @Binding var collageImage: CollageImage!
     @Binding var chosenObject: CoverImageObject!
     @Binding var noteField: NoteField!
+    
+    
+    var collageTwoView: some View {
+        VStack(spacing:0 ) {
+        ZStack {
+            Rectangle().fill(.secondary)
+            Text("Tap to select a picture").foregroundColor(.white).font(.headline)
+            imageA?.resizable()
+            
+        }
+            .onTapGesture {showingImagePicker = true; imageNumber = 1}
+            .frame(width: 250, height: 150)
+            .navigationTitle("Select 1 Photo")
+            .onChange(of: chosenImageA) { _ in loadImage(chosenImage: chosenImageA)}
+            .sheet(isPresented: $showingImagePicker) { ImagePicker(image: $chosenImageA)}
+        Divider()
+        ZStack {
+            Rectangle().fill(.secondary)
+            Text("Tap to select a picture").foregroundColor(.white).font(.headline)
+            imageB?.resizable()
+        }
+            .onTapGesture {showingImagePicker = true; imageNumber = 2}
+            .frame(width: 250, height: 150)
+            .navigationTitle("Select 1 Photo")
+            .onChange(of: chosenImageB) { _ in loadImage(chosenImage: chosenImageB)}
+            .sheet(isPresented: $showingImagePicker) {ImagePicker(image: $chosenImageB)}
+            }
+        }
 
     var body: some View {
         VStack(spacing: 0) {
-            ZStack {
-                Rectangle().fill(.secondary)
-                Text("Tap to select a picture").foregroundColor(.white).font(.headline)
-                imageA?.resizable()}
-                .onTapGesture {showingImagePicker = true; imageNumber = 1}
-                .frame(width: 250, height: 150)
-                .navigationTitle("Select 1 Photo")
-                .onChange(of: chosenImageA) { _ in loadImage(chosenImage: chosenImageA)}
-                .sheet(isPresented: $showingImagePicker) { ImagePicker(image: $chosenImageA)}
-            Divider()
-            ZStack {
-                Rectangle().fill(.secondary)
-                Text("Tap to select a picture").foregroundColor(.white).font(.headline)
-                imageB?.resizable()}
-                .onTapGesture {showingImagePicker = true; imageNumber = 2}
-                .frame(width: 250, height: 150)
-                .navigationTitle("Select 1 Photo")
-                .onChange(of: chosenImageB) { _ in loadImage(chosenImage: chosenImageB)}
-                .sheet(isPresented: $showingImagePicker) { ImagePicker(image: $chosenImageB)}
-                }.frame(width: 250, height: 300)
-        
+        collageTwoView
+        Spacer()
         Button("Confirm Collage for Inside Cover") {
             segueToWriteNote  = true
-
+            let theSnapShot = collageTwoView.snapshot()
+            print("********")
+            print(theSnapShot)
+            collageImage = CollageImage.init(collageImage: theSnapShot)
         }.padding(.bottom, 30).sheet(isPresented: $segueToWriteNote ) {WriteNoteView(chosenObject: $chosenObject, collageImage: $collageImage, noteField: $noteField)}
-        
-        
+        }
     }
     
     func loadImage(chosenImage: UIImage?) {

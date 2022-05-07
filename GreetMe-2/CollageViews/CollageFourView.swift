@@ -23,11 +23,10 @@ struct CollageFourView: View {
     @Binding var collageImage: CollageImage!
     @Binding var chosenObject: CoverImageObject!
     @Binding var noteField: NoteField!
-
-
-
-    var body: some View {
-
+    
+    
+    
+    var collageFourView: some View {
         HStack(spacing: 0) {
             VStack(spacing: 0) {
                 ZStack {
@@ -62,12 +61,22 @@ struct CollageFourView: View {
                 .sheet(isPresented: $showingImagePicker) { ImagePicker(image: $chosenImageC)}
         }.frame(width: 300, height: 300)
         
-        Button("Confirm Collage for Inside Cover") {
-            segueToWriteNote  = true
+    }
 
+
+
+    var body: some View {
+        VStack {
+            collageFourView
+            Spacer()
+            Button("Confirm Collage for Inside Cover") {
+                segueToWriteNote  = true
+                let theSnapShot = collageFourView.snapshot()
+                print("********")
+                print(theSnapShot)
+                collageImage = CollageImage.init(collageImage: theSnapShot)
         }.padding(.bottom, 30).sheet(isPresented: $segueToWriteNote ) {WriteNoteView(chosenObject: $chosenObject, collageImage: $collageImage, noteField: $noteField)}
-        
-        
+        }
     }
 
     func loadImage(chosenImage: UIImage?) {

@@ -21,9 +21,8 @@ struct CollageThreeView: View {
     @Binding var chosenObject: CoverImageObject!
     @Binding var noteField: NoteField!
 
-
-
-    var body: some View {
+    
+    var collageThreeView: some View {
         HStack(spacing: 0) {
             ZStack {
                 Rectangle().fill(.secondary)
@@ -45,12 +44,26 @@ struct CollageThreeView: View {
                 .onChange(of: chosenImageB) { _ in loadImage(chosenImage: chosenImageB)}
                 .sheet(isPresented: $showingImagePicker) { ImagePicker(image: $chosenImageB)}
                 }.frame(width: 150, height: 250)
-        
+            }
+    
+    
+    
+    
+    
+
+
+    var body: some View {
+        VStack {
+        collageThreeView
+        Spacer()
         Button("Confirm Collage for Inside Cover") {
             segueToWriteNote  = true
-
+            let theSnapShot = collageThreeView.snapshot()
+            print("********")
+            print(theSnapShot)
+            collageImage = CollageImage.init(collageImage: theSnapShot)
         }.padding(.bottom, 30).sheet(isPresented: $segueToWriteNote ) {WriteNoteView(chosenObject: $chosenObject, collageImage: $collageImage, noteField: $noteField)}
-        
+        }
     }
     
     func loadImage(chosenImage: UIImage?) {
