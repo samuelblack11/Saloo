@@ -33,6 +33,7 @@
 		26AD812B281F119A0069C3F0 /* ConfirmFrontCoverView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26AD812A281F119A0069C3F0 /* ConfirmFrontCoverView.swift */; };
 		26E63AF028233797007DB9C3 /* Card+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26E63AEE28233797007DB9C3 /* Card+CoreDataClass.swift */; };
 		26E63AF128233797007DB9C3 /* Card+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26E63AEF28233797007DB9C3 /* Card+CoreDataProperties.swift */; };
+		26EB55652827120C00178F0B /* EnlargeECard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26EB55642827120C00178F0B /* EnlargeECard.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -64,6 +65,7 @@
 		26AD812A281F119A0069C3F0 /* ConfirmFrontCoverView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfirmFrontCoverView.swift; sourceTree = "<group>"; };
 		26E63AEE28233797007DB9C3 /* Card+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Card+CoreDataClass.swift"; sourceTree = "<group>"; };
 		26E63AEF28233797007DB9C3 /* Card+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Card+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		26EB55642827120C00178F0B /* EnlargeECard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnlargeECard.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -168,6 +170,7 @@
 				26AD8126281F05160069C3F0 /* WriteNoteView.swift */,
 				26AD8128281F05310069C3F0 /* FinalizeCardView.swift */,
 				262C3ED4281E226F00F07C01 /* ShowPriorCardsView.swift */,
+				26EB55642827120C00178F0B /* EnlargeECard.swift */,
 				260F6903281DBF55002E864B /* Responses */,
 				260F6905281DC024002E864B /* Other */,
 				26A72185281DB8D900ADAE44 /* Preview Content */,
@@ -277,6 +280,7 @@
 				260F68FC281DBEA0002E864B /* UnsplashResponse.swift in Sources */,
 				26A72180281DB8D500ADAE44 /* GreetMe_2App.swift in Sources */,
 				26E63AF128233797007DB9C3 /* Card+CoreDataProperties.swift in Sources */,
+				26EB55652827120C00178F0B /* EnlargeECard.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

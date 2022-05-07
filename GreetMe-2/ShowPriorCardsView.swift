@@ -11,17 +11,44 @@ import SwiftUI
 struct ShowPriorCardsView: View {
     // https://www.hackingwithswift.com/read/38/5/loading-core-data-objects-using-nsfetchrequest-and-nssortdescriptor
     @State var cards = [Card]()
+    @State private var segueToEnlarge = false
+    @State private var chosenCard: Card!
     let columns = [GridItem(.fixed(150))]
+    
+    
+    
+    
+
 
     var body: some View {
         NavigationView {
+            ScrollView {
             LazyVGrid(columns: columns, spacing: 10) {
                 ForEach(cards, id: \.self) {card in
                     VStack(spacing: 0) {
                         HStack(spacing:0) {
-                        Image(uiImage: UIImage(data: card.coverImage!)!).resizable().frame(width: (UIScreen.screenWidth/3)-2, height: (UIScreen.screenWidth/3))
+                            // Front Cover
+                            Image(uiImage: UIImage(data: card.coverImage!)!).resizable().frame(width: (UIScreen.screenWidth/3)-2, height: (UIScreen.screenWidth/3))
+                            // Note
                             Text(card.message!).font(.system(size: 6)).frame(width: (UIScreen.screenWidth/3)-10, height: (UIScreen.screenWidth/3))
-                        Image(uiImage: UIImage(data: card.collage!)!).resizable().frame(width: (UIScreen.screenWidth/3)-2, height: (UIScreen.screenWidth/3))
+                            // Inside Cover
+                            Image(uiImage: UIImage(data: card.collage!)!).resizable().frame(width: (UIScreen.screenWidth/3)-2, height: (UIScreen.screenWidth/3))
+                        }.sheet(isPresented: $segueToEnlarge) {EnlargeECardView(chosenCard: $chosenCard)}
+                        .contextMenu {
+                            Button {
+                                chosenCard = card
+                                segueToEnlarge = true
+                            } label: {
+                                Text("Enlarge ECard")
+                                Image(systemName: "plus.magnifyingglass")
+                            }
+                            Button {
+                                deleteCoreData(card: card)
+                            } label: {
+                                Text("Delete ECard")
+                                Image(systemName: "trash")
+                                .foregroundColor(.red)
+                            }
                         }
                         HStack(spacing: 3) {
                             Text(card.recipient!)
@@ -31,6 +58,7 @@ struct ShowPriorCardsView: View {
                     }
                     
                 }
+            }
             }
         }
         .font(.headline)
@@ -55,22 +83,18 @@ struct ShowPriorCardsView: View {
         }
     }
     
-    func deleteCoreData() {
-        // https://cocoacasts.com/how-to-delete-every-record-of-a-core-data-entity
-        let request = Card.createFetchRequest()
-        let sort = NSSortDescriptor(key: "date", ascending: false)
-        request.sortDescriptors = [sort]
+    func deleteCoreData(card: Card) {
         do {
-            cards = try DataController.shared.container.viewContext.fetch(request)
-            for card in cards {
-                DataController.shared.viewContext.delete(card)
+            print("Attempting Delete")
+            DataController.shared.viewContext.delete(card)
+            try DataController.shared.viewContext.save()
             }
             // Save Changes
-            try DataController.shared.viewContext.save()
-
-        } catch {
+         catch {
             // Error Handling
             // ...
-        }
+             print("Couldn't Delete")
+         }
+        self.loadCoreData()
     }
 }
