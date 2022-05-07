@@ -20,6 +20,9 @@ struct WriteNoteView: View {
     @State private var recipient: String = ""
     @State private var cardName: String = ""
     @State private var tappedTextEditor = false
+    @State private var namesNotEntered = true
+    
+    
 
     @State private var segueToFinalize = false
     @Binding var chosenObject: CoverImageObject!
@@ -51,7 +54,6 @@ struct WriteNoteView: View {
             .font(Font.custom(selectedFont, size: 14))
             //.foregroundColor(.gray)
             .foregroundColor(tappedTextEditor ? .black: .gray)
-
             .onTapGesture {
                 message = ""
                 tappedTextEditor = true
@@ -59,12 +61,30 @@ struct WriteNoteView: View {
         Image(uiImage: collageImage.collageImage).resizable().frame(width: (UIScreen.screenWidth/5)-10, height: (UIScreen.screenWidth/5),alignment: .center)
         //Spacer()
         fontMenu.frame(height: 65)
+        
+        
         TextField("Recipient", text: $recipient).padding(.leading, 5).frame(height:35)
         TextField("Name Your Card", text: $cardName).padding(.leading, 5).frame(height:35)
-
         Button("Confirm Note") {
+            checkRequiredFields()
+            }
+        .alert("Please Enter Values for All Fields!", isPresented: $namesNotEntered) {
+            Button("Ok", role: .cancel) {}
+            }
+        .padding(.bottom, 30)
+        .sheet(isPresented: $segueToFinalize) {FinalizeCardView(chosenObject: $chosenObject, collageImage: $collageImage, noteField: $noteField)}
+    }
+    
+    func checkRequiredFields() {
+        if recipient != "" && cardName != ""  {
+            namesNotEntered = false
             segueToFinalize  = true
             noteField = NoteField.init(noteText: message, recipient: recipient, cardName: cardName)
-        }.padding(.bottom, 30).sheet(isPresented: $segueToFinalize) {FinalizeCardView(chosenObject: $chosenObject, collageImage: $collageImage, noteField: $noteField)}
+        }
+        else {
+            namesNotEntered = true
+        }
+        
     }
+    
 }

@@ -30,7 +30,7 @@ struct ShowPriorCardsView: View {
                             // Front Cover
                             Image(uiImage: UIImage(data: card.coverImage!)!).resizable().frame(width: (UIScreen.screenWidth/3)-2, height: (UIScreen.screenWidth/3))
                             // Note
-                            Text(card.message!).font(.system(size: 6)).frame(width: (UIScreen.screenWidth/3)-10, height: (UIScreen.screenWidth/3))
+                            Text(card.message!).font(.system(size: 6)).frame(width: (UIScreen.screenWidth/3)-10, height: (UIScreen.screenWidth/3)).scaledToFit()
                             // Inside Cover
                             Image(uiImage: UIImage(data: card.collage!)!).resizable().frame(width: (UIScreen.screenWidth/3)-2, height: (UIScreen.screenWidth/3))
                         }.sheet(isPresented: $segueToEnlarge) {EnlargeECardView(chosenCard: $chosenCard)}
@@ -39,13 +39,13 @@ struct ShowPriorCardsView: View {
                                 chosenCard = card
                                 segueToEnlarge = true
                             } label: {
-                                Text("Enlarge ECard")
+                                Text("Enlarge eCard")
                                 Image(systemName: "plus.magnifyingglass")
                             }
                             Button {
                                 deleteCoreData(card: card)
                             } label: {
-                                Text("Delete ECard")
+                                Text("Delete eCard")
                                 Image(systemName: "trash")
                                 .foregroundColor(.red)
                             }

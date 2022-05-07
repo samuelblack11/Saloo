@@ -43,7 +43,7 @@ struct FinalizeCardView: View {
                 Image(uiImage: collageImage.collageImage).resizable().frame(width: (UIScreen.screenWidth/5)-10, height: (UIScreen.screenWidth/5),alignment: .center)
                 }.frame(width: (UIScreen.screenWidth/3)-10, height: (UIScreen.screenWidth/3))
             //upside down message
-            Text(noteField.noteText).frame(width: (UIScreen.screenWidth/3)-30).font(.system(size: 4)).font(Font.custom("Papyrus", size: 4))
+            Text(noteField.noteText).frame(width: (UIScreen.screenWidth/3)-30).font(.system(size: 4)).font(Font.custom("Papyrus", size: 4)).scaledToFit()
                 
                 .padding(EdgeInsets(top: 0, leading: 5, bottom: 0, trailing: 5))
             }.rotationEffect(Angle(degrees: 180))

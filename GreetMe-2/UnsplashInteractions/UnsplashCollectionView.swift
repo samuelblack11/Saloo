@@ -59,7 +59,9 @@ struct UnsplashCollectionView: View {
                             .frame(width: 125, height: 125)
                 }.onTapGesture {
                     handleTap(index: photoObj.index)
-                }}}.navigationTitle("Choose Front Cover")
+                }
+            }
+            }.navigationTitle("Choose Front Cover")
             }
         }
         .font(.headline)
@@ -84,7 +86,7 @@ struct UnsplashCollectionView: View {
             if response != nil {
                 self.picCount = response!.count
                 DispatchQueue.main.async {
-                for picture in response! {
+                    for picture in response! {
                         
                         if picture.urls.small != nil && picture.user.username != nil && picture.user.name != nil && picture.links.download_location != nil {
 

@@ -17,7 +17,7 @@ struct EnlargeECardView: View {
     var eCardView: some View {
         HStack(spacing: 0) {
             Image(uiImage: UIImage(data: chosenCard.coverImage!)!).resizable().frame(width: (UIScreen.screenHeight/3)-2, height: (UIScreen.screenHeight/3))
-            Text(chosenCard.message!).frame(width: (UIScreen.screenHeight/3)-2, height: (UIScreen.screenHeight/3))
+            Text(chosenCard.message!).frame(width: (UIScreen.screenHeight/3)-2, height: (UIScreen.screenHeight/3)).scaledToFit()
             Image(uiImage: UIImage(data: chosenCard.collage!)!).resizable().frame(width: (UIScreen.screenHeight/3)-2, height: (UIScreen.screenHeight/3))
         }.rotationEffect(.degrees(90))
     }
