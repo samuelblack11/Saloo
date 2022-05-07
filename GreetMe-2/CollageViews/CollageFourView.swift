@@ -48,7 +48,7 @@ struct CollageFourView: View {
                     .navigationTitle("Select 1 Photo")
                     .onChange(of: chosenImageB) { _ in loadImage(chosenImage: chosenImageB)}
                     .sheet(isPresented: $showingImagePicker) { ImagePicker(image: $chosenImageB)}
-                    }.frame(width: 150, height: 250)
+                    }.frame(width: 150, height: 300)
             Divider()
             ZStack {
                 Rectangle().fill(.secondary)

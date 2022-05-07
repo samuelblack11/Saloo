@@ -16,9 +16,10 @@ struct NoteField {
 
 struct WriteNoteView: View {
     
-    @State private var message: String = ""
+    @State private var message: String = "Write Your Note Here"
     @State private var recipient: String = ""
     @State private var cardName: String = ""
+    @State private var tappedTextEditor = false
 
     @State private var segueToFinalize = false
     @Binding var chosenObject: CoverImageObject!
@@ -45,8 +46,18 @@ struct WriteNoteView: View {
     
     var body: some View {
         // https://www.hackingwithswift.com/quick-start/swiftui/how-to-read-text-from-a-textfield
-        TextField("Write Your Note Here", text: $message).font(Font.custom(selectedFont, size: 12))
-        Spacer()
+        // https://www.hackingwithswift.com/quick-start/swiftui/how-to-create-multi-line-editable-text-with-texteditor
+        TextEditor(text: $message)
+            .font(Font.custom(selectedFont, size: 14))
+            //.foregroundColor(.gray)
+            .foregroundColor(tappedTextEditor ? .black: .gray)
+
+            .onTapGesture {
+                message = ""
+                tappedTextEditor = true
+            }
+        Image(uiImage: collageImage.collageImage).resizable().frame(width: (UIScreen.screenWidth/5)-10, height: (UIScreen.screenWidth/5),alignment: .center)
+        //Spacer()
         fontMenu.frame(height: 65)
         TextField("Recipient", text: $recipient).padding(.leading, 5).frame(height:35)
         TextField("Name Your Card", text: $cardName).padding(.leading, 5).frame(height:35)

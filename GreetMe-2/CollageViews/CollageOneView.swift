@@ -58,6 +58,7 @@ extension View {
         let view = controller.view
 
         let targetSize = controller.view.intrinsicContentSize
+        print("Target Size: \(targetSize)")
         view?.bounds = CGRect(origin: .zero, size: targetSize)
         view?.backgroundColor = .clear
 
