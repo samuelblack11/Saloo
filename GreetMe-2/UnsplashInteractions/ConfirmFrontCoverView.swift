@@ -19,8 +19,12 @@ struct ConfirmFrontCoverView: View {
     @Binding var chosenObject: CoverImageObject!
     @Binding var collageImage: CollageImage!
     @Binding var noteField: NoteField!
+    @State private var presentPrior = false
+    @State var searchObject: SearchParameter
+
 
     var body: some View {
+        NavigationView {
         VStack {
             Image(uiImage: chosenObject.coverImage).resizable().frame(width: 250, height: 250).padding(.top, 50)
             VStack(spacing: 0) {
@@ -42,8 +46,21 @@ struct ConfirmFrontCoverView: View {
                     if response == nil {
                         debugPrint("Ping Failed!.......")}})
                 
-            }.padding(.bottom, 10).sheet(isPresented: $segueToCollageMenu) {CollageStyleMenu(collageImage: $collageImage, chosenObject: $chosenObject, noteField: $noteField)}
+            }.padding(.bottom, 10).sheet(isPresented: $segueToCollageMenu) {CollageStyleMenu(collageImage: $collageImage, chosenObject: $chosenObject, noteField: $noteField, searchObject: searchObject)}
             Text("(Attribution Will Be Included on Back Cover)").font(.system(size: 12)).padding(.bottom, 20)
+            }
+        .navigationBarItems(leading:
+            Button {
+                print("Back button tapped")
+                presentPrior = true
+            } label: {
+                Image(systemName: "chevron.left").foregroundColor(.blue)
+                Text("Back")
+            })
+        .sheet(isPresented: $presentPrior) {
+            UnsplashCollectionView(searchParam: searchObject)
+        }
+            
         }
     }
 }

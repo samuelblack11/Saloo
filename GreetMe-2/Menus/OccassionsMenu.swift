@@ -14,6 +14,11 @@ struct SearchParameter {
 
 struct OccassionsMenu: View {
     @State private var presentUCV = false
+    @State private var presentPrior = false
+    @State var searchType: String!
+    @State var searchObject: SearchParameter!
+    
+
 
     var body: some View {
         // NavigationView combines display styling of UINavigationBar and VC stack behavior of UINavigationController.
@@ -24,8 +29,8 @@ struct OccassionsMenu: View {
                 Text("Birthday 🎈").onTapGesture {
                     presentUCV = true
                 }.sheet(isPresented: $presentUCV) {
-                    let birthdaySearch = SearchParameter.init(searchText: "Birthday")
-                    UnsplashCollectionView(searchParam: birthdaySearch)
+                    let searchObject = SearchParameter.init(searchText: "Birthday")
+                    UnsplashCollectionView(searchParam: searchObject)
                 }
 
                 Text("Thank You 🙏🏽")
@@ -53,8 +58,8 @@ struct OccassionsMenu: View {
                 Text("Mother's Day 🌸").onTapGesture {
                     presentUCV = true
                 }.sheet(isPresented: $presentUCV) {
-                    let mDaySearch = SearchParameter.init(searchText: "floral")
-                    UnsplashCollectionView(searchParam: mDaySearch)
+                    let searchObject = SearchParameter.init(searchText: "Floral")
+                    UnsplashCollectionView(searchParam: searchObject)
                 }
                 Text("Memorial Day 🎗")
             }
@@ -89,6 +94,17 @@ struct OccassionsMenu: View {
             }
         }
         .navigationTitle("Pick Your Occassion")
+        .navigationBarItems(leading:
+            Button {
+                print("Back button tapped")
+                presentPrior = true
+            } label: {
+                Image(systemName: "chevron.left").foregroundColor(.blue)
+                Text("Back")
+            })
+        .sheet(isPresented: $presentPrior) {
+            MenuView()
+        }
         .font(.headline)
         .listStyle(GroupedListStyle())
         }

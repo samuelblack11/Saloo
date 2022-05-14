@@ -21,23 +21,17 @@ struct CoverImageObject: Identifiable, Hashable {
     let coverImageUserName: String
     let downloadLocation: String
     let index: Int
-    
     func hash(into hasher: inout Hasher) {
         hasher.combine(downloadLocation)
     }
-
 }
-
-
 struct UnsplashCollectionView: View {
     
-    var searchParam: SearchParameter
+    @State var searchParam: SearchParameter
     @State private var imageObjects: [CoverImageObject] = []
-
     @State private var segueToConfirmFrontCover = false
     @State private var picCount: Int!
     @State private var searchText: String!
-    
     @State public var chosenImage: UIImage!
     @State public var chosenPhotographer: String!
     @State public var chosenUserName: String!
@@ -45,6 +39,7 @@ struct UnsplashCollectionView: View {
     @State var chosenObject: CoverImageObject!
     @State var collageImage: CollageImage!
     @State var noteField: NoteField!
+    @State private var presentPrior = false
 
     let columns = [GridItem(.fixed(150)),GridItem(.fixed(150))]
     var body: some View {
@@ -61,14 +56,23 @@ struct UnsplashCollectionView: View {
                     handleTap(index: photoObj.index)
                 }
             }
-            }.navigationTitle("Choose Front Cover")
+            }
+            .navigationTitle("Choose Front Cover")
+            .navigationBarItems(leading:
+                Button {
+                    print("Back button tapped")
+                    presentPrior = true
+                } label: {
+                    Image(systemName: "chevron.left").foregroundColor(.blue)
+                    Text("Back")
+                })
             }
         }
         .font(.headline)
         .padding(.horizontal)
         .frame(maxHeight: 600)
         .onAppear {getUnsplashPhotos()}
-        .sheet(isPresented: $segueToConfirmFrontCover) {ConfirmFrontCoverView(chosenObject: $chosenObject, collageImage: $collageImage, noteField: $noteField)}
+        .sheet(isPresented: $segueToConfirmFrontCover) {ConfirmFrontCoverView(chosenObject: $chosenObject, collageImage: $collageImage, noteField: $noteField, searchObject: searchParam)}
         }
     
     func handleTap(index: Int) {
@@ -77,7 +81,6 @@ struct UnsplashCollectionView: View {
         chosenPhotographer = imageObjects[index].coverImagePhotographer
         chosenUserName = imageObjects[index].coverImageUserName
         chosenDownloadLocation = imageObjects[index].downloadLocation
-        
         chosenObject = CoverImageObject.init(coverImage: chosenImage, coverImagePhotographer: chosenPhotographer, coverImageUserName: chosenUserName, downloadLocation: chosenDownloadLocation, index: index)
     }
 
@@ -87,17 +90,12 @@ struct UnsplashCollectionView: View {
                 self.picCount = response!.count
                 DispatchQueue.main.async {
                     for picture in response! {
-                        
                         if picture.urls.small != nil && picture.user.username != nil && picture.user.name != nil && picture.links.download_location != nil {
-
                             let thisPicture = picture.urls.small
                             let imageURL = URL(string: thisPicture!)
                             let thisPhotoData = try? Data(contentsOf: imageURL!)
                             let image = UIImage(data: thisPhotoData!)!
-
-                            
                             //let image = Image(uiImage: UIImage(data: thisPhotoData!)!)
-                            
                             let newObj = CoverImageObject.init(coverImage: image, coverImagePhotographer: picture.user.name!, coverImageUserName: picture.user.username!, downloadLocation: picture.links.download_location!, index: imageObjects.count)
                             imageObjects.append(newObj)
                             print(imageObjects.count)

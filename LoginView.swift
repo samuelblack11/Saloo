@@ -45,7 +45,7 @@ struct LoginView: View {
                 }
             }
         }
-        .sheet(isPresented: $signInSuccess) {OccassionsMenu()}
+        .sheet(isPresented: $signInSuccess) {MenuView(searchObject: nil)}
         .alert(isPresented: $signInSuccess) {
             Alert(title: Text("Login Failed"), message: Text("Please Try Again"), dismissButton: .default(Text("Dismiss")))
             }

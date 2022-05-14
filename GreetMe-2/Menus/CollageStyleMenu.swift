@@ -15,6 +15,7 @@ struct CollageImage {
 struct CollageStyleMenu: View {
     
     @Binding var collageImage: CollageImage!
+    @State private var presentPrior = false
 
     let columns = [GridItem(.fixed(150)),GridItem(.fixed(150))]
     
@@ -64,6 +65,8 @@ struct CollageStyleMenu: View {
     @State private var collageSix = false
     @Binding var chosenObject: CoverImageObject!
     @Binding var noteField: NoteField!
+    @State var searchObject: SearchParameter
+
 
 
     var body: some View {
@@ -79,8 +82,20 @@ struct CollageStyleMenu: View {
             .navigationTitle("Pick Collage Style")
             .font(.headline)
             .padding(.horizontal)
+            .navigationBarItems(leading:
+                Button {
+                    print("Back button tapped")
+                    presentPrior = true
+                } label: {
+                    Image(systemName: "chevron.left").foregroundColor(.blue)
+                    Text("Back")
+                })
+            .sheet(isPresented: $presentPrior) {
+                ConfirmFrontCoverView(chosenObject: $chosenObject, collageImage: $collageImage, noteField: $noteField, searchObject: searchObject)
+            }
             .frame(maxHeight: 800)
         }
+
         .sheet(isPresented: $collageOne) {CollageOneView(collageImage: $collageImage, chosenObject: $chosenObject, noteField: $noteField)}
         .sheet(isPresented: $collageTwo) {CollageTwoView(collageImage: $collageImage, chosenObject: $chosenObject, noteField: $noteField)}
         .sheet(isPresented: $collageThree) {CollageThreeView(collageImage: $collageImage, chosenObject: $chosenObject, noteField: $noteField)}
