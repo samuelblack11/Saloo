@@ -21,6 +21,7 @@ struct ConfirmFrontCoverView: View {
     @Binding var noteField: NoteField!
     @State private var presentPrior = false
     @State var searchObject: SearchParameter
+    @Binding var frontCoverIsPersonalPhoto: Int
 
 
     var body: some View {
@@ -46,7 +47,7 @@ struct ConfirmFrontCoverView: View {
                     if response == nil {
                         debugPrint("Ping Failed!.......")}})
                 
-            }.padding(.bottom, 10).sheet(isPresented: $segueToCollageMenu) {CollageStyleMenu(collageImage: $collageImage, chosenObject: $chosenObject, noteField: $noteField, searchObject: searchObject)}
+            }.padding(.bottom, 10).sheet(isPresented: $segueToCollageMenu) {CollageStyleMenu(collageImage: $collageImage, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenObject: $chosenObject, noteField: $noteField, searchObject: searchObject)}
             Text("(Attribution Will Be Included on Back Cover)").font(.system(size: 12)).padding(.bottom, 20)
             }
         .navigationBarItems(leading:
@@ -58,7 +59,7 @@ struct ConfirmFrontCoverView: View {
                 Text("Back")
             })
         .sheet(isPresented: $presentPrior) {
-            UnsplashCollectionView(searchParam: searchObject)
+            UnsplashCollectionView(searchParam: searchObject, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto)
         }
             
         }

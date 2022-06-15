@@ -23,7 +23,8 @@ struct CollageFourView: View {
     @Binding var collageImage: CollageImage!
     @Binding var chosenObject: CoverImageObject!
     @Binding var noteField: NoteField!
-    
+    @Binding var frontCoverIsPersonalPhoto: Int
+
     
     
     var collageFourView: some View {
@@ -75,7 +76,7 @@ struct CollageFourView: View {
                 print("********")
                 print(theSnapShot)
                 collageImage = CollageImage.init(collageImage: theSnapShot)
-        }.padding(.bottom, 30).sheet(isPresented: $segueToWriteNote ) {WriteNoteView(chosenObject: $chosenObject, collageImage: $collageImage, noteField: $noteField)}
+            }.padding(.bottom, 30).sheet(isPresented: $segueToWriteNote ) {WriteNoteView(frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenObject: $chosenObject, collageImage: $collageImage, noteField: $noteField)}
         }
     }
 

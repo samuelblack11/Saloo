@@ -18,11 +18,18 @@ struct FinalizeCardView: View {
     @Binding var chosenObject: CoverImageObject!
     @Binding var collageImage: CollageImage!
     @Binding var noteField: NoteField!
+    @State var frontCoverIsPersonalPhoto: Int
+    @Binding var text1: String
+    @Binding var text2: String
+    @Binding var text2URL: URL
+    @Binding var text3: String
+    @Binding var text4: String
+
     
     //@Binding var cardForExport: Data!
     @State private var showActivityController = false
     @State var activityItemsArray: [Any] = []
-    
+        
     var eCard: some View {
         HStack(spacing: 1) {
             // Front Cover
@@ -33,7 +40,6 @@ struct FinalizeCardView: View {
             Image(uiImage: collageImage.collageImage).resizable().frame(width: (UIScreen.screenWidth/3)-2, height: (UIScreen.screenWidth/3))
         }
     }
-    
     
     var cardForPrint: some View {
         VStack(spacing: 1) {
@@ -56,20 +62,27 @@ struct FinalizeCardView: View {
                     //.imageScale(.medium)
                     .font(.system(size: 48))
                 Spacer()
-                Text("Front Cover By ").font(.system(size: 4))
-                Link(String(chosenObject.coverImagePhotographer), destination: URL(string: "https://unsplash.com/@\(chosenObject.coverImageUserName)")!).font(.system(size: 4))
+                ///////////********************************************
+                Text(text1)
+                    .onAppear{print("Appeared!!!!")}
+                    .font(.system(size: 4))
+                Link(text2, destination: text2URL)
+                    .font(.system(size: 4))
+                ///////////********************************************
                 HStack(spacing: 0) {
-                    Text("On ").font(.system(size: 4))
-                    Link("Unsplash", destination: URL(string: "https://unsplash.com")!).font(.system(size: 4))
+                    Text(text3).font(.system(size: 4))
+                    Link(text4, destination: URL(string: "https://unsplash.com")!).font(.system(size: 4))
                 }.padding(.bottom,10)
                 Text("Greeting Card by").font(.system(size: 6))
                 Text("GreetMe Inc.").font(.system(size: 6)).padding(.bottom,10)
-            }.frame(width: (UIScreen.screenWidth/3)-10, height: (UIScreen.screenWidth/3))
+            }
+            .frame(width: (UIScreen.screenWidth/3)-10, height: (UIScreen.screenWidth/3))
             // Front Cover
             Image(uiImage: chosenObject.coverImage).resizable().frame(width: (UIScreen.screenWidth/3)-10, height: (UIScreen.screenWidth/3))
             }
         }
     }
+
 
     var body: some View {
         VStack(spacing: 0) {

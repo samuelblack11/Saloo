@@ -17,8 +17,26 @@ struct OccassionsMenu: View {
     @State private var presentPrior = false
     @State var searchType: String!
     @State var searchObject: SearchParameter!
-    
+    @State private var showingImagePicker = false
+    @State private var coverImage: UIImage?
+    @State private var image: Image?
+    @State var chosenObject: CoverImageObject!
+    @State private var segueToCollageMenu = false
+    @State var noteField: NoteField!
+    @State var collageImage: CollageImage!
+    @State var frontCoverIsPersonalPhoto = 0
 
+
+    func loadImage() {
+        guard let coverImage = coverImage else {return print("loadImage() failed....")}
+        image = Image(uiImage: coverImage)
+    }
+    
+    func handlePhotoLibrarySelection() {
+        chosenObject = CoverImageObject.init(coverImage: coverImage!, coverImagePhotographer: "", coverImageUserName: "", downloadLocation: "", index: 1)
+    }
+    
+    
 
     var body: some View {
         // NavigationView combines display styling of UINavigationBar and VC stack behavior of UINavigationController.
@@ -26,13 +44,27 @@ struct OccassionsMenu: View {
         NavigationView {
         List {
             Section(header: Text("Personal")) {
+                Text("Select from Photo Library ").onTapGesture {
+                    showingImagePicker = true
+                }
+                .sheet(isPresented: $showingImagePicker) { ImagePicker(image: $coverImage)}
+                    .navigationTitle("Select Front Cover")
+                    .onChange(of: coverImage) { _ in loadImage()
+                        handlePhotoLibrarySelection()
+                        segueToCollageMenu = true
+                        frontCoverIsPersonalPhoto = 1
+                    }.sheet(isPresented: $segueToCollageMenu){
+                        let searchObject = SearchParameter.init(searchText: "None")
+                        CollageStyleMenu(collageImage: $collageImage, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenObject: $chosenObject, noteField: $noteField, searchObject: searchObject)
+                        
+                    }
                 Text("Birthday 🎈").onTapGesture {
                     presentUCV = true
+                    frontCoverIsPersonalPhoto = 0
                 }.sheet(isPresented: $presentUCV) {
                     let searchObject = SearchParameter.init(searchText: "Birthday")
-                    UnsplashCollectionView(searchParam: searchObject)
+                    UnsplashCollectionView(searchParam: searchObject, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto)
                 }
-
                 Text("Thank You 🙏🏽")
                 Text("Sympathy")
                 Text("Get Well")
@@ -57,9 +89,10 @@ struct OccassionsMenu: View {
                 Text("Cinco De Mayo ")
                 Text("Mother's Day 🌸").onTapGesture {
                     presentUCV = true
+                    frontCoverIsPersonalPhoto = 0
                 }.sheet(isPresented: $presentUCV) {
                     let searchObject = SearchParameter.init(searchText: "Floral")
-                    UnsplashCollectionView(searchParam: searchObject)
+                    UnsplashCollectionView(searchParam: searchObject, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto)
                 }
                 Text("Memorial Day 🎗")
             }
@@ -81,9 +114,7 @@ struct OccassionsMenu: View {
             Section(header: Text("Winter")) {
                 Text("New Year's Day")
                 Text("Martin Luther King Jr. Day")
-                //Text("Groundhog Day 🦔")
                 Text("Super Bowl Sunday 🏟")
-                //Text("President's Day")
                 Text("Mardi Gras")
                 Text("Purim")
                 Text("St. Patrick's Day 🍀")

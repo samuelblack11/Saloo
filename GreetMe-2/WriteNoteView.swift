@@ -21,14 +21,18 @@ struct WriteNoteView: View {
     @State private var cardName: String = ""
     @State private var tappedTextEditor = false
     @State private var namesNotEntered = true
-    
-    
-
+    @Binding var frontCoverIsPersonalPhoto: Int
     @State private var segueToFinalize = false
     @Binding var chosenObject: CoverImageObject!
     @Binding var collageImage: CollageImage!
     @Binding var noteField: NoteField!
     @State private var selectedFont = "Papyrus"
+    @State var text1: String = ""
+    @State var text2: String = ""
+    @State var text2URL: URL = URL(string: "https://google.com")!
+    @State var text3: String = ""
+    @State var text4: String = ""
+    
     let allFontNames = UIFont.familyNames
       .flatMap { UIFont.fontNames(forFamilyName: $0) }
     
@@ -44,6 +48,23 @@ struct WriteNoteView: View {
             }
             Spacer()
         }
+    }
+    
+    func annotateIfNeeded() {
+        print("annotateIfNeeded was Called")
+        print(frontCoverIsPersonalPhoto)
+        if frontCoverIsPersonalPhoto == 0 {
+            text1 = "Front Cover By "
+            text2 = String(chosenObject.coverImagePhotographer)
+            text2URL = URL(string: "https://unsplash.com/@\(chosenObject.coverImageUserName)")!
+            text3 = "On "
+            text4 = "Unsplash"
+        }
+        else {
+            text2URL = URL(string: "https://google.com")!
+        }
+        print("----------")
+        print(text2URL)
     }
 
     
@@ -67,12 +88,13 @@ struct WriteNoteView: View {
         TextField("Name Your Card", text: $cardName).padding(.leading, 5).frame(height:35)
         Button("Confirm Note") {
             checkRequiredFields()
+            annotateIfNeeded()
             }
         .alert("Please Enter Values for All Fields!", isPresented: $namesNotEntered) {
             Button("Ok", role: .cancel) {}
             }
         .padding(.bottom, 30)
-        .sheet(isPresented: $segueToFinalize) {FinalizeCardView(chosenObject: $chosenObject, collageImage: $collageImage, noteField: $noteField)}
+        .sheet(isPresented: $segueToFinalize) {FinalizeCardView(chosenObject: $chosenObject, collageImage: $collageImage, noteField: $noteField, frontCoverIsPersonalPhoto: frontCoverIsPersonalPhoto, text1: $text1, text2: $text2, text2URL: $text2URL, text3: $text3, text4: $text4)}
     }
     
     func checkRequiredFields() {
