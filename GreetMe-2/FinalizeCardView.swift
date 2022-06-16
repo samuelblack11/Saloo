@@ -49,7 +49,11 @@ struct FinalizeCardView: View {
                 Image(uiImage: collageImage.collageImage).resizable().frame(width: (UIScreen.screenWidth/5)-10, height: (UIScreen.screenWidth/5),alignment: .center)
                 }.frame(width: (UIScreen.screenWidth/3)-10, height: (UIScreen.screenWidth/3))
             //upside down message
-            Text(noteField.noteText).frame(width: (UIScreen.screenWidth/3)-30).font(.system(size: 4)).font(Font.custom("Papyrus", size: 4)).scaledToFit()
+            Text(noteField.noteText)
+                .scaledToFill()
+                .frame(width: (UIScreen.screenWidth/3)-30)
+                //.font(.system(size: 4))
+                .font(Font.custom("Papyrus", size: 4))
                 
                 .padding(EdgeInsets(top: 0, leading: 5, bottom: 0, trailing: 5))
             }.rotationEffect(Angle(degrees: 180))
@@ -62,13 +66,10 @@ struct FinalizeCardView: View {
                     //.imageScale(.medium)
                     .font(.system(size: 48))
                 Spacer()
-                ///////////********************************************
                 Text(text1)
-                    .onAppear{print("Appeared!!!!")}
                     .font(.system(size: 4))
                 Link(text2, destination: text2URL)
                     .font(.system(size: 4))
-                ///////////********************************************
                 HStack(spacing: 0) {
                     Text(text3).font(.system(size: 4))
                     Link(text4, destination: URL(string: "https://unsplash.com")!).font(.system(size: 4))

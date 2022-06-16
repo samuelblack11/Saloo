@@ -41,9 +41,12 @@ struct UnsplashCollectionView: View {
     @State var noteField: NoteField!
     @State private var presentPrior = false
     @Binding var frontCoverIsPersonalPhoto: Int
-
+    @State private var shouldAnimate = false
+    @State private var downloadAmount = 0.0
+    let timer = Timer.publish(every: 0.05, on: .main, in: .common).autoconnect()
 
     let columns = [GridItem(.fixed(150)),GridItem(.fixed(150))]
+
     var body: some View {
         NavigationView {
             ScrollView {
@@ -51,9 +54,24 @@ struct UnsplashCollectionView: View {
                     ForEach(imageObjects, id: \.self.id) {photoObj in
                     VStack(spacing: 0) {
                         //Text("Hello")
-                        Image(uiImage: photoObj.coverImage)
-                            .resizable()
-                            .frame(width: 125, height: 125)
+                        ZStack {
+                            //ActivityIndicator(shouldAnimate: self.$shouldAnimate)
+                            //ProgressView("Downloading...", value: downloadAmount, total: 100)
+                            //   .onReceive(timer) { _ in
+                            //      if downloadAmount < 100 {
+                             //        downloadAmount += 2
+                             //     }
+                             //  }
+                            //AsyncImage(url: URL(string: photoObj.downloadLocation))
+                                //.resizable()
+                             //   .frame(width: 125, height: 125)
+                            
+                            Image(uiImage: photoObj.coverImage)
+                                .resizable()
+                                .frame(width: 125, height: 125)
+                            
+                            
+                        }
                 }.onTapGesture {
                     handleTap(index: photoObj.index)
                 }

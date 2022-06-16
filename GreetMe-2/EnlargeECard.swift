@@ -12,12 +12,13 @@ import SwiftUI
 struct EnlargeECardView: View {
     @Binding var chosenCard: Card!
     
-    
-    
     var eCardView: some View {
         HStack(spacing: 0) {
             Image(uiImage: UIImage(data: chosenCard.coverImage!)!).resizable().frame(width: (UIScreen.screenHeight/3)-2, height: (UIScreen.screenHeight/3))
-            Text(chosenCard.message!).frame(width: (UIScreen.screenHeight/3)-2, height: (UIScreen.screenHeight/3)).scaledToFit()
+            Text(chosenCard.message!)
+                .scaledToFit()
+                .minimumScaleFactor(0.3)
+                .frame(width: (UIScreen.screenHeight/3)-2, height: (UIScreen.screenHeight/3))
             Image(uiImage: UIImage(data: chosenCard.collage!)!).resizable().frame(width: (UIScreen.screenHeight/3)-2, height: (UIScreen.screenHeight/3))
         }.rotationEffect(.degrees(90))
     }
