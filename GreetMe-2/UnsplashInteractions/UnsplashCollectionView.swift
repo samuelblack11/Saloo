@@ -26,7 +26,7 @@ struct CoverImageObject: Identifiable, Hashable {
     }
 }
 struct UnsplashCollectionView: View {
-    
+    @Environment(\.presentationMode) var presentationMode
     @State var searchParam: SearchParameter
     @State private var imageObjects: [CoverImageObject] = []
     @State private var segueToConfirmFrontCover = false
@@ -81,7 +81,9 @@ struct UnsplashCollectionView: View {
             .navigationBarItems(leading:
                 Button {
                     print("Back button tapped")
-                    presentPrior = true
+                    //presentPrior = true
+                    presentationMode.wrappedValue.dismiss()
+
                 } label: {
                     Image(systemName: "chevron.left").foregroundColor(.blue)
                     Text("Back")

@@ -11,6 +11,8 @@ import SwiftUI
 
 //2narrow1wide
 struct CollageFiveView: View {
+    @Environment(\.presentationMode) var presentationMode
+
     @State private var showingImagePicker = false
     @State private var imageA: Image?
     @State private var imageB: Image?
@@ -35,7 +37,12 @@ struct CollageFiveView: View {
                     imageA?.resizable()}
                     .onTapGesture {showingImagePicker = true; imageNumber = 1}
                     .frame(width: 150, height: 150)
-                    .navigationTitle("Select 1 Photo")
+                    .navigationTitle("Select 3 Photos")
+                    .navigationBarItems(leading:
+                                        Button {presentationMode.wrappedValue.dismiss()} label: {
+                                        Image(systemName: "chevron.left").foregroundColor(.blue)
+                                        Text("Back")
+                                        })
                     .onChange(of: chosenImageA) { _ in loadImage(chosenImage: chosenImageA)}
                     .sheet(isPresented: $showingImagePicker) { ImagePicker(image: $chosenImageA)}
                 Divider()
@@ -45,7 +52,6 @@ struct CollageFiveView: View {
                     imageB?.resizable()}
                     .onTapGesture {showingImagePicker = true; imageNumber = 2}
                     .frame(width: 150, height: 150)
-                    .navigationTitle("Select 1 Photo")
                     .onChange(of: chosenImageB) { _ in loadImage(chosenImage: chosenImageB)}
                     .sheet(isPresented: $showingImagePicker) { ImagePicker(image: $chosenImageB)}
                     }.frame(width: 300, height: 150)
@@ -56,7 +62,6 @@ struct CollageFiveView: View {
                 imageC?.resizable()}
                 .onTapGesture {showingImagePicker = true; imageNumber = 3}
                 .frame(width: 300, height: 150)
-                .navigationTitle("Select 1 Photo")
                 .onChange(of: chosenImageC) { _ in loadImage(chosenImage: chosenImageC)}
                 .sheet(isPresented: $showingImagePicker) { ImagePicker(image: $chosenImageC)}
         }.frame(width: 300, height: 300)
@@ -65,6 +70,7 @@ struct CollageFiveView: View {
 
     
     var body: some View {
+        NavigationView {
         collageFiveView
         Spacer()
         Button("Confirm Collage for Inside Cover") {
@@ -74,6 +80,7 @@ struct CollageFiveView: View {
             print(theSnapShot)
             collageImage = CollageImage.init(collageImage: theSnapShot)
         }.padding(.bottom, 30).sheet(isPresented: $segueToWriteNote ) {WriteNoteView(frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenObject: $chosenObject, collageImage: $collageImage, noteField: $noteField)}
+    }
     }
 
     func loadImage(chosenImage: UIImage?) {

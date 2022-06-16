@@ -9,7 +9,7 @@ import Foundation
 import SwiftUI
 
 struct ConfirmFrontCoverView: View {
-    
+    @Environment(\.presentationMode) var presentationMode
     // https://stackoverflow.com/questions/61237660/toggling-state-variables-using-ontapgesture-in-swiftui
     // https://developer.apple.com/documentation/swiftui/link
     @State var frontCoverImage: Image!
@@ -53,7 +53,9 @@ struct ConfirmFrontCoverView: View {
         .navigationBarItems(leading:
             Button {
                 print("Back button tapped")
-                presentPrior = true
+                //presentPrior = true
+                presentationMode.wrappedValue.dismiss()
+
             } label: {
                 Image(systemName: "chevron.left").foregroundColor(.blue)
                 Text("Back")

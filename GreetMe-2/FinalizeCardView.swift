@@ -13,7 +13,7 @@ import CoreData
 //https://medium.com/swiftui-made-easy/activity-view-controller-in-swiftui-593fddadee79
 
 struct FinalizeCardView: View {
-    
+    @Environment(\.presentationMode) var presentationMode
     var card: Card!
     @Binding var chosenObject: CoverImageObject!
     @Binding var collageImage: CollageImage!
@@ -24,6 +24,7 @@ struct FinalizeCardView: View {
     @Binding var text2URL: URL
     @Binding var text3: String
     @Binding var text4: String
+    @State var presentMenu = false
 
     
     //@Binding var cardForExport: Data!
@@ -86,6 +87,7 @@ struct FinalizeCardView: View {
 
 
     var body: some View {
+        NavigationView {
         VStack(spacing: 0) {
             Spacer()
             Text("Your eCard will be stored like this:").padding(.bottom, 5)
@@ -128,6 +130,17 @@ struct FinalizeCardView: View {
                     ActivityView(activityItems: $activityItemsArray, applicationActivities: nil)
                 }
             }
+        }
+        .navigationBarItems(
+            leading:Button {presentationMode.wrappedValue.dismiss()}
+            label: {Image(systemName: "chevron.left").foregroundColor(.blue)
+            Text("Back")},
+            trailing:Button {
+                presentMenu = true
+            }
+                label: {Image(systemName: "menucard.fill").foregroundColor(.blue)
+                Text("Menu")})
+        .sheet(isPresented: $presentMenu) {MenuView()}
         }
     }
     

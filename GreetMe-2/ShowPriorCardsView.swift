@@ -9,17 +9,13 @@ import Foundation
 import SwiftUI
 
 struct ShowPriorCardsView: View {
+    @Environment(\.presentationMode) var presentationMode
     // https://www.hackingwithswift.com/read/38/5/loading-core-data-objects-using-nsfetchrequest-and-nssortdescriptor
     @State var cards = [Card]()
     @State private var segueToEnlarge = false
     @State private var chosenCard: Card!
     let columns = [GridItem(.fixed(150))]
     
-    
-    
-    
-
-
     var body: some View {
         NavigationView {
             ScrollView {
@@ -59,7 +55,15 @@ struct ShowPriorCardsView: View {
                     
                 }
             }
-            }
+            }.navigationBarItems(leading:
+                                            Button {
+                                                print("Back button tapped")
+                                                //presentPrior = true
+                                                presentationMode.wrappedValue.dismiss()
+                                            } label: {
+                                                Image(systemName: "chevron.left").foregroundColor(.blue)
+                                                Text("Back")
+                                            })
         }
         .font(.headline)
         .padding(.horizontal)

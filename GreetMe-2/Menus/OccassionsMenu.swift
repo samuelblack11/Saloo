@@ -4,7 +4,7 @@
 //
 //  Created by Sam Black on 4/28/22.
 //
-
+// https://www.hackingwithswift.com/quick-start/swiftui/how-to-make-a-view-dismiss-itself
 import Foundation
 import SwiftUI
 
@@ -13,6 +13,7 @@ struct SearchParameter {
 }
 
 struct OccassionsMenu: View {
+    @Environment(\.presentationMode) var presentationMode
     @State private var presentUCV = false
     @State private var presentPrior = false
     @State var searchType: String!
@@ -128,7 +129,8 @@ struct OccassionsMenu: View {
         .navigationBarItems(leading:
             Button {
                 print("Back button tapped")
-                presentPrior = true
+                //presentPrior = true
+                presentationMode.wrappedValue.dismiss()
             } label: {
                 Image(systemName: "chevron.left").foregroundColor(.blue)
                 Text("Back")

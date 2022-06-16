@@ -9,6 +9,8 @@ import Foundation
 import SwiftUI
 
 struct CollageSixView: View {
+    @Environment(\.presentationMode) var presentationMode
+
     @State private var showingImagePicker = false
     @State private var imageA: Image?
     @State private var imageB: Image?
@@ -35,6 +37,12 @@ struct CollageSixView: View {
                         imageA?.resizable()}
                         .onTapGesture {showingImagePicker = true; imageNumber = 1}
                         .frame(width: 150, height: 150)
+                        .navigationTitle("Select 4 Photos")
+                        .navigationBarItems(leading:
+                                                Button {presentationMode.wrappedValue.dismiss()} label: {
+                                                Image(systemName: "chevron.left").foregroundColor(.blue)
+                                                Text("Back")
+                                                })
                         .onChange(of: chosenImageA) { _ in loadImage(chosenImage: chosenImageA)}
                         .sheet(isPresented: $showingImagePicker) { ImagePicker(image: $chosenImageA)}
                     Divider()
@@ -67,11 +75,13 @@ struct CollageSixView: View {
                         .onChange(of: chosenImageD) { _ in loadImage(chosenImage: chosenImageD)}
                         .sheet(isPresented: $showingImagePicker) { ImagePicker(image: $chosenImageD)}
                         }.frame(width: 150, height: 150)
+                
             }.frame(width: 300, height: 300)
     }
 
 
     var body: some View {
+        NavigationView {
         VStack {
             collageSixView
             Spacer()
@@ -83,6 +93,7 @@ struct CollageSixView: View {
                 collageImage = CollageImage.init(collageImage: theSnapShot)
             }.padding(.bottom, 30).sheet(isPresented: $segueToWriteNote ) {WriteNoteView(frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenObject: $chosenObject, collageImage: $collageImage, noteField: $noteField)}
         }
+    }
     }
         
         

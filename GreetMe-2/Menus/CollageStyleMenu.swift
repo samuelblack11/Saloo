@@ -13,11 +13,10 @@ struct CollageImage {
 }
 
 struct CollageStyleMenu: View {
-    
+    @Environment(\.presentationMode) var presentationMode
     @Binding var collageImage: CollageImage!
     @State private var presentPrior = false
     @Binding var frontCoverIsPersonalPhoto: Int
-
 
     let columns = [GridItem(.fixed(150)),GridItem(.fixed(150))]
     
@@ -87,7 +86,8 @@ struct CollageStyleMenu: View {
             .navigationBarItems(leading:
                 Button {
                     print("Back button tapped")
-                    presentPrior = true
+                    presentationMode.wrappedValue.dismiss()
+                    //presentPrior = true
                 } label: {
                     Image(systemName: "chevron.left").foregroundColor(.blue)
                     Text("Back")

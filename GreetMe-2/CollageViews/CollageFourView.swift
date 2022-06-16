@@ -10,6 +10,7 @@ import SwiftUI
 
 //2short1long
 struct CollageFourView: View {
+    @Environment(\.presentationMode) var presentationMode
 
     @State private var showingImagePicker = false
     @State private var imageA: Image?
@@ -36,7 +37,12 @@ struct CollageFourView: View {
                     imageA?.resizable()}
                     .onTapGesture {showingImagePicker = true; imageNumber = 1}
                     .frame(width: 150, height: 150)
-                    .navigationTitle("Select 1 Photo")
+                    .navigationTitle("Select 3 Photos")
+                    .navigationBarItems(leading:
+                                            Button {presentationMode.wrappedValue.dismiss()} label: {
+                                            Image(systemName: "chevron.left").foregroundColor(.blue)
+                                            Text("Back")
+                                            })
                     .onChange(of: chosenImageA) { _ in loadImage(chosenImage: chosenImageA)}
                     .sheet(isPresented: $showingImagePicker) { ImagePicker(image: $chosenImageA)}
                 Divider()
@@ -46,7 +52,6 @@ struct CollageFourView: View {
                     imageB?.resizable()}
                     .onTapGesture {showingImagePicker = true; imageNumber = 2}
                     .frame(width: 150, height: 150)
-                    .navigationTitle("Select 1 Photo")
                     .onChange(of: chosenImageB) { _ in loadImage(chosenImage: chosenImageB)}
                     .sheet(isPresented: $showingImagePicker) { ImagePicker(image: $chosenImageB)}
                     }.frame(width: 150, height: 300)
@@ -57,7 +62,6 @@ struct CollageFourView: View {
                 imageC?.resizable()}
                 .onTapGesture {showingImagePicker = true; imageNumber = 3}
                 .frame(width: 150, height: 300)
-                .navigationTitle("Select 1 Photo")
                 .onChange(of: chosenImageC) { _ in loadImage(chosenImage: chosenImageC)}
                 .sheet(isPresented: $showingImagePicker) { ImagePicker(image: $chosenImageC)}
         }.frame(width: 300, height: 300)
@@ -67,6 +71,7 @@ struct CollageFourView: View {
 
 
     var body: some View {
+        NavigationView {
         VStack {
             collageFourView
             Spacer()
@@ -77,6 +82,7 @@ struct CollageFourView: View {
                 print(theSnapShot)
                 collageImage = CollageImage.init(collageImage: theSnapShot)
             }.padding(.bottom, 30).sheet(isPresented: $segueToWriteNote ) {WriteNoteView(frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenObject: $chosenObject, collageImage: $collageImage, noteField: $noteField)}
+        }
         }
     }
 

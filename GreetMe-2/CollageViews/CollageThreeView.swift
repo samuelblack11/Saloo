@@ -9,7 +9,8 @@ import Foundation
 import SwiftUI
 
 struct CollageThreeView: View {
-    
+    @Environment(\.presentationMode) var presentationMode
+
     @State private var showingImagePicker = false
     @State private var imageA: Image?
     @State private var imageB: Image?
@@ -31,7 +32,12 @@ struct CollageThreeView: View {
                 imageA?.resizable()}
                 .onTapGesture {showingImagePicker = true; imageNumber = 1}
                 .frame(width: 150, height: 250)
-                .navigationTitle("Select 1 Photo")
+                .navigationTitle("Select 2 Photos")
+                .navigationBarItems(leading:
+                                        Button {presentationMode.wrappedValue.dismiss()} label: {
+                                        Image(systemName: "chevron.left").foregroundColor(.blue)
+                                        Text("Back")
+                                        })
                 .onChange(of: chosenImageA) { _ in loadImage(chosenImage: chosenImageA)}
                 .sheet(isPresented: $showingImagePicker) { ImagePicker(image: $chosenImageA)}
             Divider()
@@ -41,7 +47,6 @@ struct CollageThreeView: View {
                 imageB?.resizable()}
                 .onTapGesture {showingImagePicker = true; imageNumber = 2}
                 .frame(width: 150, height: 250)
-                .navigationTitle("Select 1 Photo")
                 .onChange(of: chosenImageB) { _ in loadImage(chosenImage: chosenImageB)}
                 .sheet(isPresented: $showingImagePicker) { ImagePicker(image: $chosenImageB)}
                 }.frame(width: 300, height: 250)
@@ -54,6 +59,7 @@ struct CollageThreeView: View {
 
 
     var body: some View {
+        NavigationView {
         VStack {
         collageThreeView
         Spacer()
@@ -64,6 +70,7 @@ struct CollageThreeView: View {
             print(theSnapShot)
             collageImage = CollageImage.init(collageImage: theSnapShot)
         }.padding(.bottom, 30).sheet(isPresented: $segueToWriteNote ) {WriteNoteView(frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenObject: $chosenObject, collageImage: $collageImage, noteField: $noteField)}
+        }
         }
     }
     

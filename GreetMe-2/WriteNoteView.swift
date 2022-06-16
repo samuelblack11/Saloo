@@ -15,7 +15,7 @@ struct NoteField {
 }
 
 struct WriteNoteView: View {
-    
+    @Environment(\.presentationMode) var presentationMode
     @State private var message: String = "Write Your Note Here"
     @State private var recipient: String = ""
     @State private var cardName: String = ""
@@ -71,6 +71,8 @@ struct WriteNoteView: View {
 
     
     var body: some View {
+        NavigationView {
+            VStack {
         // https://www.hackingwithswift.com/quick-start/swiftui/how-to-read-text-from-a-textfield
         // https://www.hackingwithswift.com/quick-start/swiftui/how-to-create-multi-line-editable-text-with-texteditor
         TextEditor(text: $message)
@@ -79,8 +81,7 @@ struct WriteNoteView: View {
             .foregroundColor(tappedTextEditor ? .black: .gray)
             .onTapGesture {
                 message = ""
-                tappedTextEditor = true
-            }
+                tappedTextEditor = true}
         Image(uiImage: collageImage.collageImage).resizable().frame(width: (UIScreen.screenWidth/5)-10, height: (UIScreen.screenWidth/5),alignment: .center)
         //Spacer()
         fontMenu.frame(height: 65)
@@ -90,26 +91,20 @@ struct WriteNoteView: View {
             checkRequiredFields()
             annotateIfNeeded()
             }
-        .alert("Please Enter Values for All Fields!", isPresented: $namesNotEntered) {
-            Button("Ok", role: .cancel) {}
-            }
+        .alert("Please Enter Values for All Fields!", isPresented: $namesNotEntered) {Button("Ok", role: .cancel) {}}
         .alert("Type Note Here or Hand Write After Printing?", isPresented: $handWrite) {
             Button("Type it Here", action: {})
             Button("Hand Write it", action: {
                 message = " "
-                willHandWrite = true})
-            }
-        .alert("Enter a Recipient & Card Name, Then Confirm", isPresented: $willHandWrite) {
-            Button("Ok", role: .cancel) {}
-            }
-        
-        
-        
-        
-        
-        
+                willHandWrite = true})}
+        .alert("Enter a Recipient & Card Name, Then Confirm", isPresented: $willHandWrite) {Button("Ok", role: .cancel) {}}
         .padding(.bottom, 30)
         .sheet(isPresented: $segueToFinalize) {FinalizeCardView(chosenObject: $chosenObject, collageImage: $collageImage, noteField: $noteField, frontCoverIsPersonalPhoto: frontCoverIsPersonalPhoto, text1: $text1, text2: $text2, text2URL: $text2URL, text3: $text3, text4: $text4)}
+        }.navigationBarItems(leading:
+                                        Button {presentationMode.wrappedValue.dismiss()} label: {
+                                            Image(systemName: "chevron.left").foregroundColor(.blue)
+                                                Text("Back")})
+        }
     }
     
     func checkRequiredFields() {

@@ -9,7 +9,8 @@ import Foundation
 import SwiftUI
 
 struct CollageTwoView: View {
-    
+    @Environment(\.presentationMode) var presentationMode
+
     @State private var showingImagePicker = false
     @State private var imageA: Image?
     @State private var imageB: Image?
@@ -29,14 +30,12 @@ struct CollageTwoView: View {
             Rectangle().fill(.secondary)
             Text("Tap to select a picture").foregroundColor(.white).font(.headline)
             imageA?.resizable()
-            
         }
             .onTapGesture {showingImagePicker = true; imageNumber = 1}
             .frame(width: 250, height: 150)
-            .navigationTitle("Select 1 Photo")
             .onChange(of: chosenImageA) { _ in loadImage(chosenImage: chosenImageA)}
             .sheet(isPresented: $showingImagePicker) { ImagePicker(image: $chosenImageA)}
-        Divider()
+        Divider().frame(width: 250)
         ZStack {
             Rectangle().fill(.secondary)
             Text("Tap to select a picture").foregroundColor(.white).font(.headline)
@@ -44,13 +43,19 @@ struct CollageTwoView: View {
         }
             .onTapGesture {showingImagePicker = true; imageNumber = 2}
             .frame(width: 250, height: 150)
-            .navigationTitle("Select 1 Photo")
+            .navigationTitle("Select 2 Photos")
+            .navigationBarItems(leading:
+                                    Button {presentationMode.wrappedValue.dismiss()} label: {
+                                    Image(systemName: "chevron.left").foregroundColor(.blue)
+                                    Text("Back")
+                                    })
             .onChange(of: chosenImageB) { _ in loadImage(chosenImage: chosenImageB)}
             .sheet(isPresented: $showingImagePicker) {ImagePicker(image: $chosenImageB)}
             }
         }
 
     var body: some View {
+        NavigationView {
         VStack(spacing: 0) {
         collageTwoView
         Spacer()
@@ -61,6 +66,7 @@ struct CollageTwoView: View {
             print(theSnapShot)
             collageImage = CollageImage.init(collageImage: theSnapShot)
         }.padding(.bottom, 30).sheet(isPresented: $segueToWriteNote ) {WriteNoteView(frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenObject: $chosenObject, collageImage: $collageImage, noteField: $noteField)}
+        }
         }
     }
     

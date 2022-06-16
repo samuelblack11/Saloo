@@ -9,7 +9,8 @@ import Foundation
 import SwiftUI
 
 struct CollageOneView: View {
-    
+    @Environment(\.presentationMode) var presentationMode
+
     @State private var showingImagePicker = false
     @State private var image: Image?
     @State private var chosenImage: UIImage?
@@ -30,10 +31,16 @@ struct CollageOneView: View {
                 .onTapGesture {showingImagePicker = true}
                 .frame(width: 300, height: 300)
                 .navigationTitle("Select 1 Photo")
+                .navigationBarItems(leading:
+                    Button {presentationMode.wrappedValue.dismiss()} label: {
+                    Image(systemName: "chevron.left").foregroundColor(.blue)
+                    Text("Back")
+                    })
                 .onChange(of: chosenImage) { _ in loadImage()}
                 .sheet(isPresented: $showingImagePicker) { ImagePicker(image: $chosenImage)}
         }
     var body: some View {
+        NavigationView {
         VStack {
         collageOneView
         Spacer()
@@ -45,6 +52,8 @@ struct CollageOneView: View {
             collageImage = CollageImage.init(collageImage: theSnapShot)
         }.padding(.bottom, 30).sheet(isPresented: $segueToWriteNote ) {WriteNoteView(frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenObject: $chosenObject, collageImage: $collageImage, noteField: $noteField)}
         }
+        }
+
     }
     
     func loadImage() {
