@@ -32,7 +32,6 @@ struct CollageThreeView: View {
                 imageA?.resizable()}
                 .onTapGesture {showingImagePicker = true; imageNumber = 1}
                 .frame(width: 150, height: 250)
-                .navigationTitle("Select 2 Photos")
                 .navigationBarItems(leading:
                                         Button {presentationMode.wrappedValue.dismiss()} label: {
                                         Image(systemName: "chevron.left").foregroundColor(.blue)

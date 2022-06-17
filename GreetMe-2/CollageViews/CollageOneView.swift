@@ -30,7 +30,6 @@ struct CollageOneView: View {
                 }
                 .onTapGesture {showingImagePicker = true}
                 .frame(width: 300, height: 300)
-                .navigationTitle("Select 1 Photo")
                 .navigationBarItems(leading:
                     Button {presentationMode.wrappedValue.dismiss()} label: {
                     Image(systemName: "chevron.left").foregroundColor(.blue)

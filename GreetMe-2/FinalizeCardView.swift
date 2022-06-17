@@ -26,7 +26,6 @@ struct FinalizeCardView: View {
     @Binding var text4: String
     @State var presentMenu = false
 
-    
     //@Binding var cardForExport: Data!
     @State private var showActivityController = false
     @State var activityItemsArray: [Any] = []
@@ -97,7 +96,8 @@ struct FinalizeCardView: View {
             cardForPrint
             Spacer()
             HStack {
-                Button("Save Your Card") {
+                VStack {
+                Button("Save eCard") {
                     //save to core data
                     
                     let card = Card(context: DataController.shared.viewContext)
@@ -116,8 +116,15 @@ struct FinalizeCardView: View {
                     let count = try! DataController.shared.viewContext.count(for: fetchRequest)
                     print("\(count) Cards Saved")  
                 }
+                    Button("Share eCard") {
+                        showActivityController = true
+                        let cardForShare = eCard.snapshot()
+                        activityItemsArray.append(cardForShare)
+                    }
+                }
+                /////////////////////////////////////////////////////////////////////////////////
                 Spacer()
-                Button("Export Card for Print") {
+                Button("Export for Print") {
                     showActivityController = true
                     print("*****")
                     print(cardForPrint.snapshot())
@@ -143,7 +150,7 @@ struct FinalizeCardView: View {
         .sheet(isPresented: $presentMenu) {MenuView()}
         }
     }
-    
+
     func prepCardForExport() -> Data {
         
         // https://www.advancedswift.com/resize-uiimage-no-stretching-swift/
@@ -168,6 +175,7 @@ struct FinalizeCardView: View {
         })
         return data
     }
+    
     
     func saveContext() {
         if DataController.shared.container.viewContext.hasChanges {

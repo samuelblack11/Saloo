@@ -43,7 +43,6 @@ struct CollageTwoView: View {
         }
             .onTapGesture {showingImagePicker = true; imageNumber = 2}
             .frame(width: 250, height: 150)
-            .navigationTitle("Select 2 Photos")
             .navigationBarItems(leading:
                                     Button {presentationMode.wrappedValue.dismiss()} label: {
                                     Image(systemName: "chevron.left").foregroundColor(.blue)

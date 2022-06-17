@@ -37,7 +37,6 @@ struct CollageSixView: View {
                         imageA?.resizable()}
                         .onTapGesture {showingImagePicker = true; imageNumber = 1}
                         .frame(width: 150, height: 150)
-                        .navigationTitle("Select 4 Photos")
                         .navigationBarItems(leading:
                                                 Button {presentationMode.wrappedValue.dismiss()} label: {
                                                 Image(systemName: "chevron.left").foregroundColor(.blue)

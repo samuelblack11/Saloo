@@ -37,7 +37,6 @@ struct CollageFiveView: View {
                     imageA?.resizable()}
                     .onTapGesture {showingImagePicker = true; imageNumber = 1}
                     .frame(width: 150, height: 150)
-                    .navigationTitle("Select 3 Photos")
                     .navigationBarItems(leading:
                                         Button {presentationMode.wrappedValue.dismiss()} label: {
                                         Image(systemName: "chevron.left").foregroundColor(.blue)
