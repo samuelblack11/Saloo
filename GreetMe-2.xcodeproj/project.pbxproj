@@ -55,6 +55,7 @@
 		260F6908281DEAE7002E864B /* GreetMe-2.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "GreetMe-2.entitlements"; sourceTree = "<group>"; };
 		262C3ED2281E1E9C00F07C01 /* MenuView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuView.swift; sourceTree = "<group>"; };
 		262C3ED4281E226F00F07C01 /* ShowPriorCardsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShowPriorCardsView.swift; sourceTree = "<group>"; };
+		2650FFCD285C9C340020980E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		26A7217C281DB8D500ADAE44 /* GreetMe-2.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "GreetMe-2.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		26A7217F281DB8D500ADAE44 /* GreetMe_2App.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GreetMe_2App.swift; sourceTree = "<group>"; };
 		26A72183281DB8D900ADAE44 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -162,6 +163,7 @@
 		26A7217E281DB8D500ADAE44 /* GreetMe-2 */ = {
 			isa = PBXGroup;
 			children = (
+				2650FFCD285C9C340020980E /* Info.plist */,
 				260F6908281DEAE7002E864B /* GreetMe-2.entitlements */,
 				260F6902281DBF41002E864B /* Model */,
 				260F6901281DBF28002E864B /* Menus */,
@@ -413,6 +415,8 @@
 				DEVELOPMENT_TEAM = BSM3YZFUT2;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "GreetMe-2/Info.plist";
+				INFOPLIST_KEY_NSCameraUsageDescription = "Use for Photos to Include in Cards";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -443,6 +447,8 @@
 				DEVELOPMENT_TEAM = BSM3YZFUT2;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "GreetMe-2/Info.plist";
+				INFOPLIST_KEY_NSCameraUsageDescription = "Use for Photos to Include in Cards";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;

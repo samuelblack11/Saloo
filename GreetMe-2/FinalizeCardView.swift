@@ -119,6 +119,7 @@ struct FinalizeCardView: View {
                     Button("Share eCard") {
                         showActivityController = true
                         let cardForShare = eCard.snapshot()
+                        activityItemsArray = []
                         activityItemsArray.append(cardForShare)
                     }
                 }
@@ -132,6 +133,7 @@ struct FinalizeCardView: View {
                     print(prepCardForExport())
                     let cardForExport = prepCardForExport()
                     //print(cardForExport!)
+                    activityItemsArray = []
                     activityItemsArray.append(cardForExport)
                 }.sheet(isPresented: $showActivityController) {
                     ActivityView(activityItems: $activityItemsArray, applicationActivities: nil)

@@ -12,12 +12,12 @@ struct LoginView: View {
     
     @State private var signInSuccess = false
     @State private var signInFailure = false
-    @Binding var chosenObject: CoverImageObject!
-    @Binding var collageImage: CollageImage!
-    @Binding var noteField: NoteField!
+    @State var chosenObject: CoverImageObject!
+    @State var collageImage: CollageImage!
+    @State var noteField: NoteField!
     
     var body: some View {
-        NavigationView {
+        //NavigationView {
         ZStack {
             Image("hamid-roshaan-BQrzI0vi9x0-unsplash").resizable()
             VStack {
@@ -44,7 +44,7 @@ struct LoginView: View {
                     ).frame(width: 200, height: 50, alignment: .center).padding(.bottom, 20)
                 }
             }
-        }
+        //}
         .sheet(isPresented: $signInSuccess) {MenuView(searchObject: nil)}
         .alert(isPresented: $signInSuccess) {
             Alert(title: Text("Login Failed"), message: Text("Please Try Again"), dismissButton: .default(Text("Dismiss")))

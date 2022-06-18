@@ -34,6 +34,8 @@ struct WriteNoteView: View {
     @State var text2URL: URL = URL(string: "https://google.com")!
     @State var text3: String = ""
     @State var text4: String = ""
+    @FocusState private var isNoteFieldFocused: Bool
+
     
     let allFontNames = UIFont.familyNames
       .flatMap { UIFont.fontNames(forFamilyName: $0) }
@@ -73,20 +75,36 @@ struct WriteNoteView: View {
     var body: some View {
         NavigationView {
             VStack {
+            //ScrollView {
         // https://www.hackingwithswift.com/quick-start/swiftui/how-to-read-text-from-a-textfield
         // https://www.hackingwithswift.com/quick-start/swiftui/how-to-create-multi-line-editable-text-with-texteditor
+        // https://www.hackingwithswift.com/quick-start/swiftui/what-is-the-focusstate-property-wrapper
         TextEditor(text: $message)
+            .focused($isNoteFieldFocused)
             .font(Font.custom(selectedFont, size: 14))
             //.foregroundColor(.gray)
-            .foregroundColor(tappedTextEditor ? .black: .gray)
+            //.foregroundColor(tappedTextEditor ? .black: .gray)
             .onTapGesture {
-                message = ""
+                if message == "Write Your Note Here" {
+                    message = ""
+                }
+                isNoteFieldFocused.toggle()
                 tappedTextEditor = true}
         Image(uiImage: collageImage.collageImage).resizable().frame(width: (UIScreen.screenWidth/5)-10, height: (UIScreen.screenWidth/5),alignment: .center)
         //Spacer()
         fontMenu.frame(height: 65)
-        TextField("Recipient", text: $recipient).padding(.leading, 5).frame(height:35)
-        TextField("Name Your Card", text: $cardName).padding(.leading, 5).frame(height:35)
+        TextField("Recipient", text: $recipient)
+            .padding(.leading, 5)
+            .frame(height:35)
+            .onTapGesture {
+                isNoteFieldFocused.toggle()
+            }
+        TextField("Name Your Card", text: $cardName)
+            .padding(.leading, 5)
+            .frame(height:35)
+            .onTapGesture {
+                isNoteFieldFocused.toggle()
+            }
         Button("Confirm Note") {
             checkRequiredFields()
             annotateIfNeeded()
@@ -100,7 +118,9 @@ struct WriteNoteView: View {
         .alert("Enter a Recipient & Card Name, Then Confirm", isPresented: $willHandWrite) {Button("Ok", role: .cancel) {}}
         .padding(.bottom, 30)
         .sheet(isPresented: $segueToFinalize) {FinalizeCardView(chosenObject: $chosenObject, collageImage: $collageImage, noteField: $noteField, frontCoverIsPersonalPhoto: frontCoverIsPersonalPhoto, text1: $text1, text2: $text2, text2URL: $text2URL, text3: $text3, text4: $text4)}
-        }.navigationBarItems(leading:
+        }
+            //.ignoresSafeArea(.keyboard)
+            .navigationBarItems(leading:
                                         Button {presentationMode.wrappedValue.dismiss()} label: {
                                             Image(systemName: "chevron.left").foregroundColor(.blue)
                                                 Text("Back")})
