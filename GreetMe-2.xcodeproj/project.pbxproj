@@ -24,6 +24,8 @@
 		260F6907281DC0E3002E864B /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 260F6906281DC0E3002E864B /* LoginView.swift */; };
 		262C3ED3281E1E9C00F07C01 /* MenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 262C3ED2281E1E9C00F07C01 /* MenuView.swift */; };
 		262C3ED5281E226F00F07C01 /* ShowPriorCardsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 262C3ED4281E226F00F07C01 /* ShowPriorCardsView.swift */; };
+		2688D704285FA24300954120 /* SnapShotECard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2688D703285FA24200954120 /* SnapShotECard.swift */; };
+		2688D706285FA25100954120 /* SnapShotCardForPrint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2688D705285FA25100954120 /* SnapShotCardForPrint.swift */; };
 		26A72180281DB8D500ADAE44 /* GreetMe_2App.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26A7217F281DB8D500ADAE44 /* GreetMe_2App.swift */; };
 		26A72184281DB8D900ADAE44 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 26A72183281DB8D900ADAE44 /* Assets.xcassets */; };
 		26A72187281DB8D900ADAE44 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 26A72186281DB8D900ADAE44 /* Preview Assets.xcassets */; };
@@ -56,6 +58,8 @@
 		262C3ED2281E1E9C00F07C01 /* MenuView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuView.swift; sourceTree = "<group>"; };
 		262C3ED4281E226F00F07C01 /* ShowPriorCardsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShowPriorCardsView.swift; sourceTree = "<group>"; };
 		2650FFCD285C9C340020980E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		2688D703285FA24200954120 /* SnapShotECard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SnapShotECard.swift; sourceTree = "<group>"; };
+		2688D705285FA25100954120 /* SnapShotCardForPrint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SnapShotCardForPrint.swift; sourceTree = "<group>"; };
 		26A7217C281DB8D500ADAE44 /* GreetMe-2.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "GreetMe-2.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		26A7217F281DB8D500ADAE44 /* GreetMe_2App.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GreetMe_2App.swift; sourceTree = "<group>"; };
 		26A72183281DB8D900ADAE44 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -171,6 +175,8 @@
 				260F6904281DBFAB002E864B /* UnsplashInteractions */,
 				26AD8126281F05160069C3F0 /* WriteNoteView.swift */,
 				26AD8128281F05310069C3F0 /* FinalizeCardView.swift */,
+				2688D703285FA24200954120 /* SnapShotECard.swift */,
+				2688D705285FA25100954120 /* SnapShotCardForPrint.swift */,
 				262C3ED4281E226F00F07C01 /* ShowPriorCardsView.swift */,
 				26EB55642827120C00178F0B /* EnlargeECard.swift */,
 				260F6903281DBF55002E864B /* Responses */,
@@ -272,6 +278,7 @@
 				260F68EB281DBD7A002E864B /* CollageOneView.swift in Sources */,
 				260F68F5281DBDCD002E864B /* OccassionsMenu.swift in Sources */,
 				260F68FA281DBE61002E864B /* PhotoAPI.swift in Sources */,
+				2688D706285FA25100954120 /* SnapShotCardForPrint.swift in Sources */,
 				260F68E7281DBD68002E864B /* CollageFiveView.swift in Sources */,
 				260F68F3281DBDA7002E864B /* CollageThreeView.swift in Sources */,
 				260F68E5281DBD63002E864B /* ImagePicker.swift in Sources */,
@@ -279,6 +286,7 @@
 				260F68F1281DBDA2002E864B /* CollageTwoView.swift in Sources */,
 				262C3ED5281E226F00F07C01 /* ShowPriorCardsView.swift in Sources */,
 				260F6907281DC0E3002E864B /* LoginView.swift in Sources */,
+				2688D704285FA24300954120 /* SnapShotECard.swift in Sources */,
 				260F68FC281DBEA0002E864B /* UnsplashResponse.swift in Sources */,
 				26A72180281DB8D500ADAE44 /* GreetMe_2App.swift in Sources */,
 				26E63AF128233797007DB9C3 /* Card+CoreDataProperties.swift in Sources */,

@@ -80,7 +80,7 @@ struct WriteNoteView: View {
         // https://www.hackingwithswift.com/quick-start/swiftui/how-to-create-multi-line-editable-text-with-texteditor
         // https://www.hackingwithswift.com/quick-start/swiftui/what-is-the-focusstate-property-wrapper
         TextEditor(text: $message)
-            .focused($isNoteFieldFocused)
+            //.focused($isNoteFieldFocused)
             .font(Font.custom(selectedFont, size: 14))
             //.foregroundColor(.gray)
             //.foregroundColor(tappedTextEditor ? .black: .gray)
@@ -88,22 +88,24 @@ struct WriteNoteView: View {
                 if message == "Write Your Note Here" {
                     message = ""
                 }
-                isNoteFieldFocused.toggle()
+                //isNoteFieldFocused.toggle()
                 tappedTextEditor = true}
-        Image(uiImage: collageImage.collageImage).resizable().frame(width: (UIScreen.screenWidth/5)-10, height: (UIScreen.screenWidth/5),alignment: .center)
+        Image(uiImage: collageImage.collageImage)
+                    .resizable()
+                    .frame(width: (UIScreen.screenWidth/5)-10, height: (UIScreen.screenWidth/5),alignment: .center)
         //Spacer()
         fontMenu.frame(height: 65)
         TextField("Recipient", text: $recipient)
             .padding(.leading, 5)
             .frame(height:35)
             .onTapGesture {
-                isNoteFieldFocused.toggle()
+                //isNoteFieldFocused.toggle()
             }
         TextField("Name Your Card", text: $cardName)
             .padding(.leading, 5)
             .frame(height:35)
             .onTapGesture {
-                isNoteFieldFocused.toggle()
+                //isNoteFieldFocused.toggle()
             }
         Button("Confirm Note") {
             checkRequiredFields()

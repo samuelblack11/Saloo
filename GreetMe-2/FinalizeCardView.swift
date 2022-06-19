@@ -33,11 +33,21 @@ struct FinalizeCardView: View {
     var eCard: some View {
         HStack(spacing: 1) {
             // Front Cover
-            Image(uiImage: chosenObject.coverImage).resizable().frame(width: (UIScreen.screenWidth/3)-2, height: (UIScreen.screenWidth/3))
+            Image(uiImage: chosenObject.coverImage)
+                .interpolation(.none)
+                .resizable()
+                .scaledToFit()
+                .frame(width: (UIScreen.screenWidth/3)-2, height: (UIScreen.screenWidth/3))
             //upside down message
-            Text(noteField.noteText).frame(width: (UIScreen.screenWidth/3)-10, height: (UIScreen.screenWidth/3)).font(.system(size: 4))
+            Text(noteField.noteText)
+                .frame(width: (UIScreen.screenWidth/3)-10, height: (UIScreen.screenWidth/3))
+                .font(.system(size: 4))
             //upside down collage
-            Image(uiImage: collageImage.collageImage).resizable().frame(width: (UIScreen.screenWidth/3)-2, height: (UIScreen.screenWidth/3))
+            Image(uiImage: collageImage.collageImage)
+                .interpolation(.none)
+                .resizable()
+                .scaledToFit()
+                .frame(width: (UIScreen.screenWidth/3)-2, height: (UIScreen.screenWidth/3))
         }
     }
     
@@ -118,7 +128,12 @@ struct FinalizeCardView: View {
                 }
                     Button("Share eCard") {
                         showActivityController = true
-                        let cardForShare = eCard.snapshot()
+                        //let cardForShare = eCard.snapshot()
+                        let cardForShare = SnapShotECard(chosenObject: $chosenObject, collageImage: $collageImage, noteField: $noteField).snapShotECardView.snapshot()
+                            
+                            //.snapshot()
+                        
+                        
                         activityItemsArray = []
                         activityItemsArray.append(cardForShare)
                     }
@@ -156,7 +171,9 @@ struct FinalizeCardView: View {
     func prepCardForExport() -> Data {
         
         // https://www.advancedswift.com/resize-uiimage-no-stretching-swift/
-        let image = cardForPrint.snapshot()
+        //let image = cardForPrint.snapshot()
+        let image = SnapShotCardForPrint(chosenObject: $chosenObject, collageImage: $collageImage, noteField: $noteField, text1: $text1, text2: $text2, text2URL: $text2URL, text3: $text3, text4: $text4).snapshot()
+
         //let imageRect_w = 350
         //let imageRect_h = 325
         let a4_width = 595.2 - 20
