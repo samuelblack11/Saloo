@@ -37,7 +37,7 @@ struct SnapShotCardForPrint: View {
 
             //upside down message
             Text(noteField.noteText)
-                .scaledToFill()
+                //.scaledToFill()
                 .frame(width: (UIScreen.screenWidth/2)-20)
                 //.font(.system(size: 4))
                 .font(Font.custom("Papyrus", size: 4))
@@ -56,7 +56,6 @@ struct SnapShotCardForPrint: View {
                 Text(text1)
                     .font(.system(size: 4))
                     .foregroundColor(.blue)
-                    
                 Link(text2, destination: text2URL)
                     .font(.system(size: 4))
                 HStack(spacing: 0) {

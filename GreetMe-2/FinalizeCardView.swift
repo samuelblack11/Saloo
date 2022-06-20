@@ -60,7 +60,7 @@ struct FinalizeCardView: View {
                 }.frame(width: (UIScreen.screenWidth/3)-10, height: (UIScreen.screenWidth/3))
             //upside down message
             Text(noteField.noteText)
-                .scaledToFill()
+                //.scaledToFill()
                 .frame(width: (UIScreen.screenWidth/3)-30)
                 //.font(.system(size: 4))
                 .font(Font.custom("Papyrus", size: 4))

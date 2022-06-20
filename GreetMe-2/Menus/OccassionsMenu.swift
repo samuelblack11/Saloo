@@ -59,6 +59,7 @@ struct OccassionsMenu: View {
                 
                 
                 Text("Birthday 🎈").onTapGesture {
+                    searchType = "Birthday"
                     presentUCV = true
                     frontCoverIsPersonalPhoto = 0
                 }.sheet(isPresented: $presentUCV) {

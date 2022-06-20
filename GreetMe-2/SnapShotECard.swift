@@ -16,20 +16,29 @@ struct SnapShotECard: View {
     
     var snapShotECardView: some View {
         
-        HStack(spacing: 0) {
+        HStack(spacing: 1) {
             Image(uiImage: chosenObject.coverImage)
                 .resizable()
-                .frame(width: (UIScreen.screenHeight/3)-2, height: (UIScreen.screenHeight/3))
+                .scaledToFill()
+                .frame(width: (UIScreen.screenWidth/3)-10, height: (UIScreen.screenHeight/3))
+                .border(Color.pink)
+                .clipped()
+            ZStack {
             Text(noteField.noteText)
-                .scaledToFit()
                 .minimumScaleFactor(0.3)
-                .frame(width: (UIScreen.screenHeight/3)-2, height: (UIScreen.screenHeight/3))
+            }
+                .background(.white)
+                .foregroundColor(.black)
+                .frame(width: (UIScreen.screenHeight/3)-10, height: (UIScreen.screenHeight/3))
+            
             Image(uiImage: collageImage.collageImage)
                 .resizable()
-                .frame(width: (UIScreen.screenHeight/3)-2, height: (UIScreen.screenHeight/3))
-        }//.rotationEffect(.degrees(90))
+                .scaledToFill()
+                .frame(width: (UIScreen.screenHeight/3)-10, height: (UIScreen.screenHeight/3))
+                .border(Color.pink)
+                .clipped()
+        }
     }
-
     
     var body: some View {
         snapShotECardView

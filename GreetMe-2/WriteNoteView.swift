@@ -17,6 +17,8 @@ struct NoteField {
 struct WriteNoteView: View {
     @Environment(\.presentationMode) var presentationMode
     @State private var message: String = "Write Your Note Here"
+    @ObservedObject var input = TextLimiter(limit: 225)
+    
     @State private var recipient: String = ""
     @State private var cardName: String = ""
     @State private var tappedTextEditor = false
@@ -79,17 +81,19 @@ struct WriteNoteView: View {
         // https://www.hackingwithswift.com/quick-start/swiftui/how-to-read-text-from-a-textfield
         // https://www.hackingwithswift.com/quick-start/swiftui/how-to-create-multi-line-editable-text-with-texteditor
         // https://www.hackingwithswift.com/quick-start/swiftui/what-is-the-focusstate-property-wrapper
-        TextEditor(text: $message)
+        TextEditor(text: $input.value)
+            .border(Color.red, width: $input.hasReachedLimit.wrappedValue ? 1 : 0 )
+        //TextEditor(text: $message)
             //.focused($isNoteFieldFocused)
             .font(Font.custom(selectedFont, size: 14))
-            //.foregroundColor(.gray)
-            //.foregroundColor(tappedTextEditor ? .black: .gray)
             .onTapGesture {
-                if message == "Write Your Note Here" {
-                    message = ""
+                if input.value == "Write Your Note Here" {
+                    input.value = ""
                 }
                 //isNoteFieldFocused.toggle()
                 tappedTextEditor = true}
+                
+            
         Image(uiImage: collageImage.collageImage)
                     .resizable()
                     .frame(width: (UIScreen.screenWidth/5)-10, height: (UIScreen.screenWidth/5),alignment: .center)
@@ -108,6 +112,7 @@ struct WriteNoteView: View {
                 //isNoteFieldFocused.toggle()
             }
         Button("Confirm Note") {
+            message = input.value
             checkRequiredFields()
             annotateIfNeeded()
             }
@@ -138,7 +143,29 @@ struct WriteNoteView: View {
         else {
             namesNotEntered = true
         }
-        
     }
+    // https://programmingwithswift.com/swiftui-textfield-character-limit/
+    class TextLimiter: ObservableObject {
+        // variable for character limit
+        private let limit: Int
+        
+        init(limit: Int) {
+            self.limit = limit
+        }
+        // value that text field displays
+        @Published var value = "Write Your Note Here" {
+            didSet {
+                if value.count > self.limit {
+                    value = String(value.prefix(self.limit))
+                    self.hasReachedLimit = true
+                } else {
+                    self.hasReachedLimit = false
+                }
+            }
+        }
+        @Published var hasReachedLimit = false
+    }
+    
+    
     
 }

@@ -43,6 +43,10 @@ struct UnsplashCollectionView: View {
     @Binding var frontCoverIsPersonalPhoto: Int
     @State private var shouldAnimate = false
     @State private var downloadAmount = 0.0
+    @State var searchType: String!
+    @State private var presentUCV2 = false
+    @State private var pageCount = 1
+
     let timer = Timer.publish(every: 0.05, on: .main, in: .common).autoconnect()
 
     let columns = [GridItem(.fixed(150)),GridItem(.fixed(150))]
@@ -88,12 +92,20 @@ struct UnsplashCollectionView: View {
                     Image(systemName: "chevron.left").foregroundColor(.blue)
                     Text("Back")
                 })
+                
+                Button {
+                    presentUCV2 = true
+                    pageCount = pageCount + 1
+                } label: {Text("More...")}
             }
         }
         .font(.headline)
         .padding(.horizontal)
         .frame(maxHeight: 600)
         .onAppear {getUnsplashPhotos()}
+        
+        .sheet(isPresented: $presentUCV2) {                    UnsplashCollectionView(searchParam: SearchParameter.init(searchText: searchType), frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto)}
+        
         .sheet(isPresented: $segueToConfirmFrontCover) {ConfirmFrontCoverView(chosenObject: $chosenObject, collageImage: $collageImage, noteField: $noteField, searchObject: searchParam, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto)}
         }
     
@@ -107,7 +119,7 @@ struct UnsplashCollectionView: View {
     }
 
     func getUnsplashPhotos() {
-        PhotoAPI.getPhoto(userSearch: searchParam.searchText, completionHandler: { (response, error) in
+        PhotoAPI.getPhoto(pageNum: pageCount, userSearch: searchParam.searchText, completionHandler: { (response, error) in
             if response != nil {
                 self.picCount = response!.count
                 DispatchQueue.main.async {
