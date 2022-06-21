@@ -120,6 +120,7 @@ struct WriteNoteView: View {
         .alert("Type Note Here or Hand Write After Printing?", isPresented: $handWrite) {
             Button("Type it Here", action: {})
             Button("Hand Write it", action: {
+                input.value = ""
                 message = " "
                 willHandWrite = true})}
         .alert("Enter a Recipient & Card Name, Then Confirm", isPresented: $willHandWrite) {Button("Ok", role: .cancel) {}}

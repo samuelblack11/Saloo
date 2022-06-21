@@ -51,12 +51,6 @@ struct CollageThreeView: View {
                 }.frame(width: 300, height: 250)
             }
     
-    
-    
-    
-    
-
-
     var body: some View {
         NavigationView {
         VStack {

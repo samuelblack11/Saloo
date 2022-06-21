@@ -16,7 +16,7 @@ struct OccassionsMenu: View {
     @Environment(\.presentationMode) var presentationMode
     @State private var presentUCV = false
     @State private var presentPrior = false
-    //@State var searchType: String!
+    @Binding var searchType: String!
     @State var searchObject: SearchParameter!
     @State private var showingImagePicker = false
     @State private var coverImage: UIImage?
@@ -26,11 +26,21 @@ struct OccassionsMenu: View {
     @State var noteField: NoteField!
     @State var collageImage: CollageImage!
     @State var frontCoverIsPersonalPhoto = 0
+    @State private var selectedSearchTerm: theSearch? = nil
+
     
-    struct search: Identifiable {
-        var id: ObjectIdentifier
-        var searchType: String
+    
+    
+    struct theSearch: Identifiable {
+        var id = "Taylor Swift"
     }
+   //@Binding struct search: Identifiable, Hashable {
+    //   let id = UUID()
+    //   let searchType: String
+    //   func hash(into hasher: inout Hasher) {
+    //       hasher.combine(searchType)
+    //   }
+  // }
     
     func loadImage() {
         guard let coverImage = coverImage else {return print("loadImage() failed....")}
@@ -39,6 +49,11 @@ struct OccassionsMenu: View {
     
     func handlePhotoLibrarySelection() {
         chosenObject = CoverImageObject.init(coverImage: coverImage!, coverImagePhotographer: "", coverImageUserName: "", downloadLocation: "", index: 1)
+    }
+    
+    
+    func createSearch(searchTerm: String) {
+        
     }
     
 
@@ -63,17 +78,19 @@ struct OccassionsMenu: View {
                     }
                 Text("Take Photo with Camera 📸 ")
                 
-                Text("Birthday 🎈").onTapGesture {
-                    search.init(id: <#T##ObjectIdentifier#>, searchType: "Birthday")
-                    searchType = "Birthday"
-                    presentUCV = true
-                    self.frontCoverIsPersonalPhoto = 0
-
-                }
-                //.sheet(isPresented: $presentUCV)
-                .sheet(item: )
-                {_ in
-                    let searchObject = SearchParameter.init(searchText: searchType)
+                Text("Birthday 🎈")
+                    .onTapGesture {
+                        //searchType = "Birthday"
+                        selectedSearchTerm = theSearch()
+                        //frontCoverIsPersonalPhoto = 0
+                    }
+                .sheet(item: $selectedSearchTerm) { theSearch2 in
+                    
+                    //Text(TheSearch.id)
+                    
+                    let searchObject = SearchParameter.init(searchText: "Birthday")
+                    
+                    
                     UnsplashCollectionView(searchParam: searchObject, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto)
                 }
                 Text("Thank You 🙏🏽").onTapGesture {

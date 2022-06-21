@@ -40,7 +40,7 @@ struct SnapShotCardForPrint: View {
                 //.scaledToFill()
                 .frame(width: (UIScreen.screenWidth/2)-20)
                 //.font(.system(size: 4))
-                .font(Font.custom("Papyrus", size: 4))
+                .font(Font.custom("Papyrus", size: 10))
                 .foregroundColor(.black)
                 .background(.white)
                 .padding(EdgeInsets(top: 0, leading: 5, bottom: 0, trailing: 5))

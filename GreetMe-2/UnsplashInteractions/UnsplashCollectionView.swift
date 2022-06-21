@@ -96,6 +96,8 @@ struct UnsplashCollectionView: View {
                 Button {
                     presentUCV2 = true
                     pageCount = pageCount + 1
+                    let searchObject = SearchParameter.init(searchText: searchType)
+                    UnsplashCollectionView(searchParam: searchObject, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto)
                 } label: {Text("More...")}
             }
         }
@@ -104,7 +106,7 @@ struct UnsplashCollectionView: View {
         .frame(maxHeight: 600)
         .onAppear {getUnsplashPhotos()}
         
-        .sheet(isPresented: $presentUCV2) {                    UnsplashCollectionView(searchParam: SearchParameter.init(searchText: searchType), frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto)}
+        .sheet(isPresented: $presentUCV2) {UnsplashCollectionView(searchParam: SearchParameter.init(searchText: searchType), frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto)}
         
         .sheet(isPresented: $segueToConfirmFrontCover) {ConfirmFrontCoverView(chosenObject: $chosenObject, collageImage: $collageImage, noteField: $noteField, searchObject: searchParam, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto)}
         }
