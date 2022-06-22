@@ -13,7 +13,7 @@ struct MenuView: View {
     @State private var createNew = false
     @State private var showPrior = false
     @State var searchObject: SearchParameter!
-
+    @State var searchType: String!
      
     var body: some View {
         NavigationView {
@@ -24,7 +24,7 @@ struct MenuView: View {
                     }
                     .onTapGesture {createNew = true}
                     .frame(width: 200, height: 200)
-                    .sheet(isPresented: $createNew) {OccassionsMenu(searchType: nil, searchObject: searchObject)}
+                    .sheet(isPresented: $createNew) {OccassionsMenu(searchType: $searchType, searchObject: searchObject)}
                     .padding(.top, 20)
                 Spacer()
                 ZStack {

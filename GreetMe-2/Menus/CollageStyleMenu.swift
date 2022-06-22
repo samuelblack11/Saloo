@@ -93,7 +93,7 @@ struct CollageStyleMenu: View {
                     Text("Back")
                 })
             .sheet(isPresented: $presentPrior) {
-                ConfirmFrontCoverView(chosenObject: $chosenObject, collageImage: $collageImage, noteField: $noteField, searchObject: searchObject, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto)
+                ConfirmFrontCoverView(chosenObject: $chosenObject, collageImage: $collageImage, noteField: $noteField, searchObject: searchObject, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, pageCount: 1)
             }
             .frame(maxHeight: 800)
         }

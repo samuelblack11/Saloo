@@ -25,8 +25,10 @@ struct CollageFourView: View {
     @Binding var chosenObject: CoverImageObject!
     @Binding var noteField: NoteField!
     @Binding var frontCoverIsPersonalPhoto: Int
+    @State var willHandWrite = false
+    @State var eCardText: String = ""
+    @State var printCardText: String = ""
 
-    
     
     var collageFourView: some View {
         HStack(spacing: 0) {
@@ -80,7 +82,7 @@ struct CollageFourView: View {
                 print("********")
                 print(theSnapShot)
                 collageImage = CollageImage.init(collageImage: theSnapShot)
-            }.padding(.bottom, 30).sheet(isPresented: $segueToWriteNote ) {WriteNoteView(frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenObject: $chosenObject, collageImage: $collageImage, noteField: $noteField)}
+            }.padding(.bottom, 30).sheet(isPresented: $segueToWriteNote ) {WriteNoteView(frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenObject: $chosenObject, collageImage: $collageImage, noteField: $noteField, eCardText: $eCardText, printCardText: $printCardText)}
         }
         }
     }

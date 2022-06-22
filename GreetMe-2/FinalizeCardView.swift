@@ -25,6 +25,12 @@ struct FinalizeCardView: View {
     @Binding var text3: String
     @Binding var text4: String
     @State var presentMenu = false
+    
+    @ObservedObject var willHandWrite: HandWrite
+
+    
+    @Binding var eCardText: String
+    @Binding var printCardText: String
 
     //@Binding var cardForExport: Data!
     @State private var showActivityController = false
@@ -39,7 +45,8 @@ struct FinalizeCardView: View {
                 .scaledToFit()
                 .frame(width: (UIScreen.screenWidth/3)-2, height: (UIScreen.screenWidth/3))
             //upside down message
-            Text(noteField.noteText)
+            Text(eCardText)
+                .foregroundColor(.black)
                 .frame(width: (UIScreen.screenWidth/3)-10, height: (UIScreen.screenWidth/3))
                 .font(.system(size: 4))
             //upside down collage
@@ -59,7 +66,8 @@ struct FinalizeCardView: View {
                 Image(uiImage: collageImage.collageImage).resizable().frame(width: (UIScreen.screenWidth/5)-10, height: (UIScreen.screenWidth/5),alignment: .center)
                 }.frame(width: (UIScreen.screenWidth/3)-10, height: (UIScreen.screenWidth/3))
             //upside down message
-            Text(noteField.noteText)
+            //Text(noteField.noteText)
+            Text(printCardText)
                 //.scaledToFill()
                 .frame(width: (UIScreen.screenWidth/3)-30)
                 //.font(.system(size: 4))

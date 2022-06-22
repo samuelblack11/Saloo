@@ -20,7 +20,9 @@ struct CollageOneView: View {
     @Binding var noteField: NoteField!
     //var theSnapShot: Image!
     @Binding var frontCoverIsPersonalPhoto: Int
-
+    @State var willHandWrite = false
+    @State var eCardText: String = ""
+    @State var printCardText: String = ""
 
     var collageOneView: some View {
         ZStack {
@@ -49,7 +51,7 @@ struct CollageOneView: View {
             print("********")
             print(theSnapShot)
             collageImage = CollageImage.init(collageImage: theSnapShot)
-        }.padding(.bottom, 30).sheet(isPresented: $segueToWriteNote ) {WriteNoteView(frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenObject: $chosenObject, collageImage: $collageImage, noteField: $noteField)}
+        }.padding(.bottom, 30).sheet(isPresented: $segueToWriteNote ) {WriteNoteView(frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenObject: $chosenObject, collageImage: $collageImage, noteField: $noteField, eCardText: $eCardText, printCardText: $printCardText)}
         }
         }
 

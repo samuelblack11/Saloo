@@ -14,6 +14,10 @@ struct NoteField {
     //var font: String
 }
 
+class HandWrite: ObservableObject {
+    @Published var willHandWrite: Bool = false
+}
+
 struct WriteNoteView: View {
     @Environment(\.presentationMode) var presentationMode
     @State private var message: String = "Write Your Note Here"
@@ -24,7 +28,11 @@ struct WriteNoteView: View {
     @State private var tappedTextEditor = false
     @State private var namesNotEntered = false
     @State private var handWrite = true
-    @State private var willHandWrite = false
+    @State private var handWrite2 = false
+
+    @StateObject var willHandWrite = HandWrite()
+
+    
     @Binding var frontCoverIsPersonalPhoto: Int
     @State private var segueToFinalize = false
     @Binding var chosenObject: CoverImageObject!
@@ -37,11 +45,12 @@ struct WriteNoteView: View {
     @State var text3: String = ""
     @State var text4: String = ""
     @FocusState private var isNoteFieldFocused: Bool
+    @Binding var eCardText: String
+    @Binding var printCardText: String
 
-    
+
     let allFontNames = UIFont.familyNames
       .flatMap { UIFont.fontNames(forFamilyName: $0) }
-    
     
     var fonts = ["Zapfino","Papyrus","American-Typewriter-Bold"]
     var fontMenu: some View {
@@ -69,8 +78,21 @@ struct WriteNoteView: View {
         else {
             text2URL = URL(string: "https://google.com")!
         }
-        print("----------")
-        print(text2URL)
+    }
+    
+    func willHandWritePrintCard() {
+        print("called willHandWritePrintCard")
+        print(willHandWrite.willHandWrite)
+        if willHandWrite.willHandWrite == true {
+            eCardText = input.value
+            print("eCardText.......")
+            print(eCardText)
+            printCardText = ""
+        }
+        else {
+            eCardText = input.value
+            printCardText = input.value
+        }
     }
 
     
@@ -92,11 +114,13 @@ struct WriteNoteView: View {
                 }
                 //isNoteFieldFocused.toggle()
                 tappedTextEditor = true}
-                
-            
+        HStack {
+        Text("\(225 - input.value.count) Characters Remaining").font(Font.custom(selectedFont, size: 10))
         Image(uiImage: collageImage.collageImage)
                     .resizable()
                     .frame(width: (UIScreen.screenWidth/5)-10, height: (UIScreen.screenWidth/5),alignment: .center)
+            
+        }
         //Spacer()
         fontMenu.frame(height: 65)
         TextField("Recipient", text: $recipient)
@@ -113,19 +137,25 @@ struct WriteNoteView: View {
             }
         Button("Confirm Note") {
             message = input.value
+            print("Confirming Note.......")
+            print(willHandWrite)
+            willHandWritePrintCard()
             checkRequiredFields()
             annotateIfNeeded()
+            print("******************")
             }
         .alert("Please Enter Values for All Fields!", isPresented: $namesNotEntered) {Button("Ok", role: .cancel) {}}
         .alert("Type Note Here or Hand Write After Printing?", isPresented: $handWrite) {
             Button("Type it Here", action: {})
-            Button("Hand Write it", action: {
-                input.value = ""
-                message = " "
-                willHandWrite = true})}
-        .alert("Enter a Recipient & Card Name, Then Confirm", isPresented: $willHandWrite) {Button("Ok", role: .cancel) {}}
+            Button("Hand Write it"){
+                handWrite2 = true
+                willHandWrite.willHandWrite = true
+                print("willHandWrite......")
+                print(willHandWrite)
+            }}
+        .alert("Your typed message will only appear in your eCard", isPresented: $handWrite2) {Button("Ok", role: .cancel) {}}
         .padding(.bottom, 30)
-        .sheet(isPresented: $segueToFinalize) {FinalizeCardView(chosenObject: $chosenObject, collageImage: $collageImage, noteField: $noteField, frontCoverIsPersonalPhoto: frontCoverIsPersonalPhoto, text1: $text1, text2: $text2, text2URL: $text2URL, text3: $text3, text4: $text4)}
+        .sheet(isPresented: $segueToFinalize) {FinalizeCardView(chosenObject: $chosenObject, collageImage: $collageImage, noteField: $noteField, frontCoverIsPersonalPhoto: frontCoverIsPersonalPhoto, text1: $text1, text2: $text2, text2URL: $text2URL, text3: $text3, text4: $text4, willHandWrite: willHandWrite, eCardText: $eCardText, printCardText: $printCardText)}
         }
             //.ignoresSafeArea(.keyboard)
             .navigationBarItems(leading:
@@ -145,6 +175,7 @@ struct WriteNoteView: View {
             namesNotEntered = true
         }
     }
+
     // https://programmingwithswift.com/swiftui-textfield-character-limit/
     class TextLimiter: ObservableObject {
         // variable for character limit

@@ -45,11 +45,17 @@ struct UnsplashCollectionView: View {
     @State private var downloadAmount = 0.0
     @State var searchType: String!
     @State private var presentUCV2 = false
-    @State private var pageCount = 1
+    @Binding var pageCount: Int
 
     let timer = Timer.publish(every: 0.05, on: .main, in: .common).autoconnect()
 
     let columns = [GridItem(.fixed(150)),GridItem(.fixed(150))]
+    
+    
+    func getMorePhotos() {
+        pageCount = pageCount + 1
+        presentUCV2 = true
+    }
 
     var body: some View {
         NavigationView {
@@ -87,17 +93,12 @@ struct UnsplashCollectionView: View {
                     print("Back button tapped")
                     //presentPrior = true
                     presentationMode.wrappedValue.dismiss()
-
                 } label: {
                     Image(systemName: "chevron.left").foregroundColor(.blue)
                     Text("Back")
                 })
-                
                 Button {
-                    presentUCV2 = true
-                    pageCount = pageCount + 1
-                    let searchObject = SearchParameter.init(searchText: searchType)
-                    UnsplashCollectionView(searchParam: searchObject, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto)
+                    getMorePhotos()
                 } label: {Text("More...")}
             }
         }
@@ -106,9 +107,11 @@ struct UnsplashCollectionView: View {
         .frame(maxHeight: 600)
         .onAppear {getUnsplashPhotos()}
         
-        .sheet(isPresented: $presentUCV2) {UnsplashCollectionView(searchParam: SearchParameter.init(searchText: searchType), frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto)}
+        .sheet(isPresented: $presentUCV2) {
+            UnsplashCollectionView(searchParam: searchParam, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, pageCount: $pageCount)
+        }
         
-        .sheet(isPresented: $segueToConfirmFrontCover) {ConfirmFrontCoverView(chosenObject: $chosenObject, collageImage: $collageImage, noteField: $noteField, searchObject: searchParam, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto)}
+        .sheet(isPresented: $segueToConfirmFrontCover) {ConfirmFrontCoverView(chosenObject: $chosenObject, collageImage: $collageImage, noteField: $noteField, searchObject: searchParam, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, pageCount: pageCount)}
         }
     
     func handleTap(index: Int) {
