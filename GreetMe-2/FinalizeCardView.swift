@@ -136,7 +136,7 @@ struct FinalizeCardView: View {
                     Button("Share eCard") {
                         showActivityController = true
                         //let cardForShare = eCard.snapshot()
-                        let cardForShare = SnapShotECard(chosenObject: $chosenObject, collageImage: $collageImage, noteField: $noteField).snapShotECardView.snapshot()
+                        let cardForShare = SnapShotECard(chosenObject: $chosenObject, collageImage: $collageImage, noteField: $noteField, eCardText: $eCardText).snapShotECardView.snapshot()
                             
                             //.snapshot()
                         
@@ -179,7 +179,7 @@ struct FinalizeCardView: View {
         
         // https://www.advancedswift.com/resize-uiimage-no-stretching-swift/
         //let image = cardForPrint.snapshot()
-        let image = SnapShotCardForPrint(chosenObject: $chosenObject, collageImage: $collageImage, noteField: $noteField, text1: $text1, text2: $text2, text2URL: $text2URL, text3: $text3, text4: $text4).snapshot()
+        let image = SnapShotCardForPrint(chosenObject: $chosenObject, collageImage: $collageImage, noteField: $noteField, text1: $text1, text2: $text2, text2URL: $text2URL, text3: $text3, text4: $text4, printCardText: $printCardText).snapshot()
 
         //let imageRect_w = 350
         //let imageRect_h = 325

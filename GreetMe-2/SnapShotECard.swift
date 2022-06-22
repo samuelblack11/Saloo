@@ -13,7 +13,8 @@ struct SnapShotECard: View {
     @Binding var chosenObject: CoverImageObject!
     @Binding var collageImage: CollageImage!
     @Binding var noteField: NoteField!
-    
+    @Binding var eCardText: String
+
     var snapShotECardView: some View {
         
         HStack(spacing: 1) {
@@ -25,7 +26,7 @@ struct SnapShotECard: View {
             
             ZStack {
             Color.white
-            Text(noteField.noteText)
+            Text(eCardText)
                 .font(.system(size: 500))
                 .minimumScaleFactor(0.01)
                 .foregroundColor(.black)

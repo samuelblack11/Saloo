@@ -98,8 +98,8 @@ struct WriteNoteView: View {
     
     var body: some View {
         NavigationView {
-            VStack {
-            //ScrollView {
+            //VStack {
+            ScrollView {
         // https://www.hackingwithswift.com/quick-start/swiftui/how-to-read-text-from-a-textfield
         // https://www.hackingwithswift.com/quick-start/swiftui/how-to-create-multi-line-editable-text-with-texteditor
         // https://www.hackingwithswift.com/quick-start/swiftui/what-is-the-focusstate-property-wrapper
@@ -107,13 +107,15 @@ struct WriteNoteView: View {
             .border(Color.red, width: $input.hasReachedLimit.wrappedValue ? 1 : 0 )
         //TextEditor(text: $message)
             //.focused($isNoteFieldFocused)
+            .frame(minHeight: 125)
             .font(Font.custom(selectedFont, size: 14))
             .onTapGesture {
                 if input.value == "Write Your Note Here" {
                     input.value = ""
                 }
                 //isNoteFieldFocused.toggle()
-                tappedTextEditor = true}
+                tappedTextEditor = true
+            }
         HStack {
         Text("\(225 - input.value.count) Characters Remaining").font(Font.custom(selectedFont, size: 10))
         Image(uiImage: collageImage.collageImage)

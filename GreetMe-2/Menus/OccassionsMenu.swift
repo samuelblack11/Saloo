@@ -9,14 +9,18 @@ import Foundation
 import SwiftUI
 
 struct SearchParameter {
-    var searchText: String
+    @Binding var searchText: String!
 }
 
 struct OccassionsMenu: View {
     @Environment(\.presentationMode) var presentationMode
     @State private var presentUCV = false
     @State private var presentPrior = false
+    
+    
     @Binding var searchType: String!
+    
+    
     @State var searchObject: SearchParameter!
     @State private var showingImagePicker = false
     @State private var showingCameraCapture = false
@@ -29,7 +33,7 @@ struct OccassionsMenu: View {
     @State var collageImage: CollageImage!
     @State var frontCoverIsPersonalPhoto = 0
     @State var pageCount = 1
-
+    @Binding var noneSearch: String!
     
     
     func loadImage() {
@@ -59,9 +63,26 @@ struct OccassionsMenu: View {
     
     func createOccassionsMenu() {
         let birthday = SearchItem(searchTitle: "Birthday 🎈", searchTerm: "Birthday")
-        let mother = SearchItem(searchTitle: "Mother's Day 🌸", searchTerm: "Flowers")
+        let superbowl = SearchItem(searchTitle: "Super Bowl 🏟", searchTerm: "Football")
+        let valentine = SearchItem(searchTitle: "Valentine's Day ❤️", searchTerm: "Valentine")
+        let stpatsday = SearchItem(searchTitle: "St Patrick's Day 🍀", searchTerm: "Clover")
+        let mother = SearchItem(searchTitle: "Mother's Day 🌸", searchTerm: "Floral")
+        let father = SearchItem(searchTitle: "Father's Day", searchTerm: "Parent")
+        let thanksgiving = SearchItem(searchTitle: "Thanksgiving 🍁", searchTerm: "Thanksgiving")
+        let hanukkah = SearchItem(searchTitle: "Hanukkah 🕎", searchTerm: "Hanukkah")
+        let christmas = SearchItem(searchTitle: "Christmas 🎄", searchTerm: "Christmas")
+        let nye = SearchItem(searchTitle: "New Year's 🎇", searchTerm: "Fireworks")
+
         menuItems.searchItems.append(birthday)
+        menuItems.searchItems.append(superbowl)
+        menuItems.searchItems.append(valentine)
+        menuItems.searchItems.append(stpatsday)
         menuItems.searchItems.append(mother)
+        menuItems.searchItems.append(father)
+        menuItems.searchItems.append(thanksgiving)
+        menuItems.searchItems.append(hanukkah)
+        menuItems.searchItems.append(christmas)
+        menuItems.searchItems.append(nye)
     }
 
     var body: some View {
@@ -79,8 +100,9 @@ struct OccassionsMenu: View {
                         handlePhotoLibrarySelection()
                         segueToCollageMenu = true
                         frontCoverIsPersonalPhoto = 1
+                        noneSearch = "None"
                     }.sheet(isPresented: $segueToCollageMenu){
-                        let searchObject = SearchParameter.init(searchText: "None")
+                        let searchObject = SearchParameter.init(searchText: $noneSearch)
                         CollageStyleMenu(collageImage: $collageImage, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenObject: $chosenObject, noteField: $noteField, searchObject: searchObject)
                     }
                 Text("Take Photo with Camera 📸 ")
@@ -92,8 +114,10 @@ struct OccassionsMenu: View {
                         handlePhotoLibrarySelection()
                         segueToCollageMenu = true
                         frontCoverIsPersonalPhoto = 1
+                        noneSearch = "None"
+
                     }.sheet(isPresented: $segueToCollageMenu){
-                        let searchObject = SearchParameter.init(searchText: "None")
+                        let searchObject = SearchParameter.init(searchText: $noneSearch)
                         CollageStyleMenu(collageImage: $collageImage, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenObject: $chosenObject, noteField: $noteField, searchObject: searchObject)
                     }
             Section(header: Text("Occassions & Holidays")) {
@@ -105,7 +129,7 @@ struct OccassionsMenu: View {
                     print(search)
                     print("******")
                 }.sheet(isPresented: $presentUCV) {
-                    let searchObject = SearchParameter.init(searchText: search.searchTerm)
+                    let searchObject = SearchParameter.init(searchText: $searchType)
                     UnsplashCollectionView(searchParam: searchObject, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, pageCount: $pageCount)
                     }
                 }

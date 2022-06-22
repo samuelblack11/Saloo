@@ -79,12 +79,14 @@ struct UnsplashCollectionView: View {
                             Image(uiImage: photoObj.coverImage)
                                 .resizable()
                                 .frame(width: 125, height: 125)
+                                //.redacted(reason: .placeholder)
                             
                             
                         }
-                }.onTapGesture {
-                    handleTap(index: photoObj.index)
                 }
+                .onTapGesture {
+                    handleTap(index: photoObj.index)
+                    }
             }
             }
             .navigationTitle("Choose Front Cover")

@@ -18,7 +18,8 @@ struct SnapShotCardForPrint: View {
     @Binding var text2URL: URL
     @Binding var text3: String
     @Binding var text4: String
-    
+    @Binding var printCardText: String
+
     var body: some View {
         snapShotCardForPrintView
     }
@@ -36,7 +37,7 @@ struct SnapShotCardForPrint: View {
                 .background(.white)
 
             //upside down message
-            Text(noteField.noteText)
+            Text(printCardText)
                 //.scaledToFill()
                 .frame(width: (UIScreen.screenWidth/2)-20)
                 //.font(.system(size: 4))

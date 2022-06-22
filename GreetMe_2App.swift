@@ -16,14 +16,6 @@ struct GreetMe_2App: App {
         WindowGroup {
             //LoginView()
             MenuView()
-            //OccassionsMenu()
-            //CollageStyleMenu()
-            //CollageOneView()
-            //CollageTwoView()
-            //CollageThreeView()
-            //CollageFourView()
-            //CollageFiveView()
-            //CollageSixView()
                 .environment(\.managedObjectContext, dataController.container.viewContext)
         }
     }
