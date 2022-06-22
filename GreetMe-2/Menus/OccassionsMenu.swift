@@ -19,6 +19,8 @@ struct OccassionsMenu: View {
     @Binding var searchType: String!
     @State var searchObject: SearchParameter!
     @State private var showingImagePicker = false
+    @State private var showingCameraCapture = false
+
     @State private var coverImage: UIImage?
     @State private var image: Image?
     @State var chosenObject: CoverImageObject!
@@ -67,30 +69,45 @@ struct OccassionsMenu: View {
         // Hold cmd + ctrl, then click space bar to show emoji menu
         NavigationView {
         List {
-            //Section(header: Text("Personal")) {
-            //    Text("Select from Photo Library ").onTapGesture {
-            //        showingImagePicker = true
-            //    }
-            //    .sheet(isPresented: $showingImagePicker) { ImagePicker(image: $coverImage)}
-            //        .navigationTitle("Select Front Cover")
-            //        .onChange(of: coverImage) { _ in loadImage()
-            //            handlePhotoLibrarySelection()
-            //            segueToCollageMenu = true
-            //            frontCoverIsPersonalPhoto = 1
-             //       }.sheet(isPresented: $segueToCollageMenu){
-             //           let searchObject = SearchParameter.init(searchText: "None")
-            //            CollageStyleMenu(collageImage: $collageImage, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenObject: $chosenObject, noteField: $noteField, searchObject: searchObject)
-            //        }
-            //    Text("Take Photo with Camera 📸 ")
-            //    }
+            Section(header: Text("Personal")) {
+                Text("Select from Photo Library ").onTapGesture {
+                    showingImagePicker = true
+                }
+                .sheet(isPresented: $showingImagePicker) { ImagePicker(image: $coverImage)}
+                    .navigationTitle("Select Front Cover")
+                    .onChange(of: coverImage) { _ in loadImage()
+                        handlePhotoLibrarySelection()
+                        segueToCollageMenu = true
+                        frontCoverIsPersonalPhoto = 1
+                    }.sheet(isPresented: $segueToCollageMenu){
+                        let searchObject = SearchParameter.init(searchText: "None")
+                        CollageStyleMenu(collageImage: $collageImage, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenObject: $chosenObject, noteField: $noteField, searchObject: searchObject)
+                    }
+                Text("Take Photo with Camera 📸 ")
+                }.onTapGesture {
+                    showingCameraCapture = true
+                }
+                .sheet(isPresented: $showingCameraCapture) { CameraCapture(selectedImage: $coverImage, sourceType: .camera)}
+                    .onChange(of: coverImage) { _ in loadImage()
+                        handlePhotoLibrarySelection()
+                        segueToCollageMenu = true
+                        frontCoverIsPersonalPhoto = 1
+                    }.sheet(isPresented: $segueToCollageMenu){
+                        let searchObject = SearchParameter.init(searchText: "None")
+                        CollageStyleMenu(collageImage: $collageImage, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenObject: $chosenObject, noteField: $noteField, searchObject: searchObject)
+                    }
+            Section(header: Text("Occassions & Holidays")) {
             ForEach(menuItems.searchItems, id: \.searchTitle) { search in
                 Text(search.searchTitle).onTapGesture {
                     presentUCV = true
                     frontCoverIsPersonalPhoto = 0
                     self.searchType = search.searchTerm
+                    print(search)
+                    print("******")
                 }.sheet(isPresented: $presentUCV) {
                     let searchObject = SearchParameter.init(searchText: search.searchTerm)
                     UnsplashCollectionView(searchParam: searchObject, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, pageCount: $pageCount)
+                    }
                 }
             }
         }

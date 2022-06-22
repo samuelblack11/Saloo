@@ -36,6 +36,7 @@
 		26E63AF028233797007DB9C3 /* Card+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26E63AEE28233797007DB9C3 /* Card+CoreDataClass.swift */; };
 		26E63AF128233797007DB9C3 /* Card+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26E63AEF28233797007DB9C3 /* Card+CoreDataProperties.swift */; };
 		26EB55652827120C00178F0B /* EnlargeECard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26EB55642827120C00178F0B /* EnlargeECard.swift */; };
+		C27430FC286335F000E17B19 /* CameraCapture.swift in Sources */ = {isa = PBXBuildFile; fileRef = C27430FB286335F000E17B19 /* CameraCapture.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -71,6 +72,7 @@
 		26E63AEE28233797007DB9C3 /* Card+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Card+CoreDataClass.swift"; sourceTree = "<group>"; };
 		26E63AEF28233797007DB9C3 /* Card+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Card+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		26EB55642827120C00178F0B /* EnlargeECard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnlargeECard.swift; sourceTree = "<group>"; };
+		C27430FB286335F000E17B19 /* CameraCapture.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraCapture.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -88,6 +90,7 @@
 			isa = PBXGroup;
 			children = (
 				260F68E4281DBD62002E864B /* ImagePicker.swift */,
+				C27430FB286335F000E17B19 /* CameraCapture.swift */,
 				260F68EA281DBD7A002E864B /* CollageOneView.swift */,
 				260F68F0281DBDA2002E864B /* CollageTwoView.swift */,
 				260F68F2281DBDA7002E864B /* CollageThreeView.swift */,
@@ -271,6 +274,7 @@
 				260F68ED281DBD8D002E864B /* CollageSixView.swift in Sources */,
 				26A7218C281DB8D900ADAE44 /* GreetMe_2.xcdatamodeld in Sources */,
 				262C3ED3281E1E9C00F07C01 /* MenuView.swift in Sources */,
+				C27430FC286335F000E17B19 /* CameraCapture.swift in Sources */,
 				26AD8127281F05160069C3F0 /* WriteNoteView.swift in Sources */,
 				26AD812B281F119A0069C3F0 /* ConfirmFrontCoverView.swift in Sources */,
 				260F68E9281DBD75002E864B /* CollageFourView.swift in Sources */,

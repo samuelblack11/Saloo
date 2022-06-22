@@ -46,7 +46,6 @@ struct FinalizeCardView: View {
                 .frame(width: (UIScreen.screenWidth/3)-2, height: (UIScreen.screenWidth/3))
             //upside down message
             Text(eCardText)
-                .foregroundColor(.black)
                 .frame(width: (UIScreen.screenWidth/3)-10, height: (UIScreen.screenWidth/3))
                 .font(.system(size: 4))
             //upside down collage
