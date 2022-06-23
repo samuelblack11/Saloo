@@ -28,7 +28,11 @@ struct ConfirmFrontCoverView: View {
     var body: some View {
         NavigationView {
         VStack {
-            Image(uiImage: chosenObject.coverImage).resizable().frame(width: 250, height: 250).padding(.top, 50)
+            //Image(uiImage: UIImage(data: chosenObject.coverImage!)!)
+            Image(uiImage: UIImage(data: try! Data(contentsOf: chosenObject.smallImageURL))!)
+                .resizable()
+                .frame(width: 250, height: 250)
+                .padding(.top, 50)
             VStack(spacing: 0) {
                 Text("Photo By ")
                 

@@ -16,7 +16,8 @@ import SwiftUI
 
 struct CoverImageObject: Identifiable, Hashable {
     let id = UUID()
-    let coverImage: UIImage
+    let coverImage: Data?
+    let smallImageURL: URL
     let coverImagePhotographer: String
     let coverImageUserName: String
     let downloadLocation: String
@@ -32,7 +33,8 @@ struct UnsplashCollectionView: View {
     @State private var segueToConfirmFrontCover = false
     @State private var picCount: Int!
     @State private var searchText: String!
-    @State public var chosenImage: UIImage!
+    @State public var chosenImage: Data!
+    @State public var chosenSmallURL: URL!
     @State public var chosenPhotographer: String!
     @State public var chosenUserName: String!
     @State public var chosenDownloadLocation: String!
@@ -62,32 +64,14 @@ struct UnsplashCollectionView: View {
             ScrollView {
             LazyVGrid(columns: columns, spacing: 10) {
                     ForEach(imageObjects, id: \.self.id) {photoObj in
-                    VStack(spacing: 0) {
-                        //Text("Hello")
-                        ZStack {
-                            //ActivityIndicator(shouldAnimate: self.$shouldAnimate)
-                            //ProgressView("Downloading...", value: downloadAmount, total: 100)
-                            //   .onReceive(timer) { _ in
-                            //      if downloadAmount < 100 {
-                             //        downloadAmount += 2
-                             //     }
-                             //  }
-                            //AsyncImage(url: URL(string: photoObj.downloadLocation))
-                                //.resizable()
-                             //   .frame(width: 125, height: 125)
-                            
-                            Image(uiImage: photoObj.coverImage)
-                                .resizable()
+                            AsyncImage(url: photoObj.smallImageURL) { image in
+                                image.resizable()} placeholder: {
+                                    Color.gray
+                                }
                                 .frame(width: 125, height: 125)
-                                //.redacted(reason: .placeholder)
-                            
-                            
-                        }
-                }
-                .onTapGesture {
-                    handleTap(index: photoObj.index)
+                                .onTapGesture {handleTap(index: photoObj.index)
                     }
-            }
+                }
             }
             .navigationTitle("Choose Front Cover")
             .navigationBarItems(leading:
@@ -110,7 +94,7 @@ struct UnsplashCollectionView: View {
         .onAppear {getUnsplashPhotos()}
         
         .sheet(isPresented: $presentUCV2) {
-            UnsplashCollectionView(searchParam: searchParam, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, pageCount: $pageCount)
+            UnsplashCollectionView(searchParam: searchParam, chosenSmallURL: chosenSmallURL, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, pageCount: $pageCount)
         }
         
         .sheet(isPresented: $segueToConfirmFrontCover) {ConfirmFrontCoverView(chosenObject: $chosenObject, collageImage: $collageImage, noteField: $noteField, searchObject: searchParam, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, pageCount: pageCount)}
@@ -118,11 +102,12 @@ struct UnsplashCollectionView: View {
     
     func handleTap(index: Int) {
         segueToConfirmFrontCover = true
-        chosenImage = imageObjects[index].coverImage
+        //chosenImage = imageObjects[index].coverImage
+        chosenSmallURL = imageObjects[index].smallImageURL
         chosenPhotographer = imageObjects[index].coverImagePhotographer
         chosenUserName = imageObjects[index].coverImageUserName
         chosenDownloadLocation = imageObjects[index].downloadLocation
-        chosenObject = CoverImageObject.init(coverImage: chosenImage, coverImagePhotographer: chosenPhotographer, coverImageUserName: chosenUserName, downloadLocation: chosenDownloadLocation, index: index)
+        chosenObject = CoverImageObject.init(coverImage: nil, smallImageURL: chosenSmallURL, coverImagePhotographer: chosenPhotographer, coverImageUserName: chosenUserName, downloadLocation: chosenDownloadLocation, index: index)
     }
 
     func getUnsplashPhotos() {
@@ -134,13 +119,13 @@ struct UnsplashCollectionView: View {
                         if picture.urls.small != nil && picture.user.username != nil && picture.user.name != nil && picture.links.download_location != nil {
                             let thisPicture = picture.urls.small
                             let imageURL = URL(string: thisPicture!)
-                            let thisPhotoData = try? Data(contentsOf: imageURL!)
-                            let image = UIImage(data: thisPhotoData!)!
-                            //let image = Image(uiImage: UIImage(data: thisPhotoData!)!)
-                            let newObj = CoverImageObject.init(coverImage: image, coverImagePhotographer: picture.user.name!, coverImageUserName: picture.user.username!, downloadLocation: picture.links.download_location!, index: imageObjects.count)
+                            // These lines slow down the appearance of images significantly
+                            // let thisPhotoData = try? Data(contentsOf: imageURL!)
+                            // let image = UIImage(data: thisPhotoData!)!
+                            let newObj = CoverImageObject.init(coverImage: nil, smallImageURL: imageURL!, coverImagePhotographer: picture.user.name!, coverImageUserName: picture.user.username!, downloadLocation: picture.links.download_location!, index: imageObjects.count)
                             imageObjects.append(newObj)
-                            print(imageObjects.count)
-                    }}}
+                    }}
+                }
             if self.picCount == 0 {
                 print("No Picture Available for that Search")
                 }

@@ -39,7 +39,7 @@ struct FinalizeCardView: View {
     var eCard: some View {
         HStack(spacing: 1) {
             // Front Cover
-            Image(uiImage: chosenObject.coverImage)
+            Image(uiImage: UIImage(data: try! Data(contentsOf: chosenObject.smallImageURL))!)
                 .interpolation(.none)
                 .resizable()
                 .scaledToFit()
@@ -96,7 +96,9 @@ struct FinalizeCardView: View {
             }
             .frame(width: (UIScreen.screenWidth/3)-10, height: (UIScreen.screenWidth/3))
             // Front Cover
-            Image(uiImage: chosenObject.coverImage).resizable().frame(width: (UIScreen.screenWidth/3)-10, height: (UIScreen.screenWidth/3))
+            Image(uiImage: UIImage(data: try! Data(contentsOf: chosenObject.smallImageURL))!)
+                .resizable()
+                .frame(width: (UIScreen.screenWidth/3)-10, height: (UIScreen.screenWidth/3))
             }
         }
     }
@@ -120,7 +122,7 @@ struct FinalizeCardView: View {
                     let card = Card(context: DataController.shared.viewContext)
                     card.card = eCard.snapshot().pngData()
                     card.collage = collageImage.collageImage.pngData()
-                    card.coverImage = chosenObject.coverImage.pngData()
+                    card.coverImage = UIImage(data: try! Data(contentsOf: chosenObject.smallImageURL))?.pngData()
                     card.date = Date.now
                     card.message = noteField.noteText
                     card.occassion = noteField.cardName

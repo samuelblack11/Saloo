@@ -16,33 +16,30 @@ struct OccassionsMenu: View {
     @Environment(\.presentationMode) var presentationMode
     @State private var presentUCV = false
     @State private var presentPrior = false
-    
-    
     @Binding var searchType: String!
-    
-    
     @State var searchObject: SearchParameter!
     @State private var showingImagePicker = false
     @State private var showingCameraCapture = false
-
     @State private var coverImage: UIImage?
     @State private var image: Image?
     @State var chosenObject: CoverImageObject!
     @State private var segueToCollageMenu = false
+    @State private var segueToCollageMenu2 = false
     @State var noteField: NoteField!
     @State var collageImage: CollageImage!
     @State var frontCoverIsPersonalPhoto = 0
     @State var pageCount = 1
     @Binding var noneSearch: String!
     
-    
     func loadImage() {
         guard let coverImage = coverImage else {return print("loadImage() failed....")}
         image = Image(uiImage: coverImage)
+        print(coverImage)
     }
     
     func handlePhotoLibrarySelection() {
-        chosenObject = CoverImageObject.init(coverImage: coverImage!, coverImagePhotographer: "", coverImageUserName: "", downloadLocation: "", index: 1)
+        chosenObject = CoverImageObject.init(coverImage: coverImage?.pngData(), smallImageURL: URL(string: "https://google.com")!, coverImagePhotographer: "", coverImageUserName: "", downloadLocation: "", index: 1)
+        print("created chosenObject")
     }
     
     ///////////////////////////////////////////////////////////////////////////////////////////
@@ -112,14 +109,17 @@ struct OccassionsMenu: View {
                 .sheet(isPresented: $showingCameraCapture) { CameraCapture(selectedImage: $coverImage, sourceType: .camera)}
                     .onChange(of: coverImage) { _ in loadImage()
                         handlePhotoLibrarySelection()
-                        segueToCollageMenu = true
                         frontCoverIsPersonalPhoto = 1
                         noneSearch = "None"
+                        segueToCollageMenu2 = true
 
-                    }.sheet(isPresented: $segueToCollageMenu){
+                    }.sheet(isPresented: $segueToCollageMenu2){
                         let searchObject = SearchParameter.init(searchText: $noneSearch)
                         CollageStyleMenu(collageImage: $collageImage, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenObject: $chosenObject, noteField: $noteField, searchObject: searchObject)
                     }
+            
+            
+            ///////////////////////////////////////////////////////
             Section(header: Text("Occassions & Holidays")) {
             ForEach(menuItems.searchItems, id: \.searchTitle) { search in
                 Text(search.searchTitle).onTapGesture {

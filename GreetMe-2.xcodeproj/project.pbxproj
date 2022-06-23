@@ -89,8 +89,6 @@
 		260F68F8281DBDED002E864B /* CollageViews */ = {
 			isa = PBXGroup;
 			children = (
-				260F68E4281DBD62002E864B /* ImagePicker.swift */,
-				C27430FB286335F000E17B19 /* CameraCapture.swift */,
 				260F68EA281DBD7A002E864B /* CollageOneView.swift */,
 				260F68F0281DBDA2002E864B /* CollageTwoView.swift */,
 				260F68F2281DBDA7002E864B /* CollageThreeView.swift */,
@@ -107,6 +105,7 @@
 				260F68EE281DBD93002E864B /* CollageStyleMenu.swift */,
 				260F68F4281DBDCD002E864B /* OccassionsMenu.swift */,
 				262C3ED2281E1E9C00F07C01 /* MenuView.swift */,
+				262C3ED4281E226F00F07C01 /* ShowPriorCardsView.swift */,
 			);
 			path = Menus;
 			sourceTree = "<group>";
@@ -180,8 +179,9 @@
 				26AD8128281F05310069C3F0 /* FinalizeCardView.swift */,
 				2688D703285FA24200954120 /* SnapShotECard.swift */,
 				2688D705285FA25100954120 /* SnapShotCardForPrint.swift */,
-				262C3ED4281E226F00F07C01 /* ShowPriorCardsView.swift */,
 				26EB55642827120C00178F0B /* EnlargeECard.swift */,
+				260F68E4281DBD62002E864B /* ImagePicker.swift */,
+				C27430FB286335F000E17B19 /* CameraCapture.swift */,
 				260F6903281DBF55002E864B /* Responses */,
 				260F6905281DC024002E864B /* Other */,
 				26A72185281DB8D900ADAE44 /* Preview Content */,

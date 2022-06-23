@@ -18,7 +18,9 @@ struct SnapShotECard: View {
     var snapShotECardView: some View {
         
         HStack(spacing: 1) {
-            Image(uiImage: chosenObject.coverImage)
+            //Image(uiImage: UIImage(data: chosenObject.coverImage!)!)
+            Image(uiImage: UIImage(data: try! Data(contentsOf: chosenObject.smallImageURL))!)
+
                 .interpolation(.none)
                 .resizable()
                 .scaledToFit()

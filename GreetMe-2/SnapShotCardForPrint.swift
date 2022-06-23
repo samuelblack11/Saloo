@@ -35,7 +35,6 @@ struct SnapShotCardForPrint: View {
                 }
                 .frame(width: (UIScreen.screenWidth/2)-10, height: (UIScreen.screenWidth/2))
                 .background(.white)
-
             //upside down message
             Text(printCardText)
                 //.scaledToFill()
@@ -60,28 +59,25 @@ struct SnapShotCardForPrint: View {
                 Link(text2, destination: text2URL)
                     .font(.system(size: 4))
                 HStack(spacing: 0) {
-                    Text(text3).font(.system(size: 4))                    .foregroundColor(.blue)
-
+                    Text(text3).font(.system(size: 4)).foregroundColor(.blue)
                     Link(text4, destination: URL(string: "https://unsplash.com")!).font(.system(size: 4))
                 }.padding(.bottom,10)
                 Text("Greeting Card by")
                     .font(.system(size: 6))
                     .foregroundColor(.blue)
-
                 Text("GreetMe Inc.")
                     .font(.system(size: 6))
                     .padding(.bottom,10)
                     .foregroundColor(.blue)
-
                 }
                 .background(.white)
                 .frame(width: (UIScreen.screenWidth/2)-10, height: (UIScreen.screenWidth/2))
-            
-            Image(uiImage: chosenObject.coverImage)
+            //Image(uiImage: UIImage(data: chosenObject.coverImage!)!)
+            Image(uiImage: UIImage(data: try! Data(contentsOf: chosenObject.smallImageURL))!)
+
                 .resizable()
                 .frame(width: (UIScreen.screenWidth/2)-10, height: (UIScreen.screenWidth/2))
             }.background(.white)
-
         }
     }
 }
