@@ -38,7 +38,7 @@ struct OccassionsMenu: View {
     }
     
     func handlePhotoLibrarySelection() {
-        chosenObject = CoverImageObject.init(coverImage: coverImage?.pngData(), smallImageURL: URL(string: "https://google.com")!, coverImagePhotographer: "", coverImageUserName: "", downloadLocation: "", index: 1)
+        chosenObject = CoverImageObject.init(coverImage: coverImage?.jpegData(compressionQuality: 1), smallImageURL: URL(string: "https://google.com")!, coverImagePhotographer: "", coverImageUserName: "", downloadLocation: "", index: 1)
         print("created chosenObject")
     }
     

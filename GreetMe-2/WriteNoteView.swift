@@ -107,7 +107,7 @@ struct WriteNoteView: View {
             .border(Color.red, width: $input.hasReachedLimit.wrappedValue ? 1 : 0 )
         //TextEditor(text: $message)
             //.focused($isNoteFieldFocused)
-            .frame(minHeight: 125)
+            .frame(minHeight: 150)
             .font(Font.custom(selectedFont, size: 14))
             .onTapGesture {
                 if input.value == "Write Your Note Here" {

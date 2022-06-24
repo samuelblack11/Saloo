@@ -25,21 +25,29 @@ struct FinalizeCardView: View {
     @Binding var text3: String
     @Binding var text4: String
     @State var presentMenu = false
-    
     @ObservedObject var willHandWrite: HandWrite
-
-    
     @Binding var eCardText: String
     @Binding var printCardText: String
-
     //@Binding var cardForExport: Data!
     @State private var showActivityController = false
     @State var activityItemsArray: [Any] = []
+    
+    
+    func coverSource() -> Image {
+        if chosenObject.coverImage != nil {
+            
+            return Image(uiImage: UIImage(data: chosenObject.coverImage!)!)
+        }
+        else {
+            return Image(uiImage: UIImage(data: try! Data(contentsOf: chosenObject.smallImageURL))!)
+        }
+    }
         
     var eCard: some View {
         HStack(spacing: 1) {
             // Front Cover
-            Image(uiImage: UIImage(data: try! Data(contentsOf: chosenObject.smallImageURL))!)
+            //Image(uiImage: UIImage(data: try! Data(contentsOf: chosenObject.smallImageURL))!)
+            coverSource()
                 .interpolation(.none)
                 .resizable()
                 .scaledToFit()
@@ -96,7 +104,8 @@ struct FinalizeCardView: View {
             }
             .frame(width: (UIScreen.screenWidth/3)-10, height: (UIScreen.screenWidth/3))
             // Front Cover
-            Image(uiImage: UIImage(data: try! Data(contentsOf: chosenObject.smallImageURL))!)
+            //Image(uiImage: UIImage(data: try! Data(contentsOf: chosenObject.smallImageURL))!)
+            coverSource()
                 .resizable()
                 .frame(width: (UIScreen.screenWidth/3)-10, height: (UIScreen.screenWidth/3))
             }

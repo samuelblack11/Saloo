@@ -14,13 +14,23 @@ struct SnapShotECard: View {
     @Binding var collageImage: CollageImage!
     @Binding var noteField: NoteField!
     @Binding var eCardText: String
+    
+    
+    func coverSource() -> Image {
+        if chosenObject.coverImage != nil {
+            return Image(uiImage: UIImage(data: chosenObject.coverImage!)!)
+        }
+        else {
+            return Image(uiImage: UIImage(data: try! Data(contentsOf: chosenObject.smallImageURL))!)
+        }
+    }
 
     var snapShotECardView: some View {
         
         HStack(spacing: 1) {
             //Image(uiImage: UIImage(data: chosenObject.coverImage!)!)
-            Image(uiImage: UIImage(data: try! Data(contentsOf: chosenObject.smallImageURL))!)
-
+            //Image(uiImage: UIImage(data: try! Data(contentsOf: chosenObject.smallImageURL))!)
+            coverSource()
                 .interpolation(.none)
                 .resizable()
                 .scaledToFit()

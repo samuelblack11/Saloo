@@ -19,7 +19,16 @@ struct SnapShotCardForPrint: View {
     @Binding var text3: String
     @Binding var text4: String
     @Binding var printCardText: String
-
+    
+    func coverSource() -> Image {
+        if chosenObject.coverImage != nil {
+            return Image(uiImage: UIImage(data: chosenObject.coverImage!)!)
+        }
+        else {
+            return Image(uiImage: UIImage(data: try! Data(contentsOf: chosenObject.smallImageURL))!)
+        }
+    }
+    
     var body: some View {
         snapShotCardForPrintView
     }
@@ -73,8 +82,8 @@ struct SnapShotCardForPrint: View {
                 .background(.white)
                 .frame(width: (UIScreen.screenWidth/2)-10, height: (UIScreen.screenWidth/2))
             //Image(uiImage: UIImage(data: chosenObject.coverImage!)!)
-            Image(uiImage: UIImage(data: try! Data(contentsOf: chosenObject.smallImageURL))!)
-
+            //Image(uiImage: UIImage(data: try! Data(contentsOf: chosenObject.smallImageURL))!)
+            coverSource()
                 .resizable()
                 .frame(width: (UIScreen.screenWidth/2)-10, height: (UIScreen.screenWidth/2))
             }.background(.white)
