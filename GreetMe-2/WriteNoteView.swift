@@ -11,6 +11,7 @@ struct NoteField {
     var noteText: String
     var recipient: String
     var cardName: String
+    var font: String
     //var font: String
 }
 
@@ -55,7 +56,9 @@ struct WriteNoteView: View {
     var fonts = ["Zapfino","Papyrus","American-Typewriter-Bold"]
     var fontMenu: some View {
         HStack {
-            Text("Choose Font Here:  ").padding(.leading, 5).font(Font.custom(selectedFont, size: 12))
+            Text("Choose Font Here:  ")
+                .padding(.leading, 5)
+                .font(Font.custom(selectedFont, size: 12))
             Picker("", selection: $selectedFont) {
                 ForEach(fonts, id:\.self) { fontType in
                     Text(fontType).font(Font.custom(fontType, size: 12))
@@ -139,12 +142,9 @@ struct WriteNoteView: View {
             }
         Button("Confirm Note") {
             message = input.value
-            print("Confirming Note.......")
-            print(willHandWrite)
             willHandWritePrintCard()
             checkRequiredFields()
             annotateIfNeeded()
-            print("******************")
             }
         .alert("Please Enter Values for All Fields!", isPresented: $namesNotEntered) {Button("Ok", role: .cancel) {}}
         .alert("Type Note Here or Hand Write After Printing?", isPresented: $handWrite) {
@@ -152,14 +152,11 @@ struct WriteNoteView: View {
             Button("Hand Write it"){
                 handWrite2 = true
                 willHandWrite.willHandWrite = true
-                print("willHandWrite......")
-                print(willHandWrite)
             }}
         .alert("Your typed message will only appear in your eCard", isPresented: $handWrite2) {Button("Ok", role: .cancel) {}}
         .padding(.bottom, 30)
         .sheet(isPresented: $segueToFinalize) {FinalizeCardView(chosenObject: $chosenObject, collageImage: $collageImage, noteField: $noteField, frontCoverIsPersonalPhoto: frontCoverIsPersonalPhoto, text1: $text1, text2: $text2, text2URL: $text2URL, text3: $text3, text4: $text4, willHandWrite: willHandWrite, eCardText: $eCardText, printCardText: $printCardText)}
         }
-            //.ignoresSafeArea(.keyboard)
             .navigationBarItems(leading:
                                         Button {presentationMode.wrappedValue.dismiss()} label: {
                                             Image(systemName: "chevron.left").foregroundColor(.blue)
@@ -171,7 +168,7 @@ struct WriteNoteView: View {
         if recipient != "" && cardName != ""  {
             namesNotEntered = false
             segueToFinalize  = true
-            noteField = NoteField.init(noteText: message, recipient: recipient, cardName: cardName)
+            noteField = NoteField.init(noteText: message, recipient: recipient, cardName: cardName, font: selectedFont)
         }
         else {
             namesNotEntered = true

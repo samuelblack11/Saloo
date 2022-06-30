@@ -42,16 +42,14 @@ struct SnapShotCardForPrint: View {
                     .resizable()
                     .frame(width: (UIScreen.screenWidth/2.5)-10, height: (UIScreen.screenWidth/2.5),alignment: .center)
                 }
-                .frame(width: (UIScreen.screenWidth/2)-10, height: (UIScreen.screenWidth/2))
-                .background(.white)
+                .frame(width: (UIScreen.screenWidth/2)-10, height: (UIScreen.screenHeight/2))
+                //.background(.white)
             //upside down message
             Text(printCardText)
-                //.scaledToFill()
-                .frame(width: (UIScreen.screenWidth/2)-20)
-                //.font(.system(size: 4))
-                .font(Font.custom("Papyrus", size: 10))
+                .frame(width: (UIScreen.screenWidth/2)-20, height: (UIScreen.screenHeight/2))
+                .font(Font.custom(noteField.font, size: 500))
+                .minimumScaleFactor(0.1)
                 .foregroundColor(.black)
-                .background(.white)
                 .padding(EdgeInsets(top: 0, leading: 5, bottom: 0, trailing: 5))
             }.rotationEffect(Angle(degrees: 180))
         // Front Cover & Back Cover
@@ -79,14 +77,12 @@ struct SnapShotCardForPrint: View {
                     .padding(.bottom,10)
                     .foregroundColor(.blue)
                 }
-                .background(.white)
-                .frame(width: (UIScreen.screenWidth/2)-10, height: (UIScreen.screenWidth/2))
-            //Image(uiImage: UIImage(data: chosenObject.coverImage!)!)
-            //Image(uiImage: UIImage(data: try! Data(contentsOf: chosenObject.smallImageURL))!)
+                //.background(.white)
+                .frame(width: (UIScreen.screenWidth/2)-10, height: (UIScreen.screenHeight/2))
             coverSource()
                 .resizable()
-                .frame(width: (UIScreen.screenWidth/2)-10, height: (UIScreen.screenWidth/2))
-            }.background(.white)
+                .frame(width: (UIScreen.screenWidth/2)-10, height: (UIScreen.screenHeight/2))
+            }//.background(.white)
         }
     }
 }

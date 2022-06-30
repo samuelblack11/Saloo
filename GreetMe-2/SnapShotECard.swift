@@ -26,40 +26,30 @@ struct SnapShotECard: View {
     }
 
     var snapShotECardView: some View {
-        
         HStack(spacing: 1) {
-            //Image(uiImage: UIImage(data: chosenObject.coverImage!)!)
-            //Image(uiImage: UIImage(data: try! Data(contentsOf: chosenObject.smallImageURL))!)
             coverSource()
                 .interpolation(.none)
                 .resizable()
-                .scaledToFit()
-                .frame(width: (UIScreen.screenWidth/3)-2, height: (UIScreen.screenHeight/3))
+                .frame(width: (UIScreen.screenWidth/3)-2)
             
             ZStack {
             Color.white
             Text(eCardText)
-                .font(.system(size: 500))
-                .minimumScaleFactor(0.01)
                 .foregroundColor(.black)
+                .font(Font.custom(noteField.font, size: 500))
+                .minimumScaleFactor(0.01)
                 }
-                .frame(width: (UIScreen.screenHeight/3)-10, height: .infinity)
+                .frame(width: (UIScreen.screenHeight/3)-10)
 
             Image(uiImage: collageImage.collageImage)
                 .interpolation(.none)
                 .resizable()
-                .scaledToFit()
-                .frame(width: (UIScreen.screenHeight/3)-2, height: (UIScreen.screenHeight/3))
-        }.frame(height: (UIScreen.screenHeight/3))
+                .frame(width: (UIScreen.screenHeight/3)-2)
+        }.frame(height: (UIScreen.screenHeight/3)-5)
     }
     
     var body: some View {
         snapShotECardView
-    }
-        
-    
-    
-    
-    
+    } 
 }
 

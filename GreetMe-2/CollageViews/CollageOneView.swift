@@ -27,8 +27,12 @@ struct CollageOneView: View {
     var collageOneView: some View {
         ZStack {
                 Rectangle().fill(.secondary)
-                Text("Tap to select a picture").foregroundColor(.white).font(.headline)
-                image?.resizable().scaledToFill()
+                Text("Tap to select a picture")
+                    .foregroundColor(.white)
+                    .font(.headline)
+                image?
+                .resizable()
+                //.scaledToFill()
                 }
                 .onTapGesture {showingImagePicker = true}
                 .frame(width: 300, height: 300)

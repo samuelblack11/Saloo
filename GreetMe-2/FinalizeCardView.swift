@@ -9,9 +9,7 @@ import Foundation
 import SwiftUI
 import CoreData
 
-
 //https://medium.com/swiftui-made-easy/activity-view-controller-in-swiftui-593fddadee79
-
 struct FinalizeCardView: View {
     @Environment(\.presentationMode) var presentationMode
     var card: Card!
@@ -32,37 +30,47 @@ struct FinalizeCardView: View {
     @State private var showActivityController = false
     @State var activityItemsArray: [Any] = []
     
-    
     func coverSource() -> Image {
         if chosenObject.coverImage != nil {
-            
             return Image(uiImage: UIImage(data: chosenObject.coverImage!)!)
         }
         else {
             return Image(uiImage: UIImage(data: try! Data(contentsOf: chosenObject.smallImageURL))!)
         }
     }
+    
+    func coverData() -> Data? {
+        if chosenObject.coverImage != nil {
+            return chosenObject.coverImage!
+        }
+        else {
+            return try! Data(contentsOf: chosenObject.smallImageURL)
+        }
+    }
+        
         
     var eCard: some View {
         HStack(spacing: 1) {
             // Front Cover
-            //Image(uiImage: UIImage(data: try! Data(contentsOf: chosenObject.smallImageURL))!)
             coverSource()
                 .interpolation(.none)
                 .resizable()
-                .scaledToFit()
+                //.scaledToFit()
                 .frame(width: (UIScreen.screenWidth/3)-2, height: (UIScreen.screenWidth/3))
+                .scaledToFill()
             //upside down message
             Text(eCardText)
+                .font(Font.custom(noteField.font, size: 500))
+                .minimumScaleFactor(0.01)
                 .frame(width: (UIScreen.screenWidth/3)-10, height: (UIScreen.screenWidth/3))
-                .font(.system(size: 4))
-            //upside down collage
+            //collage
             Image(uiImage: collageImage.collageImage)
                 .interpolation(.none)
                 .resizable()
-                .scaledToFit()
-                .frame(width: (UIScreen.screenWidth/3)-2, height: (UIScreen.screenWidth/3))
-        }
+                //
+                .frame(width: (UIScreen.screenWidth/3)-5, height: (UIScreen.screenWidth/3))
+                .scaledToFill()
+        }.frame(height: (UIScreen.screenWidth/3))
     }
     
     var cardForPrint: some View {
@@ -73,13 +81,10 @@ struct FinalizeCardView: View {
                 Image(uiImage: collageImage.collageImage).resizable().frame(width: (UIScreen.screenWidth/5)-10, height: (UIScreen.screenWidth/5),alignment: .center)
                 }.frame(width: (UIScreen.screenWidth/3)-10, height: (UIScreen.screenWidth/3))
             //upside down message
-            //Text(noteField.noteText)
             Text(printCardText)
-                //.scaledToFill()
                 .frame(width: (UIScreen.screenWidth/3)-30)
-                //.font(.system(size: 4))
-                .font(Font.custom("Papyrus", size: 4))
-                
+                .font(Font.custom(noteField.font, size: 500))
+                .minimumScaleFactor(0.01)
                 .padding(EdgeInsets(top: 0, leading: 5, bottom: 0, trailing: 5))
             }.rotationEffect(Angle(degrees: 180))
         // Front Cover & Back Cover
@@ -104,7 +109,6 @@ struct FinalizeCardView: View {
             }
             .frame(width: (UIScreen.screenWidth/3)-10, height: (UIScreen.screenWidth/3))
             // Front Cover
-            //Image(uiImage: UIImage(data: try! Data(contentsOf: chosenObject.smallImageURL))!)
             coverSource()
                 .resizable()
                 .frame(width: (UIScreen.screenWidth/3)-10, height: (UIScreen.screenWidth/3))
@@ -131,11 +135,12 @@ struct FinalizeCardView: View {
                     let card = Card(context: DataController.shared.viewContext)
                     card.card = eCard.snapshot().pngData()
                     card.collage = collageImage.collageImage.pngData()
-                    card.coverImage = UIImage(data: try! Data(contentsOf: chosenObject.smallImageURL))?.pngData()
+                    card.coverImage = coverData()!
                     card.date = Date.now
                     card.message = noteField.noteText
                     card.occassion = noteField.cardName
                     card.recipient = noteField.recipient
+                    card.font = noteField.font
                     self.saveContext()
                     print("Saved card to Core Data")
                     // https://stackoverflow.com/questions/1134289/cocoa-core-data-efficient-way-to-count-entities
@@ -146,12 +151,7 @@ struct FinalizeCardView: View {
                 }
                     Button("Share eCard") {
                         showActivityController = true
-                        //let cardForShare = eCard.snapshot()
                         let cardForShare = SnapShotECard(chosenObject: $chosenObject, collageImage: $collageImage, noteField: $noteField, eCardText: $eCardText).snapShotECardView.snapshot()
-                            
-                            //.snapshot()
-                        
-                        
                         activityItemsArray = []
                         activityItemsArray.append(cardForShare)
                     }
@@ -160,12 +160,8 @@ struct FinalizeCardView: View {
                 Spacer()
                 Button("Export for Print") {
                     showActivityController = true
-                    print("*****")
-                    print(cardForPrint.snapshot())
-                    print("*****")
                     print(prepCardForExport())
                     let cardForExport = prepCardForExport()
-                    //print(cardForExport!)
                     activityItemsArray = []
                     activityItemsArray.append(cardForExport)
                 }.sheet(isPresented: $showActivityController) {

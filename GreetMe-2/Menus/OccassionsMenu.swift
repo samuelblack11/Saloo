@@ -7,6 +7,7 @@
 // https://www.hackingwithswift.com/quick-start/swiftui/how-to-make-a-view-dismiss-itself
 import Foundation
 import SwiftUI
+import UIKit
 
 struct SearchParameter {
     @Binding var searchText: String!
@@ -21,6 +22,8 @@ struct OccassionsMenu: View {
     @State private var showingImagePicker = false
     @State private var showingCameraCapture = false
     @State private var coverImage: UIImage?
+    @State private var coverImageFromLibrary: UIImage?
+    @State private var coverImageFromCamera: UIImage?
     @State private var image: Image?
     @State var chosenObject: CoverImageObject!
     @State private var segueToCollageMenu = false
@@ -29,21 +32,10 @@ struct OccassionsMenu: View {
     @State var collageImage: CollageImage!
     @State var frontCoverIsPersonalPhoto = 0
     @State var pageCount = 1
+    @State var test_a: Bool = false
     @Binding var noneSearch: String!
     
-    func loadImage() {
-        guard let coverImage = coverImage else {return print("loadImage() failed....")}
-        image = Image(uiImage: coverImage)
-        print(coverImage)
-    }
-    
-    func handlePhotoLibrarySelection() {
-        chosenObject = CoverImageObject.init(coverImage: coverImage?.jpegData(compressionQuality: 1), smallImageURL: URL(string: "https://google.com")!, coverImagePhotographer: "", coverImageUserName: "", downloadLocation: "", index: 1)
-        print("created chosenObject")
-    }
-    
-    ///////////////////////////////////////////////////////////////////////////////////////////
-      // https://www.hackingwithswift.com/books/ios-swiftui/building-a-list-we-can-delete-from
+    // https://www.hackingwithswift.com/books/ios-swiftui/building-a-list-we-can-delete-from
       struct SearchItem {
           let searchTitle: String
           let searchTerm: String
@@ -58,6 +50,32 @@ struct OccassionsMenu: View {
     // @StateObject asks SwiftUI to watch the object for any change announcements. So any time on of our @Published properties changes the iew will refresh.
       @StateObject var menuItems = Searches()
     
+    func loadImage(pic: UIImage) {
+        print("#######")
+        print(pic)
+        coverImage = pic
+        if showingImagePicker  {
+            test_a = true
+        }
+        //image = Image(uiImage: coverImage)
+        //print(coverImage)
+    }
+    
+    
+    func handlePhotoLibrarySelection() {
+        chosenObject = CoverImageObject.init(coverImage: coverImage?.jpegData(compressionQuality: 1), smallImageURL: URL(string: "https://google.com")!, coverImagePhotographer: "", coverImageUserName: "", downloadLocation: "", index: 1)
+        print("created chosenObject")
+    }
+    
+    
+    func handleCameraPic() {
+        chosenObject = CoverImageObject.init(coverImage: coverImage?.jpegData(compressionQuality: 1), smallImageURL: URL(string: "https://google.com")!, coverImagePhotographer: "", coverImageUserName: "", downloadLocation: "", index: 1)
+        print(segueToCollageMenu)
+        print(segueToCollageMenu2)
+        print("created chosenObject")
+    }
+    
+
     func createOccassionsMenu() {
         let birthday = SearchItem(searchTitle: "Birthday 🎈", searchTerm: "Birthday")
         let superbowl = SearchItem(searchTitle: "Super Bowl 🏟", searchTerm: "Football")
@@ -89,37 +107,42 @@ struct OccassionsMenu: View {
         List {
             Section(header: Text("Personal")) {
                 Text("Select from Photo Library ").onTapGesture {
-                    showingImagePicker = true
+                    self.showingCameraCapture = false
+                    self.showingImagePicker = true
                 }
-                .sheet(isPresented: $showingImagePicker) { ImagePicker(image: $coverImage)}
-                    .navigationTitle("Select Front Cover")
-                    .onChange(of: coverImage) { _ in loadImage()
+                .sheet(isPresented: $showingImagePicker)
+                    {ImagePicker(image: $coverImageFromLibrary)}
+                .navigationTitle("Select Front Cover")
+                .onChange(of: coverImageFromLibrary) { _ in loadImage(pic: coverImageFromLibrary!)
                         handlePhotoLibrarySelection()
                         segueToCollageMenu = true
                         frontCoverIsPersonalPhoto = 1
                         noneSearch = "None"
-                    }.sheet(isPresented: $segueToCollageMenu){
+                    }
+                    .sheet(isPresented: $segueToCollageMenu){
                         let searchObject = SearchParameter.init(searchText: $noneSearch)
                         CollageStyleMenu(collageImage: $collageImage, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenObject: $chosenObject, noteField: $noteField, searchObject: searchObject)
                     }
-                Text("Take Photo with Camera 📸 ")
-                }.onTapGesture {
-                    showingCameraCapture = true
+                Text("Take Photo with Camera 📸 ").onTapGesture {
+                    self.showingImagePicker = false
+                    self.showingCameraCapture = true
+
                 }
-                .sheet(isPresented: $showingCameraCapture) { CameraCapture(selectedImage: $coverImage, sourceType: .camera)}
-                    .onChange(of: coverImage) { _ in loadImage()
-                        handlePhotoLibrarySelection()
+                .sheet(isPresented: $showingCameraCapture)
+                {CameraCapture(image: self.$coverImageFromCamera, isPresented: self.$showingCameraCapture, sourceType: .camera)}
+                .onChange(of: coverImageFromCamera) { _ in loadImage(pic: coverImageFromCamera!)
+                        handleCameraPic()
+                        segueToCollageMenu2 = true
                         frontCoverIsPersonalPhoto = 1
                         noneSearch = "None"
-                        segueToCollageMenu2 = true
+                        //presentationMode.wrappedValue.dismiss()
+                    }
+                    .sheet(isPresented: $segueToCollageMenu2){
 
-                    }.sheet(isPresented: $segueToCollageMenu2){
                         let searchObject = SearchParameter.init(searchText: $noneSearch)
                         CollageStyleMenu(collageImage: $collageImage, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenObject: $chosenObject, noteField: $noteField, searchObject: searchObject)
                     }
-            
-            
-            ///////////////////////////////////////////////////////
+            }
             Section(header: Text("Occassions & Holidays")) {
             ForEach(menuItems.searchItems, id: \.searchTitle) { search in
                 Text(search.searchTitle).onTapGesture {
@@ -139,7 +162,6 @@ struct OccassionsMenu: View {
         .navigationBarItems(leading:
             Button {
                 print("Back button tapped")
-                //presentPrior = true
                 presentationMode.wrappedValue.dismiss()
             } label: {
                 Image(systemName: "chevron.left").foregroundColor(.blue)
@@ -151,6 +173,5 @@ struct OccassionsMenu: View {
         .font(.headline)
         .listStyle(GroupedListStyle())
         }.onAppear(perform: createOccassionsMenu)
-
     }
 }

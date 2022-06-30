@@ -24,9 +24,13 @@ struct ShowPriorCardsView: View {
                     VStack(spacing: 0) {
                         HStack(spacing:0) {
                             // Front Cover
-                            Image(uiImage: UIImage(data: card.coverImage!)!).resizable().frame(width: (UIScreen.screenWidth/3)-2, height: (UIScreen.screenWidth/3))
+                            Image(uiImage: UIImage(data: card.coverImage!)!)
+                                .resizable().frame(width: (UIScreen.screenWidth/3)-2, height: (UIScreen.screenWidth/3))
                             // Note
-                            Text(card.message!).font(.system(size: 6)).frame(width: (UIScreen.screenWidth/3)-10, height: (UIScreen.screenWidth/3)).scaledToFit()
+                            Text(card.message!)
+                                .font(Font.custom(card.font!, size: 500))
+                                .minimumScaleFactor(0.01)
+                                .frame(width: (UIScreen.screenWidth/3)-10, height: (UIScreen.screenWidth/3)).scaledToFit()
                             // Inside Cover
                             Image(uiImage: UIImage(data: card.collage!)!).resizable().frame(width: (UIScreen.screenWidth/3)-2, height: (UIScreen.screenWidth/3))
                         }.sheet(isPresented: $segueToEnlarge) {EnlargeECardView(chosenCard: $chosenCard)}

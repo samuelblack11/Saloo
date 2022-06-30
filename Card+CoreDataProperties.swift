@@ -24,6 +24,7 @@ extension Card {
     @NSManaged public var occassion: String?
     @NSManaged public var recipient: String?
     @NSManaged public var timestamp: Date?
+    @NSManaged public var font: String?
 
 }
 
