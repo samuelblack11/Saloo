@@ -14,8 +14,8 @@ struct GreetMe_2App: App {
 
     var body: some Scene {
         WindowGroup {
-            //LoginView()
-            MenuView()
+            LoginView()
+            //MenuView()
                 .environment(\.managedObjectContext, dataController.container.viewContext)
         }
     }

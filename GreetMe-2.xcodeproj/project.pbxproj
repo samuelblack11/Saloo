@@ -102,9 +102,10 @@
 		260F6901281DBF28002E864B /* Menus */ = {
 			isa = PBXGroup;
 			children = (
-				260F68EE281DBD93002E864B /* CollageStyleMenu.swift */,
-				260F68F4281DBDCD002E864B /* OccassionsMenu.swift */,
+				260F6906281DC0E3002E864B /* LoginView.swift */,
 				262C3ED2281E1E9C00F07C01 /* MenuView.swift */,
+				260F68F4281DBDCD002E864B /* OccassionsMenu.swift */,
+				260F68EE281DBD93002E864B /* CollageStyleMenu.swift */,
 				262C3ED4281E226F00F07C01 /* ShowPriorCardsView.swift */,
 			);
 			path = Menus;
@@ -131,9 +132,10 @@
 		260F6904281DBFAB002E864B /* UnsplashInteractions */ = {
 			isa = PBXGroup;
 			children = (
-				260F68F9281DBE61002E864B /* PhotoAPI.swift */,
-				260F68F6281DBDD2002E864B /* UnsplashCollectionView.swift */,
 				26AD812A281F119A0069C3F0 /* ConfirmFrontCoverView.swift */,
+				260F68F9281DBE61002E864B /* PhotoAPI.swift */,
+				260F6903281DBF55002E864B /* Responses */,
+				260F68F6281DBDD2002E864B /* UnsplashCollectionView.swift */,
 			);
 			path = UnsplashInteractions;
 			sourceTree = "<group>";
@@ -152,7 +154,6 @@
 				26E63AEE28233797007DB9C3 /* Card+CoreDataClass.swift */,
 				26E63AEF28233797007DB9C3 /* Card+CoreDataProperties.swift */,
 				26A7217F281DB8D500ADAE44 /* GreetMe_2App.swift */,
-				260F6906281DC0E3002E864B /* LoginView.swift */,
 				26A7217E281DB8D500ADAE44 /* GreetMe-2 */,
 				26A7217D281DB8D500ADAE44 /* Products */,
 			);
@@ -175,14 +176,8 @@
 				260F6901281DBF28002E864B /* Menus */,
 				260F68F8281DBDED002E864B /* CollageViews */,
 				260F6904281DBFAB002E864B /* UnsplashInteractions */,
-				26AD8126281F05160069C3F0 /* WriteNoteView.swift */,
-				26AD8128281F05310069C3F0 /* FinalizeCardView.swift */,
-				2688D703285FA24200954120 /* SnapShotECard.swift */,
-				2688D705285FA25100954120 /* SnapShotCardForPrint.swift */,
-				26EB55642827120C00178F0B /* EnlargeECard.swift */,
-				260F68E4281DBD62002E864B /* ImagePicker.swift */,
-				C27430FB286335F000E17B19 /* CameraCapture.swift */,
-				260F6903281DBF55002E864B /* Responses */,
+				C2729FFA286FA8B300FD6D0C /* Finalize & Save */,
+				C2729FFB286FB80100FD6D0C /* PhotoLibrary & Camera */,
 				260F6905281DC024002E864B /* Other */,
 				26A72185281DB8D900ADAE44 /* Preview Content */,
 			);
@@ -195,6 +190,28 @@
 				26A72186281DB8D900ADAE44 /* Preview Assets.xcassets */,
 			);
 			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+		C2729FFA286FA8B300FD6D0C /* Finalize & Save */ = {
+			isa = PBXGroup;
+			children = (
+				26AD8126281F05160069C3F0 /* WriteNoteView.swift */,
+				26AD8128281F05310069C3F0 /* FinalizeCardView.swift */,
+				2688D703285FA24200954120 /* SnapShotECard.swift */,
+				2688D705285FA25100954120 /* SnapShotCardForPrint.swift */,
+				26EB55642827120C00178F0B /* EnlargeECard.swift */,
+			);
+			name = "Finalize & Save";
+			path = "../Finalize & Save";
+			sourceTree = "<group>";
+		};
+		C2729FFB286FB80100FD6D0C /* PhotoLibrary & Camera */ = {
+			isa = PBXGroup;
+			children = (
+				C27430FB286335F000E17B19 /* CameraCapture.swift */,
+				260F68E4281DBD62002E864B /* ImagePicker.swift */,
+			);
+			path = "PhotoLibrary & Camera";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */

@@ -87,6 +87,9 @@ struct WriteNoteView: View {
         print("called willHandWritePrintCard")
         print(willHandWrite.willHandWrite)
         if willHandWrite.willHandWrite == true {
+            if input.value == "Write Note Here" {
+                input.value = ""
+            }
             eCardText = input.value
             print("eCardText.......")
             print(eCardText)
