@@ -26,6 +26,8 @@ struct CoverImageObject: Identifiable, Hashable {
         hasher.combine(downloadLocation)
     }
 }
+
+
 struct UnsplashCollectionView: View {
     @Environment(\.presentationMode) var presentationMode
     @State var searchParam: SearchParameter

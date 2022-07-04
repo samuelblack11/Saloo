@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="20086" systemVersion="21D62" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
     <entity name="Card" representedClassName="Card" syncable="YES">
+        <attribute name="an1" optional="YES" attributeType="String"/>
+        <attribute name="an2" optional="YES" attributeType="String"/>
+        <attribute name="an2URL" optional="YES" attributeType="String"/>
+        <attribute name="an3" optional="YES" attributeType="String"/>
+        <attribute name="an4" optional="YES" attributeType="String"/>
         <attribute name="card" optional="YES" attributeType="Binary"/>
         <attribute name="collage" optional="YES" attributeType="Binary"/>
         <attribute name="coverImage" optional="YES" attributeType="Binary"/>
@@ -11,6 +16,6 @@
         <attribute name="recipient" optional="YES" attributeType="String"/>
     </entity>
     <elements>
-        <element name="Card" positionX="-63" positionY="-18" width="128" height="149"/>
+        <element name="Card" positionX="-63" positionY="-18" width="128" height="14"/>
     </elements>
 </model>

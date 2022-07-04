@@ -14,7 +14,7 @@ struct ShowPriorCardsView: View {
     @State var cards = [Card]()
     @State private var segueToEnlarge = false
     @State private var chosenCard: Card!
-    let columns = [GridItem(.fixed(150))]
+    let columns = [GridItem(.fixed(140)), GridItem(.fixed(140))]
     
     var body: some View {
         NavigationView {
@@ -22,17 +22,37 @@ struct ShowPriorCardsView: View {
             LazyVGrid(columns: columns, spacing: 10) {
                 ForEach(cards, id: \.self) {card in
                     VStack(spacing: 0) {
-                        HStack(spacing:0) {
-                            // Front Cover
+                        VStack(spacing:1) {
                             Image(uiImage: UIImage(data: card.coverImage!)!)
-                                .resizable().frame(width: (UIScreen.screenWidth/3)-2, height: (UIScreen.screenWidth/3))
-                            // Note
+                                .resizable()
+                                .frame(width: (UIScreen.screenWidth/3), height: (UIScreen.screenHeight/7))
                             Text(card.message!)
                                 .font(Font.custom(card.font!, size: 500))
                                 .minimumScaleFactor(0.01)
-                                .frame(width: (UIScreen.screenWidth/3)-10, height: (UIScreen.screenWidth/3)).scaledToFit()
-                            // Inside Cover
-                            Image(uiImage: UIImage(data: card.collage!)!).resizable().frame(width: (UIScreen.screenWidth/3)-2, height: (UIScreen.screenWidth/3))
+                                .frame(width: (UIScreen.screenWidth/3), height: (UIScreen.screenHeight/7))
+                                
+                            HStack(spacing:1) {
+                                Image(uiImage: UIImage(data: card.collage!)!)
+                                    .resizable()
+                                    .frame(maxWidth: (UIScreen.screenWidth/6), maxHeight: (UIScreen.screenHeight/8))
+                                VStack(spacing: 0) {
+                                    Spacer()
+                                    Image(systemName: "greetingcard.fill")
+                                        .foregroundColor(.blue)
+                                        .font(.system(size: 24))
+                                    Spacer()
+                                    Text(card.an1!)
+                                        .font(.system(size: 4))
+                                    Link(card.an2!, destination: URL(string: card.an2URL!)!)
+                                        .font(.system(size: 4))
+                                    HStack(spacing: 0) {
+                                        Text(card.an3!).font(.system(size: 4))
+                                        Link(card.an4!, destination: URL(string: "https://unsplash.com")!).font(.system(size: 4))
+                                        }.padding(.bottom,10)
+                                    Text("Greeting Card by").font(.system(size: 4))
+                                    Text("GreetMe Inc.").font(.system(size: 4)).padding(.bottom,10)
+                                        }.frame(width: (UIScreen.screenWidth/9))
+                                }
                         }.sheet(isPresented: $segueToEnlarge) {EnlargeECardView(chosenCard: $chosenCard)}
                         .contextMenu {
                             Button {
@@ -50,15 +70,25 @@ struct ShowPriorCardsView: View {
                                 .foregroundColor(.red)
                             }
                         }
+                        Divider().padding(.bottom, 5)
                         HStack(spacing: 3) {
                             Text(card.recipient!)
+                                .font(.system(size: 8))
+                                .minimumScaleFactor(0.1)
                             Spacer()
                             Text(card.occassion!)
+                                .font(.system(size: 8))
+                                .minimumScaleFactor(0.1)
                         }
+                        //Divider()
+                            //.padding(.top, 20)
+                            //.padding(.bottom, 20)
+                        }
+                    .padding()
+                        .overlay(RoundedRectangle(cornerRadius: 6)
+                            .stroke(.blue, lineWidth: 2))
                     }
-                    
                 }
-            }
             }.navigationBarItems(leading:
                                             Button {
                                                 print("Back button tapped")

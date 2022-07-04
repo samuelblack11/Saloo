@@ -25,6 +25,13 @@ extension Card {
     @NSManaged public var recipient: String?
     @NSManaged public var timestamp: Date?
     @NSManaged public var font: String?
+    @NSManaged public var an1: String?
+    @NSManaged public var an2: String?
+    @NSManaged public var an2URL: String?
+    @NSManaged public var an3: String?
+    @NSManaged public var an4: String?
+
+    
 
 }
 

@@ -40,15 +40,15 @@ struct SnapShotCardForPrint: View {
             HStack {
                 Image(uiImage: collageImage.collageImage)
                     .resizable()
-                    .frame(width: (UIScreen.screenWidth/2.5)-10, height: (UIScreen.screenWidth/2.5),alignment: .center)
+                    .frame(width: (UIScreen.screenWidth/2.5), height: (UIScreen.screenWidth/2.5),alignment: .center)
                 }
-                .frame(width: (UIScreen.screenWidth/2)-10, height: (UIScreen.screenHeight/2))
+            .frame(width: (UIScreen.screenWidth/2.5), height: (UIScreen.screenHeight/2.5))
                 //.background(.white)
             //upside down message
             Text(printCardText)
-                .frame(width: (UIScreen.screenWidth/2)-20, height: (UIScreen.screenHeight/2))
                 .font(Font.custom(noteField.font, size: 500))
                 .minimumScaleFactor(0.1)
+                .frame(width: (UIScreen.screenWidth/2.5), height: (UIScreen.screenHeight/2.5))
                 .foregroundColor(.black)
                 .padding(EdgeInsets(top: 0, leading: 5, bottom: 0, trailing: 5))
             }.rotationEffect(Angle(degrees: 180))
@@ -78,10 +78,10 @@ struct SnapShotCardForPrint: View {
                     .foregroundColor(.blue)
                 }
                 //.background(.white)
-                .frame(width: (UIScreen.screenWidth/2)-10, height: (UIScreen.screenHeight/2))
+            .frame(width: (UIScreen.screenWidth/2.5), height: (UIScreen.screenHeight/2.5))
             coverSource()
                 .resizable()
-                .frame(width: (UIScreen.screenWidth/2)-10, height: (UIScreen.screenHeight/2))
+                .frame(width: (UIScreen.screenWidth/2.5), height: (UIScreen.screenHeight/2.5))
             }//.background(.white)
         }
     }

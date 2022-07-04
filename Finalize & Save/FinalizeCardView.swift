@@ -48,6 +48,48 @@ struct FinalizeCardView: View {
         }
     }
         
+    
+    var eCardVertical: some View {
+        VStack(spacing:1) {
+            coverSource()
+                .interpolation(.none)
+                .resizable()
+                .frame(width: (UIScreen.screenWidth/4), height: (UIScreen.screenHeight/10))
+                .scaledToFill()
+            Text(eCardText)
+                .font(Font.custom(noteField.font, size: 500))
+                .minimumScaleFactor(0.01)
+                .frame(width: (UIScreen.screenWidth/4), height: (UIScreen.screenHeight/10))
+            
+            HStack(spacing:1) {
+                Image(uiImage: collageImage.collageImage)
+                    .interpolation(.none)
+                    .resizable()
+                    .scaledToFill()
+                VStack(spacing: 0) {
+                    Image(systemName: "greetingcard.fill")
+                        .foregroundColor(.blue)
+                        .font(.system(size: 28))
+                    Spacer()
+                    Text(text1)
+                        .font(.system(size: 4))
+                    Link(text2, destination: text2URL)
+                        .font(.system(size: 4))
+                    HStack(spacing: 0) {
+                        Text(text3).font(.system(size: 4))
+                        Link(text4, destination: URL(string: "https://unsplash.com")!).font(.system(size: 4))
+                    }.padding(.bottom,10)
+                    Text("Greeting Card by").font(.system(size: 4))
+                    Text("GreetMe Inc.").font(.system(size: 4)).padding(.bottom,10)
+                    }.frame(width: (UIScreen.screenWidth/9))
+                }.frame(width: (UIScreen.screenWidth/4), height: (UIScreen.screenHeight/8))
+        }.frame(width: (UIScreen.screenWidth/2), height: (UIScreen.screenHeight/4))
+        
+        
+    }
+    
+    
+    
         
     var eCard: some View {
         HStack(spacing: 1) {
@@ -58,7 +100,7 @@ struct FinalizeCardView: View {
                 //.scaledToFit()
                 .frame(width: (UIScreen.screenWidth/3)-2, height: (UIScreen.screenWidth/3))
                 .scaledToFill()
-            //upside down message
+            //message
             Text(eCardText)
                 .font(Font.custom(noteField.font, size: 500))
                 .minimumScaleFactor(0.01)
@@ -78,11 +120,14 @@ struct FinalizeCardView: View {
         HStack {
             //upside down collage
             HStack {
-                Image(uiImage: collageImage.collageImage).resizable().frame(width: (UIScreen.screenWidth/5)-10, height: (UIScreen.screenWidth/5),alignment: .center)
-                }.frame(width: (UIScreen.screenWidth/3)-10, height: (UIScreen.screenWidth/3))
+                Image(uiImage: collageImage.collageImage)
+                    .resizable()
+                    .frame(width: (UIScreen.screenWidth/6), height: (UIScreen.screenWidth/6),alignment: .center)
+                }
+                .frame(width: (UIScreen.screenWidth/4), height: (UIScreen.screenWidth/4))
             //upside down message
             Text(printCardText)
-                .frame(width: (UIScreen.screenWidth/3)-30)
+                .frame(width: (UIScreen.screenWidth/4))
                 .font(Font.custom(noteField.font, size: 500))
                 .minimumScaleFactor(0.01)
                 .padding(EdgeInsets(top: 0, leading: 5, bottom: 0, trailing: 5))
@@ -107,11 +152,11 @@ struct FinalizeCardView: View {
                 Text("Greeting Card by").font(.system(size: 6))
                 Text("GreetMe Inc.").font(.system(size: 6)).padding(.bottom,10)
             }
-            .frame(width: (UIScreen.screenWidth/3)-10, height: (UIScreen.screenWidth/3))
+            .frame(width: (UIScreen.screenWidth/4), height: (UIScreen.screenWidth/4))
             // Front Cover
             coverSource()
                 .resizable()
-                .frame(width: (UIScreen.screenWidth/3)-10, height: (UIScreen.screenWidth/3))
+                .frame(width: (UIScreen.screenWidth/4), height: (UIScreen.screenWidth/4))
             }
         }
     }
@@ -120,12 +165,18 @@ struct FinalizeCardView: View {
     var body: some View {
         NavigationView {
         VStack(spacing: 0) {
+            //Spacer()
+            HStack(spacing: 0){
+                Text("Your eCard will be stored like this:").frame(width: (UIScreen.screenWidth/3), height: (UIScreen.screenHeight/3))
+                eCardVertical
+            }
             Spacer()
-            Text("Your eCard will be stored like this:").padding(.bottom, 5)
-            eCard
+            Divider()
             Spacer()
-            Text("And will be printed like this:").padding(.bottom, 5)
-            cardForPrint
+            HStack(spacing:0){
+                Text("And will be printed like this:")
+                cardForPrint
+            }
             Spacer()
             HStack {
                 VStack {
@@ -141,6 +192,12 @@ struct FinalizeCardView: View {
                     card.occassion = noteField.cardName
                     card.recipient = noteField.recipient
                     card.font = noteField.font
+                    card.an1 = text1
+                    card.an2 = text2
+                    card.an2URL = text2URL.path
+                    card.an3 = text3
+                    card.an4 = text4
+
                     self.saveContext()
                     print("Saved card to Core Data")
                     // https://stackoverflow.com/questions/1134289/cocoa-core-data-efficient-way-to-count-entities
@@ -151,7 +208,7 @@ struct FinalizeCardView: View {
                 }
                     Button("Share eCard") {
                         showActivityController = true
-                        let cardForShare = SnapShotECard(chosenObject: $chosenObject, collageImage: $collageImage, noteField: $noteField, eCardText: $eCardText).snapShotECardView.snapshot()
+                        let cardForShare = SnapShotECard(chosenObject: $chosenObject, collageImage: $collageImage, noteField: $noteField, eCardText: $eCardText, text1: $text1, text2: $text2, text2URL: $text2URL, text3: $text3, text4: $text4).snapShotECardViewVertical.snapshot()
                         activityItemsArray = []
                         activityItemsArray.append(cardForShare)
                     }
