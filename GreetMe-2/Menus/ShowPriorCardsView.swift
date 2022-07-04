@@ -29,30 +29,38 @@ struct ShowPriorCardsView: View {
                             Text(card.message!)
                                 .font(Font.custom(card.font!, size: 500))
                                 .minimumScaleFactor(0.01)
-                                .frame(width: (UIScreen.screenWidth/3), height: (UIScreen.screenHeight/7))
-                                
-                            HStack(spacing:1) {
-                                Image(uiImage: UIImage(data: card.collage!)!)
-                                    .resizable()
-                                    .frame(maxWidth: (UIScreen.screenWidth/6), maxHeight: (UIScreen.screenHeight/8))
+                                .frame(width: (UIScreen.screenWidth/3), height: (UIScreen.screenHeight/8))
+                            Image(uiImage: UIImage(data: card.collage!)!)
+                                .resizable()
+                                .frame(maxWidth: (UIScreen.screenWidth/4), maxHeight: (UIScreen.screenHeight/7))
+                            HStack(spacing: 0) {
                                 VStack(spacing: 0) {
-                                    Spacer()
-                                    Image(systemName: "greetingcard.fill")
-                                        .foregroundColor(.blue)
-                                        .font(.system(size: 24))
-                                    Spacer()
                                     Text(card.an1!)
                                         .font(.system(size: 4))
                                     Link(card.an2!, destination: URL(string: card.an2URL!)!)
                                         .font(.system(size: 4))
-                                    HStack(spacing: 0) {
-                                        Text(card.an3!).font(.system(size: 4))
-                                        Link(card.an4!, destination: URL(string: "https://unsplash.com")!).font(.system(size: 4))
-                                        }.padding(.bottom,10)
-                                    Text("Greeting Card by").font(.system(size: 4))
-                                    Text("GreetMe Inc.").font(.system(size: 4)).padding(.bottom,10)
-                                        }.frame(width: (UIScreen.screenWidth/9))
-                                }
+                                    Text(card.an3!).font(.system(size: 4))
+                                    Link(card.an4!, destination: URL(string: "https://unsplash.com")!).font(.system(size: 4))
+                                    }
+                                    .padding(.trailing, 5)
+
+                                Spacer()
+                                Image(systemName: "greetingcard.fill")
+                                    .foregroundColor(.blue)
+                                    .font(.system(size: 24))
+                                Spacer()
+                                VStack(spacing:0) {
+                                    Text("Greeting Card")
+                                        .font(.system(size: 4))
+                                    Text("by")
+                                        .font(.system(size: 4))
+                                    Text("GreetMe Inc.")
+                                        .font(.system(size: 4))
+                                        .padding(.bottom,10)
+                                        .padding(.leading, 5)
+                                    }
+                            }.frame(width: (UIScreen.screenWidth/3), height: (UIScreen.screenHeight/15))
+                                
                         }.sheet(isPresented: $segueToEnlarge) {EnlargeECardView(chosenCard: $chosenCard)}
                         .contextMenu {
                             Button {

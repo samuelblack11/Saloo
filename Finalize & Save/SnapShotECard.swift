@@ -29,30 +29,6 @@ struct SnapShotECard: View {
             return Image(uiImage: UIImage(data: try! Data(contentsOf: chosenObject.smallImageURL))!)
         }
     }
-
-    var snapShotECardView: some View {
-        HStack(spacing: 1) {
-            coverSource()
-                .interpolation(.none)
-                .resizable()
-                .frame(width: (UIScreen.screenWidth/3)-2)
-            
-            ZStack {
-            Color.white
-            Text(eCardText)
-                .foregroundColor(.black)
-                .font(Font.custom(noteField.font, size: 500))
-                .minimumScaleFactor(0.01)
-                }
-                .frame(width: (UIScreen.screenHeight/3)-10)
-
-            Image(uiImage: collageImage.collageImage)
-                .interpolation(.none)
-                .resizable()
-                .frame(width: (UIScreen.screenHeight/3)-2)
-        }.frame(height: (UIScreen.screenHeight/3)-5)
-    }
-    
     
     var snapShotECardViewVertical: some View {
         VStack(spacing:1) {
@@ -91,6 +67,29 @@ struct SnapShotECard: View {
     
     var body: some View {
         snapShotECardViewVertical
-    } 
+    }
+    
+    var snapShotECardView: some View {
+        HStack(spacing: 1) {
+            coverSource()
+                .interpolation(.none)
+                .resizable()
+                .frame(width: (UIScreen.screenWidth/3)-2)
+            
+            ZStack {
+            Color.white
+            Text(eCardText)
+                .foregroundColor(.black)
+                .font(Font.custom(noteField.font, size: 500))
+                .minimumScaleFactor(0.01)
+                }
+                .frame(width: (UIScreen.screenHeight/3)-10)
+
+            Image(uiImage: collageImage.collageImage)
+                .interpolation(.none)
+                .resizable()
+                .frame(width: (UIScreen.screenHeight/3)-2)
+        }.frame(height: (UIScreen.screenHeight/3)-5)
+    }
 }
 

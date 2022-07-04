@@ -37,21 +37,20 @@ struct SnapShotCardForPrint: View {
         VStack(spacing: 1) {
         HStack {
             //upside down collage
-            HStack {
-                Image(uiImage: collageImage.collageImage)
-                    .resizable()
-                    .frame(width: (UIScreen.screenWidth/2.5), height: (UIScreen.screenWidth/2.5),alignment: .center)
-                }
-            .frame(width: (UIScreen.screenWidth/2.5), height: (UIScreen.screenHeight/2.5))
+            Image(uiImage: collageImage.collageImage)
+                .resizable()
+                .frame(width: (UIScreen.screenWidth/2.5), height: (UIScreen.screenWidth/2.5),alignment: .center)
                 //.background(.white)
             //upside down message
             Text(printCardText)
-                .font(Font.custom(noteField.font, size: 500))
+                .font(Font.custom(noteField.font, size: 24))
                 .minimumScaleFactor(0.1)
-                .frame(width: (UIScreen.screenWidth/2.5), height: (UIScreen.screenHeight/2.5))
                 .foregroundColor(.black)
                 .padding(EdgeInsets(top: 0, leading: 5, bottom: 0, trailing: 5))
-            }.rotationEffect(Angle(degrees: 180))
+            }
+            .rotationEffect(Angle(degrees: 180))
+            .frame(width: (UIScreen.screenWidth/1.25), height: (UIScreen.screenHeight/2.5))
+
         // Front Cover & Back Cover
         HStack(spacing: 0) {
             //Back Cover
