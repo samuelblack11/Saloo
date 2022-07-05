@@ -183,7 +183,7 @@ struct FinalizeCardView: View {
                     card.font = noteField.font
                     card.an1 = text1
                     card.an2 = text2
-                    card.an2URL = text2URL.path
+                    card.an2URL = text2URL.absoluteString
                     card.an3 = text3
                     card.an4 = text4
 
