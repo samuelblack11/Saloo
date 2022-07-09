@@ -31,12 +31,12 @@ struct EnlargeECardView: View {
                     
                     VStack(spacing: 0) {
                         Text(chosenCard.an1!)
-                            .font(.system(size: 6))
+                            .font(.system(size: 8))
                         Link(chosenCard.an2!, destination: URL(string: chosenCard.an2URL!)!)
-                            .font(.system(size: 6))
+                            .font(.system(size: 8))
                         HStack(spacing: 0) {
-                            Text(chosenCard.an3!).font(.system(size: 6))
-                            Link(chosenCard.an4!, destination: URL(string: "https://unsplash.com")!).font(.system(size: 6))
+                            Text(chosenCard.an3!).font(.system(size: 8))
+                            Link(chosenCard.an4!, destination: URL(string: "https://unsplash.com")!).font(.system(size: 8))
                             }
                         }.padding(.bottom,10)
                     Spacer()
@@ -46,8 +46,8 @@ struct EnlargeECardView: View {
                         .padding(.bottom,10)
                     Spacer()
                     VStack(spacing:0) {
-                    Text("Greeting Card by").font(.system(size: 6))
-                    Text("GreetMe Inc.").font(.system(size: 6))
+                    Text("Greeting Card by").font(.system(size: 8))
+                    Text("GreetMe Inc.").font(.system(size: 8))
                     }
                 }.frame(maxWidth: (UIScreen.screenWidth/1.5), maxHeight: (UIScreen.screenHeight/12))
             }

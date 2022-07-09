@@ -46,13 +46,17 @@ struct SnapShotECard: View {
                     .scaledToFit()
                     .frame(maxWidth: (UIScreen.screenWidth/1.5), maxHeight: (UIScreen.screenHeight/4))
             HStack(spacing: 0) {
+                Spacer()
                 VStack(spacing:0){
                     Text(text1)
                         .font(.system(size: 8))
+                        .foregroundColor(.black)
                     Link(text2, destination: text2URL)
                         .font(.system(size: 8))
                     HStack(spacing: 0) {
-                        Text(text3).font(.system(size: 8))
+                        Text(text3)
+                            .font(.system(size: 8))
+                            .foregroundColor(.black)
                         Link(text4, destination: URL(string: "https://unsplash.com")!).font(.system(size: 8))
                     }.padding(.bottom,10)
                 }
@@ -64,13 +68,16 @@ struct SnapShotECard: View {
                     Spacer()
                 VStack(spacing:0) {
                     Text("Greeting Card by").font(.system(size: 8))
+                        .foregroundColor(.black)
                     Text("GreetMe Inc.").font(.system(size: 8))
+                        .foregroundColor(.black)
                 }
+                Spacer()
                     }
                     .frame(maxWidth: (UIScreen.screenWidth/1.5), maxHeight: (UIScreen.screenHeight/10))
-                    .background(Color.white)
+                    
             //}//.frame(height: (UIScreen.screenHeight/1.2))
-        }
+        }.background(Color.white)
     }
     
     var body: some View {
