@@ -23,16 +23,22 @@ struct CollageOneView: View {
     @State var willHandWrite = false
     @State var eCardText: String = ""
     @State var printCardText: String = ""
+    @State var fillColor = Color.secondary
+    
+    func changeFillColor() {
+        fillColor = Color.white
+    }
 
     var collageOneView: some View {
         ZStack {
-                Rectangle().fill(.secondary)
+            Rectangle().fill(fillColor)
+                //.onChange(of: image, perform: changeFillColor())
                 Text("Tap to select a picture")
                     .foregroundColor(.white)
                     .font(.headline)
                 image?
                 .resizable()
-                //.scaledToFill()
+                //.scaledToFit()
                 }
                 .onTapGesture {showingImagePicker = true}
                 .frame(width: 300, height: 300)

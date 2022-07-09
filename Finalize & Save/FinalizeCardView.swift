@@ -54,48 +54,48 @@ struct FinalizeCardView: View {
             coverSource()
                 .interpolation(.none)
                 .resizable()
+                .scaledToFit()
                 .frame(width: (UIScreen.screenWidth/4), height: (UIScreen.screenHeight/8))
-                .scaledToFill()
             Text(eCardText)
                 .font(Font.custom(noteField.font, size: 500))
                 .minimumScaleFactor(0.01)
                 .frame(maxWidth: (UIScreen.screenWidth/4), maxHeight: (UIScreen.screenHeight/9))
-            
-                Image(uiImage: collageImage.collageImage)
-                    .interpolation(.none)
-                    .resizable()
-                    .frame(width: (UIScreen.screenWidth/4), height: (UIScreen.screenHeight/8))
+            Image(uiImage: collageImage.collageImage)
+                .interpolation(.none)
+                .resizable()
+                .scaledToFit()
+                .frame(width: (UIScreen.screenWidth/4), height: (UIScreen.screenHeight/8))
+            HStack(spacing: 0) {
+                VStack(spacing:0){
+                Text(text1)
+                    .font(.system(size: 4))
+                    .frame(alignment: .center)
+                Link(text2, destination: text2URL)
+                    .font(.system(size: 4))
+                    .frame(alignment: .center)
                 HStack(spacing: 0) {
-                    VStack(spacing:0){
-                    Text(text1)
+                    Text(text3).font(.system(size: 4))
+                        .frame(alignment: .center)
+                    Link(text4, destination: URL(string: "https://unsplash.com")!)
                         .font(.system(size: 4))
                         .frame(alignment: .center)
-                    Link(text2, destination: text2URL)
-                        .font(.system(size: 4))
-                        .frame(alignment: .center)
-                    HStack(spacing: 0) {
-                        Text(text3).font(.system(size: 4))
-                            .frame(alignment: .center)
-                        Link(text4, destination: URL(string: "https://unsplash.com")!)
-                            .font(.system(size: 4))
-                            .frame(alignment: .center)
-                        }
                     }
-                    Spacer()
-                    Image(systemName: "greetingcard.fill")
-                        .foregroundColor(.blue)
-                        .font(.system(size: 12))
+                }
+                Spacer()
+                Image(systemName: "greetingcard.fill")
+                    .foregroundColor(.blue)
+                    .font(.system(size: 12))
+                    .frame(alignment: .center)
+                Spacer()
+                VStack(spacing:0) {
+                    Text("Greeting Card by")
+                        .font(.system(size: 4))
                         .frame(alignment: .center)
-                    Spacer()
-                    VStack(spacing:0) {
-                        Text("Greeting Card by")
-                            .font(.system(size: 4))
-                            .frame(alignment: .center)
-                        Text("GreetMe Inc.")
-                            .font(.system(size: 4))
-                            .frame(alignment: .center)
-                        }
-                    }.frame(width: (UIScreen.screenWidth/4), height: (UIScreen.screenHeight/22))
+                    Text("GreetMe Inc.")
+                        .font(.system(size: 4))
+                        .frame(alignment: .center)
+                    }
+                }.frame(width: (UIScreen.screenWidth/4), height: (UIScreen.screenHeight/22))
         }.frame(width: (UIScreen.screenWidth/3.5), height: (UIScreen.screenHeight/2.5))
     }
     
