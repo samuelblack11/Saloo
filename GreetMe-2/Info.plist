@@ -2,11 +2,9 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>NSPhotoLibraryUsageDescription</key>
-	<string>User Photos for Front Cover</string>
-	<key>NSPhotoLibraryAddUsageDescription</key>
-	<string>Add Photos Taken from Camera to Photo Library</string>
-	<key>NSCameraUsageDescription</key>
-	<string>Use Camera for Front Cover Image</string>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>remote-notification</string>
+	</array>
 </dict>
 </plist>
