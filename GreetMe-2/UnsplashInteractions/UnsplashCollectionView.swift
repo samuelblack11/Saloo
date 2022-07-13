@@ -50,11 +50,8 @@ struct UnsplashCollectionView: View {
     @State var searchType: String!
     @State private var presentUCV2 = false
     @Binding var pageCount: Int
-
     let timer = Timer.publish(every: 0.05, on: .main, in: .common).autoconnect()
-
     let columns = [GridItem(.fixed(150)),GridItem(.fixed(150))]
-    
     
     func getMorePhotos() {
         pageCount = pageCount + 1
@@ -104,7 +101,6 @@ struct UnsplashCollectionView: View {
     
     func handleTap(index: Int) {
         segueToConfirmFrontCover = true
-        //chosenImage = imageObjects[index].coverImage
         chosenSmallURL = imageObjects[index].smallImageURL
         chosenPhotographer = imageObjects[index].coverImagePhotographer
         chosenUserName = imageObjects[index].coverImageUserName

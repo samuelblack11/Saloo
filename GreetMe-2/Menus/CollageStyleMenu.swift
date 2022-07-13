@@ -4,6 +4,7 @@
 //
 //  Created by Sam Black on 4/28/22.
 //
+// https://www.hackingwithswift.com/quick-start/swiftui/how-to-present-a-new-view-using-sheets
 
 import Foundation
 import SwiftUI
@@ -17,6 +18,16 @@ struct CollageStyleMenu: View {
     @Binding var collageImage: CollageImage!
     @State private var presentPrior = false
     @Binding var frontCoverIsPersonalPhoto: Int
+    @State private var chosenCollageStyle = 0
+    @State private var collageOne = false
+    @State private var collageTwo = false
+    @State private var collageThree = false
+    @State private var collageFour = false
+    @State private var collageFive = false
+    @State private var collageSix = false
+    @Binding var chosenObject: CoverImageObject!
+    @Binding var noteField: NoteField!
+    @State var searchObject: SearchParameter
 
     let columns = [GridItem(.fixed(150)),GridItem(.fixed(150))]
     
@@ -54,20 +65,6 @@ struct CollageStyleMenu: View {
             Rectangle().fill(Color.gray).frame(width: 75, height: 75).border(Color.black)
         }.border(Color.black)
     }.border(Color.black)
-    
-    // Add a var to define what type of view
-    // https://www.hackingwithswift.com/quick-start/swiftui/how-to-present-a-new-view-using-sheets
-    @State private var chosenCollageStyle = 0
-    @State private var collageOne = false
-    @State private var collageTwo = false
-    @State private var collageThree = false
-    @State private var collageFour = false
-    @State private var collageFive = false
-    @State private var collageSix = false
-    @Binding var chosenObject: CoverImageObject!
-    @Binding var noteField: NoteField!
-    @State var searchObject: SearchParameter
-
 
 
     var body: some View {
@@ -98,11 +95,11 @@ struct CollageStyleMenu: View {
             .frame(maxHeight: 800)
         }
 
-        .sheet(isPresented: $collageOne) {CollageOneView(collageImage: $collageImage, chosenObject: $chosenObject, noteField: $noteField,frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto)}
-        .sheet(isPresented: $collageTwo) {CollageTwoView(collageImage: $collageImage, chosenObject: $chosenObject, noteField: $noteField, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto)}
-        .sheet(isPresented: $collageThree) {CollageThreeView(collageImage: $collageImage, chosenObject: $chosenObject, noteField: $noteField, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto)}
-        .sheet(isPresented: $collageFour) {CollageFourView(collageImage: $collageImage, chosenObject: $chosenObject, noteField: $noteField, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto)}
-        .sheet(isPresented: $collageFive) {CollageFiveView(collageImage: $collageImage, chosenObject: $chosenObject, noteField: $noteField, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto)}
-        .sheet(isPresented: $collageSix) {CollageSixView(collageImage: $collageImage, chosenObject: $chosenObject, noteField: $noteField, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto)}
+        .sheet(isPresented: $collageOne) {CollageOneView(collageImage: $collageImage, chosenObject: $chosenObject, noteField: $noteField,frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, searchObject: searchObject)}
+        .sheet(isPresented: $collageTwo) {CollageTwoView(collageImage: $collageImage, chosenObject: $chosenObject, noteField: $noteField, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, searchObject: searchObject)}
+        .sheet(isPresented: $collageThree) {CollageThreeView(collageImage: $collageImage, chosenObject: $chosenObject, noteField: $noteField, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, searchObject: searchObject)}
+        .sheet(isPresented: $collageFour) {CollageFourView(collageImage: $collageImage, chosenObject: $chosenObject, noteField: $noteField, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, searchObject: searchObject)}
+        .sheet(isPresented: $collageFive) {CollageFiveView(collageImage: $collageImage, chosenObject: $chosenObject, noteField: $noteField, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, searchObject: searchObject)}
+        .sheet(isPresented: $collageSix) {CollageSixView(collageImage: $collageImage, chosenObject: $chosenObject, noteField: $noteField, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, searchObject: searchObject)}
     }
 }

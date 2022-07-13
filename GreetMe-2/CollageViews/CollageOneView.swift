@@ -24,6 +24,8 @@ struct CollageOneView: View {
     @State var eCardText: String = ""
     @State var printCardText: String = ""
     @State var fillColor = Color.secondary
+    @State var searchObject: SearchParameter
+
     
     func changeFillColor() {
         fillColor = Color.white
@@ -61,7 +63,7 @@ struct CollageOneView: View {
             print("********")
             print(theSnapShot)
             collageImage = CollageImage.init(collageImage: theSnapShot)
-        }.padding(.bottom, 30).sheet(isPresented: $segueToWriteNote ) {WriteNoteView(frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenObject: $chosenObject, collageImage: $collageImage, noteField: $noteField, eCardText: $eCardText, printCardText: $printCardText)}
+        }.padding(.bottom, 30).sheet(isPresented: $segueToWriteNote ) {WriteNoteView(frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenObject: $chosenObject, collageImage: $collageImage, noteField: $noteField, eCardText: $eCardText, printCardText: $printCardText, searchObject: searchObject)}
         }
         }
 

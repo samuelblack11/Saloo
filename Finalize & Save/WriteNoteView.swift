@@ -27,19 +27,14 @@ struct WriteNoteView: View {
     @Environment(\.presentationMode) var presentationMode
     @State private var message: String = "Write Your Note Here"
     @ObservedObject var input = TextLimiter(limit: 225)
-    
     @State private var recipient: String = ""
     @State private var recipientEmail: String = ""
-
     @State private var cardName: String = ""
     @State private var tappedTextEditor = false
     @State private var namesNotEntered = false
     @State private var handWrite = true
     @State private var handWrite2 = false
-
     @StateObject var willHandWrite = HandWrite()
-
-    
     @Binding var frontCoverIsPersonalPhoto: Int
     @State private var segueToFinalize = false
     @Binding var chosenObject: CoverImageObject!
@@ -54,6 +49,8 @@ struct WriteNoteView: View {
     @FocusState private var isNoteFieldFocused: Bool
     @Binding var eCardText: String
     @Binding var printCardText: String
+    @State var searchObject: SearchParameter
+
 
 
     let allFontNames = UIFont.familyNames
@@ -134,12 +131,7 @@ struct WriteNoteView: View {
         TextField("Recipient", text: $recipient)
             .padding(.leading, 5)
             .frame(height:35)
-  
         TextField("Recipient Email", text: $recipientEmail)
-            .padding(.leading, 5)
-            .frame(height:35)
-
-        TextField("Occassion", text: $recipientEmail)
             .padding(.leading, 5)
             .frame(height:35)
         TextField("Name Your Card", text: $cardName)
@@ -161,7 +153,7 @@ struct WriteNoteView: View {
             }}
         .alert("Your typed message will only appear in your eCard", isPresented: $handWrite2) {Button("Ok", role: .cancel) {}}
         .padding(.bottom, 30)
-        .sheet(isPresented: $segueToFinalize) {FinalizeCardView(chosenObject: $chosenObject, collageImage: $collageImage, noteField: $noteField, frontCoverIsPersonalPhoto: frontCoverIsPersonalPhoto, text1: $text1, text2: $text2, text2URL: $text2URL, text3: $text3, text4: $text4, willHandWrite: willHandWrite, eCardText: $eCardText, printCardText: $printCardText)}
+        .sheet(isPresented: $segueToFinalize) {FinalizeCardView(chosenObject: $chosenObject, collageImage: $collageImage, noteField: $noteField, frontCoverIsPersonalPhoto: frontCoverIsPersonalPhoto, text1: $text1, text2: $text2, text2URL: $text2URL, text3: $text3, text4: $text4, willHandWrite: willHandWrite, eCardText: $eCardText, printCardText: $printCardText, searchObject: searchObject)}
         }
             .navigationBarItems(leading:
                                         Button {presentationMode.wrappedValue.dismiss()} label: {

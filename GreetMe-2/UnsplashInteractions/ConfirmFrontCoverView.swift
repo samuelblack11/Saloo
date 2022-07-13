@@ -4,14 +4,14 @@
 //
 //  Created by Sam Black on 5/1/22.
 //
+// https://stackoverflow.com/questions/61237660/toggling-state-variables-using-ontapgesture-in-swiftui
+// https://developer.apple.com/documentation/swiftui/link
 
 import Foundation
 import SwiftUI
 
 struct ConfirmFrontCoverView: View {
     @Environment(\.presentationMode) var presentationMode
-    // https://stackoverflow.com/questions/61237660/toggling-state-variables-using-ontapgesture-in-swiftui
-    // https://developer.apple.com/documentation/swiftui/link
     @State var frontCoverImage: Image!
     @State var frontCoverPhotographer: String!
     @State var frontCoverUserName: String!

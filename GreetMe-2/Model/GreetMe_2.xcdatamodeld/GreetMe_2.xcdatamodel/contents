@@ -7,6 +7,7 @@
         <attribute name="an3" optional="YES" attributeType="String"/>
         <attribute name="an4" optional="YES" attributeType="String"/>
         <attribute name="card" optional="YES" attributeType="Binary"/>
+        <attribute name="cardName" optional="YES" attributeType="String"/>
         <attribute name="collage" optional="YES" attributeType="Binary"/>
         <attribute name="coverImage" optional="YES" attributeType="Binary"/>
         <attribute name="date" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
@@ -16,6 +17,6 @@
         <attribute name="recipient" optional="YES" attributeType="String"/>
     </entity>
     <elements>
-        <element name="Card" positionX="-63" positionY="-18" width="128" height="14"/>
+        <element name="Card" positionX="-63" positionY="-18" width="128" height="239"/>
     </elements>
 </model>

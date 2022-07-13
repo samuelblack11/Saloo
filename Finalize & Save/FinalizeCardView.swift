@@ -10,6 +10,12 @@ import SwiftUI
 import CoreData
 
 //https://medium.com/swiftui-made-easy/activity-view-controller-in-swiftui-593fddadee79
+// https://www.hackingwithswift.com/example-code/uikit/how-to-render-pdfs-using-uigraphicspdfrenderer
+// https://stackoverflow.com/questions/1134289/cocoa-core-data-efficient-way-to-count-entities
+// https://www.advancedswift.com/resize-uiimage-no-stretching-swift/
+// https://www.hackingwithswift.com/articles/103/seven-useful-methods-from-cgrect
+// https://stackoverflow.com/questions/57727107/how-to-get-the-iphones-screen-width-in-swiftui
+
 struct FinalizeCardView: View {
     @Environment(\.presentationMode) var presentationMode
     var card: Card!
@@ -29,7 +35,8 @@ struct FinalizeCardView: View {
     //@Binding var cardForExport: Data!
     @State private var showActivityController = false
     @State var activityItemsArray: [Any] = []
-    
+    @State var searchObject: SearchParameter
+
     func coverSource() -> Image {
         if chosenObject.coverImage != nil {
             return Image(uiImage: UIImage(data: chosenObject.coverImage!)!)
@@ -201,7 +208,8 @@ struct FinalizeCardView: View {
                         card.coverImage = coverData()!
                         card.date = Date.now
                         card.message = noteField.noteText
-                        card.occassion = noteField.cardName
+                        card.occassion = searchObject.searchText
+                        card.cardName = noteField.cardName
                         card.recipient = noteField.recipient
                         card.font = noteField.font
                         card.an1 = text1
@@ -212,7 +220,6 @@ struct FinalizeCardView: View {
 
                         self.saveContext()
                         print("Saved card to Core Data")
-                        // https://stackoverflow.com/questions/1134289/cocoa-core-data-efficient-way-to-count-entities
                         // Print Count of Cards Saved
                         let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "Card")
                         let count = try! DataController.shared.viewContext.count(for: fetchRequest)
@@ -243,55 +250,15 @@ struct FinalizeCardView: View {
         .sheet(isPresented: $presentMenu) {MenuView()}
         }
     }
-    
-    var eCard: some View {
-        HStack(spacing: 1) {
-            // Front Cover
-            coverSource()
-                .interpolation(.none)
-                .resizable()
-                //.scaledToFit()
-                .frame(width: (UIScreen.screenWidth/3)-2, height: (UIScreen.screenWidth/3))
-                .scaledToFill()
-            //message
-            Text(eCardText)
-                .font(Font.custom(noteField.font, size: 500))
-                .minimumScaleFactor(0.01)
-                .frame(width: (UIScreen.screenWidth/3)-10, height: (UIScreen.screenWidth/3))
-            //collage
-            Image(uiImage: collageImage.collageImage)
-                .interpolation(.none)
-                .resizable()
-                //
-                .frame(width: (UIScreen.screenWidth/3)-5, height: (UIScreen.screenWidth/3))
-                .scaledToFill()
-        }.frame(height: (UIScreen.screenWidth/3))
-    }
-    
 
     func prepCardForExport() -> Data {
-        
-        // https://www.advancedswift.com/resize-uiimage-no-stretching-swift/
-        //let image = cardForPrint.snapshot()
         let image = SnapShotCardForPrint(chosenObject: $chosenObject, collageImage: $collageImage, noteField: $noteField, text1: $text1, text2: $text2, text2URL: $text2URL, text3: $text3, text4: $text4, printCardText: $printCardText).snapshot()
-
-        //let imageRect_w = 350
-        //let imageRect_h = 325
         let a4_width = 595.2 - 20
         let a4_height = 841.8
-        //let imageRect = CGRect(x: 0, y: 0, width: imageRect_w , height: imageRect_h)
-        // https://www.hackingwithswift.com/example-code/uikit/how-to-render-pdfs-using-uigraphicspdfrenderer
         let pageRect = CGRect(x: 0, y: 0, width: a4_width, height: a4_height)
         let renderer = UIGraphicsPDFRenderer(bounds: pageRect)
-        //let textAttributes = [NSAttributedString.Key.font: noteView.font]
-        //let formattedText = NSAttributedString(string: noteView.text, attributes: textAttributes as [NSAttributedString.Key : Any])
-        
         let data = renderer.pdfData(actions: {ctx in ctx.beginPage()
-            // Append formattedText to collageView
-                //.insetBy(dx: 50, dy: 50)
-            // https://www.hackingwithswift.com/articles/103/seven-useful-methods-from-cgrect
-            image.draw(in: pageRect)
-            //formattedText.draw(in: pageRect.offsetBy(dx: pageRect_X_offset, dy: pageRect_Y_offset))
+        image.draw(in: pageRect)
         })
         return data
     }
@@ -301,14 +268,14 @@ struct FinalizeCardView: View {
         if DataController.shared.container.viewContext.hasChanges {
             do {
                 try DataController.shared.container.viewContext.save()
-            } catch {
+                }
+            catch {
                 print("An error occurred while saving: \(error)")
+                }
             }
         }
-    }   
 }
 
-// https://stackoverflow.com/questions/57727107/how-to-get-the-iphones-screen-width-in-swiftui
 extension UIScreen{
    static let screenWidth = UIScreen.main.bounds.size.width
    static let screenHeight = UIScreen.main.bounds.size.height

@@ -22,6 +22,7 @@ extension Card {
     @NSManaged public var date: Date?
     @NSManaged public var message: String?
     @NSManaged public var occassion: String?
+    @NSManaged public var cardName: String?
     @NSManaged public var recipient: String?
     @NSManaged public var timestamp: Date?
     @NSManaged public var font: String?
@@ -30,8 +31,6 @@ extension Card {
     @NSManaged public var an2URL: String?
     @NSManaged public var an3: String?
     @NSManaged public var an4: String?
-
-    
 
 }
 

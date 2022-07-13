@@ -9,12 +9,28 @@ import Foundation
 import SwiftUI
 import ConfettiSwiftUI
 
-
+//https://www.appcoda.com/swiftui-confetti-animation/
 struct EnlargeECardView: View {
     @Binding var chosenCard: Card!
     @State private var counter = 1
-    @State private var emojiDict: [String: String] = ["Birthday": "🎈", "Christmas": "🎄", "Hanukkah": "🕎"]
     
+    //key must be SearchItem SearchTerm's field
+    @State private var emojiDict: [String: String] = ["Birthday": "🎈",
+                                                      "Christmas": "🎄",
+                                                      "Hanukkah": "🕎",
+                                                      "Fireworks": "🎇",
+                                                      "Thanksgiving": "🍁",
+                                                      "Clover": "🍀",
+                                                      "Floral": "🌸",
+                                                      "Valentine": "❤️"]
+    func addToCounter() {
+        counter += 1
+    }
+    
+    func assignEmoji(occassion: String) -> String {
+        return emojiDict[occassion]!
+    }
+
     var eCardView: some View {
         VStack(spacing:1) {
             Image(uiImage: UIImage(data: chosenCard.coverImage!)!)
@@ -56,24 +72,9 @@ struct EnlargeECardView: View {
             }
         }.frame(height: (UIScreen.screenHeight/1.1))
     }
-       
-    func addToCounter() {
-        counter += 1
-    }
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
     
     var body: some View {
-        eCardView.confettiCannon(counter: $counter, num: 1, confettis: [ .text("🎈")], colors: [.red], confettiSize: 20.0, rainHeight: 600, fadesOut: true, opacity: 1, openingAngle: Angle.degrees(60), closingAngle: Angle.degrees(120), radius: 300, repetitions: 50, repetitionInterval: 0.05).onAppear(perform: addToCounter)
+        //.text("🎈")
+        eCardView.confettiCannon(counter: $counter, num: 1, confettis: [ .text(assignEmoji(occassion: chosenCard.occassion!))], colors: [.red], confettiSize: 20.0, rainHeight: 600, fadesOut: true, opacity: 1, openingAngle: Angle.degrees(60), closingAngle: Angle.degrees(120), radius: 300, repetitions: 50, repetitionInterval: 0.05).onAppear(perform: addToCounter)
         }
     }

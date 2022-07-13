@@ -25,6 +25,8 @@ struct CollageThreeView: View {
     @State var willHandWrite = false
     @State var eCardText: String = ""
     @State var printCardText: String = ""
+    @State var searchObject: SearchParameter
+
 
     var collageThreeView: some View {
         HStack(spacing: 0) {
@@ -64,7 +66,7 @@ struct CollageThreeView: View {
             print("********")
             print(theSnapShot)
             collageImage = CollageImage.init(collageImage: theSnapShot)
-        }.padding(.bottom, 30).sheet(isPresented: $segueToWriteNote ) {WriteNoteView(frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenObject: $chosenObject, collageImage: $collageImage, noteField: $noteField, eCardText: $eCardText, printCardText: $printCardText)}
+        }.padding(.bottom, 30).sheet(isPresented: $segueToWriteNote ) {WriteNoteView(frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenObject: $chosenObject, collageImage: $collageImage, noteField: $noteField, eCardText: $eCardText, printCardText: $printCardText, searchObject: searchObject)}
         }
         }
     }

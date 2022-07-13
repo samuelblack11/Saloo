@@ -5,6 +5,8 @@
 //  Created by Sam Black on 4/28/22.
 //
 // https://www.hackingwithswift.com/quick-start/swiftui/how-to-make-a-view-dismiss-itself
+// https://www.hackingwithswift.com/books/ios-swiftui/building-a-list-we-can-delete-from
+
 import Foundation
 import SwiftUI
 import UIKit
@@ -34,8 +36,8 @@ struct OccassionsMenu: View {
     @State var pageCount = 1
     @State var test_a: Bool = false
     @Binding var noneSearch: String!
+    @State var occassion: String!
     
-    // https://www.hackingwithswift.com/books/ios-swiftui/building-a-list-we-can-delete-from
       struct SearchItem {
           let searchTitle: String
           let searchTerm: String
@@ -57,16 +59,12 @@ struct OccassionsMenu: View {
         if showingImagePicker  {
             test_a = true
         }
-        //image = Image(uiImage: coverImage)
-        //print(coverImage)
     }
-    
     
     func handlePhotoLibrarySelection() {
         chosenObject = CoverImageObject.init(coverImage: coverImage?.jpegData(compressionQuality: 1), smallImageURL: URL(string: "https://google.com")!, coverImagePhotographer: "", coverImageUserName: "", downloadLocation: "", index: 1)
         print("created chosenObject")
     }
-    
     
     func handleCameraPic() {
         chosenObject = CoverImageObject.init(coverImage: coverImage?.jpegData(compressionQuality: 1), smallImageURL: URL(string: "https://google.com")!, coverImagePhotographer: "", coverImageUserName: "", downloadLocation: "", index: 1)
@@ -75,25 +73,20 @@ struct OccassionsMenu: View {
         print("created chosenObject")
     }
     
-
     func createOccassionsMenu() {
         let birthday = SearchItem(searchTitle: "Birthday 🎈", searchTerm: "Birthday")
-        //let superbowl = SearchItem(searchTitle: "Super Bowl 🏟", searchTerm: "Football")
         let valentine = SearchItem(searchTitle: "Valentine's Day ❤️", searchTerm: "Valentine")
         let stpatsday = SearchItem(searchTitle: "St Patrick's Day 🍀", searchTerm: "Clover")
         let mother = SearchItem(searchTitle: "Mother's Day 🌸", searchTerm: "Floral")
-        //let father = SearchItem(searchTitle: "Father's Day", searchTerm: "Parent")
         let thanksgiving = SearchItem(searchTitle: "Thanksgiving 🍁", searchTerm: "Thanksgiving")
         let hanukkah = SearchItem(searchTitle: "Hanukkah 🕎", searchTerm: "Hanukkah")
         let christmas = SearchItem(searchTitle: "Christmas 🎄", searchTerm: "Christmas")
         let nye = SearchItem(searchTitle: "New Year's 🎇", searchTerm: "Fireworks")
 
         menuItems.searchItems.append(birthday)
-        //menuItems.searchItems.append(superbowl)
         menuItems.searchItems.append(valentine)
         menuItems.searchItems.append(stpatsday)
         menuItems.searchItems.append(mother)
-        //menuItems.searchItems.append(father)
         menuItems.searchItems.append(thanksgiving)
         menuItems.searchItems.append(hanukkah)
         menuItems.searchItems.append(christmas)
@@ -135,7 +128,6 @@ struct OccassionsMenu: View {
                         segueToCollageMenu2 = true
                         frontCoverIsPersonalPhoto = 1
                         noneSearch = "None"
-                        //presentationMode.wrappedValue.dismiss()
                     }
                     .sheet(isPresented: $segueToCollageMenu2){
 
@@ -149,8 +141,6 @@ struct OccassionsMenu: View {
                     presentUCV = true
                     frontCoverIsPersonalPhoto = 0
                     self.searchType = search.searchTerm
-                    print(search)
-                    print("******")
                 }.sheet(isPresented: $presentUCV) {
                     let searchObject = SearchParameter.init(searchText: $searchType)
                     UnsplashCollectionView(searchParam: searchObject, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, pageCount: $pageCount)
