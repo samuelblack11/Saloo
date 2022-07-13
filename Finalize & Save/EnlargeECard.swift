@@ -7,10 +7,13 @@
 
 import Foundation
 import SwiftUI
+import ConfettiSwiftUI
 
 
 struct EnlargeECardView: View {
     @Binding var chosenCard: Card!
+    @State private var counter = 1
+    @State private var emojiDict: [String: String] = ["Birthday": "🎈", "Christmas": "🎄", "Hanukkah": "🕎"]
     
     var eCardView: some View {
         VStack(spacing:1) {
@@ -53,10 +56,24 @@ struct EnlargeECardView: View {
             }
         }.frame(height: (UIScreen.screenHeight/1.1))
     }
+       
+    func addToCounter() {
+        counter += 1
+    }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
     var body: some View {
-        eCardView
+        eCardView.confettiCannon(counter: $counter, num: 1, confettis: [ .text("🎈")], colors: [.red], confettiSize: 20.0, rainHeight: 600, fadesOut: true, opacity: 1, openingAngle: Angle.degrees(60), closingAngle: Angle.degrees(120), radius: 300, repetitions: 50, repetitionInterval: 0.05).onAppear(perform: addToCounter)
+        }
     }
-        
-
-}

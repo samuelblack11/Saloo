@@ -87,10 +87,7 @@ struct ShowPriorCardsView: View {
                             Text(card.occassion!)
                                 .font(.system(size: 8))
                                 .minimumScaleFactor(0.1)
-                        }
-                        //Divider()
-                            //.padding(.top, 20)
-                            //.padding(.bottom, 20)
+                            }
                         }
                     .padding()
                         .overlay(RoundedRectangle(cornerRadius: 6)

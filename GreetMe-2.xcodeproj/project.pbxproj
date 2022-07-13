@@ -39,6 +39,7 @@
 		C27430FC286335F000E17B19 /* CameraCapture.swift in Sources */ = {isa = PBXBuildFile; fileRef = C27430FB286335F000E17B19 /* CameraCapture.swift */; };
 		C2B650C7287AFEB10002E252 /* SaveToCloud.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2B650C6287AFEB10002E252 /* SaveToCloud.swift */; };
 		C2B650CA287AFFF90002E252 /* CloudKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C2B650C9287AFFF90002E252 /* CloudKit.framework */; };
+		C2D0B0A5287E2DC300198F0B /* ConfettiSwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = C2D0B0A4287E2DC300198F0B /* ConfettiSwiftUI */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -84,6 +85,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C2D0B0A5287E2DC300198F0B /* ConfettiSwiftUI in Frameworks */,
 				C2B650CA287AFFF90002E252 /* CloudKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -245,6 +247,9 @@
 			dependencies = (
 			);
 			name = "GreetMe-2";
+			packageProductDependencies = (
+				C2D0B0A4287E2DC300198F0B /* ConfettiSwiftUI */,
+			);
 			productName = "GreetMe-2";
 			productReference = 26A7217C281DB8D500ADAE44 /* GreetMe-2.app */;
 			productType = "com.apple.product-type.application";
@@ -273,6 +278,9 @@
 				Base,
 			);
 			mainGroup = 26A72173281DB8D500ADAE44;
+			packageReferences = (
+				C2D0B0A3287E2DC300198F0B /* XCRemoteSwiftPackageReference "ConfettiSwiftUI" */,
+			);
 			productRefGroup = 26A7217D281DB8D500ADAE44 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -538,6 +546,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		C2D0B0A3287E2DC300198F0B /* XCRemoteSwiftPackageReference "ConfettiSwiftUI" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/simibac/ConfettiSwiftUI.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.0.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		C2D0B0A4287E2DC300198F0B /* ConfettiSwiftUI */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = C2D0B0A3287E2DC300198F0B /* XCRemoteSwiftPackageReference "ConfettiSwiftUI" */;
+			productName = ConfettiSwiftUI;
+		};
+/* End XCSwiftPackageProductDependency section */
 
 /* Begin XCVersionGroup section */
 		26A7218A281DB8D900ADAE44 /* GreetMe_2.xcdatamodeld */ = {

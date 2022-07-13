@@ -47,7 +47,20 @@ struct FinalizeCardView: View {
             return try! Data(contentsOf: chosenObject.smallImageURL)
         }
     }
+    
+    
+    func shareECardInternally() {
+        // send to noteField.recipientEmail as unique Identifier
+    }
+    
+    
         
+    func shareECardExternally() {
+        showActivityController = true
+        let cardForShare = SnapShotECard(chosenObject: $chosenObject, collageImage: $collageImage, noteField: $noteField, eCardText: $eCardText, text1: $text1, text2: $text2, text2URL: $text2URL, text3: $text3, text4: $text4).snapShotECardViewVertical.snapshot()
+        activityItemsArray = []
+        activityItemsArray.append(cardForShare)
+    }
     
     var eCardVertical: some View {
         VStack(spacing:1) {
@@ -170,48 +183,51 @@ struct FinalizeCardView: View {
             Spacer()
             HStack {
                 VStack {
-                Button("Save eCard") {
-                    //save to core data
-                    let card = Card(context: DataController.shared.viewContext)
-                    card.card = eCardVertical.snapshot().pngData()
-                    card.collage = collageImage.collageImage.pngData()
-                    card.coverImage = coverData()!
-                    card.date = Date.now
-                    card.message = noteField.noteText
-                    card.occassion = noteField.cardName
-                    card.recipient = noteField.recipient
-                    card.font = noteField.font
-                    card.an1 = text1
-                    card.an2 = text2
-                    card.an2URL = text2URL.absoluteString
-                    card.an3 = text3
-                    card.an4 = text4
-
-                    self.saveContext()
-                    print("Saved card to Core Data")
-                    // https://stackoverflow.com/questions/1134289/cocoa-core-data-efficient-way-to-count-entities
-                    // Print Count of Cards Saved
-                    let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "Card")
-                    let count = try! DataController.shared.viewContext.count(for: fetchRequest)
-                    print("\(count) Cards Saved")  
-                }
-                    Button("Share eCard") {
-                        showActivityController = true
-                        let cardForShare = SnapShotECard(chosenObject: $chosenObject, collageImage: $collageImage, noteField: $noteField, eCardText: $eCardText, text1: $text1, text2: $text2, text2URL: $text2URL, text3: $text3, text4: $text4).snapShotECardViewVertical.snapshot()
-                        activityItemsArray = []
-                        activityItemsArray.append(cardForShare)
+                    Button("Share eCard In App") {
+                        shareECardInternally()
+                    }
+                    Button("Share eCard Externally") {
+                        shareECardExternally()
                     }
                 }
                 /////////////////////////////////////////////////////////////////////////////////
                 Spacer()
-                Button("Export for Print") {
-                    showActivityController = true
-                    print(prepCardForExport())
-                    let cardForExport = prepCardForExport()
-                    activityItemsArray = []
-                    activityItemsArray.append(cardForExport)
-                }.sheet(isPresented: $showActivityController) {
-                    ActivityView(activityItems: $activityItemsArray, applicationActivities: nil)
+                VStack {
+                    Button("Save eCard") {
+                        //save to core data
+                        let card = Card(context: DataController.shared.viewContext)
+                        card.card = eCardVertical.snapshot().pngData()
+                        card.collage = collageImage.collageImage.pngData()
+                        card.coverImage = coverData()!
+                        card.date = Date.now
+                        card.message = noteField.noteText
+                        card.occassion = noteField.cardName
+                        card.recipient = noteField.recipient
+                        card.font = noteField.font
+                        card.an1 = text1
+                        card.an2 = text2
+                        card.an2URL = text2URL.absoluteString
+                        card.an3 = text3
+                        card.an4 = text4
+
+                        self.saveContext()
+                        print("Saved card to Core Data")
+                        // https://stackoverflow.com/questions/1134289/cocoa-core-data-efficient-way-to-count-entities
+                        // Print Count of Cards Saved
+                        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "Card")
+                        let count = try! DataController.shared.viewContext.count(for: fetchRequest)
+                        print("\(count) Cards Saved")
+                    }
+                    
+                    Button("Export for Print") {
+                        showActivityController = true
+                        print(prepCardForExport())
+                        let cardForExport = prepCardForExport()
+                        activityItemsArray = []
+                        activityItemsArray.append(cardForExport)
+                    }.sheet(isPresented: $showActivityController) {
+                        ActivityView(activityItems: $activityItemsArray, applicationActivities: nil)
+                    }
                 }
             }
         }

@@ -7,12 +7,16 @@
 import Foundation
 import SwiftUI
 
+// https://www.hackingwithswift.com/quick-start/swiftui/how-to-read-text-from-a-textfield
+// https://www.hackingwithswift.com/quick-start/swiftui/how-to-create-multi-line-editable-text-with-texteditor
+// https://www.hackingwithswift.com/quick-start/swiftui/what-is-the-focusstate-property-wrapper
+
 struct NoteField {
     var noteText: String
     var recipient: String
     var cardName: String
     var font: String
-    //var font: String
+    var recipientEmail: String
 }
 
 class HandWrite: ObservableObject {
@@ -25,6 +29,8 @@ struct WriteNoteView: View {
     @ObservedObject var input = TextLimiter(limit: 225)
     
     @State private var recipient: String = ""
+    @State private var recipientEmail: String = ""
+
     @State private var cardName: String = ""
     @State private var tappedTextEditor = false
     @State private var namesNotEntered = false
@@ -104,15 +110,9 @@ struct WriteNoteView: View {
     
     var body: some View {
         NavigationView {
-            //VStack {
             ScrollView {
-        // https://www.hackingwithswift.com/quick-start/swiftui/how-to-read-text-from-a-textfield
-        // https://www.hackingwithswift.com/quick-start/swiftui/how-to-create-multi-line-editable-text-with-texteditor
-        // https://www.hackingwithswift.com/quick-start/swiftui/what-is-the-focusstate-property-wrapper
         TextEditor(text: $input.value)
             .border(Color.red, width: $input.hasReachedLimit.wrappedValue ? 1 : 0 )
-        //TextEditor(text: $message)
-            //.focused($isNoteFieldFocused)
             .frame(minHeight: 150)
             .font(Font.custom(selectedFont, size: 14))
             .onTapGesture {
@@ -134,15 +134,18 @@ struct WriteNoteView: View {
         TextField("Recipient", text: $recipient)
             .padding(.leading, 5)
             .frame(height:35)
-            .onTapGesture {
-                //isNoteFieldFocused.toggle()
-            }
+  
+        TextField("Recipient Email", text: $recipientEmail)
+            .padding(.leading, 5)
+            .frame(height:35)
+
+        TextField("Occassion", text: $recipientEmail)
+            .padding(.leading, 5)
+            .frame(height:35)
         TextField("Name Your Card", text: $cardName)
             .padding(.leading, 5)
             .frame(height:35)
-            .onTapGesture {
-                //isNoteFieldFocused.toggle()
-            }
+
         Button("Confirm Note") {
             message = input.value
             willHandWritePrintCard()
@@ -168,10 +171,10 @@ struct WriteNoteView: View {
     }
     
     func checkRequiredFields() {
-        if recipient != "" && cardName != ""  {
+        if recipient != "" && cardName != "" && recipientEmail != ""  {
             namesNotEntered = false
             segueToFinalize  = true
-            noteField = NoteField.init(noteText: message, recipient: recipient, cardName: cardName, font: selectedFont)
+            noteField = NoteField.init(noteText: message, recipient: recipient, cardName: cardName, font: selectedFont, recipientEmail: recipientEmail)
         }
         else {
             namesNotEntered = true
