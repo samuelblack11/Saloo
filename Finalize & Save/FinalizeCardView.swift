@@ -8,6 +8,7 @@
 import Foundation
 import SwiftUI
 import CoreData
+import CloudKit
 
 //https://medium.com/swiftui-made-easy/activity-view-controller-in-swiftui-593fddadee79
 // https://www.hackingwithswift.com/example-code/uikit/how-to-render-pdfs-using-uigraphicspdfrenderer
@@ -36,6 +37,9 @@ struct FinalizeCardView: View {
     @State private var showActivityController = false
     @State var activityItemsArray: [Any] = []
     @State var searchObject: SearchParameter
+    @State private var showShareSheet = false
+    private let stack = DataController.shared
+    @State private var share: CKShare?
 
     func coverSource() -> Image {
         if chosenObject.coverImage != nil {
@@ -56,9 +60,62 @@ struct FinalizeCardView: View {
     }
     
     
-    func shareECardInternally() {
-        // send to noteField.recipientEmail as unique Identifier
+    func saveECard() {
+        let card = Card(context: DataController.shared.viewContext)
+        card.card = eCardVertical.snapshot().pngData()
+        card.collage = collageImage.collageImage.pngData()
+        card.coverImage = coverData()!
+        card.date = Date.now
+        card.message = noteField.noteText
+        card.occassion = searchObject.searchText
+        card.cardName = noteField.cardName
+        card.recipient = noteField.recipient
+        card.font = noteField.font
+        card.an1 = text1
+        card.an2 = text2
+        card.an2URL = text2URL.absoluteString
+        card.an3 = text3
+        card.an4 = text4
+
+        self.saveContext()
     }
+    
+    func compileCard() -> Card {
+        let card = Card(context: DataController.shared.viewContext)
+        card.card = eCardVertical.snapshot().pngData()
+        card.collage = collageImage.collageImage.pngData()
+        card.coverImage = coverData()!
+        card.date = Date.now
+        card.message = noteField.noteText
+        card.occassion = searchObject.searchText
+        card.cardName = noteField.cardName
+        card.recipient = noteField.recipient
+        card.font = noteField.font
+        card.an1 = text1
+        card.an2 = text2
+        card.an2URL = text2URL.absoluteString
+        card.an3 = text3
+        card.an4 = text4
+        
+        self.saveContext()
+        
+        return card
+    }
+    
+    
+    private func shareECardInternally(_ card: Card) async {
+        // send to noteField.recipientEmail as unique Identifier
+          do {
+            let (_, share, _) =
+            //try await stack.persistentContainer.share([compileCard()], to: nil)
+            try stack.persistentContainer.share([compileCard()], to: nil)
+
+            share[CKShare.SystemFieldKey.title] = compileCard().cardName
+            self.share = share
+          } catch {
+            print("Failed to create share")
+          }
+        }
     
     
         
@@ -191,8 +248,22 @@ struct FinalizeCardView: View {
             HStack {
                 VStack {
                     Button("Share eCard In App") {
+                        showShareSheet = true
                         shareECardInternally()
-                    }
+                    }.sheet(isPresented: $showShareSheet, content: {
+                        if let share = share {
+                          CloudSharingView(
+                            share: share,
+                            container: stack.ckContainer,
+                            card: card
+                          )
+                        }
+                      })
+                    
+                    
+                    
+                    
+                    
                     Button("Share eCard Externally") {
                         shareECardExternally()
                     }
@@ -202,23 +273,7 @@ struct FinalizeCardView: View {
                 VStack {
                     Button("Save eCard") {
                         //save to core data
-                        let card = Card(context: DataController.shared.viewContext)
-                        card.card = eCardVertical.snapshot().pngData()
-                        card.collage = collageImage.collageImage.pngData()
-                        card.coverImage = coverData()!
-                        card.date = Date.now
-                        card.message = noteField.noteText
-                        card.occassion = searchObject.searchText
-                        card.cardName = noteField.cardName
-                        card.recipient = noteField.recipient
-                        card.font = noteField.font
-                        card.an1 = text1
-                        card.an2 = text2
-                        card.an2URL = text2URL.absoluteString
-                        card.an3 = text3
-                        card.an4 = text4
-
-                        self.saveContext()
+                        saveECard()
                         print("Saved card to Core Data")
                         // Print Count of Cards Saved
                         let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "Card")
