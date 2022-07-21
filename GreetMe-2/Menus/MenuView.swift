@@ -15,24 +15,7 @@ struct MenuView: View {
     @State var searchObject: SearchParameter!
     @State var searchType: String!
     @State var noneSearch: String!
-    
-    
-    func deleteCoreData() {
-        let request = Card.createFetchRequest()
-        do {
-            let cards = try DataController.shared.container.viewContext.fetch(request)
-            for card in cards {
-                DataController.shared.container.viewContext.delete(card)
-            }
-            // Save Changes
-            try DataController.shared.container.viewContext.save()
-        } catch {
-            // Error Handling
-            // ...
-        }
-        
-    }
-
+     
     var body: some View {
         NavigationView {
             VStack {
@@ -40,9 +23,7 @@ struct MenuView: View {
                     Rectangle().fill(.blue)
                     Text("Create New Card").foregroundColor(.white).font(.headline)
                     }
-                    .onTapGesture {
-                        deleteCoreData()
-                        createNew = true}
+                    .onTapGesture {createNew = true}
                     .frame(width: 200, height: 200)
                     .sheet(isPresented: $createNew) {OccassionsMenu(searchType: $searchType, searchObject: searchObject, noneSearch: $noneSearch)}
                     .padding(.top, 20)

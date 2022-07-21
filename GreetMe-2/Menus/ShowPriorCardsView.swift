@@ -117,7 +117,7 @@ struct ShowPriorCardsView: View {
         let sort = NSSortDescriptor(key: "date", ascending: false)
         request.sortDescriptors = [sort]
         do {
-            cards = try DataController.shared.container.viewContext.fetch(request)
+            cards = try PersistenceController.shared.persistentContainer.viewContext.fetch(request)
             print("Got \(cards.count) Cards")
             //collectionView.reloadData()
         }
@@ -129,8 +129,8 @@ struct ShowPriorCardsView: View {
     func deleteCoreData(card: Card) {
         do {
             print("Attempting Delete")
-            DataController.shared.viewContext.delete(card)
-            try DataController.shared.viewContext.save()
+            PersistenceController.shared.persistentContainer.viewContext.delete(card)
+            try PersistenceController.shared.persistentContainer.viewContext.save()
             }
             // Save Changes
          catch {

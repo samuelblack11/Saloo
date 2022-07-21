@@ -10,13 +10,13 @@ import SwiftUI
 @main
 struct GreetMe_2App: App {
     //let persistenceController = PersistenceController.shared
-    let dataController = DataController.shared
+    let dataController = PersistenceController.shared
 
     var body: some Scene {
         WindowGroup {
             //LoginView()
             MenuView()
-                .environment(\.managedObjectContext, dataController.container.viewContext)
+                .environment(\.managedObjectContext, dataController.persistentContainer.viewContext)
         }
     }
 }

@@ -8,7 +8,6 @@
 import Foundation
 import SwiftUI
 import CoreData
-import CloudKit
 
 //https://medium.com/swiftui-made-easy/activity-view-controller-in-swiftui-593fddadee79
 // https://www.hackingwithswift.com/example-code/uikit/how-to-render-pdfs-using-uigraphicspdfrenderer
@@ -37,9 +36,8 @@ struct FinalizeCardView: View {
     @State private var showActivityController = false
     @State var activityItemsArray: [Any] = []
     @State var searchObject: SearchParameter
-    @State private var showShareSheet = false
-    private let stack = DataController.shared
-    @State private var share: CKShare?
+    //@State private var isPhotoShared: Bool
+    //@State private var hasAnyShare: Bool
 
     func coverSource() -> Image {
         if chosenObject.coverImage != nil {
@@ -60,28 +58,17 @@ struct FinalizeCardView: View {
     }
     
     
-    func saveECard() {
-        let card = Card(context: DataController.shared.viewContext)
-        card.card = eCardVertical.snapshot().pngData()
-        card.collage = collageImage.collageImage.pngData()
-        card.coverImage = coverData()!
-        card.date = Date.now
-        card.message = noteField.noteText
-        card.occassion = searchObject.searchText
-        card.cardName = noteField.cardName
-        card.recipient = noteField.recipient
-        card.font = noteField.font
-        card.an1 = text1
-        card.an2 = text2
-        card.an2URL = text2URL.absoluteString
-        card.an3 = text3
-        card.an4 = text4
-
-        self.saveContext()
+    func shareECardInternally() {
+        print("&&&&&&")
+        print(PersistenceController.shared.privatePersistentStore.options?.count)
+        if PersistenceController.shared.privatePersistentStore.contains(manageObject: compileCard()) {
+            createNewShare(card: compileCard())
+        }
     }
     
     func compileCard() -> Card {
-        let card = Card(context: DataController.shared.viewContext)
+        //save to core data
+        let card = Card(context: PersistenceController.shared.persistentContainer.viewContext)
         card.card = eCardVertical.snapshot().pngData()
         card.collage = collageImage.collageImage.pngData()
         card.coverImage = coverData()!
@@ -96,28 +83,34 @@ struct FinalizeCardView: View {
         card.an2URL = text2URL.absoluteString
         card.an3 = text3
         card.an4 = text4
-        
-        self.saveContext()
-        
         return card
     }
     
-    
-    private func shareECardInternally(_ card: Card) async {
-        // send to noteField.recipientEmail as unique Identifier
-          do {
-            let (_, share, _) =
-            //try await stack.persistentContainer.share([compileCard()], to: nil)
-            try stack.persistentContainer.share([compileCard()], to: nil)
+    func saveECard() {
+        //save to core data
+        let card = Card(context: PersistenceController.shared.persistentContainer.viewContext)
+        card.card = eCardVertical.snapshot().pngData()
+        card.collage = collageImage.collageImage.pngData()
+        card.coverImage = coverData()!
+        card.date = Date.now
+        card.message = noteField.noteText
+        card.occassion = searchObject.searchText
+        card.cardName = noteField.cardName
+        card.recipient = noteField.recipient
+        card.font = noteField.font
+        card.an1 = text1
+        card.an2 = text2
+        card.an2URL = text2URL.absoluteString
+        card.an3 = text3
+        card.an4 = text4
 
-            share[CKShare.SystemFieldKey.title] = compileCard().cardName
-            self.share = share
-          } catch {
-            print("Failed to create share")
-          }
-        }
-    
-    
+        self.saveContext()
+        print("Saved card to Core Data")
+        // Print Count of Cards Saved
+        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "Card")
+        let count = try! PersistenceController.shared.persistentContainer.viewContext.count(for: fetchRequest)
+        print("\(count) Cards Saved")
+    }
         
     func shareECardExternally() {
         showActivityController = true
@@ -248,22 +241,8 @@ struct FinalizeCardView: View {
             HStack {
                 VStack {
                     Button("Share eCard In App") {
-                        showShareSheet = true
                         shareECardInternally()
-                    }.sheet(isPresented: $showShareSheet, content: {
-                        if let share = share {
-                          CloudSharingView(
-                            share: share,
-                            container: stack.ckContainer,
-                            card: card
-                          )
-                        }
-                      })
-                    
-                    
-                    
-                    
-                    
+                    }
                     Button("Share eCard Externally") {
                         shareECardExternally()
                     }
@@ -272,13 +251,7 @@ struct FinalizeCardView: View {
                 Spacer()
                 VStack {
                     Button("Save eCard") {
-                        //save to core data
                         saveECard()
-                        print("Saved card to Core Data")
-                        // Print Count of Cards Saved
-                        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "Card")
-                        let count = try! DataController.shared.viewContext.count(for: fetchRequest)
-                        print("\(count) Cards Saved")
                     }
                     
                     Button("Export for Print") {
@@ -319,10 +292,66 @@ struct FinalizeCardView: View {
     }
     
     
+    /**
+     Use UICloudSharingController to manage the share in iOS.
+     In watchOS, UICloudSharingController is unavailable, so create the share using Core Data API.
+     */
+    #if os(iOS)
+    private func createNewShare(card: Card) {
+         PersistenceController.shared.presentCloudSharingController(card: card)
+    }
+    
+    private func manageParticipation(card: Card) {
+        PersistenceController.shared.presentCloudSharingController(card: card)
+    }
+    
+    #elseif os(watchOS)
+    /**
+     Sharing a photo can take a while, so dispatch to a global queue so SwiftUI has a chance to show the progress view.
+     @State variables are thread-safe, so there's no need to dispatch back the main queue.
+     */
+    private func createNewShare(card: Card) {
+        toggleProgress.toggle()
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+            PersistenceController.shared.shareObject(card, to: nil) { share, error in
+                toggleProgress.toggle()
+                if let share = share {
+                    nextSheet = .participantView(share)
+                    activeSheet = nil
+                }
+            }
+        }
+    }
+    
+    private func manageParticipation(card: Card) {
+        nextSheet = .managingSharesView
+        activeSheet = nil
+    }
+    #endif
+    
+    /**
+     Ignore the notification in the following cases:
+     - It isn't relevant to the private database.
+     - It doesn't have a transaction. When a share changes, Core Data triggers a store remote change notification with no transaction.
+     */
+    private func processStoreChangeNotification(_ notification: Notification) {
+        guard let storeUUID = notification.userInfo?[UserInfoKey.storeUUID] as? String,
+              storeUUID == PersistenceController.shared.privatePersistentStore.identifier else {
+            return
+        }
+        guard let transactions = notification.userInfo?[UserInfoKey.transactions] as? [NSPersistentHistoryTransaction],
+              transactions.isEmpty else {
+            return
+        }
+        //isPhotoShared = (PersistenceController.shared.existingShare(card: card) != nil)
+       // hasAnyShare = PersistenceController.shared.shareTitles().isEmpty ? false : true
+    }
+    
+    
     func saveContext() {
-        if DataController.shared.container.viewContext.hasChanges {
+        if PersistenceController.shared.persistentContainer.viewContext.hasChanges {
             do {
-                try DataController.shared.container.viewContext.save()
+                try PersistenceController.shared.persistentContainer.viewContext.save()
                 }
             catch {
                 print("An error occurred while saving: \(error)")
