@@ -8,6 +8,7 @@
 import Foundation
 import SwiftUI
 import CoreData
+import CloudKit
 
 //https://medium.com/swiftui-made-easy/activity-view-controller-in-swiftui-593fddadee79
 // https://www.hackingwithswift.com/example-code/uikit/how-to-render-pdfs-using-uigraphicspdfrenderer
@@ -16,9 +17,14 @@ import CoreData
 // https://www.hackingwithswift.com/articles/103/seven-useful-methods-from-cgrect
 // https://stackoverflow.com/questions/57727107/how-to-get-the-iphones-screen-width-in-swiftui
 
+
 struct FinalizeCardView: View {
     @Environment(\.presentationMode) var presentationMode
+    //@Binding var activeSheet: ActiveSheet?
+    //@Binding var nextSheet: ActiveSheet?
+    
     var card: Card!
+    //private let card: Card!
     @Binding var chosenObject: CoverImageObject!
     @Binding var collageImage: CollageImage!
     @Binding var noteField: NoteField!
@@ -36,9 +42,12 @@ struct FinalizeCardView: View {
     @State private var showActivityController = false
     @State var activityItemsArray: [Any] = []
     @State var searchObject: SearchParameter
-    //@State private var isPhotoShared: Bool
-    //@State private var hasAnyShare: Bool
+    @State private var isPhotoShared: Bool = false
+    @State private var hasAnyShare: Bool = false
+    @State private var shareInternal: Bool = false
+    @State private var shareAndSaveOption = ""
 
+    
     func coverSource() -> Image {
         if chosenObject.coverImage != nil {
             return Image(uiImage: UIImage(data: chosenObject.coverImage!)!)
@@ -59,11 +68,88 @@ struct FinalizeCardView: View {
     
     
     func shareECardInternally() {
-        print("&&&&&&")
-        print(PersistenceController.shared.privatePersistentStore.options?.count)
-        if PersistenceController.shared.privatePersistentStore.contains(manageObject: compileCard()) {
-            createNewShare(card: compileCard())
+        //if PersistenceController.shared.privatePersistentStore.contains(manageObject: compileCard()) {
+            //shareInternal = true
+            //shareInternal = (PersistenceController.shared.existingShare(card: compileCard()) != nil)
+            //hasAnyShare = PersistenceController.shared.shareTitles().isEmpty ? false : true
+            //createNewShare(card: compileCard())
+            PersistenceController.shared.presentCloudSharingController(card: card)
+        //}
+    }
+    
+    @ViewBuilder
+    private func menuButtons() -> some View {
+        /**
+         For photos in the private database, allow creating a new share or adding to an existing share.
+         For photos in the shared database, allow managing participation.
+         */
+        //if PersistenceController.shared.privatePersistentStore.contains(manageObject: card) {
+        
+            Button("Save eCard") {
+                saveECard()
+            }
+            Button("Share eCard") {
+                shareECardInternally()
+            }//.sheet(isPresented: $shareInternal){
+            //}
+            
+        
+        Button("Export Print Card") {
+                    showActivityController = true
+                    activityItemsArray = []
+                    activityItemsArray.append(prepCardForExport())
+                }.sheet(isPresented: $showActivityController) {
+                    ActivityView(activityItems: $activityItemsArray, applicationActivities: nil)
+                    }
+        //}
+        //else {
+        //    Button("Manage Participation") { manageParticipation(card: card) }
+        //}
+    }
+
+    var body: some View {
+        NavigationView {
+        VStack(spacing: 0) {
+            HStack(spacing: 0){
+                Text("Your eCard will be stored like this:").frame(width: (UIScreen.screenWidth/3), height: (UIScreen.screenHeight/3))
+                eCardVertical
+            }
+            .onAppear()
+            Spacer()
+            Divider()
+            Spacer()
+            HStack(spacing:0){
+                Text("And will be printed like this:")
+                HStack(spacing:0){
+                    cardForPrint
+                }.frame(alignment: .center)
+            }
+            Spacer()
+            menuButtons()
         }
+        .navigationBarItems(
+            leading:Button {presentationMode.wrappedValue.dismiss()}
+            label: {Image(systemName: "chevron.left").foregroundColor(.blue)
+            Text("Back")},
+            trailing:Button {
+                presentMenu = true
+            }
+                label: {Image(systemName: "menucard.fill").foregroundColor(.blue)
+                Text("Menu")})
+        .sheet(isPresented: $presentMenu) {MenuView()}
+        }
+    }
+
+    func prepCardForExport() -> Data {
+        let image = SnapShotCardForPrint(chosenObject: $chosenObject, collageImage: $collageImage, noteField: $noteField, text1: $text1, text2: $text2, text2URL: $text2URL, text3: $text3, text4: $text4, printCardText: $printCardText).snapshot()
+        let a4_width = 595.2 - 20
+        let a4_height = 841.8
+        let pageRect = CGRect(x: 0, y: 0, width: a4_width, height: a4_height)
+        let renderer = UIGraphicsPDFRenderer(bounds: pageRect)
+        let data = renderer.pdfData(actions: {ctx in ctx.beginPage()
+        image.draw(in: pageRect)
+        })
+        return data
     }
     
     func compileCard() -> Card {
@@ -118,6 +204,75 @@ struct FinalizeCardView: View {
         activityItemsArray = []
         activityItemsArray.append(cardForShare)
     }
+    
+    
+    /**
+     Use UICloudSharingController to manage the share in iOS.
+     In watchOS, UICloudSharingController is unavailable, so create the share using Core Data API.
+     */
+    #if os(iOS)
+    private func createNewShare(card: Card) {
+         PersistenceController.shared.presentCloudSharingController(card: card)
+    }
+    
+    private func manageParticipation(card: Card) {
+        PersistenceController.shared.presentCloudSharingController(card: card)
+    }
+    
+    #elseif os(watchOS)
+    /**
+     Sharing a photo can take a while, so dispatch to a global queue so SwiftUI has a chance to show the progress view.
+     @State variables are thread-safe, so there's no need to dispatch back the main queue.
+     */
+    //private func createNewShare(card: Card) {
+    //    toggleProgress.toggle()
+    //    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+     //       PersistenceController.shared.shareObject(card, to: nil) { share, error in
+     //           toggleProgress.toggle()
+     //           if let share = share {
+     //               nextSheet = .participantView(share)
+                    //activeSheet = nil
+     //           }
+     //       }
+     //   }
+    //}
+    
+    private func manageParticipation(card: Card) {
+        nextSheet = .managingSharesView
+        activeSheet = nil
+    }
+    #endif
+    
+    /**
+     Ignore the notification in the following cases:
+     - It isn't relevant to the private database.
+     - It doesn't have a transaction. When a share changes, Core Data triggers a store remote change notification with no transaction.
+     */
+    private func processStoreChangeNotification(_ notification: Notification) {
+        guard let storeUUID = notification.userInfo?[UserInfoKey.storeUUID] as? String,
+              storeUUID == PersistenceController.shared.privatePersistentStore.identifier else {
+            return
+        }
+        guard let transactions = notification.userInfo?[UserInfoKey.transactions] as? [NSPersistentHistoryTransaction],
+              transactions.isEmpty else {
+            return
+        }
+        //isPhotoShared = (PersistenceController.shared.existingShare(card: card) != nil)
+       // hasAnyShare = PersistenceController.shared.shareTitles().isEmpty ? false : true
+    }
+    
+    
+    func saveContext() {
+        if PersistenceController.shared.persistentContainer.viewContext.hasChanges {
+            do {
+                try PersistenceController.shared.persistentContainer.viewContext.save()
+                }
+            catch {
+                print("An error occurred while saving: \(error)")
+                }
+            }
+        }
+    
     
     var eCardVertical: some View {
         VStack(spacing:1) {
@@ -220,144 +375,6 @@ struct FinalizeCardView: View {
         }
     }
 
-
-    var body: some View {
-        NavigationView {
-        VStack(spacing: 0) {
-            HStack(spacing: 0){
-                Text("Your eCard will be stored like this:").frame(width: (UIScreen.screenWidth/3), height: (UIScreen.screenHeight/3))
-                eCardVertical
-            }
-            Spacer()
-            Divider()
-            Spacer()
-            HStack(spacing:0){
-                Text("And will be printed like this:")
-                HStack(spacing:0){
-                    cardForPrint
-                }.frame(alignment: .center)
-            }
-            Spacer()
-            HStack {
-                VStack {
-                    Button("Share eCard In App") {
-                        shareECardInternally()
-                    }
-                    Button("Share eCard Externally") {
-                        shareECardExternally()
-                    }
-                }
-                /////////////////////////////////////////////////////////////////////////////////
-                Spacer()
-                VStack {
-                    Button("Save eCard") {
-                        saveECard()
-                    }
-                    
-                    Button("Export for Print") {
-                        showActivityController = true
-                        print(prepCardForExport())
-                        let cardForExport = prepCardForExport()
-                        activityItemsArray = []
-                        activityItemsArray.append(cardForExport)
-                    }.sheet(isPresented: $showActivityController) {
-                        ActivityView(activityItems: $activityItemsArray, applicationActivities: nil)
-                    }
-                }
-            }
-        }
-        .navigationBarItems(
-            leading:Button {presentationMode.wrappedValue.dismiss()}
-            label: {Image(systemName: "chevron.left").foregroundColor(.blue)
-            Text("Back")},
-            trailing:Button {
-                presentMenu = true
-            }
-                label: {Image(systemName: "menucard.fill").foregroundColor(.blue)
-                Text("Menu")})
-        .sheet(isPresented: $presentMenu) {MenuView()}
-        }
-    }
-
-    func prepCardForExport() -> Data {
-        let image = SnapShotCardForPrint(chosenObject: $chosenObject, collageImage: $collageImage, noteField: $noteField, text1: $text1, text2: $text2, text2URL: $text2URL, text3: $text3, text4: $text4, printCardText: $printCardText).snapshot()
-        let a4_width = 595.2 - 20
-        let a4_height = 841.8
-        let pageRect = CGRect(x: 0, y: 0, width: a4_width, height: a4_height)
-        let renderer = UIGraphicsPDFRenderer(bounds: pageRect)
-        let data = renderer.pdfData(actions: {ctx in ctx.beginPage()
-        image.draw(in: pageRect)
-        })
-        return data
-    }
-    
-    
-    /**
-     Use UICloudSharingController to manage the share in iOS.
-     In watchOS, UICloudSharingController is unavailable, so create the share using Core Data API.
-     */
-    #if os(iOS)
-    private func createNewShare(card: Card) {
-         PersistenceController.shared.presentCloudSharingController(card: card)
-    }
-    
-    private func manageParticipation(card: Card) {
-        PersistenceController.shared.presentCloudSharingController(card: card)
-    }
-    
-    #elseif os(watchOS)
-    /**
-     Sharing a photo can take a while, so dispatch to a global queue so SwiftUI has a chance to show the progress view.
-     @State variables are thread-safe, so there's no need to dispatch back the main queue.
-     */
-    private func createNewShare(card: Card) {
-        toggleProgress.toggle()
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-            PersistenceController.shared.shareObject(card, to: nil) { share, error in
-                toggleProgress.toggle()
-                if let share = share {
-                    nextSheet = .participantView(share)
-                    activeSheet = nil
-                }
-            }
-        }
-    }
-    
-    private func manageParticipation(card: Card) {
-        nextSheet = .managingSharesView
-        activeSheet = nil
-    }
-    #endif
-    
-    /**
-     Ignore the notification in the following cases:
-     - It isn't relevant to the private database.
-     - It doesn't have a transaction. When a share changes, Core Data triggers a store remote change notification with no transaction.
-     */
-    private func processStoreChangeNotification(_ notification: Notification) {
-        guard let storeUUID = notification.userInfo?[UserInfoKey.storeUUID] as? String,
-              storeUUID == PersistenceController.shared.privatePersistentStore.identifier else {
-            return
-        }
-        guard let transactions = notification.userInfo?[UserInfoKey.transactions] as? [NSPersistentHistoryTransaction],
-              transactions.isEmpty else {
-            return
-        }
-        //isPhotoShared = (PersistenceController.shared.existingShare(card: card) != nil)
-       // hasAnyShare = PersistenceController.shared.shareTitles().isEmpty ? false : true
-    }
-    
-    
-    func saveContext() {
-        if PersistenceController.shared.persistentContainer.viewContext.hasChanges {
-            do {
-                try PersistenceController.shared.persistentContainer.viewContext.save()
-                }
-            catch {
-                print("An error occurred while saving: \(error)")
-                }
-            }
-        }
 }
 
 extension UIScreen{

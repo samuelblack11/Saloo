@@ -77,6 +77,12 @@ struct ShowPriorCardsView: View {
                                 Image(systemName: "trash")
                                 .foregroundColor(.red)
                             }
+                            Button {
+                                chosenCard = card
+                                PersistenceController.shared.presentCloudSharingController(card: chosenCard)
+                            } label: {
+                                Text("Share Card")
+                            } 
                         }
                         Divider().padding(.bottom, 5)
                         HStack(spacing: 3) {
