@@ -7,6 +7,7 @@
 
 import Foundation
 import SwiftUI
+import CloudKit
 
 struct ShowPriorCardsView: View {
     @Environment(\.presentationMode) var presentationMode
@@ -14,6 +15,12 @@ struct ShowPriorCardsView: View {
     @State var cards = [Card]()
     @State private var segueToEnlarge = false
     @State private var chosenCard: Card!
+    //@ObservedObject var card: Card
+    @State private var share: CKShare?
+    @State private var showShareSheet = false
+    @State private var showEditSheet = false
+    private let stack = CoreDataStack.shared
+    
     let columns = [GridItem(.fixed(140)), GridItem(.fixed(140))]
     
     var body: some View {
@@ -60,8 +67,13 @@ struct ShowPriorCardsView: View {
                                         .padding(.leading, 5)
                                     }
                             }.frame(width: (UIScreen.screenWidth/3), height: (UIScreen.screenHeight/15))
-                                
-                        }.sheet(isPresented: $segueToEnlarge) {EnlargeECardView(chosenCard: $chosenCard)}
+                        }
+                        .sheet(isPresented: $segueToEnlarge) {EnlargeECardView(chosenCard: $chosenCard)}
+                        .sheet(isPresented: $showShareSheet, content: {
+                            if let share = share {
+                              CloudSharingView(share: share, container: stack.ckContainer, card: card)
+                            }
+                          })
                         .contextMenu {
                             Button {
                                 chosenCard = card
@@ -78,12 +90,20 @@ struct ShowPriorCardsView: View {
                                 .foregroundColor(.red)
                             }
                             Button {
-                                chosenCard = card
-                                PersistenceController.shared.presentCloudSharingController(card: chosenCard)
+                                if !stack.isShared(object: card) {
+                                  Task {
+                                    await createShare(card)
+                                  }
+                                }
+                                showShareSheet = true
+                                //chosenCard = card
+                                
                             } label: {
-                                Text("Share Card")
-                            } 
-                        }
+                                Text("Share eCard")
+                            }
+                        }.onAppear(perform: {
+                            self.share = stack.getShare(card)
+                          })
                         Divider().padding(.bottom, 5)
                         HStack(spacing: 3) {
                             Text(card.recipient!)
@@ -123,7 +143,7 @@ struct ShowPriorCardsView: View {
         let sort = NSSortDescriptor(key: "date", ascending: false)
         request.sortDescriptors = [sort]
         do {
-            cards = try PersistenceController.shared.persistentContainer.viewContext.fetch(request)
+            cards = try CoreDataStack.shared.persistentContainer.viewContext.fetch(request)
             print("Got \(cards.count) Cards")
             //collectionView.reloadData()
         }
@@ -135,8 +155,8 @@ struct ShowPriorCardsView: View {
     func deleteCoreData(card: Card) {
         do {
             print("Attempting Delete")
-            PersistenceController.shared.persistentContainer.viewContext.delete(card)
-            try PersistenceController.shared.persistentContainer.viewContext.save()
+            CoreDataStack.shared.context.delete(card)
+            try CoreDataStack.shared.context.save()
             }
             // Save Changes
          catch {
@@ -146,4 +166,67 @@ struct ShowPriorCardsView: View {
          }
         self.loadCoreData()
     }
+}
+
+
+// MARK: Returns CKShare participant permission, methods and properties to share
+extension ShowPriorCardsView {
+  private func createShare(_ card: Card) async {
+    do {
+      let (_, share, _) = try await stack.persistentContainer.share([card], to: nil)
+        share[CKShare.SystemFieldKey.title] = card.cardName
+      self.share = share
+    } catch {
+      print("Failed to create share")
+    }
+  }
+
+  private func string(for permission: CKShare.ParticipantPermission) -> String {
+    switch permission {
+    case .unknown:
+      return "Unknown"
+    case .none:
+      return "None"
+    case .readOnly:
+      return "Read-Only"
+    case .readWrite:
+      return "Read-Write"
+    @unknown default:
+      fatalError("A new value added to CKShare.Participant.Permission")
+    }
+  }
+
+  private func string(for role: CKShare.ParticipantRole) -> String {
+    switch role {
+    case .owner:
+      return "Owner"
+    case .privateUser:
+      return "Private User"
+    case .publicUser:
+      return "Public User"
+    case .unknown:
+      return "Unknown"
+    @unknown default:
+      fatalError("A new value added to CKShare.Participant.Role")
+    }
+  }
+
+  private func string(for acceptanceStatus: CKShare.ParticipantAcceptanceStatus) -> String {
+    switch acceptanceStatus {
+    case .accepted:
+      return "Accepted"
+    case .removed:
+      return "Removed"
+    case .pending:
+      return "Invited"
+    case .unknown:
+      return "Unknown"
+    @unknown default:
+      fatalError("A new value added to CKShare.Participant.AcceptanceStatus")
+    }
+  }
+
+  //private var canEdit: Bool {
+  //  stack.canEdit(object: card)
+  //}
 }

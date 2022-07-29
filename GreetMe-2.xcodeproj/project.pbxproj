@@ -20,7 +20,6 @@
 		260F68FA281DBE61002E864B /* PhotoAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 260F68F9281DBE61002E864B /* PhotoAPI.swift */; };
 		260F68FC281DBEA0002E864B /* UnsplashResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 260F68FB281DBEA0002E864B /* UnsplashResponse.swift */; };
 		260F68FE281DBEBD002E864B /* PingDownloadResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 260F68FD281DBEBD002E864B /* PingDownloadResponse.swift */; };
-		260F6900281DBEF9002E864B /* DataController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 260F68FF281DBEF9002E864B /* DataController.swift */; };
 		260F6907281DC0E3002E864B /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 260F6906281DC0E3002E864B /* LoginView.swift */; };
 		262C3ED3281E1E9C00F07C01 /* MenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 262C3ED2281E1E9C00F07C01 /* MenuView.swift */; };
 		262C3ED5281E226F00F07C01 /* ShowPriorCardsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 262C3ED4281E226F00F07C01 /* ShowPriorCardsView.swift */; };
@@ -29,18 +28,15 @@
 		26A72180281DB8D500ADAE44 /* GreetMe_2App.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26A7217F281DB8D500ADAE44 /* GreetMe_2App.swift */; };
 		26A72184281DB8D900ADAE44 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 26A72183281DB8D900ADAE44 /* Assets.xcassets */; };
 		26A72187281DB8D900ADAE44 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 26A72186281DB8D900ADAE44 /* Preview Assets.xcassets */; };
-		26A7218C281DB8D900ADAE44 /* iCloud.Sam.GreetMe-2.0.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 26A7218A281DB8D900ADAE44 /* iCloud.Sam.GreetMe-2.0.xcdatamodeld */; };
+		26A7218C281DB8D900ADAE44 /* GreetMe_2.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 26A7218A281DB8D900ADAE44 /* GreetMe_2.xcdatamodeld */; };
 		26AD8127281F05160069C3F0 /* WriteNoteView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26AD8126281F05160069C3F0 /* WriteNoteView.swift */; };
 		26AD8129281F05310069C3F0 /* FinalizeCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26AD8128281F05310069C3F0 /* FinalizeCardView.swift */; };
 		26AD812B281F119A0069C3F0 /* ConfirmFrontCoverView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26AD812A281F119A0069C3F0 /* ConfirmFrontCoverView.swift */; };
 		26E63AF028233797007DB9C3 /* Card+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26E63AEE28233797007DB9C3 /* Card+CoreDataClass.swift */; };
 		26E63AF128233797007DB9C3 /* Card+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26E63AEF28233797007DB9C3 /* Card+CoreDataProperties.swift */; };
 		26EB55652827120C00178F0B /* EnlargeECard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26EB55642827120C00178F0B /* EnlargeECard.swift */; };
-		C20A2B8A2887622E0024FDCB /* CoreDataHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = C20A2B892887622E0024FDCB /* CoreDataHelper.swift */; };
-		C22107BF2886C4D400C26517 /* PersistenceController+Share.swift in Sources */ = {isa = PBXBuildFile; fileRef = C22107B92886C4D400C26517 /* PersistenceController+Share.swift */; };
-		C22107C02886C4D400C26517 /* PersistenceController+History.swift in Sources */ = {isa = PBXBuildFile; fileRef = C22107BA2886C4D400C26517 /* PersistenceController+History.swift */; };
-		C22107C12886C4D400C26517 /* PersistenceController+Card.swift in Sources */ = {isa = PBXBuildFile; fileRef = C22107BB2886C4D400C26517 /* PersistenceController+Card.swift */; };
-		C22B60682884EAF000D1F73D /* ConfettiSwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = C22B60672884EAF000D1F73D /* ConfettiSwiftUI */; };
+		C22803E6289358E500802452 /* CloudSharingController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C22803E5289358E500802452 /* CloudSharingController.swift */; };
+		C22803E8289359AD00802452 /* CoreDataStack.swift in Sources */ = {isa = PBXBuildFile; fileRef = C22803E7289359AD00802452 /* CoreDataStack.swift */; };
 		C27430FC286335F000E17B19 /* CameraCapture.swift in Sources */ = {isa = PBXBuildFile; fileRef = C27430FB286335F000E17B19 /* CameraCapture.swift */; };
 		C2B650C7287AFEB10002E252 /* SaveToCloud.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2B650C6287AFEB10002E252 /* SaveToCloud.swift */; };
 		C2B650CA287AFFF90002E252 /* CloudKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C2B650C9287AFFF90002E252 /* CloudKit.framework */; };
@@ -61,7 +57,6 @@
 		260F68F9281DBE61002E864B /* PhotoAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoAPI.swift; sourceTree = "<group>"; };
 		260F68FB281DBEA0002E864B /* UnsplashResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnsplashResponse.swift; sourceTree = "<group>"; };
 		260F68FD281DBEBD002E864B /* PingDownloadResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PingDownloadResponse.swift; sourceTree = "<group>"; };
-		260F68FF281DBEF9002E864B /* DataController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataController.swift; sourceTree = "<group>"; };
 		260F6906281DC0E3002E864B /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
 		260F6908281DEAE7002E864B /* GreetMe-2.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "GreetMe-2.entitlements"; sourceTree = "<group>"; };
 		262C3ED2281E1E9C00F07C01 /* MenuView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuView.swift; sourceTree = "<group>"; };
@@ -80,10 +75,8 @@
 		26E63AEE28233797007DB9C3 /* Card+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Card+CoreDataClass.swift"; sourceTree = "<group>"; };
 		26E63AEF28233797007DB9C3 /* Card+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Card+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		26EB55642827120C00178F0B /* EnlargeECard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnlargeECard.swift; sourceTree = "<group>"; };
-		C20A2B892887622E0024FDCB /* CoreDataHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CoreDataHelper.swift; path = "../../../../../Downloads/SharingCoreDataObjectsBetweenICloudUsers-3/Persistence/CoreDataHelper.swift"; sourceTree = "<group>"; };
-		C22107B92886C4D400C26517 /* PersistenceController+Share.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "PersistenceController+Share.swift"; path = "../../../../../Downloads/SharingCoreDataObjectsBetweenICloudUsers-2/Persistence/PersistenceController+Share.swift"; sourceTree = "<group>"; };
-		C22107BA2886C4D400C26517 /* PersistenceController+History.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "PersistenceController+History.swift"; path = "../../../../../Downloads/SharingCoreDataObjectsBetweenICloudUsers-2/Persistence/PersistenceController+History.swift"; sourceTree = "<group>"; };
-		C22107BB2886C4D400C26517 /* PersistenceController+Card.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "PersistenceController+Card.swift"; path = "../../../../../Downloads/SharingCoreDataObjectsBetweenICloudUsers-2/Persistence/PersistenceController+Card.swift"; sourceTree = "<group>"; };
+		C22803E5289358E500802452 /* CloudSharingController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CloudSharingController.swift; path = "../../../../../Downloads/MyTravelJournal-3/final/MyTravelJournal/Controller/CloudSharingController.swift"; sourceTree = "<group>"; };
+		C22803E7289359AD00802452 /* CoreDataStack.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CoreDataStack.swift; path = "../../../../../Downloads/MyTravelJournal-3/final/MyTravelJournal/Helper/CoreDataStack.swift"; sourceTree = "<group>"; };
 		C27430FB286335F000E17B19 /* CameraCapture.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraCapture.swift; sourceTree = "<group>"; };
 		C2B650C6287AFEB10002E252 /* SaveToCloud.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SaveToCloud.swift; sourceTree = "<group>"; };
 		C2B650C9287AFFF90002E252 /* CloudKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CloudKit.framework; path = System/Library/Frameworks/CloudKit.framework; sourceTree = SDKROOT; };
@@ -94,7 +87,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C22B60682884EAF000D1F73D /* ConfettiSwiftUI in Frameworks */,
 				C2D0B0A5287E2DC300198F0B /* ConfettiSwiftUI in Frameworks */,
 				C2B650CA287AFFF90002E252 /* CloudKit.framework in Frameworks */,
 			);
@@ -131,12 +123,9 @@
 		260F6902281DBF41002E864B /* Model */ = {
 			isa = PBXGroup;
 			children = (
-				C20A2B892887622E0024FDCB /* CoreDataHelper.swift */,
-				260F68FF281DBEF9002E864B /* DataController.swift */,
-				C22107BA2886C4D400C26517 /* PersistenceController+History.swift */,
-				C22107BB2886C4D400C26517 /* PersistenceController+Card.swift */,
-				C22107B92886C4D400C26517 /* PersistenceController+Share.swift */,
-				26A7218A281DB8D900ADAE44 /* iCloud.Sam.GreetMe-2.0.xcdatamodeld */,
+				C22803E7289359AD00802452 /* CoreDataStack.swift */,
+				C22803E5289358E500802452 /* CloudSharingController.swift */,
+				26A7218A281DB8D900ADAE44 /* GreetMe_2.xcdatamodeld */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -263,7 +252,6 @@
 			name = "GreetMe-2";
 			packageProductDependencies = (
 				C2D0B0A4287E2DC300198F0B /* ConfettiSwiftUI */,
-				C22B60672884EAF000D1F73D /* ConfettiSwiftUI */,
 			);
 			productName = "GreetMe-2";
 			productReference = 26A7217C281DB8D500ADAE44 /* GreetMe-2.app */;
@@ -295,7 +283,6 @@
 			mainGroup = 26A72173281DB8D500ADAE44;
 			packageReferences = (
 				C2D0B0A3287E2DC300198F0B /* XCRemoteSwiftPackageReference "ConfettiSwiftUI" */,
-				C22B60662884EAEF00D1F73D /* XCRemoteSwiftPackageReference "ConfettiSwiftUI" */,
 			);
 			productRefGroup = 26A7217D281DB8D500ADAE44 /* Products */;
 			projectDirPath = "";
@@ -329,32 +316,29 @@
 				260F68FE281DBEBD002E864B /* PingDownloadResponse.swift in Sources */,
 				260F68EF281DBD93002E864B /* CollageStyleMenu.swift in Sources */,
 				260F68ED281DBD8D002E864B /* CollageSixView.swift in Sources */,
-				26A7218C281DB8D900ADAE44 /* iCloud.Sam.GreetMe-2.0.xcdatamodeld in Sources */,
+				26A7218C281DB8D900ADAE44 /* GreetMe_2.xcdatamodeld in Sources */,
 				262C3ED3281E1E9C00F07C01 /* MenuView.swift in Sources */,
 				C27430FC286335F000E17B19 /* CameraCapture.swift in Sources */,
+				C22803E8289359AD00802452 /* CoreDataStack.swift in Sources */,
 				26AD8127281F05160069C3F0 /* WriteNoteView.swift in Sources */,
 				26AD812B281F119A0069C3F0 /* ConfirmFrontCoverView.swift in Sources */,
 				260F68E9281DBD75002E864B /* CollageFourView.swift in Sources */,
 				26AD8129281F05310069C3F0 /* FinalizeCardView.swift in Sources */,
 				260F68EB281DBD7A002E864B /* CollageOneView.swift in Sources */,
-				C22107C12886C4D400C26517 /* PersistenceController+Card.swift in Sources */,
 				260F68F5281DBDCD002E864B /* OccassionsMenu.swift in Sources */,
 				260F68FA281DBE61002E864B /* PhotoAPI.swift in Sources */,
 				2688D706285FA25100954120 /* SnapShotCardForPrint.swift in Sources */,
 				260F68E7281DBD68002E864B /* CollageFiveView.swift in Sources */,
 				260F68F3281DBDA7002E864B /* CollageThreeView.swift in Sources */,
 				260F68E5281DBD63002E864B /* ImagePicker.swift in Sources */,
-				260F6900281DBEF9002E864B /* DataController.swift in Sources */,
 				260F68F1281DBDA2002E864B /* CollageTwoView.swift in Sources */,
-				C22107BF2886C4D400C26517 /* PersistenceController+Share.swift in Sources */,
 				262C3ED5281E226F00F07C01 /* ShowPriorCardsView.swift in Sources */,
-				C22107C02886C4D400C26517 /* PersistenceController+History.swift in Sources */,
 				260F6907281DC0E3002E864B /* LoginView.swift in Sources */,
 				2688D704285FA24300954120 /* SnapShotECard.swift in Sources */,
 				260F68FC281DBEA0002E864B /* UnsplashResponse.swift in Sources */,
 				26A72180281DB8D500ADAE44 /* GreetMe_2App.swift in Sources */,
-				C20A2B8A2887622E0024FDCB /* CoreDataHelper.swift in Sources */,
 				26E63AF128233797007DB9C3 /* Card+CoreDataProperties.swift in Sources */,
+				C22803E6289358E500802452 /* CloudSharingController.swift in Sources */,
 				26EB55652827120C00178F0B /* EnlargeECard.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -568,14 +552,6 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		C22B60662884EAEF00D1F73D /* XCRemoteSwiftPackageReference "ConfettiSwiftUI" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/simibac/ConfettiSwiftUI.git";
-			requirement = {
-				branch = master;
-				kind = branch;
-			};
-		};
 		C2D0B0A3287E2DC300198F0B /* XCRemoteSwiftPackageReference "ConfettiSwiftUI" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/simibac/ConfettiSwiftUI.git";
@@ -587,11 +563,6 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		C22B60672884EAF000D1F73D /* ConfettiSwiftUI */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = C22B60662884EAEF00D1F73D /* XCRemoteSwiftPackageReference "ConfettiSwiftUI" */;
-			productName = ConfettiSwiftUI;
-		};
 		C2D0B0A4287E2DC300198F0B /* ConfettiSwiftUI */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = C2D0B0A3287E2DC300198F0B /* XCRemoteSwiftPackageReference "ConfettiSwiftUI" */;
@@ -600,13 +571,13 @@
 /* End XCSwiftPackageProductDependency section */
 
 /* Begin XCVersionGroup section */
-		26A7218A281DB8D900ADAE44 /* iCloud.Sam.GreetMe-2.0.xcdatamodeld */ = {
+		26A7218A281DB8D900ADAE44 /* GreetMe_2.xcdatamodeld */ = {
 			isa = XCVersionGroup;
 			children = (
 				26A7218B281DB8D900ADAE44 /* GreetMe_2.xcdatamodel */,
 			);
 			currentVersion = 26A7218B281DB8D900ADAE44 /* GreetMe_2.xcdatamodel */;
-			path = "iCloud.Sam.GreetMe-2.0.xcdatamodeld";
+			path = GreetMe_2.xcdatamodeld;
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;
 		};

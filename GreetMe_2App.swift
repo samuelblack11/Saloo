@@ -9,8 +9,7 @@ import SwiftUI
 
 @main
 struct GreetMe_2App: App {
-    //let persistenceController = PersistenceController.shared
-    let dataController = PersistenceController.shared
+    let dataController = CoreDataStack.shared
 
     var body: some Scene {
         WindowGroup {
