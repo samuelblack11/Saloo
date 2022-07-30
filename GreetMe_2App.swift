@@ -14,7 +14,7 @@ struct GreetMe_2App: App {
     var body: some Scene {
         WindowGroup {
             //LoginView()
-            MenuView()
+            MenuView(calViewModel: CalViewModel())
                 .environment(\.managedObjectContext, dataController.persistentContainer.viewContext)
         }
     }

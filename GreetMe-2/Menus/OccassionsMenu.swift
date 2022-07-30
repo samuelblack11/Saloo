@@ -10,6 +10,7 @@
 import Foundation
 import SwiftUI
 import UIKit
+import FSCalendar
 
 struct SearchParameter {
     @Binding var searchText: String!
@@ -157,11 +158,13 @@ struct OccassionsMenu: View {
                 Image(systemName: "chevron.left").foregroundColor(.blue)
                 Text("Back")
             })
-        .sheet(isPresented: $presentPrior) {
-            MenuView()
+        .sheet(isPresented: $presentPrior) {            
+            MenuView(calViewModel: CalViewModel())
         }
         .font(.headline)
         .listStyle(GroupedListStyle())
         }.onAppear(perform: createOccassionsMenu)
     }
+    
+    
 }

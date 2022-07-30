@@ -247,7 +247,8 @@ struct FinalizeCardView: View {
             }
                 label: {Image(systemName: "menucard.fill").foregroundColor(.blue)
                 Text("Menu")})
-        .sheet(isPresented: $presentMenu) {MenuView()}
+        .sheet(isPresented: $presentMenu) {MenuView(calViewModel: CalViewModel())
+}
         }
     }
 
