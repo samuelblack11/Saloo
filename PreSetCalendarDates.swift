@@ -17,7 +17,6 @@ struct PreSetCalendarDates {
         return formatter.date(from: eventDate)!
     }
     
-    
     init(eventList: [String: Date]) {
         self.eventList = eventList
         self.eventList["New Year's Day"] = createDate(eventDate: "01/01/2023")
@@ -63,8 +62,4 @@ struct PreSetCalendarDates {
         self.eventList["Kwanzaa ✊🏾"] = createDate(eventDate: "12/26/2022")
         self.eventList["New Year's Eve 🎆"] = createDate(eventDate: "12/31/2022")
     }
-    
-    
-    
-    
 }

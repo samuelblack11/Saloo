@@ -1,8 +1,8 @@
 //
 //  Card+CoreDataClass.swift
-//  GreetMe-2
+//  
 //
-//  Created by Sam Black on 5/4/22.
+//  Created by Sam Black on 8/1/22.
 //
 //
 
