@@ -12,11 +12,10 @@ import CoreData
 import SwiftUI
 import FSCalendar
 
-
-
-struct CalendarView: UIViewRepresentable {
+struct CalendarView: UIViewRepresentable, View {
     var calendar: FSCalendar
     @Binding var isCalendarExpanded: Bool
+    //var eventsFromCore: [CalendarDate]
     
     func makeUIView(context: Context) -> some UIView {
         calendar
@@ -34,15 +33,16 @@ extension CalendarView {
 class CalViewModel: NSObject, ObservableObject {
     @Published var calendar = FSCalendar()
     @Published var isCalendarExpanded: Bool = true
-    //@Published var calendarHeight: CGFloat = 300.0
-    @Published var selectedDate: String = ""
     var eventsFromCore = [CalendarDate]()
-
+    @Published var selectedDateOld: String = ""
+    @State var selectedDate: Date!
+    @State var eventsForShow = [CalendarDate]()
+    @State var showDetailView: Bool = false
     
     override init() {
         super.init()
-        deleteAllForEntity()
-        loadCoreDataEvents()
+        addStandardEventsToCalendar()
+        loadCoreDataEvents(eventsFromCore: eventsFromCore)
         calendar.delegate = self
         calendar.dataSource = self
         calendar.scope = isCalendarExpanded ? .month : .week
@@ -51,13 +51,25 @@ class CalViewModel: NSObject, ObservableObject {
 }
 
 extension CalViewModel: FSCalendarDelegate, FSCalendarDataSource, FSCalendarDelegateAppearance {
-
+    
+    func determineEventsForShow(date: Date) {
+        for event in eventsFromCore {
+            if date == event.eventDateCore! {
+                self.eventsForShow = [event]
+            }
+        }
+    }
+    
     func calendar(_ calendar: FSCalendar,
                   didSelect date: Date,
                   at monthPosition: FSCalendarMonthPosition) {
         dateSelected(date)
+        determineEventsForShow(date: date)
+        showDetailView = true
+        selectedDate = date
+        
     }
-    
+        
     func calendar(_ calendar: FSCalendar,
                   numberOfEventsFor date: Date) -> Int {
         numberOfEvent(for: date)
@@ -71,46 +83,15 @@ extension CalViewModel: FSCalendarDelegate, FSCalendarDataSource, FSCalendarDele
         return .systemPink
     }
     
-    func loadCoreDataEvents() {
-        let request = CalendarDate.createFetchRequest()
-        let sort = NSSortDescriptor(key: "eventDateCore", ascending: false)
-        request.sortDescriptors = [sort]
-        do {
-            eventsFromCore = try CoreDataStack.shared.persistentContainer.viewContext.fetch(request)
-            print("Got \(eventsFromCore.count) Events")
-            //collectionView.reloadData()
-        }
-        catch {
-            print("Fetch failed")
-        }
-    }
-    
-    func deleteAllForEntity() {
-        let context = CoreDataStack.shared.context
-        for object in eventsFromCore {
-            context.delete(object)
-        }
-        do {
-            try context.save()
-        }
-        catch {
-            print("Couldn't save after delete")
-        }
-    }
-    
     func calendar(_ calendar: FSCalendar, subtitleFor date: Date) -> String? {
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "d"
         var matchingEventName: String!
         //if date in eventList values, take last character of corresponding eventList key and make that the title for the date
-        //for (eventName, eventDate) in events.eventList {
         for event in eventsFromCore {
+            print("&%")
+            print(event)
             if date == event.eventDateCore! {
                 matchingEventName = String(event.eventNameCore!.last!)
             }
-            //else if date != eventDate {
-            //    matchingEventName = dateFormatter.string(from: date)
-            //  }
         }
         return matchingEventName
     }
@@ -118,13 +99,6 @@ extension CalViewModel: FSCalendarDelegate, FSCalendarDataSource, FSCalendarDele
     
     func calendar(_ calendar: FSCalendar, appearance: FSCalendarAppearance, fillDefaultColorFor date: Date) -> UIColor? {
         var fillColor: UIColor!
-        let dateComponents = Calendar.current.dateComponents([.year, .month], from: Date())
-        let startOfMonth = Calendar.current.date(from: dateComponents)!
-        
-        //if date < startOfMonth {
-        //    fillColor = .lightGray
-        //}
-        //else
         if date < Date() {
             fillColor = .darkGray
         }
@@ -133,18 +107,6 @@ extension CalViewModel: FSCalendarDelegate, FSCalendarDataSource, FSCalendarDele
         }
         return fillColor
     }
-    
-    
-    func calendar(_ calendar: FSCalendar, didDeselect date: Date, at monthPosition: FSCalendarMonthPosition) {
-        //let item = DateDetailView(selectedDate: date, eventsFromCore: eventsFromCore)
-        NavigationLink(destination: DateDetailView(selectedDate: date, eventsFromCore: eventsFromCore)){}
-                       
-
-    }
-    
-    
-    
-    
 }
 
 private extension CalViewModel {
@@ -152,7 +114,6 @@ private extension CalViewModel {
     func numberOfEvent(for date: Date) -> Int {
         /// some logic here
         var matchingCount = 0
-        //if date in eventList values, take last character of corresponding eventList key and make that the title for the date
         for event in eventsFromCore {
             if date == event.eventDateCore {
                 matchingCount += 1
@@ -164,7 +125,78 @@ private extension CalViewModel {
     func dateSelected(_ date: Date) {
         DispatchQueue.main.async { [weak self] in
             guard let self = self else { return }
-            self.selectedDate = date.description
+            self.selectedDateOld = date.description
+        }
+    }
+}
+
+extension CalViewModel {
+    func deleteAllForEntity() {
+        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "CalendarDate")
+   
+        let batchDeleteRequest = NSBatchDeleteRequest(fetchRequest: fetchRequest)
+        
+        do {
+            try CoreDataStack.shared.context.execute(batchDeleteRequest)
+        }
+        catch {
+            print("error")
+            }
+    }
+    
+    func addStandardEventsToCalendar() {
+        //let defaults = UserDefaults.standard
+        // if first logon
+        //if defaults.bool(forKey: "First Launch") == true {
+            
+       //     }
+       // else {
+        //    let eventList3 = [String : Date]()
+        //    let events = PreSetCalendarDates(eventList: eventList3)
+        //    for (eventName, eventDate) in events.eventList {
+        //        let event = CalendarDate(context: CoreDataStack.shared.context)
+         //       event.eventNameCore = eventName
+         //       event.eventDateCore = eventDate
+         //       self.saveContext()
+            //}
+          //  defaults.set(true, forKey: "First Launch")
+        //}
+        deleteAllForEntity()
+        let eventList3 = [String : Date]()
+        let events = PreSetCalendarDates(eventList: eventList3)
+        print(events)
+        for (eventName, eventDate) in events.eventList {
+            let event = CalendarDate(context: CoreDataStack.shared.context)
+            event.eventNameCore = eventName
+            event.eventDateCore = eventDate
+            self.saveContext()
+        }
+    }
+    
+    func saveContext() {
+        if CoreDataStack.shared.context.hasChanges {
+            do {
+                try CoreDataStack.shared.context.save()
+                }
+            catch {
+                print("An error occurred while saving: \(error)")
+                }
+            }
+        }
+    
+    func loadCoreDataEvents(eventsFromCore: [CalendarDate]) {
+        let request = CalendarDate.createFetchRequest()
+        print(request)
+        print("^^^^")
+        let sort = NSSortDescriptor(key: "eventDateCore", ascending: false)
+        request.sortDescriptors = [sort]
+        do {
+            self.eventsFromCore = try CoreDataStack.shared.context.fetch(request)
+            print("Got \(eventsFromCore.count) Events")
+            print(eventsFromCore)
+        }
+        catch {
+            print("Fetch failed")
         }
     }
 }

@@ -13,6 +13,7 @@
 import Foundation
 import SwiftUI
 import FSCalendar
+import CoreData
 
 struct MenuView: View {
     
@@ -20,53 +21,16 @@ struct MenuView: View {
     @State private var showSent = false
     @State private var showReceived = false
     @State var cards = [Card]()
-
     @State var searchObject: SearchParameter!
     @State var searchType: String!
     @State var noneSearch: String!
     @ObservedObject var calViewModel: CalViewModel
+    @State var showDetailView: Bool = false
+    @State var selectedDate: Date!
+    //@State var eventsFromCore = [CalendarDate]()
+    @State var eventsForShow = [CalendarDate]()
 
-    func addStandardEventsToCalendar() {
-        //let defaults = UserDefaults.standard
-        // if first logon
-        //if defaults.bool(forKey: "First Launch") == true {
-            
-       //     }
-       // else {
-        //    let eventList3 = [String : Date]()
-        //    let events = PreSetCalendarDates(eventList: eventList3)
-        //    for (eventName, eventDate) in events.eventList {
-        //        let event = CalendarDate(context: CoreDataStack.shared.context)
-         //       event.eventNameCore = eventName
-         //       event.eventDateCore = eventDate
-         //       self.saveContext()
-            //}
-          //  defaults.set(true, forKey: "First Launch")
-        //}
-        //deleteAllForEntity()
-        let eventList3 = [String : Date]()
-        let events = PreSetCalendarDates(eventList: eventList3)
-        for (eventName, eventDate) in events.eventList {
-            let event = CalendarDate(context: CoreDataStack.shared.context)
-            event.eventNameCore = eventName
-            event.eventDateCore = eventDate
-            print(eventName)
-            self.saveContext()
-        }
-    }
-    
-    func saveContext() {
-        if CoreDataStack.shared.context.hasChanges {
-            do {
-                try CoreDataStack.shared.context.save()
-                }
-            catch {
-                print("An error occurred while saving: \(error)")
-                }
-            }
-        }
     var body: some View {
-        //NavigationView {
             VStack {
                 Image(systemName: "greetingcard.fill")
                     .foregroundColor(.blue)
@@ -86,7 +50,6 @@ struct MenuView: View {
                         Image(systemName: "plus")
                             .foregroundColor(.blue)
                             .font(.system(size: 24))
-
                         }
                     Spacer()
                     Button{showReceived = true} label: {
@@ -99,8 +62,12 @@ struct MenuView: View {
                     .sheet(isPresented: $createNew) {OccassionsMenu(searchType: $searchType, noneSearch: $noneSearch)}
                     .sheet(isPresented: $showSent) {ShowPriorCardsView()}
                     //.sheet(isPresented: $showReceived) {}
-            }.onAppear{self.addStandardEventsToCalendar()}
-        //}
-        
+                    .sheet(isPresented: $showDetailView) {DateDetailView(selectedDate!, eventsForShow)}
+            }.onAppear{}
+        }
     }
+
+extension MenuView {
+    
+
 }

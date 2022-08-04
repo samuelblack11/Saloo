@@ -12,21 +12,21 @@ import SwiftUI
 
 
 struct DateDetailView: View {
-    var name = "dateTestText"
     var selectedDate: Date
-    var eventsFromCore: [CalendarDate]
     @State var eventsForShow = [CalendarDate]()
+    let columns = [GridItem(.fixed(140))]
+
     
-    func determineEventsForShow(date: Date) {
-        for event in eventsFromCore {
-            if date == event.eventDateCore! {
-                self.eventsForShow = [event]
-            }
-        }
+    init(_ selectedDate: Date, _ eventsForShow: [CalendarDate] ) {
+        self.selectedDate = selectedDate
+        self.eventsForShow = eventsForShow
     }
     
     var body: some View {
-        List(content: eventsForShow)
-            .onAppear{self.determineEventsForShow(date: selectedDate)}
+        NavigationView {
+            ForEach(eventsForShow, id: \.self) {event in
+                Text(event.eventNameCore!)
+                    }
+                }
+            }
     }
-}
