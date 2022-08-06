@@ -47,6 +47,7 @@
 		C2B650C7287AFEB10002E252 /* SaveToCloud.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2B650C6287AFEB10002E252 /* SaveToCloud.swift */; };
 		C2B650CA287AFFF90002E252 /* CloudKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C2B650C9287AFFF90002E252 /* CloudKit.framework */; };
 		C2D0B0A5287E2DC300198F0B /* ConfettiSwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = C2D0B0A4287E2DC300198F0B /* ConfettiSwiftUI */; };
+		C2DE5C98289EFECC00F8C556 /* AddEventToCalendarForm.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2DE5C97289EFECC00F8C556 /* AddEventToCalendarForm.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -93,6 +94,7 @@
 		C27430FB286335F000E17B19 /* CameraCapture.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraCapture.swift; sourceTree = "<group>"; };
 		C2B650C6287AFEB10002E252 /* SaveToCloud.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SaveToCloud.swift; sourceTree = "<group>"; };
 		C2B650C9287AFFF90002E252 /* CloudKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CloudKit.framework; path = System/Library/Frameworks/CloudKit.framework; sourceTree = SDKROOT; };
+		C2DE5C97289EFECC00F8C556 /* AddEventToCalendarForm.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddEventToCalendarForm.swift; sourceTree = "<group>"; };
 		EA0978C9D748CE0611B19D5A /* Pods-GreetMe-2.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-GreetMe-2.release.xcconfig"; path = "Target Support Files/Pods-GreetMe-2/Pods-GreetMe-2.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -128,6 +130,7 @@
 			children = (
 				260F6906281DC0E3002E864B /* LoginView.swift */,
 				262C3ED2281E1E9C00F07C01 /* MenuView.swift */,
+				C2DE5C97289EFECC00F8C556 /* AddEventToCalendarForm.swift */,
 				260F68F4281DBDCD002E864B /* OccassionsMenu.swift */,
 				260F68EE281DBD93002E864B /* CollageStyleMenu.swift */,
 				262C3ED4281E226F00F07C01 /* ShowPriorCardsView.swift */,
@@ -412,6 +415,7 @@
 				C23A9D222897ECA90059B97C /* Card+CoreDataProperties.swift in Sources */,
 				C23A9D372897F3F00059B97C /* CalendarDate+CoreDataClass.swift in Sources */,
 				260F68F1281DBDA2002E864B /* CollageTwoView.swift in Sources */,
+				C2DE5C98289EFECC00F8C556 /* AddEventToCalendarForm.swift in Sources */,
 				262C3ED5281E226F00F07C01 /* ShowPriorCardsView.swift in Sources */,
 				260F6907281DC0E3002E864B /* LoginView.swift in Sources */,
 				2688D704285FA24300954120 /* SnapShotECard.swift in Sources */,

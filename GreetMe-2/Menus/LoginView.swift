@@ -59,7 +59,7 @@ struct LoginView: View {
                 }
             }
         //}
-        .sheet(isPresented: $signInSuccess) {MenuView(searchObject: nil, calViewModel: CalViewModel())}
+        .sheet(isPresented: $signInSuccess) {MenuView(searchObject: nil, calViewModel: CalViewModel(), showDetailView: ShowDetailView())}
         .alert(isPresented: $signInFailure) {
             Alert(title: Text("Login Failed"), message: Text("Please Try Again"), dismissButton: .default(Text("Dismiss")))
             }

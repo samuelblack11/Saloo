@@ -15,14 +15,12 @@ import FSCalendar
 struct CalendarView: UIViewRepresentable, View {
     var calendar: FSCalendar
     @Binding var isCalendarExpanded: Bool
-    //var eventsFromCore: [CalendarDate]
+    @Binding var showDetailView: ShowDetailView
     
     func makeUIView(context: Context) -> some UIView {
         calendar
     }
     func updateUIView(_ uiView: UIViewType, context: Context) {
-        //let scope: FSCalendarScope = isCalendarExpanded ? .month : .week
-        //uiView.setScope(scope, animated: false)
     }
 }
 
@@ -31,18 +29,21 @@ extension CalendarView {
 }
 
 class CalViewModel: NSObject, ObservableObject {
+    
     @Published var calendar = FSCalendar()
     @Published var isCalendarExpanded: Bool = true
-    var eventsFromCore = [CalendarDate]()
+    @Published var showDetailView = ShowDetailView()
     @Published var selectedDateOld: String = ""
-    @State var selectedDate: Date!
-    @State var eventsForShow = [CalendarDate]()
-    @State var showDetailView: Bool = false
+    var eventsFromCore = [CalendarDate]()
+    @Published var selectedDate: Date!
+    //@Published var eventsForShow: [String] = []
+    @Published var eventsForShow: [CalendarDate] = []
+
     
     override init() {
         super.init()
         addStandardEventsToCalendar()
-        loadCoreDataEvents(eventsFromCore: eventsFromCore)
+        eventsFromCore = loadCoreDataEvents()
         calendar.delegate = self
         calendar.dataSource = self
         calendar.scope = isCalendarExpanded ? .month : .week
@@ -52,22 +53,30 @@ class CalViewModel: NSObject, ObservableObject {
 
 extension CalViewModel: FSCalendarDelegate, FSCalendarDataSource, FSCalendarDelegateAppearance {
     
-    func determineEventsForShow(date: Date) {
-        for event in eventsFromCore {
+    func calendar(_ calendar: FSCalendar, willDisplay cell: FSCalendarCell, for date: Date, at monthPosition: FSCalendarMonthPosition) {
+        selectedDate = date
+    }
+    
+    func determineEventsForShow(date: Date, eventsFromCoreFunc: [CalendarDate]) -> [CalendarDate] {
+        var events: [CalendarDate] = []
+        for event in eventsFromCoreFunc {
             if date == event.eventDateCore! {
-                self.eventsForShow = [event]
+                print("-----")
+                events.append(event)
             }
         }
+        return events
     }
     
     func calendar(_ calendar: FSCalendar,
                   didSelect date: Date,
                   at monthPosition: FSCalendarMonthPosition) {
         dateSelected(date)
-        determineEventsForShow(date: date)
-        showDetailView = true
         selectedDate = date
-        
+        eventsForShow = determineEventsForShow(date: date, eventsFromCoreFunc: eventsFromCore)
+        showDetailView.showDetailView = true
+        print("didSelect Worked!")
+        print(eventsForShow)
     }
         
     func calendar(_ calendar: FSCalendar,
@@ -125,7 +134,7 @@ private extension CalViewModel {
     func dateSelected(_ date: Date) {
         DispatchQueue.main.async { [weak self] in
             guard let self = self else { return }
-            self.selectedDateOld = date.description
+            self.selectedDate = date
         }
     }
 }
@@ -167,7 +176,7 @@ extension CalViewModel {
         print(events)
         for (eventName, eventDate) in events.eventList {
             let event = CalendarDate(context: CoreDataStack.shared.context)
-            event.eventNameCore = eventName
+            event.eventNameCore = eventName//
             event.eventDateCore = eventDate
             self.saveContext()
         }
@@ -184,19 +193,22 @@ extension CalViewModel {
             }
         }
     
-    func loadCoreDataEvents(eventsFromCore: [CalendarDate]) {
+    func loadCoreDataEvents() -> [CalendarDate] {
         let request = CalendarDate.createFetchRequest()
         print(request)
         print("^^^^")
         let sort = NSSortDescriptor(key: "eventDateCore", ascending: false)
         request.sortDescriptors = [sort]
+        var events: [CalendarDate] = []
         do {
-            self.eventsFromCore = try CoreDataStack.shared.context.fetch(request)
-            print("Got \(eventsFromCore.count) Events")
-            print(eventsFromCore)
+            events = try CoreDataStack.shared.context.fetch(request)
+            print("Got \(events.count) Events")
+            print("loadCoreDataEvents Called....")
+            print(events)
         }
         catch {
             print("Fetch failed")
         }
+        return events
     }
 }

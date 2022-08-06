@@ -6,27 +6,71 @@
 //
 
 import Foundation
-import CoreData
 import SwiftUI
-
+import FSCalendar
+import CoreData
 
 
 struct DateDetailView: View {
-    var selectedDate: Date
-    @State var eventsForShow = [CalendarDate]()
-    let columns = [GridItem(.fixed(140))]
-
+    @State var eventsForShow: [CalendarDate]
     
-    init(_ selectedDate: Date, _ eventsForShow: [CalendarDate] ) {
-        self.selectedDate = selectedDate
+    init(_ eventsForShow: [CalendarDate] ) {
+        print("initializing dateDetailView")
         self.eventsForShow = eventsForShow
+        print(eventsForShow)
     }
     
     var body: some View {
-        NavigationView {
             ForEach(eventsForShow, id: \.self) {event in
-                Text(event.eventNameCore!)
+                VStack(spacing: 15) {
+                    Text(event.eventNameCore!)
+                        .contextMenu {
+                            Button {
+                                deleteCoreData(event: event)
+                                loadCoreData(date: event.eventDateCore!)
+                            } label: {
+                                Text("Delete Event")
+                                Image(systemName: "trash")
+                                .foregroundColor(.red)
+                            }
+                        }
                     }
-                }
             }
+        }
+    }
+    
+    extension DateDetailView {
+        func deleteCoreData(event: CalendarDate) {
+            do {
+                print("Attempting Delete")
+                CoreDataStack.shared.context.delete(event)
+                try CoreDataStack.shared.context.save()
+                }
+                // Save Changes
+             catch {
+                // Error Handling
+                // ...
+                 print("Couldn't Delete")
+             }
+        }
+        
+        func loadCoreData(date: Date) {
+            print("#$#$")
+            print(date)
+            let request = CalendarDate.createFetchRequest()
+            let sort = NSSortDescriptor(key: "eventDateCore", ascending: false)
+            request.sortDescriptors = [sort]
+            let filter = date
+            let predicate = NSPredicate(format: "date = %@", filter as CVarArg)
+            request.predicate = predicate
+            do {
+                eventsForShow = try CoreDataStack.shared.persistentContainer.viewContext.fetch(request)
+                print("Got \(eventsForShow.count) Cards")
+                //collectionView.reloadData()
+            }
+            catch {
+                print("Fetch failed")
+            }
+        }
+        
     }

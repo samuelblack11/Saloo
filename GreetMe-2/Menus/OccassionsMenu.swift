@@ -159,7 +159,7 @@ struct OccassionsMenu: View {
                 Text("Back")
             })
         .sheet(isPresented: $presentPrior) {            
-            MenuView(calViewModel: CalViewModel())
+            MenuView(calViewModel: CalViewModel(), showDetailView: ShowDetailView())
         }
         .font(.headline)
         .listStyle(GroupedListStyle())

@@ -15,6 +15,11 @@ import SwiftUI
 import FSCalendar
 import CoreData
 
+
+public class ShowDetailView: ObservableObject {
+    @Published public var showDetailView: Bool = false
+}
+
 struct MenuView: View {
     
     @State private var createNew = false
@@ -25,19 +30,26 @@ struct MenuView: View {
     @State var searchType: String!
     @State var noneSearch: String!
     @ObservedObject var calViewModel: CalViewModel
-    @State var showDetailView: Bool = false
-    @State var selectedDate: Date!
-    //@State var eventsFromCore = [CalendarDate]()
-    @State var eventsForShow = [CalendarDate]()
-
+    @ObservedObject var showDetailView: ShowDetailView
+    @State var addEventToCalendarSheet = false
+    var eventsFromCore: [CalendarDate]!
+    
     var body: some View {
             VStack {
                 Image(systemName: "greetingcard.fill")
                     .foregroundColor(.blue)
                     .font(.system(size: 36))
                     .padding(.top, 30)
+            HStack {
                 Spacer()
-                CalendarView(calendar: calViewModel.calendar, isCalendarExpanded: $calViewModel.isCalendarExpanded)
+                Button{addEventToCalendarSheet = true} label: {
+                    Text("Add Event")
+                        .foregroundColor(.blue)
+                        .font(.system(size: 18))
+                    }
+                }
+                Spacer()
+                CalendarView(calendar: calViewModel.calendar, isCalendarExpanded: $calViewModel.isCalendarExpanded, showDetailView: $calViewModel.showDetailView)
                 Spacer()
                 HStack {
                     Button{showSent = true} label: {
@@ -62,12 +74,14 @@ struct MenuView: View {
                     .sheet(isPresented: $createNew) {OccassionsMenu(searchType: $searchType, noneSearch: $noneSearch)}
                     .sheet(isPresented: $showSent) {ShowPriorCardsView()}
                     //.sheet(isPresented: $showReceived) {}
-                    .sheet(isPresented: $showDetailView) {DateDetailView(selectedDate!, eventsForShow)}
-            }.onAppear{}
+                    .sheet(isPresented: $calViewModel.showDetailView.showDetailView) {DateDetailView(calViewModel.eventsForShow)
+                            //.presentationDetents([.medium])
+                    }
+                    .sheet(isPresented: $addEventToCalendarSheet) {AddEventToCalendarForm()}
+            }
         }
     }
 
 extension MenuView {
     
-
 }
