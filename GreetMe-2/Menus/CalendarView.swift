@@ -34,7 +34,7 @@ class CalViewModel: NSObject, ObservableObject {
     @Published var isCalendarExpanded: Bool = true
     @Published var showDetailView = ShowDetailView()
     @Published var selectedDateOld: String = ""
-    var eventsFromCore = [CalendarDate]()
+    @Published var eventsFromCore = [CalendarDate]()
     @Published var selectedDate: Date!
     //@Published var eventsForShow: [String] = []
     @Published var eventsForShow: [CalendarDate] = []
@@ -95,9 +95,10 @@ extension CalViewModel: FSCalendarDelegate, FSCalendarDataSource, FSCalendarDele
     func calendar(_ calendar: FSCalendar, subtitleFor date: Date) -> String? {
         var matchingEventName: String!
         //if date in eventList values, take last character of corresponding eventList key and make that the title for the date
+        eventsFromCore = loadCoreDataEvents()
         for event in eventsFromCore {
             print("&%")
-            print(event)
+            print(event.eventNameCore!)
             if date == event.eventDateCore! {
                 matchingEventName = String(event.eventNameCore!.last!)
             }
@@ -154,33 +155,26 @@ extension CalViewModel {
     }
     
     func addStandardEventsToCalendar() {
-        //let defaults = UserDefaults.standard
-        // if first logon
-        //if defaults.bool(forKey: "First Launch") == true {
-            
-       //     }
-       // else {
-        //    let eventList3 = [String : Date]()
-        //    let events = PreSetCalendarDates(eventList: eventList3)
-        //    for (eventName, eventDate) in events.eventList {
-        //        let event = CalendarDate(context: CoreDataStack.shared.context)
-         //       event.eventNameCore = eventName
-         //       event.eventDateCore = eventDate
-         //       self.saveContext()
-            //}
-          //  defaults.set(true, forKey: "First Launch")
-        //}
-        deleteAllForEntity()
-        let eventList3 = [String : Date]()
-        let events = PreSetCalendarDates(eventList: eventList3)
-        print(events)
-        for (eventName, eventDate) in events.eventList {
-            let event = CalendarDate(context: CoreDataStack.shared.context)
-            event.eventNameCore = eventName//
-            event.eventDateCore = eventDate
-            self.saveContext()
+        let defaults = UserDefaults.standard
+         //if first logon
+        if defaults.bool(forKey: "First Launch") == true {
+            print("Not First Launch")
+            }
+        else {
+            print("First Launch")
+            let eventList3 = [String : Date]()
+            let events = PreSetCalendarDates(eventList: eventList3)
+            for (eventName, eventDate) in events.eventList {
+                let event = CalendarDate(context: CoreDataStack.shared.context)
+                event.eventNameCore = eventName
+                event.eventDateCore = eventDate
+                self.saveContext()
+            }
         }
-    }
+        defaults.set(true, forKey: "First Launch")
+        //deleteAllForEntity()
+        }
+    
     
     func saveContext() {
         if CoreDataStack.shared.context.hasChanges {
@@ -195,16 +189,11 @@ extension CalViewModel {
     
     func loadCoreDataEvents() -> [CalendarDate] {
         let request = CalendarDate.createFetchRequest()
-        print(request)
-        print("^^^^")
         let sort = NSSortDescriptor(key: "eventDateCore", ascending: false)
         request.sortDescriptors = [sort]
         var events: [CalendarDate] = []
         do {
             events = try CoreDataStack.shared.context.fetch(request)
-            print("Got \(events.count) Events")
-            print("loadCoreDataEvents Called....")
-            print(events)
         }
         catch {
             print("Fetch failed")

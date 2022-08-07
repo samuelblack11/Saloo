@@ -13,12 +13,13 @@ import CoreData
 
 struct DateDetailView: View {
     @State var eventsForShow: [CalendarDate]
+    @State var chosenDate: Date!
     
-    init(_ eventsForShow: [CalendarDate] ) {
-        print("initializing dateDetailView")
-        self.eventsForShow = eventsForShow
-        print(eventsForShow)
-    }
+    //init(_ eventsForShow: [CalendarDate] ) {
+    //    print("initializing dateDetailView")
+   //     self.eventsForShow = eventsForShow
+   //     print(eventsForShow)
+   // }
     
     var body: some View {
             ForEach(eventsForShow, id: \.self) {event in
@@ -26,8 +27,9 @@ struct DateDetailView: View {
                     Text(event.eventNameCore!)
                         .contextMenu {
                             Button {
+                                chosenDate = event.eventDateCore!
                                 deleteCoreData(event: event)
-                                loadCoreData(date: event.eventDateCore!)
+                                loadCoreData(date: chosenDate)
                             } label: {
                                 Text("Delete Event")
                                 Image(systemName: "trash")
@@ -61,11 +63,11 @@ struct DateDetailView: View {
             let sort = NSSortDescriptor(key: "eventDateCore", ascending: false)
             request.sortDescriptors = [sort]
             let filter = date
-            let predicate = NSPredicate(format: "date = %@", filter as CVarArg)
+            let predicate = NSPredicate(format: "eventDateCore = %@", filter as CVarArg)
             request.predicate = predicate
             do {
                 eventsForShow = try CoreDataStack.shared.persistentContainer.viewContext.fetch(request)
-                print("Got \(eventsForShow.count) Cards")
+                print("Got \(eventsForShow.count) Events")
                 //collectionView.reloadData()
             }
             catch {

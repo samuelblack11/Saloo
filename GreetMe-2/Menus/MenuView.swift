@@ -32,7 +32,7 @@ struct MenuView: View {
     @ObservedObject var calViewModel: CalViewModel
     @ObservedObject var showDetailView: ShowDetailView
     @State var addEventToCalendarSheet = false
-    var eventsFromCore: [CalendarDate]!
+    @State var eventsFromCore: [CalendarDate]!
     
     var body: some View {
             VStack {
@@ -49,7 +49,7 @@ struct MenuView: View {
                     }
                 }
                 Spacer()
-                CalendarView(calendar: calViewModel.calendar, isCalendarExpanded: $calViewModel.isCalendarExpanded, showDetailView: $calViewModel.showDetailView)
+                CalendarView(calendar: calViewModel.calendar, isCalendarExpanded: $calViewModel.isCalendarExpanded, showDetailView: $calViewModel.showDetailView).onAppear{self.eventsFromCore = loadCoreDataEvents()}
                 Spacer()
                 HStack {
                     Button{showSent = true} label: {
@@ -74,7 +74,7 @@ struct MenuView: View {
                     .sheet(isPresented: $createNew) {OccassionsMenu(searchType: $searchType, noneSearch: $noneSearch)}
                     .sheet(isPresented: $showSent) {ShowPriorCardsView()}
                     //.sheet(isPresented: $showReceived) {}
-                    .sheet(isPresented: $calViewModel.showDetailView.showDetailView) {DateDetailView(calViewModel.eventsForShow)
+                    .sheet(isPresented: $calViewModel.showDetailView.showDetailView) {DateDetailView(eventsForShow: calViewModel.eventsForShow)
                             //.presentationDetents([.medium])
                     }
                     .sheet(isPresented: $addEventToCalendarSheet) {AddEventToCalendarForm()}
@@ -83,5 +83,22 @@ struct MenuView: View {
     }
 
 extension MenuView {
-    
+    func loadCoreDataEvents() -> [CalendarDate] {
+        let request = CalendarDate.createFetchRequest()
+        print(request)
+        print("^^^^")
+        let sort = NSSortDescriptor(key: "eventDateCore", ascending: false)
+        request.sortDescriptors = [sort]
+        var events: [CalendarDate] = []
+        do {
+            events = try CoreDataStack.shared.context.fetch(request)
+            print("Got \(events.count) Events")
+            print("loadCoreDataEvents Called....")
+            print(events)
+        }
+        catch {
+            print("Fetch failed")
+        }
+        return events
+    }
 }
