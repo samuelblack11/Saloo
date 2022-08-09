@@ -201,29 +201,7 @@ struct FinalizeCardView: View {
                 Spacer()
                 VStack {
                     Button("Save eCard") {
-                        //save to core data
-                        let card = Card(context: CoreDataStack.shared.context)
-                        card.card = eCardVertical.snapshot().pngData()
-                        card.collage = collageImage.collageImage.pngData()
-                        card.coverImage = coverData()!
-                        card.date = Date.now
-                        card.message = noteField.noteText
-                        card.occassion = searchObject.searchText
-                        card.cardName = noteField.cardName
-                        card.recipient = noteField.recipient
-                        card.font = noteField.font
-                        card.an1 = text1
-                        card.an2 = text2
-                        card.an2URL = text2URL.absoluteString
-                        card.an3 = text3
-                        card.an4 = text4
-
-                        self.saveContext()
-                        print("Saved card to Core Data")
-                        // Print Count of Cards Saved
-                        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "Card")
-                        let count = try! CoreDataStack.shared.context.count(for: fetchRequest)
-                        print("\(count) Cards Saved")
+                        saveECard()
                     }
                     
                     Button("Export for Print") {
@@ -250,6 +228,35 @@ struct FinalizeCardView: View {
         .sheet(isPresented: $presentMenu) {MenuView(calViewModel: CalViewModel(), showDetailView: ShowDetailView())
 }
         }
+    }
+    
+    
+    
+    
+    func saveECard() {
+        //save to core data
+        let card = Card(context: CoreDataStack.shared.context)
+        card.card = eCardVertical.snapshot().pngData()
+        card.collage = collageImage.collageImage.pngData()
+        card.coverImage = coverData()!
+        card.date = Date.now
+        card.message = noteField.noteText
+        card.occassion = searchObject.searchText
+        card.cardName = noteField.cardName
+        card.recipient = noteField.recipient
+        card.font = noteField.font
+        card.an1 = text1
+        card.an2 = text2
+        card.an2URL = text2URL.absoluteString
+        card.an3 = text3
+        card.an4 = text4
+
+        self.saveContext()
+        print("Saved card to Core Data")
+        // Print Count of Cards Saved
+        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "Card")
+        let count = try! CoreDataStack.shared.context.count(for: fetchRequest)
+        print("\(count) Cards Saved")
     }
 
     func prepCardForExport() -> Data {

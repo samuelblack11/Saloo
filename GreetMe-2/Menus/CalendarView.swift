@@ -85,7 +85,24 @@ extension CalViewModel: FSCalendarDelegate, FSCalendarDataSource, FSCalendarDele
     }
     
     func calendar(_ calendar: FSCalendar, appearance: FSCalendarAppearance, titleDefaultColorFor date: Date) -> UIColor? {
-           return .white
+        var textColor: UIColor!
+        
+        if date < Date().startOfMonth() {
+            textColor = .lightGray
+        }
+        
+        else if date - 1 < Date() {
+            textColor = .lightGray
+        }
+        else if date > Date()  && date < Date().endOfMonth() {
+            textColor = .white
+        }
+        
+        else {
+            textColor = .lightGray
+        }
+        return textColor
+        
         }
     
     func calendar(_ calendar: FSCalendar, appearance: FSCalendarAppearance, borderDefaultColorFor date: Date) -> UIColor? {
@@ -109,14 +126,26 @@ extension CalViewModel: FSCalendarDelegate, FSCalendarDataSource, FSCalendarDele
     
     func calendar(_ calendar: FSCalendar, appearance: FSCalendarAppearance, fillDefaultColorFor date: Date) -> UIColor? {
         var fillColor: UIColor!
-        if date < Date() {
+        
+        if date < Date().startOfMonth() {
+            fillColor = .lightGray
+        }
+        
+        else if date < Date() + 1 {
             fillColor = .darkGray
         }
-        else {
+        else if date > Date()  && date < Date().endOfMonth() {
             fillColor = .black
         }
+        
+        else {
+            fillColor = .lightGray
+        }
+        
+        fillColor = .black
         return fillColor
     }
+    
 }
 
 private extension CalViewModel {
@@ -141,6 +170,7 @@ private extension CalViewModel {
 }
 
 extension CalViewModel {
+    
     func deleteAllForEntity() {
         let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "CalendarDate")
    
@@ -199,5 +229,15 @@ extension CalViewModel {
             print("Fetch failed")
         }
         return events
+    }
+}
+
+extension Date {
+    func startOfMonth() -> Date {
+        return Calendar.current.date(from: Calendar.current.dateComponents([.year, .month], from: Calendar.current.startOfDay(for: self)))!
+    }
+    
+    func endOfMonth() -> Date {
+        return Calendar.current.date(byAdding: DateComponents(month: 1, day: -1), to: self.startOfMonth())!
     }
 }

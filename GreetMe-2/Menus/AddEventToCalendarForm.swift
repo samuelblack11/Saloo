@@ -20,7 +20,7 @@ struct AddEventToCalendarForm: View {
     var eventsFromCore = [CalendarDate]()
     @Environment(\.presentationMode) var presentationMode
 
-    
+    let frequencies = ["One Time Only", "Monthly", "Annual"]
 
     
     func saveContext() {
@@ -44,8 +44,15 @@ struct AddEventToCalendarForm: View {
         TextField("Emoji for Calendar Display", text: $emoji)
             .padding(.leading, 5)
             .frame(height:35)
-        TextField("Frequency", text: $frequency)
-        
+        HStack {
+            Text("Select Event Frequency: ")
+            Picker("Select Event Frequency", selection: $frequency) {
+                ForEach(frequencies, id: \.self) {
+                    Text($0)
+                }
+            }
+            Spacer()
+            }
         Button("Add Event") {
             addEventToCore()
             //eventsFromCore = loadCoreDataEvents()
@@ -56,13 +63,35 @@ struct AddEventToCalendarForm: View {
 
 extension AddEventToCalendarForm {
     
+    
+    func addEventFrequency(dateOfEvent: Date, frequency: String) {
+        
+        if frequency == "Monthly" {
+            // Add
+            var month = 0
+            while month < 12 {
+                //let components = DateComponents(year: dateOfEvent.year, month: month, day: dateOfEvent.day)
+                //addEventToCore()
+                month+=1
+            }
+            
+            
+            
+        }
+        
+        if frequency == "Annual" {
+            
+        }
+        
+    }
+    
+    
+    
+    
     func addEventToCore() {
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "MM/dd/yyyy"
         let formattedEventDate = dateFormatter.date(from: eventDate)
-        print("*7*7")
-        print(formattedEventDate)
-        
         let event = CalendarDate(context: CoreDataStack.shared.context)
         event.eventNameCore = eventName + " \(emoji)"
         event.eventDateCore = formattedEventDate

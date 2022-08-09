@@ -16,7 +16,7 @@ struct ShowPriorCardsView: View {
     @State private var segueToEnlarge = false
     @State private var chosenCard: Card!
     //@ObservedObject var card: Card
-    @State private var share: CKShare?
+    @State var share: CKShare?
     @State private var showShareSheet = false
     @State private var showEditSheet = false
     private let stack = CoreDataStack.shared
@@ -95,6 +95,9 @@ struct ShowPriorCardsView: View {
                                     await createShare(card)
                                   }
                                 }
+                                if stack.isOwner(object: card) {
+                                    getPrevShare(card)
+                                }
                                 showShareSheet = true
                                 //chosenCard = card
                                 
@@ -102,7 +105,7 @@ struct ShowPriorCardsView: View {
                                 Text("Share eCard")
                             }
                         }.onAppear(perform: {
-                            self.share = stack.getShare(card)
+                            //self.share = stack.getShare(card)
                           })
                         Divider().padding(.bottom, 5)
                         HStack(spacing: 3) {
@@ -135,47 +138,33 @@ struct ShowPriorCardsView: View {
         .frame(maxHeight: 600)
         .onAppear{loadCoreData()}
     }
-    
-    
-    
-    func loadCoreData() {
-        let request = Card.createFetchRequest()
-        let sort = NSSortDescriptor(key: "date", ascending: false)
-        request.sortDescriptors = [sort]
-        do {
-            cards = try CoreDataStack.shared.persistentContainer.viewContext.fetch(request)
-            print("Got \(cards.count) Cards")
-            //collectionView.reloadData()
-        }
-        catch {
-            print("Fetch failed")
-        }
-    }
-    
-    func deleteCoreData(card: Card) {
-        do {
-            print("Attempting Delete")
-            CoreDataStack.shared.context.delete(card)
-            try CoreDataStack.shared.context.save()
-            }
-            // Save Changes
-         catch {
-            // Error Handling
-            // ...
-             print("Couldn't Delete")
-         }
-        self.loadCoreData()
-    }
 }
 
 
 // MARK: Returns CKShare participant permission, methods and properties to share
 extension ShowPriorCardsView {
+    
+ private func getPrevShare(_ card: Card) {
+        let share2 = stack.getShare(card)!
+        self.share = share2
+    }
+    
   private func createShare(_ card: Card) async {
     do {
-      let (_, share, _) = try await stack.persistentContainer.share([card], to: nil)
+        
+        // add logic for: if share for this card already exists, do something.....
+        // Is card stored as CKRecord? Necessary to create share
+        
+        
+        //let recordZone: CKRecordZone = CKRecordZone(zoneName: "Zone1")
+        //let aRecord = CKRecord(recordType: "Card", recordID: recordZone.zoneID)
+        
+        let (_, share, _) = try await stack.persistentContainer.share([card], to: nil)
+        //let share2 = CKShare(rootRecord: )
         share[CKShare.SystemFieldKey.title] = card.cardName
-      self.share = share
+        share[CKShare.SystemFieldKey.thumbnailImageData] = card.coverImage
+        share[CKShare.SystemFieldKey.shareType] = "Your Greeting Card from GreetMe"
+        self.share = share
     } catch {
       print("Failed to create share")
     }
@@ -229,4 +218,33 @@ extension ShowPriorCardsView {
   //private var canEdit: Bool {
   //  stack.canEdit(object: card)
   //}
+    
+    func loadCoreData() {
+        let request = Card.createFetchRequest()
+        let sort = NSSortDescriptor(key: "date", ascending: false)
+        request.sortDescriptors = [sort]
+        do {
+            cards = try CoreDataStack.shared.persistentContainer.viewContext.fetch(request)
+            print("Got \(cards.count) Cards")
+            //collectionView.reloadData()
+        }
+        catch {
+            print("Fetch failed")
+        }
+    }
+    
+    func deleteCoreData(card: Card) {
+        do {
+            print("Attempting Delete")
+            CoreDataStack.shared.context.delete(card)
+            try CoreDataStack.shared.context.save()
+            }
+            // Save Changes
+         catch {
+            // Error Handling
+            // ...
+             print("Couldn't Delete")
+         }
+        self.loadCoreData()
+    }
 }
