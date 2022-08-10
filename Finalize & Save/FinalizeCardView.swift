@@ -107,14 +107,14 @@ struct FinalizeCardView: View {
                     .font(.system(size: 12))
                     .frame(alignment: .center)
                 Spacer()
-                VStack(spacing:0) {
-                    Text("Greeting Card by")
-                        .font(.system(size: 4))
-                        .frame(alignment: .center)
-                    Text("GreetMe Inc.")
-                        .font(.system(size: 4))
-                        .frame(alignment: .center)
-                    }
+                //VStack(spacing:0) {
+                    //Text("Greeting Card by")
+                        //.font(.system(size: 4))
+                        //.frame(alignment: .center)
+                    //Text("GreetMe Inc.")
+                       //.font(.system(size: 4))
+                        //.frame(alignment: .center)
+                    //}
                 }.frame(width: (UIScreen.screenWidth/4), height: (UIScreen.screenHeight/22))
         }.frame(width: (UIScreen.screenWidth/3.5), height: (UIScreen.screenHeight/2.5))
     }
@@ -153,12 +153,12 @@ struct FinalizeCardView: View {
                     Link(text4, destination: URL(string: "https://unsplash.com")!)
                         .font(.system(size: 4))
                 }
-                .padding(.bottom,10)
-                Text("Greeting Card by")
-                    .font(.system(size: 6))
-                Text("GreetMe Inc.")
-                    .font(.system(size: 6))
-                    .padding(.bottom,5)
+                //.padding(.bottom,10)
+                //Text("Greeting Card by")
+                    //.font(.system(size: 6))
+                //Text("GreetMe Inc.")
+                    //.font(.system(size: 6))
+                    //.padding(.bottom,5)
             }
             .frame(width: (UIScreen.screenWidth/4.5), height: (UIScreen.screenHeight/7))
             // Front Cover

@@ -19,10 +19,8 @@ struct AddEventToCalendarForm: View {
     @State private var frequency: String = ""
     var eventsFromCore = [CalendarDate]()
     @Environment(\.presentationMode) var presentationMode
-
     let frequencies = ["One Time Only", "Monthly", "Annual"]
 
-    
     func saveContext() {
         if CoreDataStack.shared.context.hasChanges {
             do {
@@ -54,7 +52,8 @@ struct AddEventToCalendarForm: View {
             Spacer()
             }
         Button("Add Event") {
-            addEventToCore()
+            addEventToCore(eventName: eventName, eventDate: eventDate)
+            addEventFrequency(frequency: frequency)
             //eventsFromCore = loadCoreDataEvents()
             presentationMode.wrappedValue.dismiss()
             }
@@ -64,40 +63,71 @@ struct AddEventToCalendarForm: View {
 extension AddEventToCalendarForm {
     
     
-    func addEventFrequency(dateOfEvent: Date, frequency: String) {
+    func addEventFrequency(frequency: String) {
+        let dateForConversion = formatDate(eventDate: self.eventDate)
+        var dateComps = DateComponents()
+        do {
+            dateComps = try DateComponents(from: dateForConversion as! Decoder)
+        }
+        catch {
+            print("Couldn't convert date into components")
+        }
+        let originalEventDay = dateComps.day!
+        let orignalEventMonth = dateComps.month!
+        let originalEventYear = dateComps.year!
+        var month: Int = orignalEventMonth
+        var monthCount = 1
         
         if frequency == "Monthly" {
-            // Add
-            var month = 0
-            while month < 12 {
-                //let components = DateComponents(year: dateOfEvent.year, month: month, day: dateOfEvent.day)
-                //addEventToCore()
-                month+=1
+            month += 1
+            if month == 13 {
+                month = 1
             }
-            
-            
-            
+            while monthCount < 12 {
+                var recurringDateComps = DateComponents()
+                recurringDateComps.day = originalEventDay
+                recurringDateComps.month = month
+                if month == 1 {
+                    recurringDateComps.year = Int(originalEventYear + 1)
+                }
+                let date = Calendar.current.date(from: recurringDateComps)!
+                let dateFormatter = DateFormatter()
+                addEventToCore(eventName: eventName, eventDate: dateFormatter.string(from: date))
+                monthCount += 1
+            }
         }
         
+        var year: Int = originalEventYear
+        var yearCount = 1
         if frequency == "Annual" {
-            
+            year += 1
+            while yearCount < 10 {
+                var recurringDateComps = DateComponents()
+                recurringDateComps.day = originalEventDay
+                recurringDateComps.month = orignalEventMonth
+                recurringDateComps.year = year
+                let date = Calendar.current.date(from: recurringDateComps)!
+                let dateFormatter = DateFormatter()
+                addEventToCore(eventName: eventName, eventDate: dateFormatter.string(from: date))
+                yearCount += 1
+            }
         }
-        
     }
     
-    
-    
-    
-    func addEventToCore() {
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "MM/dd/yyyy"
-        let formattedEventDate = dateFormatter.date(from: eventDate)
+    func addEventToCore(eventName: String, eventDate: String) {
+        let formattedEventDate = formatDate(eventDate: eventDate)
         let event = CalendarDate(context: CoreDataStack.shared.context)
         event.eventNameCore = eventName + " \(emoji)"
         event.eventDateCore = formattedEventDate
         self.saveContext()
     }
     
+    func formatDate(eventDate: String) -> Date {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "MM/dd/yyyy"
+        let formattedEventDate = dateFormatter.date(from: eventDate)!
+        return formattedEventDate
+    }
     
     func loadCoreDataEvents() -> [CalendarDate] {
         let request = CalendarDate.createFetchRequest()
