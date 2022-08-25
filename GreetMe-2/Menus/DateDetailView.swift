@@ -9,6 +9,7 @@ import Foundation
 import SwiftUI
 import FSCalendar
 import CoreData
+import UserNotifications
 
 
 struct DateDetailView: View {
@@ -20,6 +21,7 @@ struct DateDetailView: View {
    //     self.eventsForShow = eventsForShow
    //     print(eventsForShow)
    // }
+    
     
     var body: some View {
             ForEach(eventsForShow, id: \.self) {event in
@@ -36,12 +38,39 @@ struct DateDetailView: View {
                                 .foregroundColor(.red)
                             }
                         }
+                    Button("Notify Me") {
+                        // second
+                        let content = UNMutableNotificationContent()
+                        content.title = "Make a Card For \(event.eventNameCore!)"
+                        content.subtitle = "Don't Forget 😁"
+                        content.sound = UNNotificationSound.default
+
+                        // show this notification five seconds from now
+                        //let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 5, repeats: false)
+
+                        
+                        
+                        
+                        //https://stackoverflow.com/questions/42042215/convert-date-to-datecomponents-in-function-to-schedule-local-notification-in-swi
+                        let n = -7
+                        let nextTriggerDate = Calendar.current.date(byAdding: .day, value: n, to: event.eventDateCore!)!
+                        let comps = Calendar.current.dateComponents([.year, .month, .day], from: nextTriggerDate)
+                        let trigger = UNCalendarNotificationTrigger(dateMatching: comps, repeats: true)
+                        print("Trigger = \(trigger)")
+                        // choose a random identifier
+                        let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: trigger)
+
+                        // add our notification request
+                        UNUserNotificationCenter.current().add(request)
                     }
+                }
             }
         }
     }
     
     extension DateDetailView {
+        
+        
         func deleteCoreData(event: CalendarDate) {
             do {
                 print("Attempting Delete")

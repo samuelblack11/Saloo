@@ -16,7 +16,7 @@ struct AddEventToCalendarForm: View {
     @State private var eventName: String = ""
     @State private var eventDate: String = ""
     @State private var emoji: String = ""
-    @State private var frequency: String = ""
+    @State private var frequency: String = "One Time Only"
     var eventsFromCore = [CalendarDate]()
     @Environment(\.presentationMode) var presentationMode
     let frequencies = ["One Time Only", "Monthly", "Annual"]
@@ -64,6 +64,8 @@ extension AddEventToCalendarForm {
     
     
     func addEventFrequency(frequency: String) {
+        
+        if frequency != "One Time Only" {
         let dateForConversion = formatDate(eventDate: self.eventDate)
         var dateComps = DateComponents()
         do {
@@ -111,6 +113,7 @@ extension AddEventToCalendarForm {
                 addEventToCore(eventName: eventName, eventDate: dateFormatter.string(from: date))
                 yearCount += 1
             }
+        }
         }
     }
     

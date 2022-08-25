@@ -66,12 +66,12 @@ struct SnapShotECard: View {
                         .font(.system(size: 36))
                         .padding(.bottom,10)
                     Spacer()
-                VStack(spacing:0) {
-                    Text("Greeting Card by").font(.system(size: 8))
-                        .foregroundColor(.black)
-                    Text("GreetMe Inc.").font(.system(size: 8))
-                        .foregroundColor(.black)
-                }
+                //VStack(spacing:0) {
+                    //Text("Greeting Card by").font(.system(size: 8))
+                       // .foregroundColor(.black)
+                    //Text("GreetMe Inc.").font(.system(size: 8))
+                        //.foregroundColor(.black)
+                //}
                 Spacer()
                     }
                     .frame(maxWidth: (UIScreen.screenWidth/1.5), maxHeight: (UIScreen.screenHeight/10))

@@ -200,6 +200,14 @@ extension CalViewModel {
                 event.eventDateCore = eventDate
                 self.saveContext()
             }
+            // Request Permission for Notifications
+            UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound]) { success, error in
+                if success {
+                    print("All set!")
+                } else if let error = error {
+                    print(error.localizedDescription)
+                }
+            }
         }
         defaults.set(true, forKey: "First Launch")
         //deleteAllForEntity()

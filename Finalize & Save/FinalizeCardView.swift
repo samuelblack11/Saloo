@@ -128,6 +128,7 @@ struct FinalizeCardView: View {
                     .frame(width: (UIScreen.screenWidth/4.5), height: (UIScreen.screenHeight/7), alignment: .center)
             //upside down message
                 Text(printCardText)
+                    .frame(width: (UIScreen.screenWidth/4.5), height: (UIScreen.screenHeight/7), alignment: .center)
                     .font(Font.custom(noteField.font, size: 500))
                     .minimumScaleFactor(0.01)
                     .padding(.init(top: 0, leading: 5, bottom: 0, trailing: 5))
