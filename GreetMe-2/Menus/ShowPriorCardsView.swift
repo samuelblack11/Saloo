@@ -152,15 +152,39 @@ extension ShowPriorCardsView {
   private func createShare(_ card: Card) async {
     do {
         
-        // add logic for: if share for this card already exists, do something.....
-        // Is card stored as CKRecord? Necessary to create share
+        let recordIdName = CKRecord.ID(recordName: "\(card.cardName!)-\(card.objectID)")
+        let recordToShare: Void = CoreDataStack.shared.ckContainer.privateCloudDatabase.fetch(withRecordID: recordIdName) {selectedRecord,_ in }
         
+        print("********")
+        print(recordToShare)
+        print(recordIdName)
+        print("********")
         
-        //let recordZone: CKRecordZone = CKRecordZone(zoneName: "Zone1")
-        //let aRecord = CKRecord(recordType: "Card", recordID: recordZone.zoneID)
-        
+        CoreDataStack.shared.ckContainer.privateCloudDatabase.fetch(withRecordID: recordIdName) { [self] record, error in
+            print("%%")
+            print(record)
+                if let error = error {
+                    DispatchQueue.main.async {
+                        // meaningful error message here!
+                        print("!!!!!")
+                        print(error.localizedDescription)
+                    }
+                } else {
+                    if let record = record {
+                        if let asset = record["card"] as? CKAsset {
+                            print("###")
+                            print(asset)
+                            print("###")
+                            DispatchQueue.main.async {
+                            }
+                        }
+                    }
+                }
+            }
         /////////////////////////////////////////////////////////////////////
         let (_, share, _) = try await stack.persistentContainer.share([card], to: nil)
+        //let (_, share, _) = recordToShare
+        //let share = recordToShare
         //let share2 = CKShare(rootRecord: )
         share[CKShare.SystemFieldKey.title] = card.cardName
         share[CKShare.SystemFieldKey.thumbnailImageData] = card.coverImage
@@ -168,19 +192,6 @@ extension ShowPriorCardsView {
         //share[CKShare.ID] =
         self.share = share
         /////////////////////////////////////////////////////////////////////
-
-        
-        //let share = CKShare(rootRecord: card)
-        
-        //share[CKShare.SystemFieldKey.title] = card.cardName
-        //share[CKShare.SystemFieldKey.thumbnailImageData] = card.coverImage
-        
-        
-        
-        
-        
-        
-        
         
     } catch {
       print("Failed to create share")
@@ -265,3 +276,14 @@ extension ShowPriorCardsView {
         self.loadCoreData()
     }
 }
+
+
+///// https://www.hackingwithswift.com/read/33/4/writing-to-icloud-with-cloudkit-ckrecord-and-ckasset
+//let recordZone: CKRecordZone = CKRecordZone(zoneName: "\(card.cardName)-\(card.objectID)")
+//let cardRecord = CKRecord(recordType: "Card")
+//cardRecord["card"] = card as? CKRecordValue
+//let cardAsset = CKAsset(fileURL: cardURL)
+
+
+//share[CKShare.SystemFieldKey.title] = card.cardName
+//share[CKShare.SystemFieldKey.thumbnailImageData] = card.coverImage

@@ -8,6 +8,7 @@
 import Foundation
 import SwiftUI
 import CoreData
+import CloudKit
 
 //https://medium.com/swiftui-made-easy/activity-view-controller-in-swiftui-593fddadee79
 // https://www.hackingwithswift.com/example-code/uikit/how-to-render-pdfs-using-uigraphicspdfrenderer
@@ -15,7 +16,7 @@ import CoreData
 // https://www.advancedswift.com/resize-uiimage-no-stretching-swift/
 // https://www.hackingwithswift.com/articles/103/seven-useful-methods-from-cgrect
 // https://stackoverflow.com/questions/57727107/how-to-get-the-iphones-screen-width-in-swiftui
-
+// https://www.hackingwithswift.com/read/33/4/writing-to-icloud-with-cloudkit-ckrecord-and-ckasset
 struct FinalizeCardView: View {
     @Environment(\.presentationMode) var presentationMode
     var card: Card!
@@ -36,6 +37,10 @@ struct FinalizeCardView: View {
     @State private var showActivityController = false
     @State var activityItemsArray: [Any] = []
     @State var searchObject: SearchParameter
+    
+    var field1: String!
+    var field2: String!
+    
 
     func coverSource() -> Image {
         if chosenObject.coverImage != nil {
@@ -232,11 +237,51 @@ struct FinalizeCardView: View {
         card.an2URL = text2URL.absoluteString
         card.an3 = text3
         card.an4 = text4
-
         self.saveContext()
+        
+        let recordName = CKRecord.ID(recordName: "\(card.cardName!)-\(card.objectID)")
+        let cardRecord = CKRecord(recordType: "CD_Card", recordID: recordName)
+        cardRecord["an1"] = card.an1 as? CKRecordValue
+        cardRecord["an2"] = card.an2 as? CKRecordValue
+        cardRecord["an2URL"] = card.an2URL as? CKRecordValue
+        cardRecord["an3"] = card.an3 as? CKRecordValue
+        cardRecord["an4"] = card.an4 as? CKRecordValue
+        cardRecord["font"] = card.font as? CKRecordValue
+        cardRecord["recipient"] = card.recipient as? CKRecordValue
+        cardRecord["occassion"] = card.occassion as? CKRecordValue
+        cardRecord["date"] = card.date as? CKRecordValue
+        cardRecord["cardName"] = card.cardName as? CKRecordValue
+        cardRecord["message"] = card.message as? CKRecordValue
+        //cardRecord["coverImage"] = card.coverImage as? CKRecordValue
+        //cardRecord["collage"] = card.collage as? CKRecordValue
+        
+        let cardURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0].appendingPathComponent("\(card.cardName!)-\(card.objectID).png")
+        do {
+            try card.card?.write(to: cardURL)
+        }
+        catch {
+            print(error.localizedDescription)
+        }
+        print("=====")
+        print(cardURL.absoluteString)
+        let cardAsset = CKAsset(fileURL: cardURL)
+        cardRecord["card"] = cardAsset
+
+        // can sub in .publicCloudDatabase
+        CoreDataStack.shared.ckContainer.privateCloudDatabase.save(cardRecord) { [self] record, error in
+            DispatchQueue.main.async {
+                if let error = error {
+                    print("+++")
+                   print("Error: \(error.localizedDescription)")
+                } else {
+                    print("+++")
+                    print("Done!")
+                }
+            }
+        }
         print("Saved card to Core Data")
     }
-
+    
     func prepCardForExport() -> Data {
         let image = SnapShotCardForPrint(chosenObject: $chosenObject, collageImage: $collageImage, noteField: $noteField, text1: $text1, text2: $text2, text2URL: $text2URL, text3: $text3, text4: $text4, printCardText: $printCardText).snapshot()
         let a4_width = 595.2 - 20
@@ -278,3 +323,7 @@ extension UIScreen{
        func updateUIViewController(_ uiViewController: UIActivityViewController,
                                    context: UIViewControllerRepresentableContext<ActivityView>) {}
        }
+
+
+
+    
