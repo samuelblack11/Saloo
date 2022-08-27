@@ -54,13 +54,6 @@ struct FinalizeCardView: View {
             return try! Data(contentsOf: chosenObject.smallImageURL)
         }
     }
-    
-    
-    func shareECardInternally() {
-        // send to noteField.recipientEmail as unique Identifier
-    }
-    
-    
         
     func shareECardExternally() {
         showActivityController = true
@@ -171,7 +164,6 @@ struct FinalizeCardView: View {
         }
     }
 
-
     var body: some View {
         NavigationView {
         VStack(spacing: 0) {
@@ -190,30 +182,21 @@ struct FinalizeCardView: View {
             }
             Spacer()
             HStack {
-                VStack {
-                    Button("Share eCard In App") {
-                        shareECardInternally()
-                    }
-                    Button("Share eCard Externally") {
-                        shareECardExternally()
-                    }
+                
+                Button("Save & Share") {
+                    saveECard()
+                    shareECardExternally()
                 }
-                /////////////////////////////////////////////////////////////////////////////////
+                
                 Spacer()
-                VStack {
-                    Button("Save eCard") {
-                        saveECard()
-                    }
-                    
-                    Button("Export for Print") {
-                        showActivityController = true
-                        print(prepCardForExport())
-                        let cardForExport = prepCardForExport()
-                        activityItemsArray = []
-                        activityItemsArray.append(cardForExport)
-                    }.sheet(isPresented: $showActivityController) {
-                        ActivityView(activityItems: $activityItemsArray, applicationActivities: nil)
-                    }
+                
+                Button("Export for Print") {
+                    showActivityController = true
+                    let cardForExport = prepCardForExport()
+                    activityItemsArray = []
+                    activityItemsArray.append(cardForExport)
+                }.sheet(isPresented: $showActivityController) {
+                    ActivityView(activityItems: $activityItemsArray, applicationActivities: nil)
                 }
             }
         }
@@ -231,13 +214,11 @@ struct FinalizeCardView: View {
         }
     }
     
-    
-    
-    
     func saveECard() {
         //save to core data
         let card = Card(context: CoreDataStack.shared.context)
         card.card = eCardVertical.snapshot().pngData()
+        card.cardName = noteField.cardName
         card.collage = collageImage.collageImage.pngData()
         card.coverImage = coverData()!
         card.date = Date.now
@@ -254,10 +235,6 @@ struct FinalizeCardView: View {
 
         self.saveContext()
         print("Saved card to Core Data")
-        // Print Count of Cards Saved
-        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "Card")
-        let count = try! CoreDataStack.shared.context.count(for: fetchRequest)
-        print("\(count) Cards Saved")
     }
 
     func prepCardForExport() -> Data {
@@ -301,5 +278,3 @@ extension UIScreen{
        func updateUIViewController(_ uiViewController: UIActivityViewController,
                                    context: UIViewControllerRepresentableContext<ActivityView>) {}
        }
-
-

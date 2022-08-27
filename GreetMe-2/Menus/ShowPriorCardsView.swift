@@ -159,12 +159,29 @@ extension ShowPriorCardsView {
         //let recordZone: CKRecordZone = CKRecordZone(zoneName: "Zone1")
         //let aRecord = CKRecord(recordType: "Card", recordID: recordZone.zoneID)
         
+        /////////////////////////////////////////////////////////////////////
         let (_, share, _) = try await stack.persistentContainer.share([card], to: nil)
         //let share2 = CKShare(rootRecord: )
         share[CKShare.SystemFieldKey.title] = card.cardName
         share[CKShare.SystemFieldKey.thumbnailImageData] = card.coverImage
         share[CKShare.SystemFieldKey.shareType] = "Your Greeting Card from GreetMe"
+        //share[CKShare.ID] =
         self.share = share
+        /////////////////////////////////////////////////////////////////////
+
+        
+        //let share = CKShare(rootRecord: card)
+        
+        //share[CKShare.SystemFieldKey.title] = card.cardName
+        //share[CKShare.SystemFieldKey.thumbnailImageData] = card.coverImage
+        
+        
+        
+        
+        
+        
+        
+        
     } catch {
       print("Failed to create share")
     }

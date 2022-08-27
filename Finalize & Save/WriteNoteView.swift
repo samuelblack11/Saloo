@@ -16,7 +16,6 @@ struct NoteField {
     var recipient: String
     var cardName: String
     var font: String
-    var recipientEmail: String
 }
 
 class HandWrite: ObservableObject {
@@ -28,7 +27,7 @@ struct WriteNoteView: View {
     @State private var message: String = "Write Your Note Here"
     @ObservedObject var input = TextLimiter(limit: 225)
     @State private var recipient: String = ""
-    @State private var recipientEmail: String = ""
+    //@State private var recipientEmail: String = ""
     @State private var cardName: String = ""
     @State private var tappedTextEditor = false
     @State private var namesNotEntered = false
@@ -131,9 +130,9 @@ struct WriteNoteView: View {
         TextField("Recipient", text: $recipient)
             .padding(.leading, 5)
             .frame(height:35)
-        TextField("Recipient Email", text: $recipientEmail)
-            .padding(.leading, 5)
-            .frame(height:35)
+        //TextField("Recipient Email", text: $recipientEmail)
+            //.padding(.leading, 5)
+            //.frame(height:35)
         TextField("Name Your Card", text: $cardName)
             .padding(.leading, 5)
             .frame(height:35)
@@ -163,10 +162,10 @@ struct WriteNoteView: View {
     }
     
     func checkRequiredFields() {
-        if recipient != "" && cardName != "" && recipientEmail != ""  {
+        if recipient != "" && cardName != "" {
             namesNotEntered = false
             segueToFinalize  = true
-            noteField = NoteField.init(noteText: message, recipient: recipient, cardName: cardName, font: selectedFont, recipientEmail: recipientEmail)
+            noteField = NoteField.init(noteText: message, recipient: recipient, cardName: cardName, font: selectedFont)
         }
         else {
             namesNotEntered = true
