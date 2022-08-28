@@ -241,21 +241,21 @@ struct FinalizeCardView: View {
         
         let recordName = CKRecord.ID(recordName: "\(card.cardName!)-\(card.objectID)")
         let cardRecord = CKRecord(recordType: "CD_Card", recordID: recordName)
-        cardRecord["an1"] = card.an1 as? CKRecordValue
-        cardRecord["an2"] = card.an2 as? CKRecordValue
-        cardRecord["an2URL"] = card.an2URL as? CKRecordValue
-        cardRecord["an3"] = card.an3 as? CKRecordValue
-        cardRecord["an4"] = card.an4 as? CKRecordValue
-        cardRecord["font"] = card.font as? CKRecordValue
-        cardRecord["recipient"] = card.recipient as? CKRecordValue
-        cardRecord["occassion"] = card.occassion as? CKRecordValue
-        cardRecord["date"] = card.date as? CKRecordValue
-        cardRecord["cardName"] = card.cardName as? CKRecordValue
-        cardRecord["message"] = card.message as? CKRecordValue
+        cardRecord["CD_an1"] = card.an1 as? CKRecordValue
+        cardRecord["CD_an2"] = card.an2 as? CKRecordValue
+        cardRecord["CD_an2URL"] = card.an2URL as? CKRecordValue
+        cardRecord["CD_an3"] = card.an3 as? CKRecordValue
+        cardRecord["CD_an4"] = card.an4 as? CKRecordValue
+        cardRecord["CD_font"] = card.font as? CKRecordValue
+        cardRecord["CD_recipient"] = card.recipient as? CKRecordValue
+        cardRecord["CD_occassion"] = card.occassion as? CKRecordValue
+        cardRecord["CD_date"] = card.date as? CKRecordValue
+        cardRecord["CD_cardName"] = card.cardName as? CKRecordValue
+        cardRecord["CD_message"] = card.message as? CKRecordValue
         //cardRecord["coverImage"] = card.coverImage as? CKRecordValue
         //cardRecord["collage"] = card.collage as? CKRecordValue
         
-        let cardURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0].appendingPathComponent("\(card.cardName!)-\(card.objectID).png")
+        let cardURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0].appendingPathComponent("\(card.cardName!).png")
         do {
             try card.card?.write(to: cardURL)
         }
