@@ -6,10 +6,12 @@
 //
 
 import SwiftUI
+import CloudKit
 
 @main
 struct GreetMe_2App: App {
     let dataController = CoreDataStack.shared
+    @UIApplicationDelegateAdaptor var appDelegate: AppDelegate
 
     var body: some Scene {
         WindowGroup {

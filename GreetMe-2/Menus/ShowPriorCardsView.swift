@@ -21,6 +21,7 @@ struct ShowPriorCardsView: View {
     @State private var showEditSheet = false
     private let stack = CoreDataStack.shared
     @State var returnRecord: CKRecord?
+    @State private var showDeliveryScheduler = false
 
     let columns = [GridItem(.fixed(140)), GridItem(.fixed(140))]
     
@@ -69,11 +70,12 @@ struct ShowPriorCardsView: View {
                                     }
                             }.frame(width: (UIScreen.screenWidth/3), height: (UIScreen.screenHeight/15))
                         }
+                        .sheet(isPresented: $showDeliveryScheduler) {ScheduleDelivery(card: card)}
                         .sheet(isPresented: $segueToEnlarge) {EnlargeECardView(chosenCard: $chosenCard)}
                         .sheet(isPresented: $showShareSheet, content: {
                             
                             if let share = share {
-                                CloudSharingView(share: share, container: stack.ckContainer, record: returnRecord!)
+                                CloudSharingView(share: share, container: stack.ckContainer, card: card)
                             }
                           })
                         .contextMenu {
@@ -104,8 +106,17 @@ struct ShowPriorCardsView: View {
                                 //chosenCard = card
                                 
                             } label: {
-                                Text("Share eCard")
+                                Text("Share eCard Now")
                             }
+                            Button {
+                                showDeliveryScheduler = true
+                                
+                            } label: {
+                                Text("Schedule eCard Delivery")
+                            }
+                            
+                            
+                            
                         }.onAppear(perform: {
                             //self.share = stack.getShare(card)
                           })
@@ -153,44 +164,41 @@ extension ShowPriorCardsView {
     
   private func createShare(_ card: Card) async {
     do {
-        let recordIdName = CKRecord.ID(recordName: "\(card.cardName!)-\(card.objectID)")
+        //let recordIdName = CKRecord.ID(recordName: "\(card.cardName!)-\(card.objectID)")
         
-        CoreDataStack.shared.ckContainer.privateCloudDatabase.fetch(withRecordID: recordIdName) { [self] record, error in
-                if let error = error {
-                    DispatchQueue.main.async {
+        //CoreDataStack.shared.ckContainer.privateCloudDatabase.fetch(withRecordID: recordIdName) //{ [self] record, error in
+        //        if let error = error {
+         //           DispatchQueue.main.async {
                         // meaningful error message here!
-                        print("!!!!!")
-                        print(error.localizedDescription)
-                    }
-                } else {
-                    if let record = record {
-                        if let asset = record["card"] as? CKAsset {
-                            print("###")
-                            print(asset)
-                            self.returnRecord = record
-                            let share3 = CKShare(rootRecord: record)
-                            print("++")
-                            share3[CKShare.SystemFieldKey.title] = card.cardName
-                            share3[CKShare.SystemFieldKey.thumbnailImageData] = card.coverImage
-                            share3[CKShare.SystemFieldKey.shareType] = "Your Greeting Card from GreetMe"
-                            print("@@")
-                            self.share = share3
-                            print("??")
-                            DispatchQueue.main.async {
-                            }
-                        }
-                    }
-                }
+         //               print("!!!!!")
+          //              print(error.localizedDescription)
+          //          }
+          //      } else {
+            //        if let record = record {
+            //            self.returnRecord = record
+            //            let share3 = CKShare(rootRecord: record)
+            //            share3[CKShare.SystemFieldKey.title] = card.cardName
+            //            share3[CKShare.SystemFieldKey.thumbnailImageData] = card.coverImage
+             //           share3[CKShare.SystemFieldKey.shareType] = "Your Greeting Card from GreetMe"
+             //           self.share = share3
+             //        }
+              //  }
+            //}
+        /////////////////////////////////////////////////////////////////////
+        do {
+            let (_, share, _) = try await stack.persistentContainer.share([card], to: nil)
+            share[CKShare.SystemFieldKey.title] = card.cardName
+            share[CKShare.SystemFieldKey.thumbnailImageData] = card.coverImage
+            share[CKShare.SystemFieldKey.shareType] = "Your Greeting Card from GreetMe"
+            //share[CKShare.]
+            //share[CKShare.ID] =
+            self.share = share
             }
+        catch {
+            print("Error+++++")
+        }
+
         /////////////////////////////////////////////////////////////////////
-        //let (_, share, _) = try await stack.persistentContainer.share([card], to: nil)
-        //share[CKShare.SystemFieldKey.title] = card.cardName
-        //share[CKShare.SystemFieldKey.thumbnailImageData] = card.coverImage
-        //share[CKShare.SystemFieldKey.shareType] = "Your Greeting Card from GreetMe"
-        //share[CKShare.ID] =
-        //self.share = share
-        /////////////////////////////////////////////////////////////////////
-        
     }
   }
 

@@ -20,8 +20,14 @@
         <attribute name="occassion" optional="YES" attributeType="String"/>
         <attribute name="recipient" optional="YES" attributeType="String"/>
     </entity>
+    <entity name="FutureDelivery" representedClassName=".FutureDelivery" syncable="YES">
+        <attribute name="card" optional="YES" attributeType="Binary"/>
+        <attribute name="deliveryDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="recipientList" optional="YES" attributeType="Transformable"/>
+    </entity>
     <elements>
         <element name="CalendarDate" positionX="-63" positionY="90" width="128" height="59"/>
         <element name="Card" positionX="-63" positionY="-18" width="128" height="239"/>
+        <element name="FutureDelivery" positionX="-63" positionY="90" width="128" height="74"/>
     </elements>
 </model>

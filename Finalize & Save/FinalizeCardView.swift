@@ -221,7 +221,7 @@ struct FinalizeCardView: View {
     
     func saveECard() {
         //save to core data
-        let card = Card(context: CoreDataStack.shared.context)
+        let card = Card(context: CoreDataStack.shared.context)        
         card.card = eCardVertical.snapshot().pngData()
         card.cardName = noteField.cardName
         card.collage = collageImage.collageImage.pngData()
