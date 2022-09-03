@@ -63,58 +63,74 @@ struct AddEventToCalendarForm: View {
 extension AddEventToCalendarForm {
     
     
+    
+    
     func addEventFrequency(frequency: String) {
         
         if frequency != "One Time Only" {
+        print("trying formatDate......")
         let dateForConversion = formatDate(eventDate: self.eventDate)
-        var dateComps = DateComponents()
-        do {
-            dateComps = try DateComponents(from: dateForConversion as! Decoder)
-        }
-        catch {
-            print("Couldn't convert date into components")
-        }
-        let originalEventDay = dateComps.day!
-        let orignalEventMonth = dateComps.month!
-        let originalEventYear = dateComps.year!
-        var month: Int = orignalEventMonth
-        var monthCount = 1
+        let dateComps = dateForConversion.get(.day, .month, .year)
+        print("formatDate success")
+        if let originalEventDay = dateComps.day, let orignalEventMonth = dateComps.month, let originalEventYear = dateComps.year {
+            
+            print("day: \(originalEventDay), month: \(orignalEventMonth), year: \(originalEventYear)")
+            
+            var month: Int = orignalEventMonth
+            var monthCount = 1
         
-        if frequency == "Monthly" {
-            month += 1
-            if month == 13 {
-                month = 1
-            }
-            while monthCount < 12 {
-                var recurringDateComps = DateComponents()
-                recurringDateComps.day = originalEventDay
-                recurringDateComps.month = month
-                if month == 1 {
-                    recurringDateComps.year = Int(originalEventYear + 1)
+            if frequency == "Monthly" {
+                month += 1
+                if month == 13 {
+                    month = 1
                 }
-                let date = Calendar.current.date(from: recurringDateComps)!
-                let dateFormatter = DateFormatter()
-                addEventToCore(eventName: eventName, eventDate: dateFormatter.string(from: date))
-                monthCount += 1
+                while monthCount < 12 {
+                    var recurringDateComps = DateComponents()
+                    recurringDateComps.day = originalEventDay
+                    recurringDateComps.month = month
+                    if month == 1 {
+                        recurringDateComps.year = Int(originalEventYear + 1)
+                    }
+                    else {
+                        recurringDateComps.year = originalEventYear
+                    }
+                    print("---")
+                    print(originalEventDay)
+                    print(month)
+                    print(originalEventYear)
+                    
+                    
+                    let date = Calendar.current.date(from: recurringDateComps)!
+                    let dateFormatter = DateFormatter()
+                    dateFormatter.dateStyle = .medium
+                    addEventToCore(eventName: eventName, eventDate: dateFormatter.string(from: date))
+                    month+=1
+                    monthCount += 1
+                }
             }
-        }
         
-        var year: Int = originalEventYear
-        var yearCount = 1
-        if frequency == "Annual" {
-            year += 1
-            while yearCount < 10 {
-                var recurringDateComps = DateComponents()
-                recurringDateComps.day = originalEventDay
-                recurringDateComps.month = orignalEventMonth
-                recurringDateComps.year = year
-                let date = Calendar.current.date(from: recurringDateComps)!
-                let dateFormatter = DateFormatter()
-                addEventToCore(eventName: eventName, eventDate: dateFormatter.string(from: date))
-                yearCount += 1
+            var year: Int = originalEventYear
+            var yearCount = 1
+            if frequency == "Annual" {
+                year += 1
+                while yearCount < 10 {
+                    
+                    var recurringDateComps = DateComponents()
+                    recurringDateComps.day = originalEventDay
+                    recurringDateComps.month = month
+                    recurringDateComps.year = year
+
+                    let date = Calendar.current.date(from: recurringDateComps)!
+                    let dateFormatter = DateFormatter()
+                    dateFormatter.dateStyle = .medium
+                    addEventToCore(eventName: eventName, eventDate: dateFormatter.string(from: date))
+                    year+=1
+                    yearCount += 1
+                }
+            }
             }
         }
-        }
+        print("addEventFreq Success!!")
     }
     
     func addEventToCore(eventName: String, eventDate: String) {
@@ -122,6 +138,9 @@ extension AddEventToCalendarForm {
         let event = CalendarDate(context: CoreDataStack.shared.context)
         event.eventNameCore = eventName + " \(emoji)"
         event.eventDateCore = formattedEventDate
+        print("Event Added For: ")
+        print(eventName)
+        print(eventDate)
         self.saveContext()
     }
     
@@ -150,4 +169,22 @@ extension AddEventToCalendarForm {
         }
         return events
     }
+}
+
+// https://stackoverflow.com/questions/53356392/how-to-get-day-and-month-from-date-type-swift-4
+extension Date {
+    func get(_ components: Calendar.Component..., calendar: Calendar = Calendar.current) -> DateComponents {
+        return calendar.dateComponents(Set(components), from: self)
+    }
+
+    func get(_ component: Calendar.Component, calendar: Calendar = Calendar.current) -> Int {
+        return calendar.component(component, from: self)
+    }
+
+    func stripTime() -> Date {
+        let components = Calendar.current.dateComponents([.year, .month, .day], from: self)
+        let date = Calendar.current.date(from: components)
+        return date!
+    }
+    
 }

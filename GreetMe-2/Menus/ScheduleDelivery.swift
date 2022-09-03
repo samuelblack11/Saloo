@@ -76,8 +76,9 @@ struct ScheduleDelivery: View {
     func saveDelivery() {
         //save to core data
         let del = FutureDelivery(context: CoreDataStack.shared.context)
+        //del.card = card.pngData()
         //del.recipientList = recipientList
-        //del.deliveryDate = deliveryDate
+        del.deliveryDate = deliveryDate
         self.saveContext()
         
     }

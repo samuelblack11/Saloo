@@ -37,6 +37,8 @@ struct FinalizeCardView: View {
     @State private var showActivityController = false
     @State var activityItemsArray: [Any] = []
     @State var searchObject: SearchParameter
+    @State var saveAndShareIsActive = false
+    @State private var showCompleteAlert = false
     
     var field1: String!
     var field2: String!
@@ -188,10 +190,20 @@ struct FinalizeCardView: View {
             Spacer()
             HStack {
                 
-                Button("Save & Share") {
+                
+                Button("Save eCard") {
                     saveECard()
-                    shareECardExternally()
+                    //shareECardExternally()
+                    saveAndShareIsActive = true
+                    showCompleteAlert = true
                 }
+                .disabled(saveAndShareIsActive)
+                .alert("Save Complete", isPresented: $showCompleteAlert) {
+                    Button("Ok", role: .cancel) {
+                        presentMenu = true
+                    }
+                }
+                
                 
                 Spacer()
                 
