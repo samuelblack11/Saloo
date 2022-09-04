@@ -30,40 +30,36 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 }
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
+    
+    
     func windowScene(_ windowScene: UIWindowScene,
         userDidAcceptCloudKitShareWith cloudKitShareMetadata: CKShare.Metadata) {
         
-        print("Trying to Accept Share......")
-        print(cloudKitShareMetadata)
-        print("$$$$$$$$$$$$$$$$$$$$")
-        print(cloudKitShareMetadata.share.recordID)
-        print("%%%%%%%%%%%%%%%%%%%%")
-        // If Accepting Share for object that the user owns
-        // Display that object in the EnlargeECard view
-        //if .isOwner(object:__)
-        
-        
-        
-        // else
         let stack = CoreDataStack.shared
-
-        // Get references to the app's persistent container
-        // and shared persistent store.
         let store = stack.sharedPersistentStore
         let container = stack.persistentContainer
-
-        // Tell the container to accept the specified share, adding
-        // the shared objects to the shared persistent store.
+        
        container.acceptShareInvitations(from: [cloudKitShareMetadata],
                                         into: store) { _, error in
            if let error = error {
              print("acceptShareInvitation error :\(error)")
            }
          }
-        //print("***************************************")
-        //print(store)
-        //print(cloudKitShareMetadata.share)
-        //print("***************************************")
-        //EnlargeECardView(chosenCard: )
+        
+        print("Trying to Accept Share......")
+        // if participant is owner
+        if cloudKitShareMetadata.participantRole.rawValue == 1 {
+            
+            do {
+                let shares = try container.fetchShares(in: store)
+                print("@@@@@@@@")
+                print(shares[0])
+            }
+            catch {
+                
+            }
+
+        }
+
     }
 }

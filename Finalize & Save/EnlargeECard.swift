@@ -13,7 +13,7 @@ import CloudKit
 //https://www.appcoda.com/swiftui-confetti-animation/
 struct EnlargeECardView: View {
     @Binding var chosenCard: Card!
-    @State private var share: CKShare?
+    @Binding var share: CKShare?
     @State private var counter = 1
     private let stack = CoreDataStack.shared
 
@@ -73,6 +73,24 @@ struct EnlargeECardView: View {
                     }
                 }.frame(maxWidth: (UIScreen.screenWidth/1.5), maxHeight: (UIScreen.screenHeight/12))
             }
+            if let share = share {
+                ForEach(share.participants, id: \.self) { participant in
+                  VStack(alignment: .leading) {
+                    Text(participant.userIdentity.nameComponents?.formatted(.name(style: .long)) ?? "")
+                      .font(.headline)
+                    Text("Acceptance Status: \(string(for: participant.acceptanceStatus))")
+                      .font(.subheadline)
+                    Text("Role: \(string(for: participant.role))")
+                      .font(.subheadline)
+                    Text("Permissions: \(string(for: participant.permission))")
+                      .font(.subheadline)
+                  }
+                  .padding(.bottom, 8)
+                }
+            }
+            
+            
+            
         }.frame(height: (UIScreen.screenHeight/1.1))
     }
         //.onAppear(perform: {
@@ -86,3 +104,55 @@ struct EnlargeECardView: View {
             .onAppear(perform:addToCounter)
         }
     }
+
+
+extension EnlargeECardView {
+    private func string(for permission: CKShare.ParticipantPermission) -> String {
+      switch permission {
+      case .unknown:
+        return "Unknown"
+      case .none:
+        return "None"
+      case .readOnly:
+        return "Read-Only"
+      case .readWrite:
+        return "Read-Write"
+      @unknown default:
+        fatalError("A new value added to CKShare.Participant.Permission")
+      }
+    }
+
+    private func string(for role: CKShare.ParticipantRole) -> String {
+      switch role {
+      case .owner:
+        return "Owner"
+      case .privateUser:
+        return "Private User"
+      case .publicUser:
+        return "Public User"
+      case .unknown:
+        return "Unknown"
+      @unknown default:
+        fatalError("A new value added to CKShare.Participant.Role")
+      }
+    }
+
+    private func string(for acceptanceStatus: CKShare.ParticipantAcceptanceStatus) -> String {
+      switch acceptanceStatus {
+      case .accepted:
+        return "Accepted"
+      case .removed:
+        return "Removed"
+      case .pending:
+        return "Invited"
+      case .unknown:
+        return "Unknown"
+      @unknown default:
+        fatalError("A new value added to CKShare.Participant.AcceptanceStatus")
+      }
+    }
+
+    private var canEdit: Bool {
+      stack.canEdit(object: chosenCard)
+    }
+  }

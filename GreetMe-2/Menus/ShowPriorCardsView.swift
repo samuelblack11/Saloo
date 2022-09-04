@@ -70,7 +70,7 @@ struct ShowPriorCardsView: View {
                             }.frame(width: (UIScreen.screenWidth/3), height: (UIScreen.screenHeight/15))
                         }
                         .sheet(isPresented: $showDeliveryScheduler) {ScheduleDelivery(card: card)}
-                        .sheet(isPresented: $segueToEnlarge) {EnlargeECardView(chosenCard: $chosenCard)}
+                        .sheet(isPresented: $segueToEnlarge) {EnlargeECardView(chosenCard: $chosenCard, share: $share)}
                         .sheet(isPresented: $showShareSheet, content: {
                             if let share = share {
                                 CloudSharingView(share: share, container: stack.ckContainer, card: card)
@@ -114,7 +114,7 @@ struct ShowPriorCardsView: View {
                                 Text("Schedule eCard Delivery")
                             }
                         }.onAppear(perform: {
-                            //self.share = stack.getShare(card)
+                            self.share = stack.getShare(card)
                           })
                         Divider().padding(.bottom, 5)
                         HStack(spacing: 3) {
