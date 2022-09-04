@@ -49,15 +49,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         print("Trying to Accept Share......")
         // if participant is owner
         if cloudKitShareMetadata.participantRole.rawValue == 1 {
-            
-            do {
-                let shares = try container.fetchShares(in: store)
-                print("@@@@@@@@")
-                print(shares[0])
-            }
-            catch {
-                
-            }
 
         }
 
