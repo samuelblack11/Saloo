@@ -10,13 +10,6 @@ import SwiftUI
 import CoreData
 import CloudKit
 
-//https://medium.com/swiftui-made-easy/activity-view-controller-in-swiftui-593fddadee79
-// https://www.hackingwithswift.com/example-code/uikit/how-to-render-pdfs-using-uigraphicspdfrenderer
-// https://stackoverflow.com/questions/1134289/cocoa-core-data-efficient-way-to-count-entities
-// https://www.advancedswift.com/resize-uiimage-no-stretching-swift/
-// https://www.hackingwithswift.com/articles/103/seven-useful-methods-from-cgrect
-// https://stackoverflow.com/questions/57727107/how-to-get-the-iphones-screen-width-in-swiftui
-// https://www.hackingwithswift.com/read/33/4/writing-to-icloud-with-cloudkit-ckrecord-and-ckasset
 struct FinalizeCardView: View {
     @Environment(\.presentationMode) var presentationMode
     var card: Card!
@@ -43,31 +36,8 @@ struct FinalizeCardView: View {
     var field1: String!
     var field2: String!
     
-
-    func coverSource() -> Image {
-        if chosenObject.coverImage != nil {
-            return Image(uiImage: UIImage(data: chosenObject.coverImage!)!)
-        }
-        else {
-            return Image(uiImage: UIImage(data: try! Data(contentsOf: chosenObject.smallImageURL))!)
-        }
-    }
-    
-    func coverData() -> Data? {
-        if chosenObject.coverImage != nil {
-            return chosenObject.coverImage!
-        }
-        else {
-            return try! Data(contentsOf: chosenObject.smallImageURL)
-        }
-    }
-        
-    func shareECardExternally() {
-        showActivityController = true
-        let cardForShare = SnapShotECard(chosenObject: $chosenObject, collageImage: $collageImage, noteField: $noteField, eCardText: $eCardText, text1: $text1, text2: $text2, text2URL: $text2URL, text3: $text3, text4: $text4).snapShotECardViewVertical.snapshot()
-        activityItemsArray = []
-        activityItemsArray.append(cardForShare)
-    }
+    @State var string1: String!
+    @State var string2: String!
     
     var eCardVertical: some View {
         VStack(spacing:1) {
@@ -189,8 +159,6 @@ struct FinalizeCardView: View {
             }
             Spacer()
             HStack {
-                
-                
                 Button("Save eCard") {
                     saveECard()
                     //shareECardExternally()
@@ -203,10 +171,7 @@ struct FinalizeCardView: View {
                         presentMenu = true
                     }
                 }
-                
-                
                 Spacer()
-                
                 Button("Export for Print") {
                     showActivityController = true
                     let cardForExport = prepCardForExport()
@@ -226,14 +191,43 @@ struct FinalizeCardView: View {
             }
                 label: {Image(systemName: "menucard.fill").foregroundColor(.blue)
                 Text("Menu")})
-        .sheet(isPresented: $presentMenu) {MenuView(calViewModel: CalViewModel(), showDetailView: ShowDetailView())
-}
+        .sheet(isPresented: $presentMenu) {
+            OccassionsMenu(searchType: $string1, noneSearch: $string2, calViewModel: CalViewModel(), showDetailView: ShowDetailView())
+            }
         }
+    }
+}
+
+extension FinalizeCardView {
+    
+    func coverSource() -> Image {
+        if chosenObject.coverImage != nil {
+            return Image(uiImage: UIImage(data: chosenObject.coverImage!)!)
+        }
+        else {
+            return Image(uiImage: UIImage(data: try! Data(contentsOf: chosenObject.smallImageURL))!)
+        }
+    }
+    
+    func coverData() -> Data? {
+        if chosenObject.coverImage != nil {
+            return chosenObject.coverImage!
+        }
+        else {
+            return try! Data(contentsOf: chosenObject.smallImageURL)
+        }
+    }
+        
+    func shareECardExternally() {
+        showActivityController = true
+        let cardForShare = SnapShotECard(chosenObject: $chosenObject, collageImage: $collageImage, noteField: $noteField, eCardText: $eCardText, text1: $text1, text2: $text2, text2URL: $text2URL, text3: $text3, text4: $text4).snapShotECardViewVertical.snapshot()
+        activityItemsArray = []
+        activityItemsArray.append(cardForShare)
     }
     
     func saveECard() {
         //save to core data
-        let card = Card(context: CoreDataStack.shared.context)        
+        let card = Card(context: CoreDataStack.shared.context)
         card.card = eCardVertical.snapshot().pngData()
         card.cardName = noteField.cardName
         card.collage = collageImage.collageImage.pngData()
@@ -306,7 +300,6 @@ struct FinalizeCardView: View {
         return data
     }
     
-    
     func saveContext() {
         if CoreDataStack.shared.context.hasChanges {
             do {
@@ -335,7 +328,11 @@ extension UIScreen{
        func updateUIViewController(_ uiViewController: UIActivityViewController,
                                    context: UIViewControllerRepresentableContext<ActivityView>) {}
        }
-
-
-
     
+//https://medium.com/swiftui-made-easy/activity-view-controller-in-swiftui-593fddadee79
+// https://www.hackingwithswift.com/example-code/uikit/how-to-render-pdfs-using-uigraphicspdfrenderer
+// https://stackoverflow.com/questions/1134289/cocoa-core-data-efficient-way-to-count-entities
+// https://www.advancedswift.com/resize-uiimage-no-stretching-swift/
+// https://www.hackingwithswift.com/articles/103/seven-useful-methods-from-cgrect
+// https://stackoverflow.com/questions/57727107/how-to-get-the-iphones-screen-width-in-swiftui
+// https://www.hackingwithswift.com/read/33/4/writing-to-icloud-with-cloudkit-ckrecord-and-ckasset

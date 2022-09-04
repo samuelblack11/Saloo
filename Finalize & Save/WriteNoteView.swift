@@ -27,7 +27,6 @@ struct WriteNoteView: View {
     @State private var message: String = "Write Your Note Here"
     @ObservedObject var input = TextLimiter(limit: 225)
     @State private var recipient: String = ""
-    //@State private var recipientEmail: String = ""
     @State private var cardName: String = ""
     @State private var tappedTextEditor = false
     @State private var namesNotEntered = false
@@ -50,8 +49,6 @@ struct WriteNoteView: View {
     @Binding var printCardText: String
     @State var searchObject: SearchParameter
 
-
-
     let allFontNames = UIFont.familyNames
       .flatMap { UIFont.fontNames(forFamilyName: $0) }
     
@@ -69,6 +66,92 @@ struct WriteNoteView: View {
             Spacer()
         }
     }
+
+    
+    var body: some View {
+        NavigationView {
+            ScrollView {
+        TextEditor(text: $input.value)
+            .border(Color.red, width: $input.hasReachedLimit.wrappedValue ? 1 : 0 )
+            .frame(minHeight: 150)
+            .font(Font.custom(selectedFont, size: 14))
+            .onTapGesture {
+                if input.value == "Write Your Note Here" {
+                    input.value = ""
+                }
+                //isNoteFieldFocused.toggle()
+                tappedTextEditor = true
+            }
+        HStack {
+        Text("\(225 - input.value.count) Characters Remaining").font(Font.custom(selectedFont, size: 10))
+        Image(uiImage: collageImage.collageImage)
+                    .resizable()
+                    .frame(width: (UIScreen.screenWidth/5)-10, height: (UIScreen.screenWidth/5),alignment: .center)
+            
+        }
+        //Spacer()
+        fontMenu.frame(height: 65)
+        TextField("Recipient", text: $recipient)
+            .padding(.leading, 5)
+            .frame(height:35)
+        TextField("Name Your Card", text: $cardName)
+            .padding(.leading, 5)
+            .frame(height:35)
+        Button("Confirm Note") {
+            cardName = cardName.components(separatedBy: CharacterSet.punctuationCharacters).joined()
+            message = input.value
+            willHandWritePrintCard()
+            checkRequiredFields()
+            annotateIfNeeded()
+            }
+        .alert("Please Enter Values for All Fields!", isPresented: $namesNotEntered) {Button("Ok", role: .cancel) {}}
+        .alert("Type Note Here or Hand Write After Printing?", isPresented: $handWrite) {
+            Button("Type it Here", action: {})
+            Button("Hand Write it"){
+                handWrite2 = true
+                willHandWrite.willHandWrite = true
+            }}
+        .alert("Your typed message will only appear in your eCard", isPresented: $handWrite2) {Button("Ok", role: .cancel) {}}
+        .padding(.bottom, 30)
+        .sheet(isPresented: $segueToFinalize) {FinalizeCardView(chosenObject: $chosenObject, collageImage: $collageImage, noteField: $noteField, frontCoverIsPersonalPhoto: frontCoverIsPersonalPhoto, text1: $text1, text2: $text2, text2URL: $text2URL, text3: $text3, text4: $text4, willHandWrite: willHandWrite, eCardText: $eCardText, printCardText: $printCardText, searchObject: searchObject)}
+        }
+            .navigationBarItems(leading:
+                                        Button {presentationMode.wrappedValue.dismiss()} label: {
+                                            Image(systemName: "chevron.left").foregroundColor(.blue)
+                                                Text("Back")})
+        }
+    }
+    
+
+
+    // https://programmingwithswift.com/swiftui-textfield-character-limit/
+    class TextLimiter: ObservableObject {
+        // variable for character limit
+        private let limit: Int
+        
+        init(limit: Int) {
+            self.limit = limit
+        }
+        // value that text field displays
+        @Published var value = "Write Your Note Here" {
+            didSet {
+                if value.count > self.limit {
+                    value = String(value.prefix(self.limit))
+                    self.hasReachedLimit = true
+                } else {
+                    self.hasReachedLimit = false
+                }
+            }
+        }
+        @Published var hasReachedLimit = false
+    }
+    
+    
+    
+}
+
+
+extension WriteNoteView {
     
     func annotateIfNeeded() {
         print("annotateIfNeeded was Called")
@@ -102,64 +185,6 @@ struct WriteNoteView: View {
             printCardText = input.value
         }
     }
-
-    
-    var body: some View {
-        NavigationView {
-            ScrollView {
-        TextEditor(text: $input.value)
-            .border(Color.red, width: $input.hasReachedLimit.wrappedValue ? 1 : 0 )
-            .frame(minHeight: 150)
-            .font(Font.custom(selectedFont, size: 14))
-            .onTapGesture {
-                if input.value == "Write Your Note Here" {
-                    input.value = ""
-                }
-                //isNoteFieldFocused.toggle()
-                tappedTextEditor = true
-            }
-        HStack {
-        Text("\(225 - input.value.count) Characters Remaining").font(Font.custom(selectedFont, size: 10))
-        Image(uiImage: collageImage.collageImage)
-                    .resizable()
-                    .frame(width: (UIScreen.screenWidth/5)-10, height: (UIScreen.screenWidth/5),alignment: .center)
-            
-        }
-        //Spacer()
-        fontMenu.frame(height: 65)
-        TextField("Recipient", text: $recipient)
-            .padding(.leading, 5)
-            .frame(height:35)
-        //TextField("Recipient Email", text: $recipientEmail)
-            //.padding(.leading, 5)
-            //.frame(height:35)
-        TextField("Name Your Card", text: $cardName)
-            .padding(.leading, 5)
-            .frame(height:35)
-
-        Button("Confirm Note") {
-            message = input.value
-            willHandWritePrintCard()
-            checkRequiredFields()
-            annotateIfNeeded()
-            }
-        .alert("Please Enter Values for All Fields!", isPresented: $namesNotEntered) {Button("Ok", role: .cancel) {}}
-        .alert("Type Note Here or Hand Write After Printing?", isPresented: $handWrite) {
-            Button("Type it Here", action: {})
-            Button("Hand Write it"){
-                handWrite2 = true
-                willHandWrite.willHandWrite = true
-            }}
-        .alert("Your typed message will only appear in your eCard", isPresented: $handWrite2) {Button("Ok", role: .cancel) {}}
-        .padding(.bottom, 30)
-        .sheet(isPresented: $segueToFinalize) {FinalizeCardView(chosenObject: $chosenObject, collageImage: $collageImage, noteField: $noteField, frontCoverIsPersonalPhoto: frontCoverIsPersonalPhoto, text1: $text1, text2: $text2, text2URL: $text2URL, text3: $text3, text4: $text4, willHandWrite: willHandWrite, eCardText: $eCardText, printCardText: $printCardText, searchObject: searchObject)}
-        }
-            .navigationBarItems(leading:
-                                        Button {presentationMode.wrappedValue.dismiss()} label: {
-                                            Image(systemName: "chevron.left").foregroundColor(.blue)
-                                                Text("Back")})
-        }
-    }
     
     func checkRequiredFields() {
         if recipient != "" && cardName != "" {
@@ -170,28 +195,6 @@ struct WriteNoteView: View {
         else {
             namesNotEntered = true
         }
-    }
-
-    // https://programmingwithswift.com/swiftui-textfield-character-limit/
-    class TextLimiter: ObservableObject {
-        // variable for character limit
-        private let limit: Int
-        
-        init(limit: Int) {
-            self.limit = limit
-        }
-        // value that text field displays
-        @Published var value = "Write Your Note Here" {
-            didSet {
-                if value.count > self.limit {
-                    value = String(value.prefix(self.limit))
-                    self.hasReachedLimit = true
-                } else {
-                    self.hasReachedLimit = false
-                }
-            }
-        }
-        @Published var hasReachedLimit = false
     }
     
     

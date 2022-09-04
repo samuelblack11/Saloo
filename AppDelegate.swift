@@ -33,6 +33,18 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     func windowScene(_ windowScene: UIWindowScene,
         userDidAcceptCloudKitShareWith cloudKitShareMetadata: CKShare.Metadata) {
         
+        print("Trying to Accept Share......")
+        print(cloudKitShareMetadata)
+        print("$$$$$$$$$$$$$$$$$$$$")
+        print(cloudKitShareMetadata.share.recordID)
+        print("%%%%%%%%%%%%%%%%%%%%")
+        // If Accepting Share for object that the user owns
+        // Display that object in the EnlargeECard view
+        //if .isOwner(object:__)
+        
+        
+        
+        // else
         let stack = CoreDataStack.shared
 
         // Get references to the app's persistent container

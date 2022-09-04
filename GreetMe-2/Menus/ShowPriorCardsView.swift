@@ -52,7 +52,6 @@ struct ShowPriorCardsView: View {
                                     Link(card.an4!, destination: URL(string: "https://unsplash.com")!).font(.system(size: 4))
                                     }
                                     .padding(.trailing, 5)
-
                                 Spacer()
                                 Image(systemName: "greetingcard.fill")
                                     .foregroundColor(.blue)
@@ -73,7 +72,6 @@ struct ShowPriorCardsView: View {
                         .sheet(isPresented: $showDeliveryScheduler) {ScheduleDelivery(card: card)}
                         .sheet(isPresented: $segueToEnlarge) {EnlargeECardView(chosenCard: $chosenCard)}
                         .sheet(isPresented: $showShareSheet, content: {
-                            
                             if let share = share {
                                 CloudSharingView(share: share, container: stack.ckContainer, card: card)
                             }
@@ -94,6 +92,7 @@ struct ShowPriorCardsView: View {
                                 .foregroundColor(.red)
                             }
                             Button {
+                                chosenCard = card
                                 if !stack.isShared(object: card) {
                                   Task {
                                     await createShare(card)
@@ -114,9 +113,6 @@ struct ShowPriorCardsView: View {
                             } label: {
                                 Text("Schedule eCard Delivery")
                             }
-                            
-                            
-                            
                         }.onAppear(perform: {
                             //self.share = stack.getShare(card)
                           })
@@ -137,14 +133,14 @@ struct ShowPriorCardsView: View {
                     }
                 }
             }.navigationBarItems(leading:
-                                            Button {
-                                                print("Back button tapped")
-                                                //presentPrior = true
-                                                presentationMode.wrappedValue.dismiss()
-                                            } label: {
-                                                Image(systemName: "chevron.left").foregroundColor(.blue)
-                                                Text("Back")
-                                            })
+                Button {
+                    print("Back button tapped")
+                    //presentPrior = true
+                    presentationMode.wrappedValue.dismiss()
+                    } label: {
+                        Image(systemName: "chevron.left").foregroundColor(.blue)
+                        Text("Back")
+                    })
         }
         .font(.headline)
         .padding(.horizontal)
@@ -152,7 +148,6 @@ struct ShowPriorCardsView: View {
         .onAppear{loadCoreData()}
     }
 }
-
 
 // MARK: Returns CKShare participant permission, methods and properties to share
 extension ShowPriorCardsView {
@@ -163,41 +158,24 @@ extension ShowPriorCardsView {
     }
     
   private func createShare(_ card: Card) async {
-    do {
-        //let recordIdName = CKRecord.ID(recordName: "\(card.cardName!)-\(card.objectID)")
-        
-        //CoreDataStack.shared.ckContainer.privateCloudDatabase.fetch(withRecordID: recordIdName) //{ [self] record, error in
-        //        if let error = error {
-         //           DispatchQueue.main.async {
-                        // meaningful error message here!
-         //               print("!!!!!")
-          //              print(error.localizedDescription)
-          //          }
-          //      } else {
-            //        if let record = record {
-            //            self.returnRecord = record
-            //            let share3 = CKShare(rootRecord: record)
-            //            share3[CKShare.SystemFieldKey.title] = card.cardName
-            //            share3[CKShare.SystemFieldKey.thumbnailImageData] = card.coverImage
-             //           share3[CKShare.SystemFieldKey.shareType] = "Your Greeting Card from GreetMe"
-             //           self.share = share3
-             //        }
-              //  }
-            //}
-        /////////////////////////////////////////////////////////////////////
+      print("creating share.......")
         do {
             let (_, share, _) = try await stack.persistentContainer.share([card], to: nil)
             share[CKShare.SystemFieldKey.title] = card.cardName
             share[CKShare.SystemFieldKey.thumbnailImageData] = card.coverImage
             share[CKShare.SystemFieldKey.shareType] = "Your Greeting Card from GreetMe"
+            //CKShare.addParticipant(share) =
+            print("----")
+            print(string(for: .owner))
+            print("----")
+            print(string(for: .privateUser))
             self.share = share
+            print("++++")
+            print(share)
             }
         catch {
             print("Error+++++")
         }
-
-        /////////////////////////////////////////////////////////////////////
-    }
   }
 
   private func string(for permission: CKShare.ParticipantPermission) -> String {
@@ -245,9 +223,9 @@ extension ShowPriorCardsView {
     }
   }
 
-  //private var canEdit: Bool {
-  //  stack.canEdit(object: card)
-  //}
+  private var canEdit: Bool {
+    stack.canEdit(object: chosenCard)
+  }
     
     func loadCoreData() {
         let request = Card.createFetchRequest()
@@ -286,6 +264,27 @@ extension ShowPriorCardsView {
 //cardRecord["card"] = card as? CKRecordValue
 //let cardAsset = CKAsset(fileURL: cardURL)
 
-
 //share[CKShare.SystemFieldKey.title] = card.cardName
 //share[CKShare.SystemFieldKey.thumbnailImageData] = card.coverImage
+
+
+//let recordIdName = CKRecord.ID(recordName: "\(card.cardName!)-\(card.objectID)")
+
+//CoreDataStack.shared.ckContainer.privateCloudDatabase.fetch(withRecordID: recordIdName) //{ [self] record, error in
+//        if let error = error {
+ //           DispatchQueue.main.async {
+                // meaningful error message here!
+ //               print("!!!!!")
+  //              print(error.localizedDescription)
+  //          }
+  //      } else {
+    //        if let record = record {
+    //            self.returnRecord = record
+    //            let share3 = CKShare(rootRecord: record)
+    //            share3[CKShare.SystemFieldKey.title] = card.cardName
+    //            share3[CKShare.SystemFieldKey.thumbnailImageData] = card.coverImage
+     //           share3[CKShare.SystemFieldKey.shareType] = "Your Greeting Card from GreetMe"
+     //           self.share = share3
+     //        }
+      //  }
+    //}
