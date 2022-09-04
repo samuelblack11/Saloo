@@ -11,12 +11,15 @@ import CloudKit
 @main
 struct GreetMe_2App: App {
     let dataController = CoreDataStack.shared
+    @State var string1: String!
+    @State var string2: String!
     @UIApplicationDelegateAdaptor var appDelegate: AppDelegate
 
     var body: some Scene {
         WindowGroup {
             //LoginView()
-            MenuView(calViewModel: CalViewModel(), showDetailView: ShowDetailView())
+            OccassionsMenu(searchType: $string1, noneSearch: $string2, calViewModel: CalViewModel(), showDetailView: ShowDetailView())
+            //MenuView(calViewModel: CalViewModel(), showDetailView: ShowDetailView())
                 .environment(\.managedObjectContext, dataController.persistentContainer.viewContext)
         }
     }

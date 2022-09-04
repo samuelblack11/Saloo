@@ -190,8 +190,6 @@ extension ShowPriorCardsView {
             share[CKShare.SystemFieldKey.title] = card.cardName
             share[CKShare.SystemFieldKey.thumbnailImageData] = card.coverImage
             share[CKShare.SystemFieldKey.shareType] = "Your Greeting Card from GreetMe"
-            //share[CKShare.]
-            //share[CKShare.ID] =
             self.share = share
             }
         catch {

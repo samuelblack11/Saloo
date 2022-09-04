@@ -114,8 +114,6 @@ extension CalViewModel: FSCalendarDelegate, FSCalendarDataSource, FSCalendarDele
         //if date in eventList values, take last character of corresponding eventList key and make that the title for the date
         eventsFromCore = loadCoreDataEvents()
         for event in eventsFromCore {
-            print("&%")
-            print(event.eventNameCore!)
             if date == event.eventDateCore! {
                 matchingEventName = String(event.eventNameCore!.last!)
             }
@@ -189,6 +187,7 @@ extension CalViewModel {
          //if first logon
         if defaults.bool(forKey: "First Launch") == true {
             print("Not First Launch")
+            //deleteAllForEntity()
             }
         else {
             print("First Launch")
@@ -210,7 +209,6 @@ extension CalViewModel {
             }
         }
         defaults.set(true, forKey: "First Launch")
-        //deleteAllForEntity()
         }
     
     

@@ -2,7 +2,7 @@
 //  FutureDelivery+CoreDataProperties.swift
 //  
 //
-//  Created by Sam Black on 9/1/22.
+//  Created by Sam Black on 9/3/22.
 //
 //
 
@@ -18,10 +18,6 @@ extension FutureDelivery {
 
     @NSManaged public var card: Data?
     @NSManaged public var deliveryDate: Date?
-    @NSManaged public var recipientList: NSObject?
-
-}
-
-extension FutureDelivery : Identifiable {
+    @NSManaged public var recipientList: [String]?
 
 }

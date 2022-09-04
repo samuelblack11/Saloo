@@ -38,24 +38,135 @@ struct OccassionsMenu: View {
     @State var test_a: Bool = false
     @Binding var noneSearch: String!
     @State var occassion: String!
-    
-      struct SearchItem {
-          let searchTitle: String
-          let searchTerm: String
+    @State private var createNew = false
+    @State private var showSent = false
+    @State private var showReceived = false
+    @State private var showCal = false
+    @ObservedObject var calViewModel: CalViewModel
+    @ObservedObject var showDetailView: ShowDetailView
+    struct SearchItem {
+        let searchTitle: String
+        let searchTerm: String
       }
-      
     //Class to store array of SearchItem(s)
-      class Searches: ObservableObject {
-          // @Published ensures change announcements get sent whenever the searchItems array gets modified
-          @Published var searchItems = [SearchItem]()
-      }
+    class Searches: ObservableObject {
+        // @Published ensures change announcements get sent whenever the searchItems array gets modified
+        @Published var searchItems = [SearchItem]()
+    }
     // @StateObject creates an instance of our Searches class
     // @StateObject asks SwiftUI to watch the object for any change announcements. So any time on of our @Published properties changes the iew will refresh.
-      @StateObject var menuItems = Searches()
+    @StateObject var menuItems = Searches()
+    
+    
+    var topBar: some View {
+        HStack {
+            Spacer()
+            Button("Calendar") {
+                showCal = true
+            }
+            .sheet(isPresented: $showCal) {
+                MenuView(calViewModel: calViewModel, showDetailView: showDetailView)
+                }
+        }.frame(width: (UIScreen.screenWidth/1.1), height: (UIScreen.screenHeight/12))
+    }
+    
+    var bottomBar: some View {
+        HStack {
+            Button{showSent = true} label: {
+                Image(systemName: "tray.and.arrow.up.fill")
+                    .foregroundColor(.blue)
+                    .font(.system(size: 24))
+                }
+            Spacer()
+            Button{showReceived = true} label: {
+                Image(systemName: "tray.and.arrow.down.fill")
+                    .foregroundColor(.blue)
+                    .font(.system(size: 24))
+                }
+            }
+            .padding(.bottom, 30)
+            .sheet(isPresented: $showSent) {ShowPriorCardsView()}
+            //.sheet(isPresented: $showReceived) {}
+    }
+    
+    
+
+    var body: some View {
+        topBar
+        // NavigationView combines display styling of UINavigationBar and VC stack behavior of UINavigationController.
+        // Hold cmd + ctrl, then click space bar to show emoji menu
+        NavigationView {
+        List {
+            Section(header: Text("Personal")) {
+                Text("Select from Photo Library ").onTapGesture {
+                    self.showingCameraCapture = false
+                    self.showingImagePicker = true
+                }
+                    .sheet(isPresented: $showingImagePicker)
+                        {ImagePicker(image: $coverImageFromLibrary)}
+                //.navigationTitle("Select Front Cover")
+                    .onChange(of: coverImageFromLibrary) { _ in loadImage(pic: coverImageFromLibrary!)
+                        handlePhotoLibrarySelection()
+                        segueToCollageMenu = true
+                        frontCoverIsPersonalPhoto = 1
+                        noneSearch = "None"
+                        }
+                    .sheet(isPresented: $segueToCollageMenu){
+                        let searchObject = SearchParameter.init(searchText: $noneSearch)
+                        CollageStyleMenu(collageImage: $collageImage, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenObject: $chosenObject, noteField: $noteField, searchObject: searchObject)
+                    }
+                Text("Take Photo with Camera 📸 ").onTapGesture {
+                    self.showingImagePicker = false
+                    self.showingCameraCapture = true
+                }
+                .sheet(isPresented: $showingCameraCapture)
+                {CameraCapture(image: self.$coverImageFromCamera, isPresented: self.$showingCameraCapture, sourceType: .camera)}
+                .onChange(of: coverImageFromCamera) { _ in loadImage(pic: coverImageFromCamera!)
+                        handleCameraPic()
+                        segueToCollageMenu2 = true
+                        frontCoverIsPersonalPhoto = 1
+                        noneSearch = "None"
+                    }
+                .sheet(isPresented: $segueToCollageMenu2){
+                        let searchObject = SearchParameter.init(searchText: $noneSearch)
+                        CollageStyleMenu(collageImage: $collageImage, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenObject: $chosenObject, noteField: $noteField, searchObject: searchObject)
+                        }
+            }
+            Section(header: Text("Occassions & Holidays")) {
+            ForEach(menuItems.searchItems, id: \.searchTitle) { search in
+                Text(search.searchTitle).onTapGesture {
+                    presentUCV = true
+                    frontCoverIsPersonalPhoto = 0
+                    self.searchType = search.searchTerm
+                }.sheet(isPresented: $presentUCV) {
+                    let searchObject = SearchParameter.init(searchText: $searchType)
+                    UnsplashCollectionView(searchParam: searchObject, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, pageCount: $pageCount)
+                    }
+                }
+            }
+        }
+        .sheet(isPresented: $presentPrior) {
+            MenuView(calViewModel: calViewModel, showDetailView: showDetailView)
+        }
+        .font(.headline)
+        .listStyle(GroupedListStyle())
+        .onAppear(perform: createOccassionsMenu)
+        }
+        Spacer()
+        bottomBar
+    }
+}
+
+
+
+
+
+
+
+
+extension OccassionsMenu {
     
     func loadImage(pic: UIImage) {
-        print("#######")
-        print(pic)
         coverImage = pic
         if showingImagePicker  {
             test_a = true
@@ -92,78 +203,6 @@ struct OccassionsMenu: View {
         menuItems.searchItems.append(hanukkah)
         menuItems.searchItems.append(christmas)
         menuItems.searchItems.append(nye)
-    }
-
-    var body: some View {
-        // NavigationView combines display styling of UINavigationBar and VC stack behavior of UINavigationController.
-        // Hold cmd + ctrl, then click space bar to show emoji menu
-        NavigationView {
-        List {
-            Section(header: Text("Personal")) {
-                Text("Select from Photo Library ").onTapGesture {
-                    self.showingCameraCapture = false
-                    self.showingImagePicker = true
-                }
-                .sheet(isPresented: $showingImagePicker)
-                    {ImagePicker(image: $coverImageFromLibrary)}
-                .navigationTitle("Select Front Cover")
-                .onChange(of: coverImageFromLibrary) { _ in loadImage(pic: coverImageFromLibrary!)
-                        handlePhotoLibrarySelection()
-                        segueToCollageMenu = true
-                        frontCoverIsPersonalPhoto = 1
-                        noneSearch = "None"
-                    }
-                    .sheet(isPresented: $segueToCollageMenu){
-                        let searchObject = SearchParameter.init(searchText: $noneSearch)
-                        CollageStyleMenu(collageImage: $collageImage, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenObject: $chosenObject, noteField: $noteField, searchObject: searchObject)
-                    }
-                Text("Take Photo with Camera 📸 ").onTapGesture {
-                    self.showingImagePicker = false
-                    self.showingCameraCapture = true
-
-                }
-                .sheet(isPresented: $showingCameraCapture)
-                {CameraCapture(image: self.$coverImageFromCamera, isPresented: self.$showingCameraCapture, sourceType: .camera)}
-                .onChange(of: coverImageFromCamera) { _ in loadImage(pic: coverImageFromCamera!)
-                        handleCameraPic()
-                        segueToCollageMenu2 = true
-                        frontCoverIsPersonalPhoto = 1
-                        noneSearch = "None"
-                    }
-                    .sheet(isPresented: $segueToCollageMenu2){
-
-                        let searchObject = SearchParameter.init(searchText: $noneSearch)
-                        CollageStyleMenu(collageImage: $collageImage, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenObject: $chosenObject, noteField: $noteField, searchObject: searchObject)
-                    }
-            }
-            Section(header: Text("Occassions & Holidays")) {
-            ForEach(menuItems.searchItems, id: \.searchTitle) { search in
-                Text(search.searchTitle).onTapGesture {
-                    presentUCV = true
-                    frontCoverIsPersonalPhoto = 0
-                    self.searchType = search.searchTerm
-                }.sheet(isPresented: $presentUCV) {
-                    let searchObject = SearchParameter.init(searchText: $searchType)
-                    UnsplashCollectionView(searchParam: searchObject, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, pageCount: $pageCount)
-                    }
-                }
-            }
-        }
-        .navigationTitle("Pick Your Occassion")
-        .navigationBarItems(leading:
-            Button {
-                print("Back button tapped")
-                presentationMode.wrappedValue.dismiss()
-            } label: {
-                Image(systemName: "chevron.left").foregroundColor(.blue)
-                Text("Back")
-            })
-        .sheet(isPresented: $presentPrior) {            
-            MenuView(calViewModel: CalViewModel(), showDetailView: ShowDetailView())
-        }
-        .font(.headline)
-        .listStyle(GroupedListStyle())
-        }.onAppear(perform: createOccassionsMenu)
     }
     
     

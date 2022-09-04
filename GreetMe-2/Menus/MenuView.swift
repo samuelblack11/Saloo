@@ -49,52 +49,26 @@ struct MenuView: View {
                     }
                 }
                 Spacer()
-                CalendarView(calendar: calViewModel.calendar, isCalendarExpanded: $calViewModel.isCalendarExpanded, showDetailView: $calViewModel.showDetailView).onAppear{self.eventsFromCore = loadCoreDataEvents()}
-                Spacer()
-                HStack {
-                    Button{showSent = true} label: {
-                        Image(systemName: "tray.and.arrow.up.fill")
-                            .foregroundColor(.blue)
-                            .font(.system(size: 24))
-                        }
-                    Spacer()
-                    Button{createNew = true} label: {
-                        Image(systemName: "plus")
-                            .foregroundColor(.blue)
-                            .font(.system(size: 24))
-                        }
-                    Spacer()
-                    Button{showReceived = true} label: {
-                        Image(systemName: "tray.and.arrow.down.fill")
-                            .foregroundColor(.blue)
-                            .font(.system(size: 24))
-                        }
-                    }
-                    .padding(.bottom, 30)
-                    .sheet(isPresented: $createNew) {OccassionsMenu(searchType: $searchType, noneSearch: $noneSearch)}
-                    .sheet(isPresented: $showSent) {ShowPriorCardsView()}
-                    //.sheet(isPresented: $showReceived) {}
-                    .sheet(isPresented: $calViewModel.showDetailView.showDetailView) {DateDetailView(eventsForShow: calViewModel.eventsForShow)
-                            //.presentationDetents([.medium])
-                    }
-                    .sheet(isPresented: $addEventToCalendarSheet) {AddEventToCalendarForm()}
+                CalendarView(calendar: calViewModel.calendar, isCalendarExpanded: $calViewModel.isCalendarExpanded, showDetailView: $calViewModel.showDetailView).onAppear{self.eventsFromCore = loadCoreDataEvents()
+                    
+                }
+                .padding(.bottom, 30)
+                .sheet(isPresented: $calViewModel.showDetailView.showDetailView) {DateDetailView(eventsForShow: calViewModel.eventsForShow)}
+                    //.presentationDetents([.medium])}
+                .sheet(isPresented: $addEventToCalendarSheet) {AddEventToCalendarForm()}
             }
         }
     }
 
 extension MenuView {
+    
     func loadCoreDataEvents() -> [CalendarDate] {
         let request = CalendarDate.createFetchRequest()
-        print(request)
-        print("^^^^")
         let sort = NSSortDescriptor(key: "eventDateCore", ascending: false)
         request.sortDescriptors = [sort]
         var events: [CalendarDate] = []
         do {
             events = try CoreDataStack.shared.context.fetch(request)
-            print("Got \(events.count) Events")
-            print("loadCoreDataEvents Called....")
-            print(events)
         }
         catch {
             print("Fetch failed")

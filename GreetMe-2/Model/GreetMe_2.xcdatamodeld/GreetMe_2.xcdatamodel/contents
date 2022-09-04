@@ -23,7 +23,7 @@
     <entity name="FutureDelivery" representedClassName=".FutureDelivery" syncable="YES">
         <attribute name="card" optional="YES" attributeType="Binary"/>
         <attribute name="deliveryDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
-        <attribute name="recipientList" optional="YES" attributeType="Transformable"/>
+        <attribute name="recipientList" optional="YES" attributeType="Transformable" valueTransformerName="NSSecureUnarchiveFromData" customClassName="[String]"/>
     </entity>
     <elements>
         <element name="CalendarDate" positionX="-63" positionY="90" width="128" height="59"/>
