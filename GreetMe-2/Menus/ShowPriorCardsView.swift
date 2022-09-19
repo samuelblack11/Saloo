@@ -76,6 +76,7 @@ struct ShowPriorCardsView: View {
                                 
                                 //CloudSharingView(share: share, container: stack.ckContainer, card: card)
                                 CloudSharingView(share: share, container: stack.ckContainer, card: card)
+                                    
                                 
                             }
                           })
@@ -163,37 +164,41 @@ extension ShowPriorCardsView {
   private func createShare(_ card: Card) async {
       print("creating share.......")
       
-      let recordIdName = CKRecord.ID(recordName: "\(card.cardName!)-\(card.objectID)")
+      //let recordIdName = CKRecord.ID(recordName: "\(card.cardName!)-\(card.objectID)")
 
-      CoreDataStack.shared.ckContainer.privateCloudDatabase.fetch(withRecordID: recordIdName) { [self] record, error in
-              if let error = error {
-                  DispatchQueue.main.async {
-                      // meaningful error message here!
-                      print("!!!!!")
-                      print(error.localizedDescription)
-                  }
-              } else {
-                  if let record = record {
-                      self.returnRecord = record
-                      let share3 = CKShare(rootRecord: record)
-                      share3[CKShare.SystemFieldKey.title] = card.cardName
-                      share3[CKShare.SystemFieldKey.thumbnailImageData] = card.coverImage
-                      share3[CKShare.SystemFieldKey.shareType] = "Your Greeting Card from GreetMe"
-                      self.share = share3
-                   }
-              }
+      //CoreDataStack.shared.ckContainer.privateCloudDatabase.fetch(withRecordID: recordIdName) { [self] record, error in
+      //        if let error = error {
+      //            DispatchQueue.main.async {
+      //                // meaningful error message here!
+      //                print("!!!!!")
+      //                print(error.localizedDescription)
+      //            }
+      //        } else {
+      //            if let record = record {
+      //                self.returnRecord = record
+      //                print("^^^^")
+      //                print(record)
+      //                print("^^^^")
+      //                let share3 = CKShare(rootRecord: record)
+      //                share3[CKShare.SystemFieldKey.title] = card.cardName
+      //                share3[CKShare.SystemFieldKey.thumbnailImageData] = card.coverImage
+      //                share3[CKShare.SystemFieldKey.shareType] = "Your Greeting Card from GreetMe"
+     //                 self.share = share3
+     //                 print("****")
+     //                 print(share3)
+     //                 print("****")
+     //              }
+     //         }
+     //     }
+      
+        do {
+         let (_, share, _) = try await stack.persistentContainer.share([card], to: nil)
+            share[CKShare.SystemFieldKey.title] = card.cardName
+            self.share = share
+          } catch {
+            print("Failed to create share")
           }
-
-        //do {
-         //let (_, share, _) = try await stack.persistentContainer.share([card], to: nil)
-      //stack.persistentContainer.share
-        //    self.share = share3
-
-        //    }
-        //catch {
-        //    print("Error+++++")
-       // }
-  }
+        }
 
   private func string(for permission: CKShare.ParticipantPermission) -> String {
     switch permission {
@@ -209,7 +214,7 @@ extension ShowPriorCardsView {
       fatalError("A new value added to CKShare.Participant.Permission")
     }
   }
-
+    
   private func string(for role: CKShare.ParticipantRole) -> String {
     switch role {
     case .owner:

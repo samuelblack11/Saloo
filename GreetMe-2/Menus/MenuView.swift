@@ -53,7 +53,17 @@ struct MenuView: View {
                     
                 }
                 .padding(.bottom, 30)
-                .sheet(isPresented: $calViewModel.showDetailView.showDetailView) {DateDetailView(eventsForShow: calViewModel.eventsForShow)}
+                .sheet(isPresented: $calViewModel.showDetailView.showDetailView) {if #available(iOS 16.0, *) {
+                    DateDetailView(eventsForShow: calViewModel.eventsForShow)
+                        .presentationDetents([.medium])
+                } else {
+                    // Fallback on earlier versions
+                    DateDetailView(eventsForShow: calViewModel.eventsForShow)
+                }
+                    
+                    
+                    
+                }
                     //.presentationDetents([.medium])}
                 .sheet(isPresented: $addEventToCalendarSheet) {AddEventToCalendarForm()}
             }

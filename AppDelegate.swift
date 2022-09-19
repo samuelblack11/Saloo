@@ -31,7 +31,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     
-    
     func windowScene(_ windowScene: UIWindowScene,
         userDidAcceptCloudKitShareWith cloudKitShareMetadata: CKShare.Metadata) {
         
@@ -39,18 +38,36 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         let store = stack.sharedPersistentStore
         let container = stack.persistentContainer
         
-       container.acceptShareInvitations(from: [cloudKitShareMetadata],
-                                        into: store) { _, error in
-           if let error = error {
-             print("acceptShareInvitation error :\(error)")
-           }
-         }
-        
-        print("Trying to Accept Share......")
+        container.acceptShareInvitations(from: [cloudKitShareMetadata], into: store) { _, error in
+                if let error = error {
+                    print("acceptShareInvitation error :\(error)")
+                }
+            }
         // if participant is owner
         if cloudKitShareMetadata.participantRole.rawValue == 1 {
-
+            print("Owner Is Trying To Accept Share....")
+            let recordName = cloudKitShareMetadata.share.self.value(forKey: "cloudkit.type")! as? String
+            let recordIdName = CKRecord.ID(recordName: recordName!)
+            CoreDataStack.shared.ckContainer.privateCloudDatabase.fetch(withRecordID: recordIdName) { [self] record, error in
+                if let error = error {
+                    DispatchQueue.main.async {
+                        // meaningful error message here!
+                        print("!!!!!")
+                        print(error.localizedDescription)
+                    }
+                }
+                
+                else {
+                    let asset = record!.object(forKey: "card")! as? CKAsset
+                    
+                
+                    print(">>>>>>>>>>>>>>")
+                    print(asset!)
+                    print("<<<<<<<<<<<<<<")
+                    let assetData = NSData(contentsOf: cloudKitShareMetadata.share.url!)
+                }
+                 
+            }
         }
-
     }
 }
