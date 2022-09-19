@@ -31,6 +31,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     
+    var card: CKAsset?
+    
     func windowScene(_ windowScene: UIWindowScene,
         userDidAcceptCloudKitShareWith cloudKitShareMetadata: CKShare.Metadata) {
         
@@ -56,15 +58,14 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                         print(error.localizedDescription)
                     }
                 }
-                
                 else {
+                    // https://medium.com/macoclock/how-to-fetch-image-assets-from-cloudkit-to-swiftui-app-74ad6d23821e
                     let asset = record!.object(forKey: "card")! as? CKAsset
+                    let assetData = NSData(contentsOf: (asset?.fileURL)!)
+                    //let assetData = NSData(contentsOf: cloudKitShareMetadata.share.url!)
+                    UserDefaults.standard.set(assetData, forKey: "ownerCardImage")
                     
-                
-                    print(">>>>>>>>>>>>>>")
-                    print(asset!)
-                    print("<<<<<<<<<<<<<<")
-                    let assetData = NSData(contentsOf: cloudKitShareMetadata.share.url!)
+                    
                 }
                  
             }
