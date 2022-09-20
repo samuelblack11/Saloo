@@ -14,6 +14,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ application: UIApplication, configurationForConnecting
         connectingSceneSession: UISceneSession,
         options: UIScene.ConnectionOptions) -> UISceneConfiguration {
+        let ownerOpeningOwnShare = true
 
         // Create a scene configuration object for the
         // specified session role.
@@ -24,14 +25,20 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // scene delegate that implements the share
         // acceptance method.
         config.delegateClass = SceneDelegate.self
-
+        
         return config
     }
+    
+    
+    
+    
+    
+    
 }
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     
-    var card: CKAsset?
+    @State var ownerOpeningOwnShare = false
     
     func windowScene(_ windowScene: UIWindowScene,
         userDidAcceptCloudKitShareWith cloudKitShareMetadata: CKShare.Metadata) {
@@ -64,10 +71,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                     let assetData = NSData(contentsOf: (asset?.fileURL)!)
                     //let assetData = NSData(contentsOf: cloudKitShareMetadata.share.url!)
                     UserDefaults.standard.set(assetData, forKey: "ownerCardImage")
-                    
-                    
+                    ownerOpeningOwnShare = true
+
                 }
-                 
             }
         }
     }
