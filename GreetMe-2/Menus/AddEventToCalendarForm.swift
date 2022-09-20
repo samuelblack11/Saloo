@@ -94,12 +94,6 @@ extension AddEventToCalendarForm {
                     else {
                         recurringDateComps.year = originalEventYear
                     }
-                    print("---")
-                    print(originalEventDay)
-                    print(month)
-                    print(originalEventYear)
-                    
-                    
                     let date = Calendar.current.date(from: recurringDateComps)!
                     let dateFormatter = DateFormatter()
                     dateFormatter.dateStyle = .medium

@@ -192,7 +192,7 @@ struct FinalizeCardView: View {
                 label: {Image(systemName: "menucard.fill").foregroundColor(.blue)
                 Text("Menu")})
         .sheet(isPresented: $presentMenu) {
-            OccassionsMenu(searchType: $string1, noneSearch: $string2, calViewModel: CalViewModel(), showDetailView: ShowDetailView())
+            OccassionsMenu(searchType: $string1, noneSearch: $string2, calViewModel: CalViewModel(), showDetailView: ShowDetailView(), ownerOpeningOwnShare: false)
             }
         }
     }

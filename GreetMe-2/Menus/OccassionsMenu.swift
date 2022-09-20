@@ -44,6 +44,7 @@ struct OccassionsMenu: View {
     @State private var showCal = false
     @ObservedObject var calViewModel: CalViewModel
     @ObservedObject var showDetailView: ShowDetailView
+    @State var ownerOpeningOwnShare: Bool
     struct SearchItem {
         let searchTitle: String
         let searchTerm: String
@@ -142,11 +143,15 @@ struct OccassionsMenu: View {
                     let searchObject = SearchParameter.init(searchText: $searchType)
                     UnsplashCollectionView(searchParam: searchObject, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, pageCount: $pageCount)
                     }
+                
                 }
             }
         }
         .sheet(isPresented: $presentPrior) {
             MenuView(calViewModel: calViewModel, showDetailView: showDetailView)
+        }
+        .sheet(isPresented: $ownerOpeningOwnShare) {
+            OpenOwnerShare()
         }
         .font(.headline)
         .listStyle(GroupedListStyle())
@@ -165,6 +170,10 @@ struct OccassionsMenu: View {
 
 
 extension OccassionsMenu {
+    
+    func runIt() {
+        print("ownerOpeningOwnShare is TRUE")
+    }
     
     func loadImage(pic: UIImage) {
         coverImage = pic
