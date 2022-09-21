@@ -9,12 +9,14 @@ import Foundation
 import SwiftUI
 import CloudKit
 
-
-class AppDelegate: UIResponder, UIApplicationDelegate {
+class AppDelegate: UIResponder, UIApplicationDelegate, ObservableObject {
+    @Published var oo2 = OwnerOpeningShare()
+    @Published var oo3 = false
+    
     func application(_ application: UIApplication, configurationForConnecting
         connectingSceneSession: UISceneSession,
         options: UIScene.ConnectionOptions) -> UISceneConfiguration {
-        let ownerOpeningOwnShare = true
+       //let ownerOpeningOwnShare = true
 
         // Create a scene configuration object for the
         // specified session role.
@@ -28,31 +30,19 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         return config
     }
-    
-    
-    
-    
-    
-    
 }
-
-
-
 
 class OwnerOpeningShare: ObservableObject {
-    static let shared = OwnerOpeningShare()
     @Published var owner: Bool = false
+    @EnvironmentObject var sceneDelegate: SceneDelegate
 }
 
+class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
+    @UIApplicationDelegateAdaptor var appDelegate: AppDelegate
 
-
-class SceneDelegate: UIResponder, UIWindowSceneDelegate {
-    
-    @State var ownerOpeningOwnShare: Bool = false
-
-    
     func windowScene(_ windowScene: UIWindowScene,
         userDidAcceptCloudKitShareWith cloudKitShareMetadata: CKShare.Metadata) {
+        //@EnvironmentObject var togg = false
         let stack = CoreDataStack.shared
         let store = stack.sharedPersistentStore
         let container = stack.persistentContainer
@@ -64,9 +54,14 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             }
         // if participant is owner
         if ifShareOwner(cloudKitShareMetadata: cloudKitShareMetadata) {
-            OwnerOpeningShare.shared.owner.toggle()
             print("?????")
-            print(OwnerOpeningShare.shared.owner)
+            appDelegate.oo2.owner.toggle()
+            appDelegate.oo3.toggle()
+            print(appDelegate.oo2.owner)
+            print("---")
+            print(appDelegate.oo3)
+            //UserDefaults.standard.set(true, forKey: "ownerOpenedOwnShare")
+            //print(UserDefaults.standard.object(forKey: "ownerOpenedOwnShare") as? Bool)
         }
     }
     

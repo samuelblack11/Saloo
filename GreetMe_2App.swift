@@ -14,11 +14,12 @@ struct GreetMe_2App: App {
     @State var string1: String!
     @State var string2: String!
     @UIApplicationDelegateAdaptor var appDelegate: AppDelegate
-    
+
     var body: some Scene {
         WindowGroup {
-            OccassionsMenu(searchType: $string1, noneSearch: $string2, calViewModel: CalViewModel(), showDetailView: ShowDetailView(), ownerOpeningOwnShare: OwnerOpeningShare.shared.owner)
+            OccassionsMenu(searchType: $string1, noneSearch: $string2, calViewModel: CalViewModel(), showDetailView: ShowDetailView(), ownerOpeningOwnShare: appDelegate.oo3)
                 .environment(\.managedObjectContext, dataController.persistentContainer.viewContext)
+                .environmentObject(appDelegate)
         }
     }
 }

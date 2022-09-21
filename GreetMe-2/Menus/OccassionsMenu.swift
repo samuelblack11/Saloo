@@ -44,7 +44,10 @@ struct OccassionsMenu: View {
     @State private var showCal = false
     @ObservedObject var calViewModel: CalViewModel
     @ObservedObject var showDetailView: ShowDetailView
+    
+    //@EnvironmentObject var sceneDelegate: SceneDelegate
     @State var ownerOpeningOwnShare: Bool
+    
     struct SearchItem {
         let searchTitle: String
         let searchTerm: String
