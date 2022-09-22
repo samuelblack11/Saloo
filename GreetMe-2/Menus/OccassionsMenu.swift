@@ -6,7 +6,7 @@
 //
 // https://www.hackingwithswift.com/quick-start/swiftui/how-to-make-a-view-dismiss-itself
 // https://www.hackingwithswift.com/books/ios-swiftui/building-a-list-we-can-delete-from
-
+// https://stackoverflow.com/questions/66283978/swiftui-open-a-specific-view-when-user-opens-a-push-notification/66284621#66284621
 import Foundation
 import SwiftUI
 import UIKit
@@ -44,9 +44,10 @@ struct OccassionsMenu: View {
     @State private var showCal = false
     @ObservedObject var calViewModel: CalViewModel
     @ObservedObject var showDetailView: ShowDetailView
-    
+    @UIApplicationDelegateAdaptor var appDelegate: AppDelegate
     //@EnvironmentObject var sceneDelegate: SceneDelegate
-    @State var ownerOpeningOwnShare: Bool
+    @State var oo2: Bool
+
     
     struct SearchItem {
         let searchTitle: String
@@ -153,8 +154,11 @@ struct OccassionsMenu: View {
         .sheet(isPresented: $presentPrior) {
             MenuView(calViewModel: calViewModel, showDetailView: showDetailView)
         }
-        .sheet(isPresented: $ownerOpeningOwnShare) {
+        .sheet(isPresented: $oo2) {
             OpenOwnerShare()
+        }
+        .onReceive(appDelegate.oo1.$owner) { (x) in
+            if x != nil {oo2 = true}
         }
         .font(.headline)
         .listStyle(GroupedListStyle())
