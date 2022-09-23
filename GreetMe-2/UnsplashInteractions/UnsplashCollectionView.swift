@@ -100,12 +100,16 @@ struct UnsplashCollectionView: View {
         }
     
     func handleTap(index: Int) {
-        segueToConfirmFrontCover = true
-        chosenSmallURL = imageObjects[index].smallImageURL
-        chosenPhotographer = imageObjects[index].coverImagePhotographer
-        chosenUserName = imageObjects[index].coverImageUserName
-        chosenDownloadLocation = imageObjects[index].downloadLocation
-        chosenObject = CoverImageObject.init(coverImage: nil, smallImageURL: chosenSmallURL, coverImagePhotographer: chosenPhotographer, coverImageUserName: chosenUserName, downloadLocation: chosenDownloadLocation, index: index)
+        Task {
+            let (data1, _) = try await URLSession.shared.data(from: imageObjects[index].smallImageURL)
+
+            segueToConfirmFrontCover = true
+            chosenSmallURL = imageObjects[index].smallImageURL
+            chosenPhotographer = imageObjects[index].coverImagePhotographer
+            chosenUserName = imageObjects[index].coverImageUserName
+            chosenDownloadLocation = imageObjects[index].downloadLocation
+            chosenObject = CoverImageObject.init(coverImage: data1, smallImageURL: chosenSmallURL, coverImagePhotographer: chosenPhotographer, coverImageUserName: chosenUserName, downloadLocation: chosenDownloadLocation, index: index)
+        }
     }
 
     func getUnsplashPhotos() {

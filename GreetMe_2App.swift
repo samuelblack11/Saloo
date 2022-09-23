@@ -18,7 +18,7 @@ struct GreetMe_2App: App {
     var body: some Scene {
         WindowGroup {
             OccassionsMenu(searchType: $string1, noneSearch: $string2, calViewModel: CalViewModel(), showDetailView: ShowDetailView(), oo2: false)
-                .environmentObject(appDelegate)
+                //.environmentObject(appDelegate)
                 .environment(\.managedObjectContext, dataController.persistentContainer.viewContext)
         }
     }

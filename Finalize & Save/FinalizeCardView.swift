@@ -32,10 +32,8 @@ struct FinalizeCardView: View {
     @State var searchObject: SearchParameter
     @State var saveAndShareIsActive = false
     @State private var showCompleteAlert = false
-    
     var field1: String!
     var field2: String!
-    
     @State var string1: String!
     @State var string2: String!
     
@@ -194,18 +192,50 @@ struct FinalizeCardView: View {
         .sheet(isPresented: $presentMenu) {
             OccassionsMenu(searchType: $string1, noneSearch: $string2, calViewModel: CalViewModel(), showDetailView: ShowDetailView(), oo2: false)
             }
+        .onAppear(){
+
+            }
+        }
         }
     }
-}
+
 
 extension FinalizeCardView {
     
+    
+    
+    
+    func loadCoverData() -> (image: Image, data: Data){
+        var coverSourceImage: UIImage?
+        var coverSourceData: Data?
+        DispatchQueue.main.async {
+            let session = URLSession.shared
+            let request = URLRequest(url: chosenObject.smallImageURL)
+            let dataTask = session.dataTask(with: request, completionHandler: { (data, response, error) -> Void in
+                if let data = data, let image = UIImage(data: data) {
+                    DispatchQueue.main.async {
+                        print("$1")
+                        coverSourceImage = image
+                        print("$2")
+                        coverSourceData = data
+                        print("$3")
+                    }
+                }
+            })
+            dataTask.resume()
+            }
+        print("$4")
+        return (Image(uiImage: coverSourceImage!), coverSourceData!)
+    }
+
+    
     func coverSource() -> Image {
+
         if chosenObject.coverImage != nil {
             return Image(uiImage: UIImage(data: chosenObject.coverImage!)!)
         }
         else {
-            return Image(uiImage: UIImage(data: try! Data(contentsOf: chosenObject.smallImageURL))!)
+            return loadCoverData().image
         }
     }
     
@@ -214,7 +244,7 @@ extension FinalizeCardView {
             return chosenObject.coverImage!
         }
         else {
-            return try! Data(contentsOf: chosenObject.smallImageURL)
+            return try! loadCoverData().data
         }
     }
         
@@ -263,18 +293,21 @@ extension FinalizeCardView {
         
         let cardURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0].appendingPathComponent("\(card.cardName!).png")
         do {
+            print("trying save....")
             try card.card?.write(to: cardURL)
+            print("Save Success.....")
         }
         catch {
             print(error.localizedDescription)
         }
-        print("=====")
-        print(cardURL.absoluteString)
+        
         let cardAsset = CKAsset(fileURL: cardURL)
         cardRecord["card"] = cardAsset
-
+        print("set card asset")
+        print(cardRecord)
         // can sub in .publicCloudDatabase
         CoreDataStack.shared.ckContainer.privateCloudDatabase.save(cardRecord) { [self] record, error in
+            print("saving to db")
             DispatchQueue.main.async {
                 if let error = error {
                     print("+++")

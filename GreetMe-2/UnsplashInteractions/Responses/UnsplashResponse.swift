@@ -29,7 +29,7 @@ struct ResultDetails: Decodable {
     let urls: variousURLs
     let links: variousLinks
     // categories showing as empty list
-    let categories: [String]
+    let categories: [String]?
     let likes: Int?
     let liked_by_user: Bool?
     // current_user_collections showing as empty list

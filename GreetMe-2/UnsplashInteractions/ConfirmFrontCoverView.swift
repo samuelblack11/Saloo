@@ -24,12 +24,11 @@ struct ConfirmFrontCoverView: View {
     @Binding var frontCoverIsPersonalPhoto: Int
     @State var pageCount: Int
 
-
     var body: some View {
         NavigationView {
         VStack {
             //Image(uiImage: UIImage(data: chosenObject.coverImage!)!)
-            Image(uiImage: UIImage(data: try! Data(contentsOf: chosenObject.smallImageURL))!)
+            Image(uiImage: UIImage(data: chosenObject.coverImage!)!)
                 .resizable()
                 .frame(width: 250, height: 250)
                 .padding(.top, 50)
@@ -68,7 +67,6 @@ struct ConfirmFrontCoverView: View {
         .sheet(isPresented: $presentPrior) {
             UnsplashCollectionView(searchParam: searchObject, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, pageCount: $pageCount)
         }
-            
         }
     }
 }

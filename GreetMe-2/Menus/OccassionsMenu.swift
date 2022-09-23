@@ -158,6 +158,8 @@ struct OccassionsMenu: View {
             OpenOwnerShare()
         }
         .onReceive(appDelegate.oo1.$owner) { (x) in
+            print(appDelegate.oo1.$owner)
+            print("testing.......")
             if x != nil {oo2 = true}
         }
         .font(.headline)

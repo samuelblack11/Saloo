@@ -49,7 +49,14 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
             }
         // if participant is owner
         if cloudKitShareMetadata.participantRole.rawValue == 1 {
+            //let assetData = NSData(contentsOf: cloudKitShareMetadata.share.url!)
+            //UserDefaults.standard.set(assetData, forKey: "ownerCardImage")
+            print("++++++")
+            print(appDelegate.oo1.owner)
             appDelegate.oo1.owner = true
+            print(appDelegate.oo1.owner)
+            print("++++++")
+
         }
     }
             //DispatchQueue.main.async {
