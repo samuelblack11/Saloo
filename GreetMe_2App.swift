@@ -13,13 +13,13 @@ struct GreetMe_2App: App {
     let dataController = CoreDataStack.shared
     @State var string1: String!
     @State var string2: String!
-    @UIApplicationDelegateAdaptor var appDelegate: AppDelegate
+    //@UIApplicationDelegateAdaptor var appDelegate: AppDelegate
     
     var body: some Scene {
         WindowGroup {
             OccassionsMenu(searchType: $string1, noneSearch: $string2, calViewModel: CalViewModel(), showDetailView: ShowDetailView(), oo2: false)
                 //.environmentObject(appDelegate)
-                .environment(\.managedObjectContext, dataController.persistentContainer.viewContext)
+                .environment(\.managedObjectContext, dataController.context)
         }
     }
 }

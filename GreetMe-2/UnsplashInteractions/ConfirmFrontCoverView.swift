@@ -27,7 +27,6 @@ struct ConfirmFrontCoverView: View {
     var body: some View {
         NavigationView {
         VStack {
-            //Image(uiImage: UIImage(data: chosenObject.coverImage!)!)
             Image(uiImage: UIImage(data: chosenObject.coverImage!)!)
                 .resizable()
                 .frame(width: 250, height: 250)
@@ -42,7 +41,6 @@ struct ConfirmFrontCoverView: View {
             Spacer()
             Button("Confirm Image for Front Cover") {
                 segueToCollageMenu = true
-                
                 PhotoAPI.pingDownloadURL(downloadLocation: chosenObject.downloadLocation, completionHandler: { (response, error) in
                     if response != nil {
                         debugPrint("Ping Success!.......")
@@ -50,7 +48,6 @@ struct ConfirmFrontCoverView: View {
                         }
                     if response == nil {
                         debugPrint("Ping Failed!.......")}})
-                
             }.padding(.bottom, 10).sheet(isPresented: $segueToCollageMenu) {CollageStyleMenu(collageImage: $collageImage, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenObject: $chosenObject, noteField: $noteField, searchObject: searchObject)}
             Text("(Attribution Will Be Included on Back Cover)").font(.system(size: 12)).padding(.bottom, 20)
             }
@@ -59,7 +56,6 @@ struct ConfirmFrontCoverView: View {
                 print("Back button tapped")
                 //presentPrior = true
                 presentationMode.wrappedValue.dismiss()
-
             } label: {
                 Image(systemName: "chevron.left").foregroundColor(.blue)
                 Text("Back")

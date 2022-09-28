@@ -44,7 +44,7 @@ struct OccassionsMenu: View {
     @State private var showCal = false
     @ObservedObject var calViewModel: CalViewModel
     @ObservedObject var showDetailView: ShowDetailView
-    @UIApplicationDelegateAdaptor var appDelegate: AppDelegate
+    //@UIApplicationDelegateAdaptor var appDelegate: AppDelegate
     //@EnvironmentObject var sceneDelegate: SceneDelegate
     @State var oo2: Bool
 
@@ -157,11 +157,11 @@ struct OccassionsMenu: View {
         .sheet(isPresented: $oo2) {
             OpenOwnerShare()
         }
-        .onReceive(appDelegate.oo1.$owner) { (x) in
-            print(appDelegate.oo1.$owner)
-            print("testing.......")
-            if x != nil {oo2 = true}
-        }
+        //.onReceive(appDelegate.oo1.$owner) { (x) in
+        //    print(appDelegate.oo1.$owner)
+        //    print("testing.......")
+        //    if x != nil {oo2 = true}
+       // }
         .font(.headline)
         .listStyle(GroupedListStyle())
         .onAppear(perform: createOccassionsMenu)

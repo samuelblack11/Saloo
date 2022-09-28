@@ -97,17 +97,14 @@ struct ShowPriorCardsView: View {
                             }
                             Button {
                                 chosenCard = card
+                                print(!stack.isShared(object: card))
                                 if !stack.isShared(object: card) {
-                                  Task {
-                                    await createShare(card)
-                                  }
-                                }
-                                if stack.isOwner(object: card) {
-                                    getPrevShare(card)
+                                      // createShare shows blank screen on first attempt
+                                    Task {
+                                        await createShare(card)
+                                    }
                                 }
                                 showShareSheet = true
-                                //chosenCard = card
-                                
                             } label: {
                                 Text("Share eCard Now")
                             }
@@ -161,44 +158,17 @@ extension ShowPriorCardsView {
         self.share = share2
     }
     
-  private func createShare(_ card: Card) async {
-      print("creating share.......")
-      
-      //let recordIdName = CKRecord.ID(recordName: "\(card.cardName!)-\(card.objectID)")
-
-      //CoreDataStack.shared.ckContainer.privateCloudDatabase.fetch(withRecordID: recordIdName) { [self] record, error in
-      //        if let error = error {
-      //            DispatchQueue.main.async {
-      //                // meaningful error message here!
-      //                print("!!!!!")
-      //                print(error.localizedDescription)
-      //            }
-      //        } else {
-      //            if let record = record {
-      //                self.returnRecord = record
-      //                print("^^^^")
-      //                print(record)
-      //                print("^^^^")
-      //                let share3 = CKShare(rootRecord: record)
-      //                share3[CKShare.SystemFieldKey.title] = card.cardName
-      //                share3[CKShare.SystemFieldKey.thumbnailImageData] = card.coverImage
-      //                share3[CKShare.SystemFieldKey.shareType] = "Your Greeting Card from GreetMe"
-     //                 self.share = share3
-     //                 print("****")
-     //                 print(share3)
-     //                 print("****")
-     //              }
-     //         }
-     //     }
-      
+    private func createShare(_ card: Card) async {
         do {
-         let (_, share, _) = try await stack.persistentContainer.share([card], to: nil)
+            let (_, share, _) = try await stack.persistentContainer.share([card], to: nil)
             share[CKShare.SystemFieldKey.title] = card.cardName
+            share[CKShare.SystemFieldKey.thumbnailImageData] = card.coverImage
+            share[CKShare.SystemFieldKey.shareType] = "Greeting"
             self.share = share
-          } catch {
+        } catch {
             print("Failed to create share")
-          }
         }
+    }
 
   private func string(for permission: CKShare.ParticipantPermission) -> String {
     switch permission {

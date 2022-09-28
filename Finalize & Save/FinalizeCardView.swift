@@ -39,7 +39,7 @@ struct FinalizeCardView: View {
     
     var eCardVertical: some View {
         VStack(spacing:1) {
-            coverSource()
+            Image(uiImage: UIImage(data: chosenObject.coverImage!)!)
                 .interpolation(.none)
                 .resizable()
                 .scaledToFit()
@@ -132,7 +132,7 @@ struct FinalizeCardView: View {
             .frame(width: (UIScreen.screenWidth/4.5), height: (UIScreen.screenHeight/7))
             // Front Cover
             HStack(spacing: 1)  {
-                coverSource()
+                Image(uiImage: UIImage(data: chosenObject.coverImage!)!)
                     .resizable()
             }.frame(width: (UIScreen.screenWidth/4.5), height: (UIScreen.screenHeight/7))
             }.frame(width: (UIScreen.screenWidth/2.25))
@@ -202,52 +202,6 @@ struct FinalizeCardView: View {
 
 extension FinalizeCardView {
     
-    
-    
-    
-    func loadCoverData() -> (image: Image, data: Data){
-        var coverSourceImage: UIImage?
-        var coverSourceData: Data?
-        DispatchQueue.main.async {
-            let session = URLSession.shared
-            let request = URLRequest(url: chosenObject.smallImageURL)
-            let dataTask = session.dataTask(with: request, completionHandler: { (data, response, error) -> Void in
-                if let data = data, let image = UIImage(data: data) {
-                    DispatchQueue.main.async {
-                        print("$1")
-                        coverSourceImage = image
-                        print("$2")
-                        coverSourceData = data
-                        print("$3")
-                    }
-                }
-            })
-            dataTask.resume()
-            }
-        print("$4")
-        return (Image(uiImage: coverSourceImage!), coverSourceData!)
-    }
-
-    
-    func coverSource() -> Image {
-
-        if chosenObject.coverImage != nil {
-            return Image(uiImage: UIImage(data: chosenObject.coverImage!)!)
-        }
-        else {
-            return loadCoverData().image
-        }
-    }
-    
-    func coverData() -> Data? {
-        if chosenObject.coverImage != nil {
-            return chosenObject.coverImage!
-        }
-        else {
-            return try! loadCoverData().data
-        }
-    }
-        
     func shareECardExternally() {
         showActivityController = true
         let cardForShare = SnapShotECard(chosenObject: $chosenObject, collageImage: $collageImage, noteField: $noteField, eCardText: $eCardText, text1: $text1, text2: $text2, text2URL: $text2URL, text3: $text3, text4: $text4).snapShotECardViewVertical.snapshot()
@@ -261,7 +215,7 @@ extension FinalizeCardView {
         card.card = eCardVertical.snapshot().pngData()
         card.cardName = noteField.cardName
         card.collage = collageImage.collageImage.pngData()
-        card.coverImage = coverData()!
+        card.coverImage = chosenObject.coverImage!
         card.date = Date.now
         card.message = noteField.noteText
         card.occassion = searchObject.searchText
@@ -277,19 +231,6 @@ extension FinalizeCardView {
         
         let recordName = CKRecord.ID(recordName: "\(card.cardName!)-\(card.objectID)")
         let cardRecord = CKRecord(recordType: "CD_Card", recordID: recordName)
-        cardRecord["CD_an1"] = card.an1 as? CKRecordValue
-        cardRecord["CD_an2"] = card.an2 as? CKRecordValue
-        cardRecord["CD_an2URL"] = card.an2URL as? CKRecordValue
-        cardRecord["CD_an3"] = card.an3 as? CKRecordValue
-        cardRecord["CD_an4"] = card.an4 as? CKRecordValue
-        cardRecord["CD_font"] = card.font as? CKRecordValue
-        cardRecord["CD_recipient"] = card.recipient as? CKRecordValue
-        cardRecord["CD_occassion"] = card.occassion as? CKRecordValue
-        cardRecord["CD_date"] = card.date as? CKRecordValue
-        cardRecord["CD_cardName"] = card.cardName as? CKRecordValue
-        cardRecord["CD_message"] = card.message as? CKRecordValue
-        //cardRecord["coverImage"] = card.coverImage as? CKRecordValue
-        //cardRecord["collage"] = card.collage as? CKRecordValue
         
         let cardURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0].appendingPathComponent("\(card.cardName!).png")
         do {
@@ -306,21 +247,24 @@ extension FinalizeCardView {
         print("set card asset")
         print(cardRecord)
         // can sub in .publicCloudDatabase
-        CoreDataStack.shared.ckContainer.privateCloudDatabase.save(cardRecord) { [self] record, error in
-            print("saving to db")
-            DispatchQueue.main.async {
-                if let error = error {
-                    print("+++")
-                   print("Error: \(error.localizedDescription)")
-                } else {
-                    print("+++")
-                    print("Done!")
-                }
-            }
-        }
-        print("Saved card to Core Data")
+        
+        saveToCloudKit(cardRecord: cardRecord, container: CoreDataStack.shared.ckContainer)
+        
     }
     
+    func saveToCloudKit(cardRecord: CKRecord, container: CKContainer) {
+    let pdb = container.privateCloudDatabase
+        print("------")
+        print(pdb)
+        
+        let operation = CKModifyRecordsOperation.init(recordsToSave: [cardRecord], recordIDsToDelete: nil)
+        print("Created Operation....")
+        operation.modifyRecordsResultBlock = { result in
+            print("^^^^^^^^^^^^")
+            print(result)
+        }
+        pdb.add(operation)
+    }
     func prepCardForExport() -> Data {
         let image = SnapShotCardForPrint(chosenObject: $chosenObject, collageImage: $collageImage, noteField: $noteField, text1: $text1, text2: $text2, text2URL: $text2URL, text3: $text3, text4: $text4, printCardText: $printCardText).snapshot()
         let a4_width = 595.2 - 20
@@ -369,3 +313,17 @@ extension UIScreen{
 // https://www.hackingwithswift.com/articles/103/seven-useful-methods-from-cgrect
 // https://stackoverflow.com/questions/57727107/how-to-get-the-iphones-screen-width-in-swiftui
 // https://www.hackingwithswift.com/read/33/4/writing-to-icloud-with-cloudkit-ckrecord-and-ckasset
+
+//cardRecord["CD_an1"] = card.an1 as? CKRecordValue
+//cardRecord["CD_an2"] = card.an2 as? CKRecordValue
+//cardRecord["CD_an2URL"] = card.an2URL as? CKRecordValue
+//cardRecord["CD_an3"] = card.an3 as? CKRecordValue
+//cardRecord["CD_an4"] = card.an4 as? CKRecordValue
+//cardRecord["CD_font"] = card.font as? CKRecordValue
+//cardRecord["CD_recipient"] = card.recipient as? CKRecordValue
+//cardRecord["CD_occassion"] = card.occassion as? CKRecordValue
+//cardRecord["CD_date"] = card.date as? CKRecordValue
+//cardRecord["CD_cardName"] = card.cardName as? CKRecordValue
+//cardRecord["CD_message"] = card.message as? CKRecordValue
+//cardRecord["coverImage"] = card.coverImage as? CKRecordValue
+//cardRecord["collage"] = card.collage as? CKRecordValue

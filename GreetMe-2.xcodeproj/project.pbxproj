@@ -34,7 +34,6 @@
 		26AD812B281F119A0069C3F0 /* ConfirmFrontCoverView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26AD812A281F119A0069C3F0 /* ConfirmFrontCoverView.swift */; };
 		26EB55652827120C00178F0B /* EnlargeECard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26EB55642827120C00178F0B /* EnlargeECard.swift */; };
 		2FA2853DA68002C942D1B78C /* Pods_GreetMe_2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7F1AE8F60D22915F8D334B20 /* Pods_GreetMe_2.framework */; };
-		C2163D0C28C15B6E00DEE861 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2163D0B28C15B6E00DEE861 /* AppDelegate.swift */; };
 		C2163D0E28C1609C00DEE861 /* ScheduleDelivery.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2163D0D28C1609C00DEE861 /* ScheduleDelivery.swift */; };
 		C22803E6289358E500802452 /* CloudSharingController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C22803E5289358E500802452 /* CloudSharingController.swift */; };
 		C22803E8289359AD00802452 /* CoreDataStack.swift in Sources */ = {isa = PBXBuildFile; fileRef = C22803E7289359AD00802452 /* CoreDataStack.swift */; };
@@ -87,7 +86,6 @@
 		26EB55642827120C00178F0B /* EnlargeECard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnlargeECard.swift; sourceTree = "<group>"; };
 		7F1AE8F60D22915F8D334B20 /* Pods_GreetMe_2.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_GreetMe_2.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		93AAAE1CF8AE1CB82C760293 /* Pods-GreetMe-2.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-GreetMe-2.debug.xcconfig"; path = "Target Support Files/Pods-GreetMe-2/Pods-GreetMe-2.debug.xcconfig"; sourceTree = "<group>"; };
-		C2163D0B28C15B6E00DEE861 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		C2163D0D28C1609C00DEE861 /* ScheduleDelivery.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleDelivery.swift; sourceTree = "<group>"; };
 		C22803E5289358E500802452 /* CloudSharingController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CloudSharingController.swift; path = "../../../../../Downloads/MyTravelJournal-3/final/MyTravelJournal/Controller/CloudSharingController.swift"; sourceTree = "<group>"; };
 		C22803E7289359AD00802452 /* CoreDataStack.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CoreDataStack.swift; path = "../../../../../Downloads/MyTravelJournal-3/final/MyTravelJournal/Helper/CoreDataStack.swift"; sourceTree = "<group>"; };
@@ -201,7 +199,6 @@
 				C23A9D212897ECA90059B97C /* Card+CoreDataProperties.swift */,
 				C23524D12896D5F80052494F /* PreSetCalendarDates.swift */,
 				26A7217F281DB8D500ADAE44 /* GreetMe_2App.swift */,
-				C2163D0B28C15B6E00DEE861 /* AppDelegate.swift */,
 				26A7217E281DB8D500ADAE44 /* GreetMe-2 */,
 				26A7217D281DB8D500ADAE44 /* Products */,
 				C2B650C8287AFFF90002E252 /* Frameworks */,
@@ -404,7 +401,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				260F68F7281DBDD2002E864B /* UnsplashCollectionView.swift in Sources */,
-				C2163D0C28C15B6E00DEE861 /* AppDelegate.swift in Sources */,
 				260F68FE281DBEBD002E864B /* PingDownloadResponse.swift in Sources */,
 				C23340EB28C3D589006222F5 /* FutureDelivery+CoreDataProperties.swift in Sources */,
 				260F68EF281DBD93002E864B /* CollageStyleMenu.swift in Sources */,
@@ -586,6 +582,7 @@
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -621,6 +618,7 @@
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
