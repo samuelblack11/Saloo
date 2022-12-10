@@ -1,10 +1,10 @@
+
 //
 //  AppDelegate.swift
 //  GreetMe-2
 //
 //  Created by Sam Black on 9/1/22.
 //
-
 import Foundation
 import SwiftUI
 import CloudKit
@@ -14,8 +14,26 @@ class OwnerOpeningShare: ObservableObject {
     @Published var owner: Bool?
 }
 
+class CardFromShare: ObservableObject {
+    static let shared = CardFromShare()
+    @Published var cardName: String?
+    @Published var collage: Data?
+    @Published var coverImage: Data?
+    @Published var date: Date?
+    @Published var message: String?
+    @Published var occassion: String?
+    @Published var recipient: String?
+    @Published var font: String?
+    @Published var an1: String?
+    @Published var an2: String?
+    @Published var an2URL: String?
+    @Published var an3: String?
+    @Published var an4: String?
+}
+
 class AppDelegate: UIResponder, UIApplicationDelegate, ObservableObject {
     @ObservedObject var oo1 = OwnerOpeningShare.shared
+    @ObservedObject var cardFromShare = CardFromShare.shared
 
     func application(_ application: UIApplication, configurationForConnecting
         connectingSceneSession: UISceneSession,
@@ -49,14 +67,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
             }
         // if participant is owner
         if cloudKitShareMetadata.participantRole.rawValue == 1 {
-            //let assetData = NSData(contentsOf: cloudKitShareMetadata.share.url!)
-            //UserDefaults.standard.set(assetData, forKey: "ownerCardImage")
-            print("++++++")
-            print(appDelegate.oo1.owner)
             appDelegate.oo1.owner = true
-            print(appDelegate.oo1.owner)
-            print("++++++")
-
         }
     }
             //DispatchQueue.main.async {

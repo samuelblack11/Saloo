@@ -134,4 +134,28 @@ struct UnsplashCollectionView: View {
             if response == nil {
                 print("Response is Nil")
             }}})}
+    
+    
+    func getUnsplashCollection() {
+        PhotoAPI.getPhoto(pageNum: pageCount, userSearch: searchParam.searchText, completionHandler: { (response, error) in
+            if response != nil {
+                self.picCount = response!.count
+                DispatchQueue.main.async {
+                    for picture in response! {
+                        if picture.urls.small != nil && picture.user.username != nil && picture.user.name != nil && picture.links.download_location != nil {
+                            let thisPicture = picture.urls.small
+                            let imageURL = URL(string: thisPicture!)
+                            // These lines slow down the appearance of images significantly
+                            // let thisPhotoData = try? Data(contentsOf: imageURL!)
+                            // let image = UIImage(data: thisPhotoData!)!
+                            let newObj = CoverImageObject.init(coverImage: nil, smallImageURL: imageURL!, coverImagePhotographer: picture.user.name!, coverImageUserName: picture.user.username!, downloadLocation: picture.links.download_location!, index: imageObjects.count)
+                            imageObjects.append(newObj)
+                    }}
+                }
+            if self.picCount == 0 {
+                print("No Picture Available for that Search")
+                }
+            if response == nil {
+                print("Response is Nil")
+            }}})}
 }

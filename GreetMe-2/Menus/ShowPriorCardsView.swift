@@ -159,6 +159,7 @@ extension ShowPriorCardsView {
     }
     
     private func createShare(_ card: Card) async {
+        
         do {
             let (_, share, _) = try await stack.persistentContainer.share([card], to: nil)
             share[CKShare.SystemFieldKey.title] = card.cardName
@@ -220,6 +221,20 @@ extension ShowPriorCardsView {
   }
     
     func loadCoreData() {
+        let request = Card.createFetchRequest()
+        let sort = NSSortDescriptor(key: "date", ascending: false)
+        request.sortDescriptors = [sort]
+        do {
+            cards = try CoreDataStack.shared.persistentContainer.viewContext.fetch(request)
+            print("Got \(cards.count) Cards")
+            //collectionView.reloadData()
+        }
+        catch {
+            print("Fetch failed")
+        }
+    }
+    
+    func loadOnlyMyCoreData(user: String) {
         let request = Card.createFetchRequest()
         let sort = NSSortDescriptor(key: "date", ascending: false)
         request.sortDescriptors = [sort]

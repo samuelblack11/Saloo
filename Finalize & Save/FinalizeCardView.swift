@@ -209,6 +209,7 @@ extension FinalizeCardView {
         activityItemsArray.append(cardForShare)
     }
     
+    
     func saveECard() {
         //save to core data
         let card = Card(context: CoreDataStack.shared.context)
@@ -229,25 +230,41 @@ extension FinalizeCardView {
         card.an4 = text4
         self.saveContext()
         
+        
         let recordName = CKRecord.ID(recordName: "\(card.cardName!)-\(card.objectID)")
         let cardRecord = CKRecord(recordType: "CD_Card", recordID: recordName)
         
-        let cardURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0].appendingPathComponent("\(card.cardName!).png")
+        let coverURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0].appendingPathComponent("\(card.cardName!).png")
+        let collageURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0].appendingPathComponent("\(card.cardName!).png")
+
         do {
             print("trying save....")
-            try card.card?.write(to: cardURL)
+            try card.coverImage?.write(to: coverURL)
+            try card.collage?.write(to: collageURL)
             print("Save Success.....")
         }
         catch {
             print(error.localizedDescription)
         }
+        cardRecord["CD_an1"] = card.an1 as? CKRecordValue
+        cardRecord["CD_an2"] = card.an2 as? CKRecordValue
+        cardRecord["CD_an2URL"] = card.an2URL as? CKRecordValue
+        cardRecord["CD_an3"] = card.an3 as? CKRecordValue
+        cardRecord["CD_an4"] = card.an4 as? CKRecordValue
+        cardRecord["CD_font"] = card.font as? CKRecordValue
+        cardRecord["CD_recipient"] = card.recipient as? CKRecordValue
+        cardRecord["CD_occassion"] = card.occassion as? CKRecordValue
+        cardRecord["CD_date"] = card.date as? CKRecordValue
+        cardRecord["CD_cardName"] = card.cardName as? CKRecordValue
+        cardRecord["CD_message"] = card.message as? CKRecordValue
+
+        let coverAsset = CKAsset(fileURL: coverURL)
+        let collageAsset = CKAsset(fileURL: collageURL)
+        cardRecord["coverImage"] = coverAsset
+        cardRecord["collage"] = collageAsset
         
-        let cardAsset = CKAsset(fileURL: cardURL)
-        cardRecord["card"] = cardAsset
-        print("set card asset")
-        print(cardRecord)
+        print("set card assets")
         // can sub in .publicCloudDatabase
-        
         saveToCloudKit(cardRecord: cardRecord, container: CoreDataStack.shared.ckContainer)
         
     }
@@ -256,7 +273,8 @@ extension FinalizeCardView {
     let pdb = container.privateCloudDatabase
         print("------")
         print(pdb)
-        
+        print("------")
+        print(cardRecord)
         let operation = CKModifyRecordsOperation.init(recordsToSave: [cardRecord], recordIDsToDelete: nil)
         print("Created Operation....")
         operation.modifyRecordsResultBlock = { result in
@@ -264,6 +282,8 @@ extension FinalizeCardView {
             print(result)
         }
         pdb.add(operation)
+        print(operation)
+        print()
     }
     func prepCardForExport() -> Data {
         let image = SnapShotCardForPrint(chosenObject: $chosenObject, collageImage: $collageImage, noteField: $noteField, text1: $text1, text2: $text2, text2URL: $text2URL, text3: $text3, text4: $text4, printCardText: $printCardText).snapshot()
@@ -287,7 +307,88 @@ extension FinalizeCardView {
                 }
             }
         }
+    
+    private enum CardRecordKeys {
+        static let type = "Card"
+        static let card = "card"
+        static let cardName = "cardName"
+        static let collage = "collage"
+        static let coverImage = "coverImage"
+        static let date = "date"
+        static let message = "message"
+        static let occassion = "occassion"
+        static let recipient = "recipient"
+        static let font = "font"
+        static let an1 = "an1"
+        static let an2 = "an2"
+        static let an2URL = "an2URL"
+        static let an3 = "an3"
+        static let an4 = "an4"
+    }
+
+    private enum SharedZone {
+        static let name = "SharedZone"
+        static let ID = CKRecordZone.ID(
+            zoneName: name,
+            ownerName: CKCurrentUserDefaultName
+        )
+    }
+    
 }
+
+extension FinalizeCardView {
+    var asRecord: CKRecord {
+        let cardRecord = CKRecord(
+            recordType: CardRecordKeys.type,
+            recordID: .init(zoneID: SharedZone.ID)
+        )
+        
+        cardRecord["CD_an1"] = card.an1 as? CKRecordValue
+        cardRecord["CD_an2"] = card.an2 as? CKRecordValue
+        cardRecord["CD_an2URL"] = card.an2URL as? CKRecordValue
+        cardRecord["CD_an3"] = card.an3 as? CKRecordValue
+        cardRecord["CD_an4"] = card.an4 as? CKRecordValue
+        cardRecord["CD_font"] = card.font as? CKRecordValue
+        cardRecord["CD_recipient"] = card.recipient as? CKRecordValue
+        cardRecord["CD_occassion"] = card.occassion as? CKRecordValue
+        cardRecord["CD_date"] = card.date as? CKRecordValue
+        cardRecord["CD_cardName"] = card.cardName as? CKRecordValue
+        cardRecord["CD_message"] = card.message as? CKRecordValue
+    
+        return cardRecord
+    }
+    
+    init?(from record: CKRecord) {
+        guard
+            
+            
+            
+            
+            
+            
+            let startDate = record[FastingRecordKeys.startDate] as? Date,
+            let endDate = record[FastingRecordKeys.endDate] as? Date,
+            let goalRawValue = record[FastingRecordKeys.goal] as? String,
+            let goal = Fasting.Goal(rawValue: goalRawValue)
+        else { return nil }
+        
+        self = .init(
+            startDate: startDate,
+            endDate: endDate,
+            goal: goal,
+            name: record.recordID.recordName
+        )
+    }
+}
+    
+    
+}
+
+
+
+
+
+
 
 extension UIScreen{
    static let screenWidth = UIScreen.main.bounds.size.width
@@ -313,17 +414,3 @@ extension UIScreen{
 // https://www.hackingwithswift.com/articles/103/seven-useful-methods-from-cgrect
 // https://stackoverflow.com/questions/57727107/how-to-get-the-iphones-screen-width-in-swiftui
 // https://www.hackingwithswift.com/read/33/4/writing-to-icloud-with-cloudkit-ckrecord-and-ckasset
-
-//cardRecord["CD_an1"] = card.an1 as? CKRecordValue
-//cardRecord["CD_an2"] = card.an2 as? CKRecordValue
-//cardRecord["CD_an2URL"] = card.an2URL as? CKRecordValue
-//cardRecord["CD_an3"] = card.an3 as? CKRecordValue
-//cardRecord["CD_an4"] = card.an4 as? CKRecordValue
-//cardRecord["CD_font"] = card.font as? CKRecordValue
-//cardRecord["CD_recipient"] = card.recipient as? CKRecordValue
-//cardRecord["CD_occassion"] = card.occassion as? CKRecordValue
-//cardRecord["CD_date"] = card.date as? CKRecordValue
-//cardRecord["CD_cardName"] = card.cardName as? CKRecordValue
-//cardRecord["CD_message"] = card.message as? CKRecordValue
-//cardRecord["coverImage"] = card.coverImage as? CKRecordValue
-//cardRecord["collage"] = card.collage as? CKRecordValue
