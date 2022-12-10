@@ -8,7 +8,8 @@
 
 import Foundation
 import CoreData
-
+import SwiftUI
+import CloudKit
 
 extension Card {
 
