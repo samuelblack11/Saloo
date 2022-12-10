@@ -307,81 +307,89 @@ extension FinalizeCardView {
                 }
             }
         }
-    
-    private enum CardRecordKeys {
-        static let type = "Card"
-        static let card = "card"
-        static let cardName = "cardName"
-        static let collage = "collage"
-        static let coverImage = "coverImage"
-        static let date = "date"
-        static let message = "message"
-        static let occassion = "occassion"
-        static let recipient = "recipient"
-        static let font = "font"
-        static let an1 = "an1"
-        static let an2 = "an2"
-        static let an2URL = "an2URL"
-        static let an3 = "an3"
-        static let an4 = "an4"
-    }
-
-    private enum SharedZone {
-        static let name = "SharedZone"
-        static let ID = CKRecordZone.ID(
-            zoneName: name,
-            ownerName: CKCurrentUserDefaultName
-        )
-    }
-    
 }
 
-extension FinalizeCardView {
+
+
+extension Card {
+    
     var asRecord: CKRecord {
         let cardRecord = CKRecord(
             recordType: CardRecordKeys.type,
             recordID: .init(zoneID: SharedZone.ID)
         )
         
-        cardRecord["CD_an1"] = card.an1 as? CKRecordValue
-        cardRecord["CD_an2"] = card.an2 as? CKRecordValue
-        cardRecord["CD_an2URL"] = card.an2URL as? CKRecordValue
-        cardRecord["CD_an3"] = card.an3 as? CKRecordValue
-        cardRecord["CD_an4"] = card.an4 as? CKRecordValue
-        cardRecord["CD_font"] = card.font as? CKRecordValue
-        cardRecord["CD_recipient"] = card.recipient as? CKRecordValue
-        cardRecord["CD_occassion"] = card.occassion as? CKRecordValue
-        cardRecord["CD_date"] = card.date as? CKRecordValue
-        cardRecord["CD_cardName"] = card.cardName as? CKRecordValue
-        cardRecord["CD_message"] = card.message as? CKRecordValue
+        
+        cardRecord[Card.CardRecordKeys.card] = FinalizeCardView.eCardVertical.snapshot().pngData()
+        cardRecord[Card.CardRecordKeys.card] =
+        cardRecord[Card.CardRecordKeys.card] =
+        cardRecord[Card.CardRecordKeys.card] =
+        cardRecord[Card.CardRecordKeys.card] =
+        cardRecord[Card.CardRecordKeys.card] =
+        cardRecord[Card.CardRecordKeys.card] =
+        cardRecord[Card.CardRecordKeys.card] =
+        cardRecord[Card.CardRecordKeys.card] =
+        cardRecord[Card.CardRecordKeys.card] =
+        cardRecord[Card.CardRecordKeys.card] =
     
         return cardRecord
     }
     
     init?(from record: CKRecord) {
         guard
-            
-            
-            
-            
-            
-            
-            let startDate = record[FastingRecordKeys.startDate] as? Date,
-            let endDate = record[FastingRecordKeys.endDate] as? Date,
-            let goalRawValue = record[FastingRecordKeys.goal] as? String,
-            let goal = Fasting.Goal(rawValue: goalRawValue)
+            let card = record[CardRecordKeys.card] as? Data,
+            let cardName = record[CardRecordKeys.cardName] as? String,
+            //let collage = record[CardRecordKeys.collage] as Data,
+            let date = record[CardRecordKeys.date] as? Date,
+            let message = record[CardRecordKeys.message] as? String,
+            let occassion = record[CardRecordKeys.occassion] as? String,
+            let recipient = record[CardRecordKeys.recipient] as? String,
+            let font = record[CardRecordKeys.font] as? String,
+            let an1 = record[CardRecordKeys.an1] as? String,
+            let an2 = record[CardRecordKeys.an2] as? String,
+            let an2URL = record[CardRecordKeys.an2URL] as? String,
+            let an3 = record[CardRecordKeys.an3] as? String,
+            let an4 = record[CardRecordKeys.an4] as? String,
+            //let goal = Fasting.Goal(rawValue: goalRawValue)
+            //let card = Card(context: CoreDataStack.shared.context)
         else { return nil }
         
         self = .init(
-            startDate: startDate,
-            endDate: endDate,
-            goal: goal,
+            card: card,
+            cardName: cardName,
+            //collage: collage,
+            date: date,
+            message: message,
+            occassion: occassion,
+            recipient: recipient,
+            font: font,
+            an1: an1,
+            an2: an2,
+            an2URL: an2URL,
+            an3: an3,
+            an4: an4,
             name: record.recordID.recordName
         )
     }
 }
+
+final class CloudKitService {
+    static let container = CKContainer(
+        identifier: "iCloud.GreetMe_2"
+    )
     
-    
+    func save(_ card: Card) async throws {
+        _ = try await Self.container.privateCloudDatabase.modifyRecordZones(
+            saving: [CKRecordZone(zoneName: Card.SharedZone.name)],
+            deleting: []
+        )
+        _ = try await Self.container.privateCloudDatabase.modifyRecords(
+            saving: [Card.asRecord],
+            deleting: []
+        )
+    }
+}
+
 }
 
 
@@ -414,3 +422,4 @@ extension UIScreen{
 // https://www.hackingwithswift.com/articles/103/seven-useful-methods-from-cgrect
 // https://stackoverflow.com/questions/57727107/how-to-get-the-iphones-screen-width-in-swiftui
 // https://www.hackingwithswift.com/read/33/4/writing-to-icloud-with-cloudkit-ckrecord-and-ckasset
+// https://swiftwithmajid.com/2022/03/29/zone-sharing-in-cloudkit/
