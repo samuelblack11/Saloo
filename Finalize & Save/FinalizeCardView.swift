@@ -210,7 +210,7 @@ extension FinalizeCardView {
     }
     
     
-    func saveECard() async {
+    func saveECard() {
         //save to core data
         let card = Card(context: CoreDataStack.shared.context)
         card.card = eCardVertical.snapshot().pngData()
@@ -268,7 +268,9 @@ extension FinalizeCardView {
         print("set card assets")
         // can sub in .publicCloudDatabase
         //saveToCloudKit(cardRecord: cardRecord, container: CoreDataStack.shared.ckContainer)
-        try await saveToCloudKit2(cardRecord: cardRecord, container: CoreDataStack.shared.ckContainer, cardZone: cardZone)
+        Task {
+            try await saveToCloudKit2(cardRecord: cardRecord, container: CoreDataStack.shared.ckContainer, cardZone: cardZone)
+        }
         
     }
     
@@ -294,12 +296,25 @@ extension FinalizeCardView {
         print("------")
         print(pdb)
         print("------")
-        print(cardRecord)
+        print(cardZone)
+        //print(cardRecord)
             _ = try! await pdb.modifyRecordZones(saving: [cardZone], deleting: []
             )
+        print("****")
             _ = try! await pdb.modifyRecords(saving: [cardRecord], deleting: [])
+        print("^^^")
     }
     
+    
+    func shareCards(container: CKContainer, cardZone: CKRecordZone) async throws -> CKShare {
+        let pdb = container.privateCloudDatabase
+        _ = try await pdb.modifyRecordZones(saving: [cardZone], deleting: []
+        )
+        let share = CKShare(recordZoneID: cardZone.zoneID)
+        share.publicPermission = .readOnly
+        let result = try await pdb.save(share)
+        return result as! CKShare
+    }
     
     
     

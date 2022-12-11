@@ -101,7 +101,8 @@ struct ShowPriorCardsView: View {
                                 if !stack.isShared(object: card) {
                                       // createShare shows blank screen on first attempt
                                     Task {
-                                        await createShare(card)
+                                        //await createShare(card)
+                                        await createShare2(card)
                                     }
                                 }
                                 showShareSheet = true
@@ -157,6 +158,23 @@ extension ShowPriorCardsView {
         let share2 = stack.getShare(card)!
         self.share = share2
     }
+    
+    private func createShare2(_ card: Card) async -> CKShare {
+        // , cardZone: CKRecordZone
+        print("&&&")
+        print(card)
+        print("@@@")
+            let cardZone = CKRecordZone(zoneName: "\(card.cardName!)-\(card.objectID)")
+            let container = CKContainer(identifier: "iCloud.GreetMe_2")
+            let pdb = container.privateCloudDatabase
+            _ = try! await pdb.modifyRecordZones(saving: [cardZone], deleting: [])
+            let share = CKShare(recordZoneID: cardZone.zoneID)
+            share.publicPermission = .readOnly
+            let result = try! await pdb.save(share)
+            return result as! CKShare
+    }
+    
+    
     
     private func createShare(_ card: Card) async {
         
