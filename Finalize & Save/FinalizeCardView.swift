@@ -12,7 +12,7 @@ import CloudKit
 
 struct FinalizeCardView: View {
     @Environment(\.presentationMode) var presentationMode
-    var card: Card!
+    @State var card: Card!
     @Binding var chosenObject: CoverImageObject!
     @Binding var collageImage: CollageImage!
     @Binding var noteField: NoteField!
@@ -164,7 +164,8 @@ struct FinalizeCardView: View {
                 .disabled(saveAndShareIsActive)
                 .alert("Save Complete", isPresented: $showCompleteAlert) {
                     Button("Ok", role: .cancel) {
-                        presentMenu = true
+                        //presentMenu = true
+                        showShareSheet = true
                     }
                 }
                 Spacer()
@@ -235,7 +236,6 @@ extension FinalizeCardView {
         
         
         let recordName = CKRecord.ID(recordName: "\(card.cardName!)-\(card.objectID)")
-        //let cardRecord = CKRecord(recordType: "CD_Card", recordID: recordName)
         let cardRecord = CKRecord(recordType: "CD_Card", recordID: .init(zoneID: Card.SharedZone.ID))
 
         let coverURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0].appendingPathComponent("\(card.cardName!).png")
@@ -282,6 +282,8 @@ extension FinalizeCardView {
         share[CKShare.SystemFieldKey.thumbnailImageData] = card.coverImage
         share[CKShare.SystemFieldKey.shareType] = "Greeting"
         share.publicPermission = .readOnly
+        self.share = share
+        self.card = card
         
         let operation = CKModifyRecordsOperation.init(recordsToSave: [cardRecord, share], recordIDsToDelete: nil)
         print("Created Operation....")
@@ -335,92 +337,6 @@ extension FinalizeCardView {
             }
         }
 }
-
-
-
-//extension Card {
-    
-    //var asRecord: CKRecord {
-    //    let record = CKRecord(
-    //        recordType: CardRecordKeys.type,
-    //        recordID: .init(zoneID: SharedZone.ID)
-    //    )
-        
-        //record[Card.CardRecordKeys.card] = FinalizeCardView.eCardVertical.snapshot().pngData()
-        //record[Card.CardRecordKeys.cardName] = noteField.cardName
-        //record[Card.CardRecordKeys.collage] = collageImage.collageImage.pngData()
-        //record[Card.CardRecordKeys.coverImage] = chosenObject.coverImage!
-        //record[Card.CardRecordKeys.date] = Date.now
-        //record[Card.CardRecordKeys.message] = noteField.noteText
-        //record[Card.CardRecordKeys.occassion] = searchObject.searchText
-        //record[Card.CardRecordKeys.recipient] = noteField.recipient
-        //record[Card.CardRecordKeys.font] = noteField.font
-        //record[Card.CardRecordKeys.an1] = text1
-        //record[Card.CardRecordKeys.an2] = text2
-        //record[Card.CardRecordKeys.an2URL] = text2URL.absoluteString
-        //record[Card.CardRecordKeys.an3] = text3
-        //record[Card.CardRecordKeys.an4] = text4
-
-    
-        //return record
-   // }
-    
-   // init?(from record: CKRecord) {
-    //    guard
-    //        let card = record[CardRecordKeys.card] as? Data,
-    //        let cardName = record[CardRecordKeys.cardName] as? String,
-    //        //let collage = record[CardRecordKeys.collage] as Data,
-    //        let date = record[CardRecordKeys.date] as? Date,
-    //        let message = record[CardRecordKeys.message] as? String,
-     //       let occassion = record[CardRecordKeys.occassion] as? String,
-    //        let recipient = record[CardRecordKeys.recipient] as? String,
-     //       let font = record[CardRecordKeys.font] as? String,
-     //       let an1 = record[CardRecordKeys.an1] as? String,
-    //        let an2 = record[CardRecordKeys.an2] as? String,
-    //        let an2URL = record[CardRecordKeys.an2URL] as? String,
-    //        let an3 = record[CardRecordKeys.an3] as? String,
-    //        let an4 = record[CardRecordKeys.an4] as? String
-            //let goal = Fasting.Goal(rawValue: goalRawValue)
-            //let card = Card(context: CoreDataStack.shared.context)
-    //    else { return nil }
-        
-        //self = .init(
-            //card: card,
-            //cardName: cardName,
-            //collage: collage,
-            //date: date,
-            //message: message,
-            //occassion: occassion,
-            //recipient: recipient,
-            //font: font,
-            //an1: an1,
-            //an2: an2,
-            //an2URL: an2URL,
-            //an3: an3,
-            //an4: an4,
-            //name: record.recordID.recordName
-           // )
-    //}
-//}
-
-//final class CloudKitService {
-//    static let container = CKContainer(
-//        identifier: "iCloud.GreetMe_2"
-//    )
-    
-//    func save(_ card: Card) async throws {
-//        _ = try await Self.container.privateCloudDatabase.modifyRecordZones(
- //           saving: [CKRecordZone(zoneName: Card.SharedZone.name)],
- //           deleting: []
- //       )
- //       _ = try await Self.container.privateCloudDatabase.modifyRecords(
-  //          saving: [card.asRecord],
-  //          deleting: []
-  //      )
-  //  }
-//}
-
-
 
 extension UIScreen{
    static let screenWidth = UIScreen.main.bounds.size.width
