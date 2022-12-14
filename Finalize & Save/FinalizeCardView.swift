@@ -36,6 +36,10 @@ struct FinalizeCardView: View {
     var field2: String!
     @State var string1: String!
     @State var string2: String!
+    @State private var showShareSheet = false
+    @State var share: CKShare?
+
+
     
     var eCardVertical: some View {
         VStack(spacing:1) {
@@ -122,12 +126,6 @@ struct FinalizeCardView: View {
                     Link(text4, destination: URL(string: "https://unsplash.com")!)
                         .font(.system(size: 4))
                 }
-                //.padding(.bottom,10)
-                //Text("Greeting Card by")
-                    //.font(.system(size: 6))
-                //Text("GreetMe Inc.")
-                    //.font(.system(size: 6))
-                    //.padding(.bottom,5)
             }
             .frame(width: (UIScreen.screenWidth/4.5), height: (UIScreen.screenHeight/7))
             // Front Cover
@@ -195,6 +193,11 @@ struct FinalizeCardView: View {
         .onAppear(){
 
             }
+        .sheet(isPresented: $showShareSheet, content: {
+            if let share = share {
+                CloudSharingView(share: share, container: CoreDataStack.shared.ckContainer, card: card)
+            }
+          })
         }
         }
     }
@@ -232,9 +235,8 @@ extension FinalizeCardView {
         
         
         let recordName = CKRecord.ID(recordName: "\(card.cardName!)-\(card.objectID)")
-        let cardRecord = CKRecord(recordType: "CD_Card", recordID: recordName)
-        //let cardRecord = CKRecord(recordType: "CD_Card", recordID: .init(zoneID: Card.SharedZone.ID))
-        let cardZone = CKRecordZone(zoneName: "\(card.cardName!)-\(card.objectID)")
+        //let cardRecord = CKRecord(recordType: "CD_Card", recordID: recordName)
+        let cardRecord = CKRecord(recordType: "CD_Card", recordID: .init(zoneID: Card.SharedZone.ID))
 
         let coverURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0].appendingPathComponent("\(card.cardName!).png")
         let collageURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0].appendingPathComponent("\(card.cardName!).png")
@@ -267,42 +269,36 @@ extension FinalizeCardView {
         
         print("set card assets")
         // can sub in .publicCloudDatabase
-        //saveToCloudKit(cardRecord: cardRecord, container: CoreDataStack.shared.ckContainer)
         Task {
-            try await saveToCloudKit2(cardRecord: cardRecord, container: CoreDataStack.shared.ckContainer, cardZone: cardZone)
+            print("$$$")
+            saveToCloudKit(cardRecord: cardRecord, container: CoreDataStack.shared.ckContainer, card: card)
         }
-        
     }
     
-    func saveToCloudKit(cardRecord: CKRecord, container: CKContainer) {
-    let pdb = container.privateCloudDatabase
-        print("------")
-        print(pdb)
-        print("------")
-        print(cardRecord)
-        let operation = CKModifyRecordsOperation.init(recordsToSave: [cardRecord], recordIDsToDelete: nil)
+    func saveToCloudKit(cardRecord: CKRecord, container: CKContainer, card: Card) {
+        
+        var share = CKShare(rootRecord: cardRecord, shareID: cardRecord.recordID)
+        share[CKShare.SystemFieldKey.title] = card.cardName
+        share[CKShare.SystemFieldKey.thumbnailImageData] = card.coverImage
+        share[CKShare.SystemFieldKey.shareType] = "Greeting"
+        share.publicPermission = .readOnly
+        
+        let operation = CKModifyRecordsOperation.init(recordsToSave: [cardRecord, share], recordIDsToDelete: nil)
         print("Created Operation....")
         operation.modifyRecordsResultBlock = { result in
-            print("^^^^^^^^^^^^")
+            print("#@#@")
             print(result)
         }
+        let cardZone = CKRecordZone(zoneID: CKRecordZone.ID(zoneName: "\(card.cardName!)-\(card.objectID)"))
+        let op2 = CKModifyRecordZonesOperation.init(recordZonesToSave: [cardZone])
+        op2.modifyRecordZonesResultBlock = { result in
+            print("#@#@")
+            print(result)
+        }
+        
+        let pdb = container.privateCloudDatabase
         pdb.add(operation)
-        print(operation)
-        print()
-    }
-    
-    func saveToCloudKit2(cardRecord: CKRecord, container: CKContainer, cardZone: CKRecordZone) async throws {
-    let pdb = container.privateCloudDatabase
-        print("------")
-        print(pdb)
-        print("------")
-        print(cardZone)
-        //print(cardRecord)
-            _ = try! await pdb.modifyRecordZones(saving: [cardZone], deleting: []
-            )
-        print("****")
-            _ = try! await pdb.modifyRecords(saving: [cardRecord], deleting: [])
-        print("^^^")
+        pdb.add(op2)
     }
     
     
@@ -315,8 +311,6 @@ extension FinalizeCardView {
         let result = try await pdb.save(share)
         return result as! CKShare
     }
-    
-    
     
     func prepCardForExport() -> Data {
         let image = SnapShotCardForPrint(chosenObject: $chosenObject, collageImage: $collageImage, noteField: $noteField, text1: $text1, text2: $text2, text2URL: $text2URL, text3: $text3, text4: $text4, printCardText: $printCardText).snapshot()
@@ -445,7 +439,7 @@ extension UIScreen{
                                    context: UIViewControllerRepresentableContext<ActivityView>) {}
        }
     
-//https://medium.com/swiftui-made-easy/activity-view-controller-in-swiftui-593fddadee79
+// https://medium.com/swiftui-made-easy/activity-view-controller-in-swiftui-593fddadee79
 // https://www.hackingwithswift.com/example-code/uikit/how-to-render-pdfs-using-uigraphicspdfrenderer
 // https://stackoverflow.com/questions/1134289/cocoa-core-data-efficient-way-to-count-entities
 // https://www.advancedswift.com/resize-uiimage-no-stretching-swift/
@@ -454,3 +448,4 @@ extension UIScreen{
 // https://www.hackingwithswift.com/read/33/4/writing-to-icloud-with-cloudkit-ckrecord-and-ckasset
 // https://swiftwithmajid.com/2022/03/29/zone-sharing-in-cloudkit/
 // https://swiftwithmajid.com/2022/03/29/zone-sharing-in-cloudkit/
+// https://www.techotopia.com/index.php/An_Introduction_to_CloudKit_Data_Storage_on_iOS_8#Record_Zones
