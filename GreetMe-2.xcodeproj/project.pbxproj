@@ -40,6 +40,7 @@
 		C23340EB28C3D589006222F5 /* FutureDelivery+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = C23340EA28C3D589006222F5 /* FutureDelivery+CoreDataProperties.swift */; };
 		C23340ED28C3D58D006222F5 /* FutureDelivery+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = C23340EC28C3D58D006222F5 /* FutureDelivery+CoreDataClass.swift */; };
 		C23524D22896D5F80052494F /* PreSetCalendarDates.swift in Sources */ = {isa = PBXBuildFile; fileRef = C23524D12896D5F80052494F /* PreSetCalendarDates.swift */; };
+		C237E6DD294B3FE300E472AD /* CKModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C237E6DC294B3FE300E472AD /* CKModel.swift */; };
 		C23A9D222897ECA90059B97C /* Card+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = C23A9D212897ECA90059B97C /* Card+CoreDataProperties.swift */; };
 		C23A9D262897ECB30059B97C /* Card+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = C23A9D232897ECB30059B97C /* Card+CoreDataClass.swift */; };
 		C23A9D372897F3F00059B97C /* CalendarDate+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = C23A9D352897F3F00059B97C /* CalendarDate+CoreDataClass.swift */; };
@@ -93,6 +94,7 @@
 		C23340EA28C3D589006222F5 /* FutureDelivery+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "FutureDelivery+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		C23340EC28C3D58D006222F5 /* FutureDelivery+CoreDataClass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "FutureDelivery+CoreDataClass.swift"; sourceTree = "<group>"; };
 		C23524D12896D5F80052494F /* PreSetCalendarDates.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreSetCalendarDates.swift; sourceTree = "<group>"; };
+		C237E6DC294B3FE300E472AD /* CKModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CKModel.swift; sourceTree = "<group>"; };
 		C23A9D212897ECA90059B97C /* Card+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Card+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		C23A9D232897ECB30059B97C /* Card+CoreDataClass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Card+CoreDataClass.swift"; sourceTree = "<group>"; };
 		C23A9D352897F3F00059B97C /* CalendarDate+CoreDataClass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "CalendarDate+CoreDataClass.swift"; sourceTree = "<group>"; };
@@ -257,6 +259,7 @@
 			children = (
 				26AD8126281F05160069C3F0 /* WriteNoteView.swift */,
 				26AD8128281F05310069C3F0 /* FinalizeCardView.swift */,
+				C237E6DC294B3FE300E472AD /* CKModel.swift */,
 				2688D703285FA24200954120 /* SnapShotECard.swift */,
 				2688D705285FA25100954120 /* SnapShotCardForPrint.swift */,
 				26EB55642827120C00178F0B /* EnlargeECard.swift */,
@@ -444,6 +447,7 @@
 				C22803E6289358E500802452 /* CloudSharingController.swift in Sources */,
 				26EB55652827120C00178F0B /* EnlargeECard.swift in Sources */,
 				C23340ED28C3D58D006222F5 /* FutureDelivery+CoreDataClass.swift in Sources */,
+				C237E6DD294B3FE300E472AD /* CKModel.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

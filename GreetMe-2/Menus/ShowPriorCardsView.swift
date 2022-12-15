@@ -10,6 +10,17 @@ import SwiftUI
 import CloudKit
 
 struct ShowPriorCardsView: View {
+    
+    
+    @EnvironmentObject private var cm: CKModel
+    @State private var isAddingCard = false
+    @State private var isSharing = false
+    @State private var isProcessingShare = false
+    @State private var activeShare: CKShare?
+    @State private var activeContainer: CKContainer?
+    
+    
+    
     @Environment(\.presentationMode) var presentationMode
     // https://www.hackingwithswift.com/read/38/5/loading-core-data-objects-using-nsfetchrequest-and-nssortdescriptor
     @State var cards = [Card]()
@@ -153,6 +164,44 @@ struct ShowPriorCardsView: View {
 
 // MARK: Returns CKShare participant permission, methods and properties to share
 extension ShowPriorCardsView {
+    
+    /// Builds a `CloudSharingView` with state after processing a share.
+    private func shareView(_ card: Card) -> CloudSharingView? {
+        guard let share = activeShare, let container = activeContainer else {
+            return nil
+        }
+
+        return CloudSharingView(share: share, container: container, card: card)
+    }
+    
+    private func shareCard(_ card: Card) async throws {
+        isProcessingShare = true
+
+        do {
+            let (share, container) = try await cm.fetchOrCreateShare(card: card)
+            isProcessingShare = false
+            activeShare = share
+            activeContainer = container
+            isSharing = true
+        } catch {
+            debugPrint("Error sharing contact record: \(error)")
+        }
+    }
+    
+    private func addCard(name: String, phoneNumber: String) async throws {
+        try await $cm.addCard(name: name, phoneNumber: phoneNumber)
+        try await cm.refresh()
+        isAddingCard = false
+    }
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
  private func getPrevShare(_ card: Card) {
         let share2 = stack.getShare(card)!
