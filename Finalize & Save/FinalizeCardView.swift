@@ -218,7 +218,6 @@ extension FinalizeCardView {
     
     private func addCard(noteField: NoteField, searchObject: SearchParameter
                          , an1: String, an2: String, an2URL: String, an3: String, an4: String, chosenObject: CoverImageObject, collageImage: CollageImage) async throws {
-        
         try await cm.addCard(noteField: noteField, searchObject: searchObject
                              , an1: an1, an2: an2, an2URL: an2URL, an3: an3, an4: an4, chosenObject: chosenObject, collageImage: collageImage)
         try await cm.refresh()

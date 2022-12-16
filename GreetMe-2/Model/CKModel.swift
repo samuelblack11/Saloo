@@ -10,6 +10,7 @@ import Foundation
 import SwiftUI
 import CoreData
 import CloudKit
+import OSLog
 
 @MainActor
 final class CKModel: ObservableObject {
@@ -27,7 +28,7 @@ final class CKModel: ObservableObject {
     /// State directly observable by our view.
     @Published private(set) var state: State = .loading
     /// Use the specified iCloud container ID, which should also be present in the entitlements file.
-    lazy var container = CoreDataStack.shared.ckContainer
+    lazy var container = CKContainer(identifier: "iCloud.GreetMe_2")
     /// This project uses the user's private database.
     private lazy var pdb = container.privateCloudDatabase
     /// Sharing requires using a custom record zone.
@@ -92,7 +93,7 @@ final class CKModel: ObservableObject {
         do {
             try await pdb.save(cardRecord)
         } catch {
-            debugPrint("ERROR: Failed to save new Contact: \(error)")
+            debugPrint("ERROR: Failed to save new Card: \(error)")
             throw error
         }
     }

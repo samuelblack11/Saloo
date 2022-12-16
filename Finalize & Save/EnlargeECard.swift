@@ -151,8 +151,4 @@ extension EnlargeECardView {
         fatalError("A new value added to CKShare.Participant.AcceptanceStatus")
       }
     }
-
-    private var canEdit: Bool {
-      stack.canEdit(object: chosenCard)
-    }
   }

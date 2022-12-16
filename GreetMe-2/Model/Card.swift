@@ -11,7 +11,7 @@ import CoreData
 import SwiftUI
 import CloudKit
 
-struct Card: Identifiable {
+struct Card: Identifiable, Hashable {
     let id: String
     let cardName: String?
     let occassion: String?

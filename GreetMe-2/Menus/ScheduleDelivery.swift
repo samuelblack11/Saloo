@@ -61,9 +61,9 @@ struct ScheduleDelivery: View {
     func scheduleDelivery(delivery: FutureDelivery) {
         //let date = Date.now.addingTimeInterval(5)
         let schedDelC = ScheduleDeliveryC.init(card: card, share: share!, showShareSheet: showShareSheet)
-        let timer = Timer(fireAt: delivery.deliveryDate!, interval: 0, target: self, selector: #selector(schedDelC.determineHowToShare), userInfo: nil, repeats: false)
+        //let timer = Timer(fireAt: delivery.deliveryDate!, interval: 0, target: self, selector: #selector(schedDelC.determineHowToShare), userInfo: nil, repeats: false)
         showShareSheet = true
-        RunLoop.main.add(timer, forMode: .common)
+        //RunLoop.main.add(timer, forMode: .common)
     }
        
     let dateRange: ClosedRange<Date> = {
@@ -92,44 +92,6 @@ class ScheduleDeliveryC {
         self.share = share
         self.showShareSheet = showShareSheet
     }
-    
-    @objc func determineHowToShare() {
-        if !stack.isShared(object: card) {
-            Task {
-                await createShare(card)
-            }
-        }
-        if stack.isOwner(object: card) {
-            getPrevShare(card)
-        }
-        // Show Share Controller
-        showShareSheet = true
-        
-        // From CloudSharingController, Select Send via Messages
-        
-        // Auto Add Recipients
-        
-        // Send
-    }
-    
-    private func getPrevShare(_ card: Card) {
-           let share2 = stack.getShare(card)!
-           self.share = share2
-       }
-    
-    private func createShare(_ card: Card) async {
-          do {
-              let (_, share, _) = try await stack.persistentContainer.share([card], to: nil)
-              share[CKShare.SystemFieldKey.title] = card.cardName
-              share[CKShare.SystemFieldKey.thumbnailImageData] = card.coverImage
-              share[CKShare.SystemFieldKey.shareType] = "Your Greeting Card from GreetMe"
-              self.share = share
-              }
-          catch {
-              print("Error+++++")
-          }
-    }
-    
 }
 
 // MARK: Returns CKShare participant permission, methods and properties to share
@@ -150,7 +112,7 @@ extension ScheduleDelivery {
     func saveDelivery() {
         //save to core data
         let del = FutureDelivery(context: CoreDataStack.shared.context)
-        del.card = card.card
+        //del.card = card.card
         del.recipientList = recipientList
         del.deliveryDate = deliveryDate
         self.saveContext()
@@ -167,24 +129,6 @@ extension ScheduleDelivery {
                 }
             }
         }
-
- private func getPrevShare(_ card: Card) {
-        let share2 = stack.getShare(card)!
-        self.share = share2
-    }
-    
-  private func createShare(_ card: Card) async {
-        do {
-            let (_, share, _) = try await stack.persistentContainer.share([card], to: nil)
-            share[CKShare.SystemFieldKey.title] = card.cardName
-            share[CKShare.SystemFieldKey.thumbnailImageData] = card.coverImage
-            share[CKShare.SystemFieldKey.shareType] = "Your Greeting Card from GreetMe"
-            self.share = share
-            }
-        catch {
-            print("Error+++++")
-        }
-  }
 
   private func string(for permission: CKShare.ParticipantPermission) -> String {
     switch permission {

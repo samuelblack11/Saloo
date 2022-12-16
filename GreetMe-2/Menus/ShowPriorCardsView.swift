@@ -100,7 +100,7 @@ struct ShowPriorCardsView: View {
                                 Image(systemName: "plus.magnifyingglass")
                             }
                             Button {
-                                deleteCoreData(card: card)
+                                //deleteCoreData(card: card)
                             } label: {
                                 Text("Delete eCard")
                                 Image(systemName: "trash")
@@ -108,12 +108,12 @@ struct ShowPriorCardsView: View {
                             }
                             Button {
                                 chosenCard = card
-                                print(!stack.isShared(object: card))
-                                if !stack.isShared(object: card) {
-                                      // createShare shows blank screen on first attempt
-                                    Task {
-                                    }
-                                }
+                                //print(!stack.isShared(object: card))
+                                //if !stack.isShared(object: card) {
+                                //      // createShare shows blank screen on first attempt
+                                //    Task {
+                                //    }
+                                //}
                                 showShareSheet = true
                             } label: {
                                 Text("Share eCard Now")
@@ -156,7 +156,7 @@ struct ShowPriorCardsView: View {
         .font(.headline)
         .padding(.horizontal)
         .frame(maxHeight: 600)
-        .onAppear{loadCoreData()}
+        //.onAppear{loadCoreData()}
     }
 }
 
@@ -184,12 +184,6 @@ extension ShowPriorCardsView {
         } catch {
             debugPrint("Error sharing contact record: \(error)")
         }
-    }
-    
-    private func addCard(card: Card) async throws {
-        try await cm.addCard(card: card)
-        try await cm.refresh()
-        isAddingCard = false
     }
     
   private func string(for permission: CKShare.ParticipantPermission) -> String {
@@ -236,53 +230,6 @@ extension ShowPriorCardsView {
       fatalError("A new value added to CKShare.Participant.AcceptanceStatus")
     }
   }
-
-  private var canEdit: Bool {
-    stack.canEdit(object: chosenCard)
-  }
-    
-    func loadCoreData() {
-        let request = Card.createFetchRequest()
-        let sort = NSSortDescriptor(key: "date", ascending: false)
-        request.sortDescriptors = [sort]
-        do {
-            cards = try CoreDataStack.shared.persistentContainer.viewContext.fetch(request)
-            print("Got \(cards.count) Cards")
-            //collectionView.reloadData()
-        }
-        catch {
-            print("Fetch failed")
-        }
-    }
-    
-    func loadOnlyMyCoreData(user: String) {
-        let request = Card.createFetchRequest()
-        let sort = NSSortDescriptor(key: "date", ascending: false)
-        request.sortDescriptors = [sort]
-        do {
-            cards = try CoreDataStack.shared.persistentContainer.viewContext.fetch(request)
-            print("Got \(cards.count) Cards")
-            //collectionView.reloadData()
-        }
-        catch {
-            print("Fetch failed")
-        }
-    }
-    
-    func deleteCoreData(card: Card) {
-        do {
-            print("Attempting Delete")
-            CoreDataStack.shared.context.delete(card)
-            try CoreDataStack.shared.context.save()
-            }
-            // Save Changes
-         catch {
-            // Error Handling
-            // ...
-             print("Couldn't Delete")
-         }
-        self.loadCoreData()
-    }
 }
 
 
