@@ -40,13 +40,41 @@ struct FinalizeCardView: View {
     @State private var showShareSheet = false
     @State var share: CKShare?
     
-    @State private var isAddingContact = false
+    @EnvironmentObject private var cm: CKModel
+    @State private var isAddingCard = false
     @State private var isSharing = false
     @State private var isProcessingShare = false
     @State private var activeShare: CKShare?
     @State private var activeContainer: CKContainer?
 
+    private func addCard(card: Card) async throws {
+        try await cm.addCard(card: card)
+        try await cm.refresh()
+        isAddingCard = false
+    }
+    
+    private func shareCard(_ card: Card) async throws {
+        isProcessingShare = true
 
+        do {
+            let (share, container) = try await cm.fetchOrCreateShare(card: card)
+            isProcessingShare = false
+            activeShare = share
+            activeContainer = container
+            isSharing = true
+        } catch {
+            debugPrint("Error sharing contact record: \(error)")
+        }
+    }
+    
+    /// Builds a `CloudSharingView` with state after processing a share.
+    private func shareView(card: Card) -> CloudSharingView? {
+        guard let share = activeShare, let container = activeContainer else {
+            return nil
+        }
+
+        return CloudSharingView(share: share, container: container, card: card)
+    }
     
     var eCardVertical: some View {
         VStack(spacing:1) {
@@ -213,14 +241,6 @@ struct FinalizeCardView: View {
 
 extension FinalizeCardView {
     
-    func shareECardExternally() {
-        showActivityController = true
-        let cardForShare = SnapShotECard(chosenObject: $chosenObject, collageImage: $collageImage, noteField: $noteField, eCardText: $eCardText, text1: $text1, text2: $text2, text2URL: $text2URL, text3: $text3, text4: $text4).snapShotECardViewVertical.snapshot()
-        activityItemsArray = []
-        activityItemsArray.append(cardForShare)
-    }
-    
-    
     func saveECard() {
         //save to core data
         let card = Card(context: CoreDataStack.shared.context)
@@ -243,7 +263,6 @@ extension FinalizeCardView {
         
         
         let recordName = CKRecord.ID(recordName: "\(card.cardName!)-\(card.objectID)")
-        let cardRecord = CKRecord(recordType: "CD_Card", recordID: .init(zoneID: Card.SharedZone.ID))
         let coverURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0].appendingPathComponent("\(card.cardName!).png")
         let collageURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0].appendingPathComponent("\(card.cardName!).png")
 
@@ -267,6 +286,7 @@ extension FinalizeCardView {
         cardRecord["CD_date"] = card.date as? CKRecordValue
         cardRecord["CD_cardName"] = card.cardName as? CKRecordValue
         cardRecord["CD_message"] = card.message as? CKRecordValue
+        cardRecord["associatedRecord"] = cardRecord as? CKRecordValue
 
         let coverAsset = CKAsset(fileURL: coverURL)
         let collageAsset = CKAsset(fileURL: collageURL)
@@ -277,60 +297,10 @@ extension FinalizeCardView {
         // can sub in .publicCloudDatabase
         Task {
             print("$$$")
-            try await saveToCloudKit(cardRecord: cardRecord, container: CoreDataStack.shared.ckContainer, card: card)
+
         }
     }
     
-    func saveToCloudKit(cardRecord: CKRecord, container: CKContainer, card: Card) async throws  {
-        
-        let pdb = container.privateCloudDatabase
-        let share = CKShare(rootRecord: cardRecord, shareID: cardRecord.recordID)
-        let cardZone = CKRecordZone(zoneID: CKRecordZone.ID(zoneName: "\(card.cardName!)-\(card.objectID)"))
-        share[CKShare.SystemFieldKey.title] = card.cardName as CKRecordValue?
-        share[CKShare.SystemFieldKey.thumbnailImageData] = card.coverImage as CKRecordValue?
-        share[CKShare.SystemFieldKey.shareType] = "Greeting" as CKRecordValue?
-        share["Card"] = card.card!
-        //share.publicPermission = .readOnly
-        //self.share = share
-        self.card = card
-        _ = try await pdb.modifyRecords(saving: [cardRecord, share], deleting: [])
-        guard let share = try await pdb.record(for: cardRecord.recordID) as? CKShare else {
-            throw ViewModelError.invalidShare
-        }
-        self.share = share
-        //let operation = CKModifyRecordsOperation.init(recordsToSave: [cardRecord, share], recordIDsToDelete: nil)
-        //let op2 = CKModifyRecordZonesOperation.init(recordZonesToSave: [cardZone])
-        //operation.modifyRecordsResultBlock = { result in print(result)}
-        //op2.modifyRecordZonesResultBlock = { result in print(result)}
-        //pdb.add(operation)
-        //pdb.add(op2)
-        
-        return (share, CoreDataStack.shared.ckContainer)
-        
-        }
-    
-    
-    private func shareView() -> CloudSharingView? {
-        guard let share = activeShare, let container = CoreDataStack.shared.ckContainer else {
-            return nil
-        }
-        return CloudSharingView(share: share, container: container, card: <#T##Card#>)
-    }
-    
-    
-    
-    
-    
-    
-    func shareCards(container: CKContainer, cardZone: CKRecordZone) async throws -> CKShare {
-        let pdb = container.privateCloudDatabase
-        _ = try await pdb.modifyRecordZones(saving: [cardZone], deleting: []
-        )
-        let share = CKShare(recordZoneID: cardZone.zoneID)
-        share.publicPermission = .readOnly
-        let result = try await pdb.save(share)
-        return result as! CKShare
-    }
     
     func prepCardForExport() -> Data {
         let image = SnapShotCardForPrint(chosenObject: $chosenObject, collageImage: $collageImage, noteField: $noteField, text1: $text1, text2: $text2, text2URL: $text2URL, text3: $text3, text4: $text4, printCardText: $printCardText).snapshot()

@@ -112,8 +112,6 @@ struct ShowPriorCardsView: View {
                                 if !stack.isShared(object: card) {
                                       // createShare shows blank screen on first attempt
                                     Task {
-                                        //await createShare(card)
-                                        await createShare(card)
                                     }
                                 }
                                 showShareSheet = true
@@ -188,37 +186,10 @@ extension ShowPriorCardsView {
         }
     }
     
-    private func addCard(name: String, phoneNumber: String) async throws {
-        try await $cm.addCard(name: name, phoneNumber: phoneNumber)
+    private func addCard(card: Card) async throws {
+        try await cm.addCard(card: card)
         try await cm.refresh()
         isAddingCard = false
-    }
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
- private func getPrevShare(_ card: Card) {
-        let share2 = stack.getShare(card)!
-        self.share = share2
-    }
-    
-    private func createShare(_ card: Card) async {
-        
-        do {
-            let (_, share, _) = try await stack.persistentContainer.share([card], to: nil)
-            share[CKShare.SystemFieldKey.title] = card.cardName
-            share[CKShare.SystemFieldKey.thumbnailImageData] = card.coverImage
-            share[CKShare.SystemFieldKey.shareType] = "Greeting"
-            self.share = share
-        } catch {
-            print("Failed to create share")
-        }
     }
     
   private func string(for permission: CKShare.ParticipantPermission) -> String {

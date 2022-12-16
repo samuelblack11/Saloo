@@ -64,8 +64,8 @@ final class CKModel: ObservableObject {
     /// - Returns: A tuple containing separated private and shared contacts.
     func fetchPrivateAndSharedCards() async throws -> (private: [Card], shared: [Card]) {
         // This will run each of these operations in parallel.
-        async let privateContacts = fetchCards(scope: .private, in: [recordZone])
-        async let sharedContacts = fetchSharedCards()
+        async let privateCards = fetchCards(scope: .private, in: [recordZone])
+        async let sharedCards = fetchSharedCards()
         
         return (private: try await privateCards, shared: try await sharedCards)
     }
@@ -109,10 +109,10 @@ final class CKModel: ObservableObject {
        ///   - contact: Contact to share.
        ///   - completionHandler: Handler to process a `success` or `failure` result.
        func fetchOrCreateShare(card: Card) async throws -> (CKShare, CKContainer) {
-           guard let existingShare = card.associatedRecord.share else {
-               let share = CKShare(rootRecord: card.associatedRecord)
-               share[CKShare.SystemFieldKey.title] = "Contact: \(card.name)"
-               _ = try await pdb.modifyRecords(saving: [card.associatedRecord, share], deleting: [])
+           guard let existingShare = card.associatedRecord!.share else {
+               let share = CKShare(rootRecord: card.associatedRecord!)
+               share[CKShare.SystemFieldKey.title] = "Card: \(card.cardName)"
+               _ = try await pdb.modifyRecords(saving: [card.associatedRecord!, share], deleting: [])
                return (share, container)
            }
 
@@ -195,7 +195,7 @@ final class CKModel: ObservableObject {
            }
 
            do {
-               _ = try await database.modifyRecordZones(saving: [recordZone], deleting: [])
+               _ = try await pdb.modifyRecordZones(saving: [recordZone], deleting: [])
            } catch {
                print("ERROR: Failed to create custom zone: \(error.localizedDescription)")
                throw error
