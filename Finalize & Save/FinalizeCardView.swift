@@ -165,14 +165,14 @@ struct FinalizeCardView: View {
                     //isAddingCard = true
                     Task {
                         try? await addCard(noteField: noteField, searchObject: searchObject, an1: text1, an2: text2, an2URL: text2URL.absoluteString, an3: text3, an4: text4, chosenObject: chosenObject, collageImage: collageImage)
+                        try? await shareCard(card)
                     }
                     //saveAndShareIsActive = true
-                    //showCompleteAlert = true
+                    showCompleteAlert = true
                 }
                 .disabled(saveAndShareIsActive)
                 .alert("Save Complete", isPresented: $showCompleteAlert) {
-                    Button(action: { Task { try? await shareCard(card)}}, label: { Image(systemName: "square.and.arrow.up") }).buttonStyle(BorderlessButtonStyle())
-                    Button("Share Later", role: .cancel) {
+                    Button("Save Complete", role: .cancel) {
                         presentMenu = true
                     }
                 }

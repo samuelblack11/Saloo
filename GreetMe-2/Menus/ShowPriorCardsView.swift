@@ -11,15 +11,12 @@ import CloudKit
 
 struct ShowPriorCardsView: View {
     
-    
     @EnvironmentObject private var cm: CKModel
     @State private var isAddingCard = false
     @State private var isSharing = false
     @State private var isProcessingShare = false
     @State private var activeShare: CKShare?
     @State private var activeContainer: CKContainer?
-    
-    
     
     @Environment(\.presentationMode) var presentationMode
     // https://www.hackingwithswift.com/read/38/5/loading-core-data-objects-using-nsfetchrequest-and-nssortdescriptor
@@ -30,135 +27,95 @@ struct ShowPriorCardsView: View {
     @State var share: CKShare?
     @State private var showShareSheet = false
     @State private var showEditSheet = false
-    private let stack = CoreDataStack.shared
     @State var returnRecord: CKRecord?
     @State private var showDeliveryScheduler = false
-
     let columns = [GridItem(.fixed(140)), GridItem(.fixed(140))]
-    
     var body: some View {
         NavigationView {
             ScrollView {
-            LazyVGrid(columns: columns, spacing: 10) {
-                ForEach(cards, id: \.self) {card in
-                    VStack(spacing: 0) {
-                        VStack(spacing:1) {
-                            Image(uiImage: UIImage(data: card.coverImage!)!)
-                                .resizable()
-                                .frame(width: (UIScreen.screenWidth/3), height: (UIScreen.screenHeight/7))
-                            Text(card.message!)
-                                .font(Font.custom(card.font!, size: 500))
-                                .minimumScaleFactor(0.01)
-                                .frame(width: (UIScreen.screenWidth/3), height: (UIScreen.screenHeight/8))
-                            Image(uiImage: UIImage(data: card.collage!)!)
-                                .resizable()
-                                .frame(maxWidth: (UIScreen.screenWidth/4), maxHeight: (UIScreen.screenHeight/7))
-                            HStack(spacing: 0) {
-                                VStack(spacing: 0) {
-                                    Text(card.an1!)
-                                        .font(.system(size: 4))
-                                    Link(card.an2!, destination: URL(string: card.an2URL!)!)
-                                        .font(.system(size: 4))
-                                    Text(card.an3!).font(.system(size: 4))
-                                    Link(card.an4!, destination: URL(string: "https://unsplash.com")!).font(.system(size: 4))
-                                    }
-                                    .padding(.trailing, 5)
+                    Group {
+                        switch cm.state {
+                        case .loading:
+                            VStack{EmptyView()}
+                        case .error(let error):
+                            VStack {
+                                Text("An error occurred: \(error.localizedDescription)").padding()
                                 Spacer()
-                                Image(systemName: "greetingcard.fill")
-                                    .foregroundColor(.blue)
-                                    .font(.system(size: 24))
-                                Spacer()
-                                VStack(spacing:0) {
-                                    Text("Greeting Card")
-                                        .font(.system(size: 4))
-                                    Text("by")
-                                        .font(.system(size: 4))
-                                    Text("GreetMe Inc.")
-                                        .font(.system(size: 4))
-                                        .padding(.bottom,10)
-                                        .padding(.leading, 5)
-                                    }
-                            }.frame(width: (UIScreen.screenWidth/3), height: (UIScreen.screenHeight/15))
-                        }
-                        .sheet(isPresented: $showDeliveryScheduler) {ScheduleDelivery(card: card)}
-                        .sheet(isPresented: $segueToEnlarge) {EnlargeECardView(chosenCard: $chosenCard, share: $share)}
-                        .sheet(isPresented: $showShareSheet, content: {
-                            if let share = share {
-                                
-                                //CloudSharingView(share: share, container: stack.ckContainer, card: card)
-                                CloudSharingView(share: share, container: stack.ckContainer, card: card)
-                                    
-                                
                             }
-                          })
-                        .contextMenu {
-                            Button {
-                                chosenCard = card
-                                segueToEnlarge = true
-                            } label: {
-                                Text("Enlarge eCard")
-                                Image(systemName: "plus.magnifyingglass")
+                        case let .loaded(privateCards, sharedCards):
+                            List {
+                                ForEach(privateCards) {cardView(for: $0, shareable: false)}
                             }
-                            Button {
-                                //deleteCoreData(card: card)
-                            } label: {
-                                Text("Delete eCard")
-                                Image(systemName: "trash")
-                                .foregroundColor(.red)
-                            }
-                            Button {
-                                chosenCard = card
-                                //print(!stack.isShared(object: card))
-                                //if !stack.isShared(object: card) {
-                                //      // createShare shows blank screen on first attempt
-                                //    Task {
-                                //    }
-                                //}
-                                showShareSheet = true
-                            } label: {
-                                Text("Share eCard Now")
-                            }
-                            Button {
-                                showDeliveryScheduler = true
-                                
-                            } label: {
-                                Text("Schedule eCard Delivery")
-                            }
-                        }.onAppear(perform: {
-                            //self.share = stack.getShare(card)
-                          })
-                        Divider().padding(.bottom, 5)
-                        HStack(spacing: 3) {
-                            Text(card.recipient!)
-                                .font(.system(size: 8))
-                                .minimumScaleFactor(0.1)
-                            Spacer()
-                            Text(card.occassion!)
-                                .font(.system(size: 8))
-                                .minimumScaleFactor(0.1)
+                            List {
+                                ForEach(sharedCards) {cardView(for: $0, shareable: false)}
                             }
                         }
-                    .padding()
-                        .overlay(RoundedRectangle(cornerRadius: 6)
-                            .stroke(.blue, lineWidth: 2))
-                    }
+                    }.navigationBarItems(leading:
+                                            Button {presentationMode.wrappedValue.dismiss()} label: { Image(systemName: "chevron.left").foregroundColor(.blue); Text("Back")})
+            }
+        }
+    }
+    
+    
+    private func cardView(for card: Card, shareable: Bool = true) -> some View {
+        LazyVGrid(columns: columns, spacing: 10) {
+
+            VStack(spacing: 0) {
+                VStack(spacing:1) {
+                    Image(uiImage: UIImage(data: card.coverImage!)!)
+                        .resizable()
+                        .frame(width: (UIScreen.screenWidth/3), height: (UIScreen.screenHeight/7))
+                    Text(card.message!)
+                        .font(Font.custom(card.font!, size: 500))
+                        .minimumScaleFactor(0.01)
+                        .frame(width: (UIScreen.screenWidth/3), height: (UIScreen.screenHeight/8))
+                    Image(uiImage: UIImage(data: card.collage!)!)
+                        .resizable()
+                        .frame(maxWidth: (UIScreen.screenWidth/4), maxHeight: (UIScreen.screenHeight/7))
+                    HStack(spacing: 0) {
+                        VStack(spacing: 0) {
+                            Text(card.an1!).font(.system(size: 4))
+                            Link(card.an2!, destination: URL(string: card.an2URL!)!).font(.system(size: 4))
+                            Text(card.an3!).font(.system(size: 4))
+                            Link(card.an4!, destination: URL(string: "https://unsplash.com")!).font(.system(size: 4))
+                        }.padding(.trailing, 5)
+                        Spacer()
+                        Image(systemName: "greetingcard.fill").foregroundColor(.blue).font(.system(size: 24))
+                        Spacer()
+                        VStack(spacing:0) {
+                            Text("Greeting Card").font(.system(size: 4))
+                            Text("by").font(.system(size: 4))
+                            Text("GreetMe Inc.").font(.system(size: 4)).padding(.bottom,10).padding(.leading, 5)
+                        }}.frame(width: (UIScreen.screenWidth/3), height: (UIScreen.screenHeight/15))
                 }
-            }.navigationBarItems(leading:
-                Button {
-                    print("Back button tapped")
-                    //presentPrior = true
-                    presentationMode.wrappedValue.dismiss()
-                    } label: {
-                        Image(systemName: "chevron.left").foregroundColor(.blue)
-                        Text("Back")
-                    })
+                .sheet(isPresented: $showDeliveryScheduler) {ScheduleDelivery(card: card)}
+                .sheet(isPresented: $segueToEnlarge) {EnlargeECardView(chosenCard: $chosenCard, share: $share)}
+                .sheet(isPresented: $isSharing, content: {
+                    shareView(card)
+                })
+                .contextMenu {
+                    Button {chosenCard = card; segueToEnlarge = true} label: {Text("Enlarge eCard"); Image(systemName: "plus.magnifyingglass")}
+                    Button {} label: {Text("Delete eCard"); Image(systemName: "trash").foregroundColor(.red)}
+                    Button {Task {try? await shareCard(card)}; isSharing = true} label: {Text("Share eCard Now")}
+                    Button {showDeliveryScheduler = true} label: {Text("Schedule eCard Delivery")}
+                }
+                Divider().padding(.bottom, 5)
+                HStack(spacing: 3) {
+                    Text(card.recipient!)
+                        .font(.system(size: 8))
+                        .minimumScaleFactor(0.1)
+                    Spacer()
+                    Text(card.occassion!)
+                        .font(.system(size: 8))
+                        .minimumScaleFactor(0.1)
+                }
+            }.padding().overlay(RoundedRectangle(cornerRadius: 6).stroke(.blue, lineWidth: 2))
         }
         .font(.headline)
         .padding(.horizontal)
         .frame(maxHeight: 600)
-        //.onAppear{loadCoreData()}
+        }
     }
-}
 
 // MARK: Returns CKShare participant permission, methods and properties to share
 extension ShowPriorCardsView {

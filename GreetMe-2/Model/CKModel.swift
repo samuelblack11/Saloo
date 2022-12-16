@@ -87,9 +87,24 @@ final class CKModel: ObservableObject {
         cardRecord["CD_font"] = noteField.font as CKRecordValue
         cardRecord["CD_date"] = Date.now as CKRecordValue
         cardRecord["CD_message"] = noteField.noteText as CKRecordValue
-        cardRecord["coverImage"] = chosenObject.coverImage!
-        cardRecord["collage"] = collageImage.collageImage.pngData()
+        //cardRecord["coverImage"] = chosenObject.coverImage! as CKRecordValue
+        //cardRecord["collage"] = collageImage.collageImage.pngData() as CKRecordValue
+
+        let coverURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0].appendingPathComponent("\(noteField.cardName).png")
+        let collageURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0].appendingPathComponent("\(noteField.cardName).png")
+        do {
+            try chosenObject.coverImage?.write(to: coverURL)
+            try collageImage.collageImage.pngData()!.write(to: collageURL)
+        }
+        catch {
+            print(error.localizedDescription)
+        }
         
+        let coverAsset = CKAsset(fileURL: coverURL)
+        let collageAsset = CKAsset(fileURL: collageURL)
+        cardRecord["coverImage"] = coverAsset
+        cardRecord["collage"] = collageAsset
+
         do {
             try await pdb.save(cardRecord)
         } catch {
