@@ -46,35 +46,6 @@ struct FinalizeCardView: View {
     @State private var isProcessingShare = false
     @State private var activeShare: CKShare?
     @State private var activeContainer: CKContainer?
-
-    private func addCard(card: Card) async throws {
-        try await cm.addCard(card: card)
-        try await cm.refresh()
-        isAddingCard = false
-    }
-    
-    private func shareCard(_ card: Card) async throws {
-        isProcessingShare = true
-
-        do {
-            let (share, container) = try await cm.fetchOrCreateShare(card: card)
-            isProcessingShare = false
-            activeShare = share
-            activeContainer = container
-            isSharing = true
-        } catch {
-            debugPrint("Error sharing contact record: \(error)")
-        }
-    }
-    
-    /// Builds a `CloudSharingView` with state after processing a share.
-    private func shareView(card: Card) -> CloudSharingView? {
-        guard let share = activeShare, let container = activeContainer else {
-            return nil
-        }
-
-        return CloudSharingView(share: share, container: container, card: card)
-    }
     
     var eCardVertical: some View {
         VStack(spacing:1) {
@@ -191,18 +162,21 @@ struct FinalizeCardView: View {
             Spacer()
             HStack {
                 Button("Save eCard") {
-                    saveECard()
-                    //shareECardExternally()
-                    saveAndShareIsActive = true
-                    showCompleteAlert = true
+                    //isAddingCard = true
+                    Task {
+                        try? await addCard(noteField: noteField, searchObject: searchObject, an1: text1, an2: text2, an2URL: text2URL.absoluteString, an3: text3, an4: text4, chosenObject: chosenObject, collageImage: collageImage)
+                    }
+                    //saveAndShareIsActive = true
+                    //showCompleteAlert = true
                 }
                 .disabled(saveAndShareIsActive)
                 .alert("Save Complete", isPresented: $showCompleteAlert) {
-                    Button("Ok", role: .cancel) {
+                    Button(action: { Task { try? await shareCard(card)}}, label: { Image(systemName: "square.and.arrow.up") }).buttonStyle(BorderlessButtonStyle())
+                    Button("Share Later", role: .cancel) {
                         presentMenu = true
-                        //showShareSheet = true
                     }
                 }
+                .sheet(isPresented: $isSharing, content: { shareView(card: card)})
                 Spacer()
                 Button("Export for Print") {
                     showActivityController = true
@@ -239,68 +213,39 @@ struct FinalizeCardView: View {
     }
 
 
+
 extension FinalizeCardView {
     
-    func saveECard() {
-        //save to core data
-        let card = Card(context: CoreDataStack.shared.context)
-        card.card = eCardVertical.snapshot().pngData()
-        card.cardName = noteField.cardName
-        card.collage = collageImage.collageImage.pngData()
-        card.coverImage = chosenObject.coverImage!
-        card.date = Date.now
-        card.message = noteField.noteText
-        card.occassion = searchObject.searchText
-        card.cardName = noteField.cardName
-        card.recipient = noteField.recipient
-        card.font = noteField.font
-        card.an1 = text1
-        card.an2 = text2
-        card.an2URL = text2URL.absoluteString
-        card.an3 = text3
-        card.an4 = text4
-        self.saveContext()
+    private func addCard(noteField: NoteField, searchObject: SearchParameter
+                         , an1: String, an2: String, an2URL: String, an3: String, an4: String, chosenObject: CoverImageObject, collageImage: CollageImage) async throws {
         
-        
-        let recordName = CKRecord.ID(recordName: "\(card.cardName!)-\(card.objectID)")
-        let coverURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0].appendingPathComponent("\(card.cardName!).png")
-        let collageURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0].appendingPathComponent("\(card.cardName!).png")
-
+        try await cm.addCard(noteField: noteField, searchObject: searchObject
+                             , an1: an1, an2: an2, an2URL: an2URL, an3: an3, an4: an4, chosenObject: chosenObject, collageImage: collageImage)
+        try await cm.refresh()
+        isAddingCard = false
+    }
+    
+    private func shareCard(_ card: Card) async throws {
+        isProcessingShare = true
         do {
-            print("trying save....")
-            try card.coverImage?.write(to: coverURL)
-            try card.collage?.write(to: collageURL)
-            print("Save Success.....")
-        }
-        catch {
-            print(error.localizedDescription)
-        }
-        cardRecord["CD_an1"] = card.an1 as? CKRecordValue
-        cardRecord["CD_an2"] = card.an2 as? CKRecordValue
-        cardRecord["CD_an2URL"] = card.an2URL as? CKRecordValue
-        cardRecord["CD_an3"] = card.an3 as? CKRecordValue
-        cardRecord["CD_an4"] = card.an4 as? CKRecordValue
-        cardRecord["CD_font"] = card.font as? CKRecordValue
-        cardRecord["CD_recipient"] = card.recipient as? CKRecordValue
-        cardRecord["CD_occassion"] = card.occassion as? CKRecordValue
-        cardRecord["CD_date"] = card.date as? CKRecordValue
-        cardRecord["CD_cardName"] = card.cardName as? CKRecordValue
-        cardRecord["CD_message"] = card.message as? CKRecordValue
-        cardRecord["associatedRecord"] = cardRecord as? CKRecordValue
-
-        let coverAsset = CKAsset(fileURL: coverURL)
-        let collageAsset = CKAsset(fileURL: collageURL)
-        cardRecord["coverImage"] = coverAsset
-        cardRecord["collage"] = collageAsset
-        self.cardRecord = cardRecord
-        print("set card assets")
-        // can sub in .publicCloudDatabase
-        Task {
-            print("$$$")
-
+            let (share, container) = try await cm.fetchOrCreateShare(card: card)
+            isProcessingShare = false
+            activeShare = share
+            activeContainer = container
+            isSharing = true
+        } catch {
+            debugPrint("Error sharing contact record: \(error)")
         }
     }
     
+    /// Builds a `CloudSharingView` with state after processing a share.
+    private func shareView(card: Card) -> CloudSharingView? {
+        guard let share = activeShare, let container = activeContainer else {
+            return nil
+        }
+
+        return CloudSharingView(share: share, container: container, card: card)
+    }
     
     func prepCardForExport() -> Data {
         let image = SnapShotCardForPrint(chosenObject: $chosenObject, collageImage: $collageImage, noteField: $noteField, text1: $text1, text2: $text2, text2URL: $text2URL, text3: $text3, text4: $text4, printCardText: $printCardText).snapshot()
@@ -353,3 +298,4 @@ extension UIScreen{
 // https://swiftwithmajid.com/2022/03/29/zone-sharing-in-cloudkit/
 // https://swiftwithmajid.com/2022/03/29/zone-sharing-in-cloudkit/
 // https://www.techotopia.com/index.php/An_Introduction_to_CloudKit_Data_Storage_on_iOS_8#Record_Zones
+// https://github.com/apple/sample-cloudkit-sharing

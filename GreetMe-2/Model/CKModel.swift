@@ -70,31 +70,24 @@ final class CKModel: ObservableObject {
         return (private: try await privateCards, shared: try await sharedCards)
     }
     
-    /// Adds a new Contact to the database.
-    /// - Parameters:
-    ///   - name: Name of the Contact.
-    ///   - phoneNumber: Phone number of the contact.
-    func addCard(card: Card) async throws {
+    /// Adds a new Card  to the database.
+    func addCard(noteField: NoteField, searchObject: SearchParameter, an1: String, an2: String, an2URL: String, an3: String, an4: String, chosenObject: CoverImageObject, collageImage: CollageImage) async throws {
+        
         let id = CKRecord.ID(zoneID: recordZone.zoneID)
-        //let recordName = CKRecord.ID(recordName: "\(card.cardName!)-\(card.objectID)")
-        //let cardRecord = CKRecord(recordType: "CD_Card", recordID: .init(zoneID: Card.SharedZone.ID))
         let cardRecord = CKRecord(recordType: "CD_Card", recordID: id)
-        cardRecord["CD_an1"] = card.an1 as? CKRecordValue
-        cardRecord["CD_an2"] = card.an2 as? CKRecordValue
-        cardRecord["CD_an2URL"] = card.an2URL as? CKRecordValue
-        cardRecord["CD_an3"] = card.an3 as? CKRecordValue
-        cardRecord["CD_an4"] = card.an4 as? CKRecordValue
-        cardRecord["CD_font"] = card.font as? CKRecordValue
-        cardRecord["CD_recipient"] = card.recipient as? CKRecordValue
-        cardRecord["CD_occassion"] = card.occassion as? CKRecordValue
-        cardRecord["CD_date"] = card.date as? CKRecordValue
-        cardRecord["CD_cardName"] = card.cardName as? CKRecordValue
-        cardRecord["CD_message"] = card.message as? CKRecordValue
-
-        //let coverAsset = CKAsset(fileURL: coverURL)
-        //let collageAsset = CKAsset(fileURL: collageURL)
-        //cardRecord["coverImage"] = coverAsset
-        //cardRecord["collage"] = collageAsset
+        cardRecord["CD_cardName"] = noteField.cardName as CKRecordValue
+        cardRecord["CD_occassion"] = searchObject.searchText as? CKRecordValue
+        cardRecord["CD_recipient"] = noteField.recipient as CKRecordValue
+        cardRecord["CD_an1"] = an1 as CKRecordValue
+        cardRecord["CD_an2"] = an2 as CKRecordValue
+        cardRecord["CD_an2URL"] = an2URL as CKRecordValue
+        cardRecord["CD_an3"] = an3 as CKRecordValue
+        cardRecord["CD_an4"] = an4 as CKRecordValue
+        cardRecord["CD_font"] = noteField.font as CKRecordValue
+        cardRecord["CD_date"] = Date.now as CKRecordValue
+        cardRecord["CD_message"] = noteField.noteText as CKRecordValue
+        cardRecord["coverImage"] = chosenObject.coverImage!
+        cardRecord["collage"] = collageImage.collageImage.pngData()
         
         do {
             try await pdb.save(cardRecord)
