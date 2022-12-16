@@ -67,7 +67,8 @@ final class CKModel: ObservableObject {
         // This will run each of these operations in parallel.
         async let privateCards = fetchCards(scope: .private, in: [recordZone])
         async let sharedCards = fetchSharedCards()
-        
+        print("**")
+        try await print(privateCards)
         return (private: try await privateCards, shared: try await sharedCards)
     }
     
@@ -75,18 +76,18 @@ final class CKModel: ObservableObject {
     func addCard(noteField: NoteField, searchObject: SearchParameter, an1: String, an2: String, an2URL: String, an3: String, an4: String, chosenObject: CoverImageObject, collageImage: CollageImage) async throws {
         
         let id = CKRecord.ID(zoneID: recordZone.zoneID)
-        let cardRecord = CKRecord(recordType: "CD_Card", recordID: id)
-        cardRecord["CD_cardName"] = noteField.cardName as CKRecordValue
-        cardRecord["CD_occassion"] = searchObject.searchText as? CKRecordValue
-        cardRecord["CD_recipient"] = noteField.recipient as CKRecordValue
-        cardRecord["CD_an1"] = an1 as CKRecordValue
-        cardRecord["CD_an2"] = an2 as CKRecordValue
-        cardRecord["CD_an2URL"] = an2URL as CKRecordValue
-        cardRecord["CD_an3"] = an3 as CKRecordValue
-        cardRecord["CD_an4"] = an4 as CKRecordValue
-        cardRecord["CD_font"] = noteField.font as CKRecordValue
-        cardRecord["CD_date"] = Date.now as CKRecordValue
-        cardRecord["CD_message"] = noteField.noteText as CKRecordValue
+        let cardRecord = CKRecord(recordType: "Card", recordID: id)
+        cardRecord["cardName"] = noteField.cardName as CKRecordValue
+        cardRecord["occassion"] = searchObject.searchText as? CKRecordValue
+        cardRecord["recipient"] = noteField.recipient as CKRecordValue
+        cardRecord["an1"] = an1 as CKRecordValue
+        cardRecord["an2"] = an2 as CKRecordValue
+        cardRecord["an2URL"] = an2URL as CKRecordValue
+        cardRecord["an3"] = an3 as CKRecordValue
+        cardRecord["an4"] = an4 as CKRecordValue
+        cardRecord["font"] = noteField.font as CKRecordValue
+        cardRecord["date"] = Date.now as CKRecordValue
+        cardRecord["message"] = noteField.noteText as CKRecordValue
         //cardRecord["coverImage"] = chosenObject.coverImage! as CKRecordValue
         //cardRecord["collage"] = collageImage.collageImage.pngData() as CKRecordValue
 
@@ -118,10 +119,10 @@ final class CKModel: ObservableObject {
        ///   - contact: Contact to share.
        ///   - completionHandler: Handler to process a `success` or `failure` result.
        func fetchOrCreateShare(card: Card) async throws -> (CKShare, CKContainer) {
-           guard let existingShare = card.associatedRecord!.share else {
-               let share = CKShare(rootRecord: card.associatedRecord!)
+           guard let existingShare = card.associatedRecord.share else {
+               let share = CKShare(rootRecord: card.associatedRecord)
                share[CKShare.SystemFieldKey.title] = "Card: \(card.cardName)"
-               _ = try await pdb.modifyRecords(saving: [card.associatedRecord!, share], deleting: [])
+               _ = try await pdb.modifyRecords(saving: [card.associatedRecord, share], deleting: [])
                return (share, container)
            }
 
@@ -143,10 +144,10 @@ final class CKModel: ObservableObject {
            in zones: [CKRecordZone]
        ) async throws -> [Card] {
            let database = container.database(with: scope)
-           var allContacts: [Card] = []
+           var allCards: [Card] = []
 
-           // Inner function retrieving and converting all Contact records for a single zone.
-           @Sendable func contactsInZone(_ zone: CKRecordZone) async throws -> [Card] {
+           // Inner function retrieving and converting all Card records for a single zone.
+           @Sendable func cardsInZone(_ zone: CKRecordZone) async throws -> [Card] {
                var allCards: [Card] = []
 
                /// `recordZoneChanges` can return multiple consecutive changesets before completing, so
@@ -157,11 +158,26 @@ final class CKModel: ObservableObject {
 
                while awaitingChanges {
                    let zoneChanges = try await database.recordZoneChanges(inZoneWith: zone.zoneID, since: nextChangeToken)
-                   let cards = zoneChanges.modificationResultsByID.values
-                       .compactMap { try? $0.get().record }
-                       .compactMap { Card(record: $0) }
-                   allCards.append(contentsOf: cards)
-
+                   print("&&")
+                   //let cards = zoneChanges.modificationResultsByID.values
+                   //    .compactMap { try? $0.get().record }
+                   //    .compactMap { Card(record: $0) }
+                   //print("**")
+                   //print(cards)
+                   //print("--")
+                   //allCards.append(contentsOf: cards)
+                  for rec in zoneChanges.modificationResultsByID.values {
+                      var c: CKRecord
+                      try c = rec.get().record
+                      print("the record.....")
+                      print(c)
+                      let c2 = Card(record: c)
+                      print("000")
+                      print(c2)
+                      allCards.append(c2!)
+                   }
+                   print("!!")
+                   print(allCards)
                    awaitingChanges = zoneChanges.moreComing
                    nextChangeToken = zoneChanges.changeToken
                }
@@ -173,17 +189,15 @@ final class CKModel: ObservableObject {
            try await withThrowingTaskGroup(of: [Card].self) { group in
                for zone in zones {
                    group.addTask {
-                       try await contactsInZone(zone)
+                       try await cardsInZone(zone)
                    }
                }
-
                // As each result comes back, append it to a combined array to finally return.
                for try await contactsResult in group {
-                   allContacts.append(contentsOf: contactsResult)
+                   allCards.append(contentsOf: contactsResult)
                }
            }
-
-           return allContacts
+           return allCards
        }
 
        /// Fetches all shared Contacts from all available record zones.

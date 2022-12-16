@@ -16,7 +16,8 @@ struct Card: Identifiable, Hashable {
     let cardName: String?
     let occassion: String?
     let recipient: String?
-    let associatedRecord: CKRecord?
+    let associatedRecord: CKRecord
+    
     let an1: String?
     let an2: String?
     let an2URL: String?
@@ -34,19 +35,19 @@ struct Card: Identifiable, Hashable {
 extension Card {
     
     init?(record: CKRecord) {
-        guard let cardName = record["CD_cardName"] as? String,
-            let occassion = record["CD_occassion"] as? String,
-            let recipient = record["CD_recipient"] as? String,
-            let an1 = record["CD_an1"] as? String,
-            let an2 = record["CD_an2"] as? String,
-            let an2URL = record["CD_an2URL"] as? String,
-            let an3 = record["CD_an3"] as? String,
-            let an4 = record["CD_an4"] as? String,
-            let collage = record["CD_collage"] as? Data,
-            let coverImage = record["CD_coverImage"] as? Data,
-            let date = record["CD_date"] as? Date,
-            let font = record["CD_font"] as? String,
-            let message = record["CD_message"] as? String else {
+        guard let cardName = record["cardName"] as? String,
+            let occassion = record["occassion"] as? String,
+            let recipient = record["recipient"] as? String,
+            let an1 = record["an1"] as? String,
+            let an2 = record["an2"] as? String,
+            let an2URL = record["an2URL"] as? String,
+            let an3 = record["an3"] as? String,
+            let an4 = record["an4"] as? String,
+            let collage = record["collage"] as? Data,
+            let coverImage = record["coverImage"] as? Data,
+            let date = record["date"] as? Date,
+            let font = record["font"] as? String,
+            let message = record["message"] as? String else {
             return nil
         }
         

@@ -29,29 +29,42 @@ struct ShowPriorCardsView: View {
     @State private var showEditSheet = false
     @State var returnRecord: CKRecord?
     @State private var showDeliveryScheduler = false
+    @State private var privateCards: [Card]?
+    @State private var sharedCards: [Card]?
+
+    
+    
     let columns = [GridItem(.fixed(140)), GridItem(.fixed(140))]
     var body: some View {
         NavigationView {
             ScrollView {
-                    Group {
-                        switch cm.state {
-                        case .loading:
-                            VStack{EmptyView()}
-                        case .error(let error):
-                            VStack {
-                                Text("An error occurred: \(error.localizedDescription)").padding()
-                                Spacer()
-                            }
-                        case let .loaded(privateCards, sharedCards):
-                            List {
-                                ForEach(privateCards) {cardView(for: $0, shareable: false)}
-                            }
-                            List {
-                                ForEach(sharedCards) {cardView(for: $0, shareable: false)}
-                            }
+                Group {
+                    switch cm.state {
+                    case .loading:
+                        VStack{EmptyView()}
+                    case .error(let error):
+                        VStack {
+                            Text("An error occurred: \(error.localizedDescription)").padding()
+                            Spacer()
                         }
-                    }.navigationBarItems(leading:
-                                            Button {presentationMode.wrappedValue.dismiss()} label: { Image(systemName: "chevron.left").foregroundColor(.blue); Text("Back")})
+                    case let .loaded(privateCards, sharedCards):
+                        List {
+                            ForEach(privateCards) {cardView(for: $0, shareable: false)}
+                        }
+                        List {
+                            ForEach(sharedCards) {cardView(for: $0, shareable: false)}
+                        }
+                    }
+                }
+            }
+            .navigationViewStyle(.stack)
+            .navigationBarItems(leading: Button {presentationMode.wrappedValue.dismiss()} label: { Image(systemName: "chevron.left").foregroundColor(.blue); Text("Back")})
+            .onAppear {
+                Task {
+                    try await cm.initialize()
+                    try await (privateCards, sharedCards) = cm.fetchPrivateAndSharedCards()
+                    try await cm.refresh()
+                }
             }
         }
     }
