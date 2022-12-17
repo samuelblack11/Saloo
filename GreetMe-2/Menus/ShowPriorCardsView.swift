@@ -34,9 +34,11 @@ struct ShowPriorCardsView: View {
     @State private var allCards: [Card]?
 
     
-    let columns = [GridItem(.adaptive(minimum: 80))]
+    let columns = [GridItem(.adaptive(minimum: 120))]
     var body: some View {
         NavigationView {
+            ScrollView {
+                LazyVGrid(columns: columns, spacing: 10) {
                     switch cm.state {
                     case .loading:
                         VStack{EmptyView()}
@@ -45,45 +47,32 @@ struct ShowPriorCardsView: View {
                             Text("An error occurred: \(error.localizedDescription)").padding()
                             Spacer()
                         }
-                    case let .loaded(privateCards, sharedCards):
-                        List {
-                            ForEach(allCards!) {cardView(for: $0, shareable: false)}
-                        }
+                    //case let .loaded(privateCards, sharedCards):
+                    case let .loaded(allCards):
+                        //List {
+                        ForEach(allCards) {cardView(for: $0, shareable: false)}
+                        //}
                     }
+                }
             }
-            .navigationViewStyle(.stack)
-            .onAppear {
-                Task {
-                    try await cm.initialize()
-                    try await (privateCards, sharedCards) = cm.fetchPrivateAndSharedCards()
-                    allCards = sumLists(privateCards: privateCards!, sharedCards: sharedCards!)
-                    try await cm.refresh()
-                }}
-    }
-    
-    
-    func sumLists(privateCards: [Card], sharedCards: [Card]) -> [Card] {
-        if sharedCards != sharedCards {
-            allCards = privateCards
-        }
-        else {
-            allCards = privateCards + sharedCards
-        }
-        return allCards!
+        }                //.navigationViewStyle(.stack)
+        .onAppear {
+            Task {
+                try await cm.initialize()
+                try await (privateCards, sharedCards) = cm.fetchPrivateAndSharedCards()
+                try await cm.refresh()
+            }}
     }
     
     private func cardView(for card: Card, shareable: Bool = true) -> some View {
-        LazyVGrid(columns: columns, spacing: 10) {
-
             VStack(spacing: 0) {
                 VStack(spacing:1) {
                     Image(uiImage: UIImage(data: card.coverImage!)!)
                         .resizable()
                         .frame(width: (UIScreen.screenWidth/4), height: (UIScreen.screenHeight/7))
                     Text(card.message!)
-                        .font(Font.custom(card.font!, size: 500))
-                        .minimumScaleFactor(0.01)
-                        .frame(width: (UIScreen.screenWidth/3), height: (UIScreen.screenHeight/8))
+                        .font(Font.custom(card.font!, size: 500)).minimumScaleFactor(0.01)
+                        .frame(width: (UIScreen.screenWidth/4), height: (UIScreen.screenHeight/8))
                     Image(uiImage: UIImage(data: card.collage!)!)
                         .resizable()
                         .frame(maxWidth: (UIScreen.screenWidth/4), maxHeight: (UIScreen.screenHeight/7))
@@ -105,32 +94,23 @@ struct ShowPriorCardsView: View {
                 }
                 .sheet(isPresented: $showDeliveryScheduler) {ScheduleDelivery(card: card)}
                 .sheet(isPresented: $segueToEnlarge) {EnlargeECardView(chosenCard: $chosenCard, share: $share)}
-                .sheet(isPresented: $isSharing, content: {
-                    shareView(card)
-                })
+                .sheet(isPresented: $isSharing, content: {shareView(card)})
+                Divider().padding(.bottom, 5)
+                HStack(spacing: 3) {
+                    Text(card.recipient!)
+                        .font(.system(size: 8)).minimumScaleFactor(0.1)
+                    Spacer()
+                    Text(card.occassion!)
+                        .font(.system(size: 8)).minimumScaleFactor(0.1)
+                }
+            }.padding().overlay(RoundedRectangle(cornerRadius: 6).stroke(.blue, lineWidth: 2))
+                .font(.headline).padding(.horizontal).frame(maxHeight: 600)
                 .contextMenu {
                     Button {chosenCard = card; segueToEnlarge = true} label: {Text("Enlarge eCard"); Image(systemName: "plus.magnifyingglass")}
                     Button {} label: {Text("Delete eCard"); Image(systemName: "trash").foregroundColor(.red)}
                     Button {Task {try? await shareCard(card)}; isSharing = true} label: {Text("Share eCard Now")}
                     Button {showDeliveryScheduler = true} label: {Text("Schedule eCard Delivery")}
-                }
-                Divider().padding(.bottom, 5)
-                HStack(spacing: 3) {
-                    Text(card.recipient!)
-                        .font(.system(size: 8))
-                        .minimumScaleFactor(0.1)
-                    Spacer()
-                    Text(card.occassion!)
-                        .font(.system(size: 8))
-                        .minimumScaleFactor(0.1)
-                }
-            }.padding().overlay(RoundedRectangle(cornerRadius: 6).stroke(.blue, lineWidth: 2))
-        }
-        .font(.headline)
-        .padding(.horizontal)
-        .frame(maxHeight: 600)
-        }
-    }
+                }}}
 
 // MARK: Returns CKShare participant permission, methods and properties to share
 extension ShowPriorCardsView {

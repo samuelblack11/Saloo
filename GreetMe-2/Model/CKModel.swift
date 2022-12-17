@@ -21,7 +21,8 @@ final class CKModel: ObservableObject {
     
     enum State {
         case loading
-        case loaded(private: [Card], shared: [Card])
+        //case loaded(private: [Card], shared: [Card])
+        case loaded(allCards: [Card])
         case error(Error)
     }
     
@@ -33,6 +34,7 @@ final class CKModel: ObservableObject {
     private lazy var pdb = container.privateCloudDatabase
     /// Sharing requires using a custom record zone.
     let recordZone = CKRecordZone(zoneName: "Cards")
+    var allCards: [Card]!
     
     nonisolated init() {}
     
@@ -55,7 +57,14 @@ final class CKModel: ObservableObject {
         state = .loading
         do {
             let (privateCards, sharedCards) = try await fetchPrivateAndSharedCards()
-            state = .loaded(private: privateCards, shared: sharedCards)
+            //state = .loaded(private: privateCards, shared: sharedCards)
+            if sharedCards != sharedCards {
+                allCards = privateCards
+            }
+            else {
+                allCards = privateCards + sharedCards
+            }
+            state = .loaded(allCards: allCards)
         } catch {
             state = .error(error)
         }

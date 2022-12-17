@@ -50,40 +50,30 @@ struct FinalizeCardView: View {
     var eCardVertical: some View {
         VStack(spacing:1) {
             Image(uiImage: UIImage(data: chosenObject.coverImage!)!)
-                .interpolation(.none)
-                .resizable()
-                .scaledToFit()
+                .interpolation(.none).resizable().scaledToFit()
                 .frame(width: (UIScreen.screenWidth/4), height: (UIScreen.screenHeight/8))
             Text(eCardText)
-                .font(Font.custom(noteField.font, size: 500))
-                .minimumScaleFactor(0.01)
+                .font(Font.custom(noteField.font, size: 500)).minimumScaleFactor(0.01)
                 .frame(maxWidth: (UIScreen.screenWidth/4), maxHeight: (UIScreen.screenHeight/9))
             Image(uiImage: collageImage.collageImage)
-                .interpolation(.none)
-                .resizable()
-                .scaledToFit()
+                .interpolation(.none).resizable().scaledToFit()
                 .frame(width: (UIScreen.screenWidth/4), height: (UIScreen.screenHeight/8))
             HStack(spacing: 0) {
                 VStack(spacing:0){
                 Text(text1)
-                    .font(.system(size: 4))
-                    .frame(alignment: .center)
+                    .font(.system(size: 4)).frame(alignment: .center)
                 Link(text2, destination: text2URL)
-                    .font(.system(size: 4))
-                    .frame(alignment: .center)
+                    .font(.system(size: 4)).frame(alignment: .center)
                 HStack(spacing: 0) {
                     Text(text3).font(.system(size: 4))
                         .frame(alignment: .center)
                     Link(text4, destination: URL(string: "https://unsplash.com")!)
-                        .font(.system(size: 4))
-                        .frame(alignment: .center)
+                        .font(.system(size: 4)).frame(alignment: .center)
                     }
                 }
                 Spacer()
                 Image(systemName: "greetingcard.fill")
-                    .foregroundColor(.blue)
-                    .font(.system(size: 12))
-                    .frame(alignment: .center)
+                    .foregroundColor(.blue).font(.system(size: 12)).frame(alignment: .center)
                 Spacer()
                 //VStack(spacing:0) {
                     //Text("Greeting Card by")
@@ -155,9 +145,7 @@ struct FinalizeCardView: View {
             Spacer()
             HStack(spacing:0){
                 Text("And will be printed like this:")
-                HStack(spacing:0){
-                    cardForPrint
-                }.frame(alignment: .center)
+                HStack(spacing:0){cardForPrint}.frame(alignment: .center)
             }
             Spacer()
             HStack {
@@ -170,21 +158,16 @@ struct FinalizeCardView: View {
                     //saveAndShareIsActive = true
                     showCompleteAlert = true
                 }
+                .sheet(isPresented: $presentMenu) {OccassionsMenu(searchType: $string1, noneSearch: $string2, calViewModel: CalViewModel(), showDetailView: ShowDetailView(), oo2: false)}
                 .disabled(saveAndShareIsActive)
                 .alert("Save Complete", isPresented: $showCompleteAlert) {
-                    Button("Save Complete", role: .cancel) {
-                        presentMenu = true
-                    }
+                    Button("Ok", role: .cancel) {presentMenu = true}
                 }
-                .sheet(isPresented: $isSharing, content: { shareView(card: card)})
+                .sheet(isPresented: $isSharing, content: {shareView(card: card)})
                 Spacer()
                 Button("Export for Print") {
-                    showActivityController = true
-                    let cardForExport = prepCardForExport()
-                    activityItemsArray = []
-                    activityItemsArray.append(cardForExport)
-                }.sheet(isPresented: $showActivityController) {
-                    ActivityView(activityItems: $activityItemsArray, applicationActivities: nil)
+                    showActivityController = true; let cardForExport = prepCardForExport()
+                    activityItemsArray = []; activityItemsArray.append(cardForExport)
                 }
             }
         }
@@ -192,27 +175,15 @@ struct FinalizeCardView: View {
             leading:Button {presentationMode.wrappedValue.dismiss()}
             label: {Image(systemName: "chevron.left").foregroundColor(.blue)
             Text("Back")},
-            trailing:Button {
-                presentMenu = true
-            }
-                label: {Image(systemName: "menucard.fill").foregroundColor(.blue)
-                Text("Menu")})
-        .sheet(isPresented: $presentMenu) {
-            OccassionsMenu(searchType: $string1, noneSearch: $string2, calViewModel: CalViewModel(), showDetailView: ShowDetailView(), oo2: false)
-            }
-        .onAppear(){
-
-            }
-        .sheet(isPresented: $showShareSheet, content: {
-            if let share = share {
-                CloudSharingView(share: share, container: CoreDataStack.shared.ckContainer, card: card)
-            }
-          })
-        }
+            trailing: Button {presentMenu = true} label: {Image(systemName: "menucard.fill").foregroundColor(.blue)
+            Text("Menu")}
+            )
+        .sheet(isPresented: $presentMenu) {OccassionsMenu(searchType: $string1, noneSearch: $string2, calViewModel: CalViewModel(), showDetailView: ShowDetailView(), oo2: false)}
+        .sheet(isPresented: $showShareSheet, content: {if let share = share {CloudSharingView(share: share, container: CoreDataStack.shared.ckContainer, card: card)}})
+        .sheet(isPresented: $showActivityController) {ActivityView(activityItems: $activityItemsArray, applicationActivities: nil)}
         }
     }
-
-
+    }
 
 extension FinalizeCardView {
     
@@ -257,17 +228,6 @@ extension FinalizeCardView {
         })
         return data
     }
-    
-    func saveContext() {
-        if CoreDataStack.shared.context.hasChanges {
-            do {
-                try CoreDataStack.shared.context.save()
-                }
-            catch {
-                print("An error occurred while saving: \(error)")
-                }
-            }
-        }
 }
 
 extension UIScreen{
