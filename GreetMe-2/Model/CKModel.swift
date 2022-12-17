@@ -77,6 +77,7 @@ final class CKModel: ObservableObject {
         
         let id = CKRecord.ID(zoneID: recordZone.zoneID)
         let cardRecord = CKRecord(recordType: "Card", recordID: id)
+        //cardRecord["id"] = cardRecord.recordID.recordName as CKRecordValue
         cardRecord["cardName"] = noteField.cardName as CKRecordValue
         cardRecord["occassion"] = searchObject.searchText as? CKRecordValue
         cardRecord["recipient"] = noteField.recipient as CKRecordValue
@@ -88,23 +89,8 @@ final class CKModel: ObservableObject {
         cardRecord["font"] = noteField.font as CKRecordValue
         cardRecord["date"] = Date.now as CKRecordValue
         cardRecord["message"] = noteField.noteText as CKRecordValue
-        //cardRecord["coverImage"] = chosenObject.coverImage! as CKRecordValue
-        //cardRecord["collage"] = collageImage.collageImage.pngData() as CKRecordValue
-
-        let coverURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0].appendingPathComponent("\(noteField.cardName).png")
-        let collageURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0].appendingPathComponent("\(noteField.cardName).png")
-        do {
-            try chosenObject.coverImage?.write(to: coverURL)
-            try collageImage.collageImage.pngData()!.write(to: collageURL)
-        }
-        catch {
-            print(error.localizedDescription)
-        }
-        
-        let coverAsset = CKAsset(fileURL: coverURL)
-        let collageAsset = CKAsset(fileURL: collageURL)
-        cardRecord["coverImage"] = coverAsset
-        cardRecord["collage"] = collageAsset
+        cardRecord["coverImage"] = chosenObject.coverImage! as CKRecordValue
+        cardRecord["collage"] = collageImage.collageImage.pngData()! as CKRecordValue
 
         do {
             try await pdb.save(cardRecord)
@@ -159,25 +145,22 @@ final class CKModel: ObservableObject {
                while awaitingChanges {
                    let zoneChanges = try await database.recordZoneChanges(inZoneWith: zone.zoneID, since: nextChangeToken)
                    print("&&")
-                   //let cards = zoneChanges.modificationResultsByID.values
-                   //    .compactMap { try? $0.get().record }
-                   //    .compactMap { Card(record: $0) }
-                   //print("**")
-                   //print(cards)
-                   //print("--")
-                   //allCards.append(contentsOf: cards)
-                  for rec in zoneChanges.modificationResultsByID.values {
-                      var c: CKRecord
-                      try c = rec.get().record
-                      print("the record.....")
-                      print(c)
-                      let c2 = Card(record: c)
-                      print("000")
-                      print(c2)
-                      allCards.append(c2!)
-                   }
-                   print("!!")
-                   print(allCards)
+                   let cards = zoneChanges.modificationResultsByID.values
+                       .compactMap { try? $0.get().record }
+                       .compactMap { Card(record: $0) }
+                   allCards.append(contentsOf: cards)
+                  //for rec in zoneChanges.modificationResultsByID.values {
+                  //    var c: CKRecord
+                  //    try c = rec.get().record
+                  //    print("the record.....")
+                  //    print(c)
+                  //    let c2 = Card(record: c)
+                  //    print("000")
+                  //    print(c2)
+                  //    allCards.append(c2!)
+                   //}
+                   //print("!!")
+                   //print(allCards)
                    awaitingChanges = zoneChanges.moreComing
                    nextChangeToken = zoneChanges.changeToken
                }

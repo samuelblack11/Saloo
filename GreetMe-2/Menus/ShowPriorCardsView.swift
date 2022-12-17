@@ -31,14 +31,12 @@ struct ShowPriorCardsView: View {
     @State private var showDeliveryScheduler = false
     @State private var privateCards: [Card]?
     @State private var sharedCards: [Card]?
+    @State private var allCards: [Card]?
 
     
-    
-    let columns = [GridItem(.fixed(140)), GridItem(.fixed(140))]
+    let columns = [GridItem(.adaptive(minimum: 80))]
     var body: some View {
         NavigationView {
-            ScrollView {
-                Group {
                     switch cm.state {
                     case .loading:
                         VStack{EmptyView()}
@@ -49,26 +47,30 @@ struct ShowPriorCardsView: View {
                         }
                     case let .loaded(privateCards, sharedCards):
                         List {
-                            ForEach(privateCards) {cardView(for: $0, shareable: false)}
-                        }
-                        List {
-                            ForEach(sharedCards) {cardView(for: $0, shareable: false)}
+                            ForEach(allCards!) {cardView(for: $0, shareable: false)}
                         }
                     }
-                }
             }
             .navigationViewStyle(.stack)
-            .navigationBarItems(leading: Button {presentationMode.wrappedValue.dismiss()} label: { Image(systemName: "chevron.left").foregroundColor(.blue); Text("Back")})
             .onAppear {
                 Task {
                     try await cm.initialize()
                     try await (privateCards, sharedCards) = cm.fetchPrivateAndSharedCards()
+                    allCards = sumLists(privateCards: privateCards!, sharedCards: sharedCards!)
                     try await cm.refresh()
-                }
-            }
-        }
+                }}
     }
     
+    
+    func sumLists(privateCards: [Card], sharedCards: [Card]) -> [Card] {
+        if sharedCards != sharedCards {
+            allCards = privateCards
+        }
+        else {
+            allCards = privateCards + sharedCards
+        }
+        return allCards!
+    }
     
     private func cardView(for card: Card, shareable: Bool = true) -> some View {
         LazyVGrid(columns: columns, spacing: 10) {
@@ -77,7 +79,7 @@ struct ShowPriorCardsView: View {
                 VStack(spacing:1) {
                     Image(uiImage: UIImage(data: card.coverImage!)!)
                         .resizable()
-                        .frame(width: (UIScreen.screenWidth/3), height: (UIScreen.screenHeight/7))
+                        .frame(width: (UIScreen.screenWidth/4), height: (UIScreen.screenHeight/7))
                     Text(card.message!)
                         .font(Font.custom(card.font!, size: 500))
                         .minimumScaleFactor(0.01)
@@ -99,7 +101,7 @@ struct ShowPriorCardsView: View {
                             Text("Greeting Card").font(.system(size: 4))
                             Text("by").font(.system(size: 4))
                             Text("GreetMe Inc.").font(.system(size: 4)).padding(.bottom,10).padding(.leading, 5)
-                        }}.frame(width: (UIScreen.screenWidth/3), height: (UIScreen.screenHeight/15))
+                        }}.frame(width: (UIScreen.screenWidth/4), height: (UIScreen.screenHeight/15))
                 }
                 .sheet(isPresented: $showDeliveryScheduler) {ScheduleDelivery(card: card)}
                 .sheet(isPresented: $segueToEnlarge) {EnlargeECardView(chosenCard: $chosenCard, share: $share)}
@@ -204,32 +206,3 @@ extension ShowPriorCardsView {
 
 
 ///// https://www.hackingwithswift.com/read/33/4/writing-to-icloud-with-cloudkit-ckrecord-and-ckasset
-//let recordZone: CKRecordZone = CKRecordZone(zoneName: "\(card.cardName)-\(card.objectID)")
-//let cardRecord = CKRecord(recordType: "Card")
-//cardRecord["card"] = card as? CKRecordValue
-//let cardAsset = CKAsset(fileURL: cardURL)
-
-//share[CKShare.SystemFieldKey.title] = card.cardName
-//share[CKShare.SystemFieldKey.thumbnailImageData] = card.coverImage
-
-
-//let recordIdName = CKRecord.ID(recordName: "\(card.cardName!)-\(card.objectID)")
-
-//CoreDataStack.shared.ckContainer.privateCloudDatabase.fetch(withRecordID: recordIdName) //{ [self] record, error in
-//        if let error = error {
- //           DispatchQueue.main.async {
-                // meaningful error message here!
- //               print("!!!!!")
-  //              print(error.localizedDescription)
-  //          }
-  //      } else {
-    //        if let record = record {
-    //            self.returnRecord = record
-    //            let share3 = CKShare(rootRecord: record)
-    //            share3[CKShare.SystemFieldKey.title] = card.cardName
-    //            share3[CKShare.SystemFieldKey.thumbnailImageData] = card.coverImage
-     //           share3[CKShare.SystemFieldKey.shareType] = "Your Greeting Card from GreetMe"
-     //           self.share = share3
-     //        }
-      //  }
-    //}

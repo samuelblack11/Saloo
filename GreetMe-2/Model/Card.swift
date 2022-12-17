@@ -13,7 +13,7 @@ import CloudKit
 
 struct Card: Identifiable, Hashable {
     let id: String
-    let cardName: String?
+    let cardName: String
     let occassion: String?
     let recipient: String?
     let associatedRecord: CKRecord
