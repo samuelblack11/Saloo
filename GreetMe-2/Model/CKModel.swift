@@ -22,7 +22,7 @@ final class CKModel: ObservableObject {
     enum State {
         case loading
         //case loaded(private: [Card], shared: [Card])
-        case loaded(allCards: [Card])
+        case loaded(myCards: [Card])
         case error(Error)
     }
     
@@ -31,10 +31,17 @@ final class CKModel: ObservableObject {
     /// Use the specified iCloud container ID, which should also be present in the entitlements file.
     lazy var container = CKContainer(identifier: "iCloud.GreetMe_2")
     /// This project uses the user's private database.
+    /// 
     private lazy var pdb = container.privateCloudDatabase
+    private lazy var sdb = container.privateCloudDatabase
+
     /// Sharing requires using a custom record zone.
     let recordZone = CKRecordZone(zoneName: "Cards")
-    var allCards: [Card]!
+    let sharedZone = CKRecordZone(zoneName: "Cards")
+
+    var myCards: [Card]!
+    var cardsSharedWithMe: [Card]!
+
     
     nonisolated init() {}
     
@@ -59,12 +66,12 @@ final class CKModel: ObservableObject {
             let (privateCards, sharedCards) = try await fetchPrivateAndSharedCards()
             //state = .loaded(private: privateCards, shared: sharedCards)
             if sharedCards != sharedCards {
-                allCards = privateCards
+                myCards = privateCards
             }
             else {
-                allCards = privateCards + sharedCards
+                myCards = privateCards + sharedCards
             }
-            state = .loaded(allCards: allCards)
+            state = .loaded(myCards: myCards)
         } catch {
             state = .error(error)
         }
@@ -127,6 +134,11 @@ final class CKModel: ObservableObject {
 
            return (share, container)
        }
+    
+        func accept(_ metadata: CKShare.Metadata) async throws {
+            try await self.container.accept(metadata)
+        }
+    
 
        // MARK: - Private
        /// Fetches contacts for a given set of zones in a given database scope.
@@ -134,16 +146,16 @@ final class CKModel: ObservableObject {
        ///   - scope: Database scope to fetch from.
        ///   - zones: Record zones to fetch contacts from.
        /// - Returns: Combined set of contacts across all given zones.
-       private func fetchCards(
+       func fetchCards(
            scope: CKDatabase.Scope,
            in zones: [CKRecordZone]
        ) async throws -> [Card] {
            let database = container.database(with: scope)
-           var allCards: [Card] = []
+           var myCards: [Card] = []
 
            // Inner function retrieving and converting all Card records for a single zone.
            @Sendable func cardsInZone(_ zone: CKRecordZone) async throws -> [Card] {
-               var allCards: [Card] = []
+               var myCards: [Card] = []
 
                /// `recordZoneChanges` can return multiple consecutive changesets before completing, so
                /// we use a loop to process multiple results if needed, indicated by the `moreComing` flag.
@@ -157,24 +169,12 @@ final class CKModel: ObservableObject {
                    let cards = zoneChanges.modificationResultsByID.values
                        .compactMap { try? $0.get().record }
                        .compactMap { Card(record: $0) }
-                   allCards.append(contentsOf: cards)
-                  //for rec in zoneChanges.modificationResultsByID.values {
-                  //    var c: CKRecord
-                  //    try c = rec.get().record
-                  //    print("the record.....")
-                  //    print(c)
-                  //    let c2 = Card(record: c)
-                  //    print("000")
-                  //    print(c2)
-                  //    allCards.append(c2!)
-                   //}
-                   //print("!!")
-                   //print(allCards)
+                   myCards.append(contentsOf: cards)
                    awaitingChanges = zoneChanges.moreComing
                    nextChangeToken = zoneChanges.changeToken
                }
 
-               return allCards
+               return myCards
            }
 
            // Using this task group, fetch each zone's contacts in parallel.
@@ -185,11 +185,11 @@ final class CKModel: ObservableObject {
                    }
                }
                // As each result comes back, append it to a combined array to finally return.
-               for try await contactsResult in group {
-                   allCards.append(contentsOf: contactsResult)
+               for try await cardsResult in group {
+                   myCards.append(contentsOf: cardsResult)
                }
            }
-           return allCards
+           return myCards
        }
 
        /// Fetches all shared Contacts from all available record zones.

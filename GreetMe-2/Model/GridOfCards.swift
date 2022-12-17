@@ -1,15 +1,16 @@
 //
-//  ShowPriorCardsView.swift
+//  GridOfCards.swift
 //  GreetMe-2
 //
-//  Created by Sam Black on 4/30/22.
+//  Created by Sam Black on 12/17/22.
 //
-
+// https://www.hackingwithswift.com/read/38/5/loading-core-data-objects-using-nsfetchrequest-and-nssortdescriptor
+///// https://www.hackingwithswift.com/read/33/4/writing-to-icloud-with-cloudkit-ckrecord-and-ckasset
 import Foundation
 import SwiftUI
 import CloudKit
 
-struct ShowPriorCardsView: View {
+struct GridOfCards: View {
     
     @EnvironmentObject private var cm: CKModel
     @State private var isAddingCard = false
@@ -19,7 +20,6 @@ struct ShowPriorCardsView: View {
     @State private var activeContainer: CKContainer?
     
     @Environment(\.presentationMode) var presentationMode
-    // https://www.hackingwithswift.com/read/38/5/loading-core-data-objects-using-nsfetchrequest-and-nssortdescriptor
     @State var cards = [Card]()
     @State private var segueToEnlarge = false
     @State private var chosenCard: Card!
@@ -31,9 +31,8 @@ struct ShowPriorCardsView: View {
     @State private var showDeliveryScheduler = false
     @State private var privateCards: [Card]?
     @State private var sharedCards: [Card]?
-    @State private var allCards: [Card]?
+    @State private var myCards: [Card]?
 
-    
     let columns = [GridItem(.adaptive(minimum: 120))]
     var body: some View {
         NavigationView {
@@ -47,15 +46,12 @@ struct ShowPriorCardsView: View {
                             Text("An error occurred: \(error.localizedDescription)").padding()
                             Spacer()
                         }
-                    //case let .loaded(privateCards, sharedCards):
-                    case let .loaded(allCards):
-                        //List {
-                        ForEach(allCards) {cardView(for: $0, shareable: false)}
-                        //}
+                    case let .loaded(myCards):
+                        ForEach(myCards) {cardView(for: $0, shareable: false)}
                     }
                 }
             }
-        }                //.navigationViewStyle(.stack)
+        }
         .onAppear {
             Task {
                 try await cm.initialize()
@@ -110,10 +106,11 @@ struct ShowPriorCardsView: View {
                     Button {} label: {Text("Delete eCard"); Image(systemName: "trash").foregroundColor(.red)}
                     Button {Task {try? await shareCard(card)}; isSharing = true} label: {Text("Share eCard Now")}
                     Button {showDeliveryScheduler = true} label: {Text("Schedule eCard Delivery")}
-                }}}
+                }}
+}
 
 // MARK: Returns CKShare participant permission, methods and properties to share
-extension ShowPriorCardsView {
+extension GridOfCards {
     
     /// Builds a `CloudSharingView` with state after processing a share.
     private func shareView(_ card: Card) -> CloudSharingView? {
@@ -183,6 +180,3 @@ extension ShowPriorCardsView {
     }
   }
 }
-
-
-///// https://www.hackingwithswift.com/read/33/4/writing-to-icloud-with-cloudkit-ckrecord-and-ckasset

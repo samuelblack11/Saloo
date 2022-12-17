@@ -154,9 +154,6 @@ struct OccassionsMenu: View {
         .sheet(isPresented: $presentPrior) {
             MenuView(calViewModel: calViewModel, showDetailView: showDetailView)
         }
-        .sheet(isPresented: $oo2) {
-            OpenOwnerShare()
-        }
         //.onReceive(appDelegate.oo1.$owner) { (x) in
         //    print(appDelegate.oo1.$owner)
         //    print("testing.......")

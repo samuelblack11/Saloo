@@ -22,7 +22,7 @@
 		260F68FE281DBEBD002E864B /* PingDownloadResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 260F68FD281DBEBD002E864B /* PingDownloadResponse.swift */; };
 		260F6907281DC0E3002E864B /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 260F6906281DC0E3002E864B /* LoginView.swift */; };
 		262C3ED3281E1E9C00F07C01 /* MenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 262C3ED2281E1E9C00F07C01 /* MenuView.swift */; };
-		262C3ED5281E226F00F07C01 /* ShowPriorCardsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 262C3ED4281E226F00F07C01 /* ShowPriorCardsView.swift */; };
+		262C3ED5281E226F00F07C01 /* Outbox.swift in Sources */ = {isa = PBXBuildFile; fileRef = 262C3ED4281E226F00F07C01 /* Outbox.swift */; };
 		2688D704285FA24300954120 /* SnapShotECard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2688D703285FA24200954120 /* SnapShotECard.swift */; };
 		2688D706285FA25100954120 /* SnapShotCardForPrint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2688D705285FA25100954120 /* SnapShotCardForPrint.swift */; };
 		26A72180281DB8D500ADAE44 /* GreetMe_2App.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26A7217F281DB8D500ADAE44 /* GreetMe_2App.swift */; };
@@ -41,13 +41,14 @@
 		C23340ED28C3D58D006222F5 /* FutureDelivery+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = C23340EC28C3D58D006222F5 /* FutureDelivery+CoreDataClass.swift */; };
 		C23524D22896D5F80052494F /* PreSetCalendarDates.swift in Sources */ = {isa = PBXBuildFile; fileRef = C23524D12896D5F80052494F /* PreSetCalendarDates.swift */; };
 		C237E6DD294B3FE300E472AD /* CKModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C237E6DC294B3FE300E472AD /* CKModel.swift */; };
+		C237E6DF294E44D500E472AD /* Inbox.swift in Sources */ = {isa = PBXBuildFile; fileRef = C237E6DE294E44D500E472AD /* Inbox.swift */; };
+		C237E6E1294E453600E472AD /* GridOfCards.swift in Sources */ = {isa = PBXBuildFile; fileRef = C237E6E0294E453600E472AD /* GridOfCards.swift */; };
 		C23A9D222897ECA90059B97C /* Card.swift in Sources */ = {isa = PBXBuildFile; fileRef = C23A9D212897ECA90059B97C /* Card.swift */; };
 		C23A9D372897F3F00059B97C /* CalendarDate+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = C23A9D352897F3F00059B97C /* CalendarDate+CoreDataClass.swift */; };
 		C23A9D382897F3F00059B97C /* CalendarDate+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = C23A9D362897F3F00059B97C /* CalendarDate+CoreDataProperties.swift */; };
 		C23A9D3A28989B630059B97C /* DateDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C23A9D3928989B630059B97C /* DateDetailView.swift */; };
 		C23A9D3C28989C340059B97C /* CalendarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C23A9D3B28989C340059B97C /* CalendarView.swift */; };
 		C23B622128B5ABE300D88F85 /* Notify.swift in Sources */ = {isa = PBXBuildFile; fileRef = C23B622028B5ABE300D88F85 /* Notify.swift */; };
-		C267127528D92D70004DD0B5 /* OpenOwnerShare.swift in Sources */ = {isa = PBXBuildFile; fileRef = C267127428D92D70004DD0B5 /* OpenOwnerShare.swift */; };
 		C27430FC286335F000E17B19 /* CameraCapture.swift in Sources */ = {isa = PBXBuildFile; fileRef = C27430FB286335F000E17B19 /* CameraCapture.swift */; };
 		C28B13F828E3E106008E2C4C /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C28B13F728E3E106008E2C4C /* AppDelegate.swift */; };
 		C2B650CA287AFFF90002E252 /* CloudKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C2B650C9287AFFF90002E252 /* CloudKit.framework */; };
@@ -72,7 +73,7 @@
 		260F6906281DC0E3002E864B /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
 		260F6908281DEAE7002E864B /* GreetMe-2.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "GreetMe-2.entitlements"; sourceTree = "<group>"; };
 		262C3ED2281E1E9C00F07C01 /* MenuView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuView.swift; sourceTree = "<group>"; };
-		262C3ED4281E226F00F07C01 /* ShowPriorCardsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShowPriorCardsView.swift; sourceTree = "<group>"; };
+		262C3ED4281E226F00F07C01 /* Outbox.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Outbox.swift; sourceTree = "<group>"; };
 		2650FFCD285C9C340020980E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		2688D703285FA24200954120 /* SnapShotECard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SnapShotECard.swift; sourceTree = "<group>"; };
 		2688D705285FA25100954120 /* SnapShotCardForPrint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SnapShotCardForPrint.swift; sourceTree = "<group>"; };
@@ -94,13 +95,14 @@
 		C23340EC28C3D58D006222F5 /* FutureDelivery+CoreDataClass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "FutureDelivery+CoreDataClass.swift"; sourceTree = "<group>"; };
 		C23524D12896D5F80052494F /* PreSetCalendarDates.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreSetCalendarDates.swift; sourceTree = "<group>"; };
 		C237E6DC294B3FE300E472AD /* CKModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CKModel.swift; sourceTree = "<group>"; };
+		C237E6DE294E44D500E472AD /* Inbox.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Inbox.swift; sourceTree = "<group>"; };
+		C237E6E0294E453600E472AD /* GridOfCards.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GridOfCards.swift; sourceTree = "<group>"; };
 		C23A9D212897ECA90059B97C /* Card.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Card.swift; sourceTree = "<group>"; };
 		C23A9D352897F3F00059B97C /* CalendarDate+CoreDataClass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "CalendarDate+CoreDataClass.swift"; sourceTree = "<group>"; };
 		C23A9D362897F3F00059B97C /* CalendarDate+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "CalendarDate+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		C23A9D3928989B630059B97C /* DateDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateDetailView.swift; sourceTree = "<group>"; };
 		C23A9D3B28989C340059B97C /* CalendarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarView.swift; sourceTree = "<group>"; };
 		C23B622028B5ABE300D88F85 /* Notify.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Notify.swift; sourceTree = "<group>"; };
-		C267127428D92D70004DD0B5 /* OpenOwnerShare.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenOwnerShare.swift; sourceTree = "<group>"; };
 		C27430FB286335F000E17B19 /* CameraCapture.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraCapture.swift; sourceTree = "<group>"; };
 		C28B13F728E3E106008E2C4C /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		C2B650C9287AFFF90002E252 /* CloudKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CloudKit.framework; path = System/Library/Frameworks/CloudKit.framework; sourceTree = SDKROOT; };
@@ -143,11 +145,11 @@
 				C2DE5C97289EFECC00F8C556 /* AddEventToCalendarForm.swift */,
 				260F68F4281DBDCD002E864B /* OccassionsMenu.swift */,
 				260F68EE281DBD93002E864B /* CollageStyleMenu.swift */,
-				262C3ED4281E226F00F07C01 /* ShowPriorCardsView.swift */,
+				262C3ED4281E226F00F07C01 /* Outbox.swift */,
+				C237E6DE294E44D500E472AD /* Inbox.swift */,
 				C2163D0D28C1609C00DEE861 /* ScheduleDelivery.swift */,
 				C23A9D3928989B630059B97C /* DateDetailView.swift */,
 				C23A9D3B28989C340059B97C /* CalendarView.swift */,
-				C267127428D92D70004DD0B5 /* OpenOwnerShare.swift */,
 			);
 			path = Menus;
 			sourceTree = "<group>";
@@ -161,6 +163,7 @@
 				C22803E5289358E500802452 /* CloudSharingController.swift */,
 				C22803E7289359AD00802452 /* CoreDataStack.swift */,
 				26A7218A281DB8D900ADAE44 /* GreetMe_2.xcdatamodeld */,
+				C237E6E0294E453600E472AD /* GridOfCards.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -405,6 +408,7 @@
 			files = (
 				260F68F7281DBDD2002E864B /* UnsplashCollectionView.swift in Sources */,
 				260F68FE281DBEBD002E864B /* PingDownloadResponse.swift in Sources */,
+				C237E6E1294E453600E472AD /* GridOfCards.swift in Sources */,
 				C23340EB28C3D589006222F5 /* FutureDelivery+CoreDataProperties.swift in Sources */,
 				260F68EF281DBD93002E864B /* CollageStyleMenu.swift in Sources */,
 				C28B13F828E3E106008E2C4C /* AppDelegate.swift in Sources */,
@@ -416,6 +420,7 @@
 				C23524D22896D5F80052494F /* PreSetCalendarDates.swift in Sources */,
 				26AD8127281F05160069C3F0 /* WriteNoteView.swift in Sources */,
 				26AD812B281F119A0069C3F0 /* ConfirmFrontCoverView.swift in Sources */,
+				C237E6DF294E44D500E472AD /* Inbox.swift in Sources */,
 				C23A9D3A28989B630059B97C /* DateDetailView.swift in Sources */,
 				260F68E9281DBD75002E864B /* CollageFourView.swift in Sources */,
 				C23A9D3C28989C340059B97C /* CalendarView.swift in Sources */,
@@ -428,12 +433,11 @@
 				260F68F3281DBDA7002E864B /* CollageThreeView.swift in Sources */,
 				260F68E5281DBD63002E864B /* ImagePicker.swift in Sources */,
 				C23A9D222897ECA90059B97C /* Card.swift in Sources */,
-				C267127528D92D70004DD0B5 /* OpenOwnerShare.swift in Sources */,
 				C23B622128B5ABE300D88F85 /* Notify.swift in Sources */,
 				C23A9D372897F3F00059B97C /* CalendarDate+CoreDataClass.swift in Sources */,
 				260F68F1281DBDA2002E864B /* CollageTwoView.swift in Sources */,
 				C2DE5C98289EFECC00F8C556 /* AddEventToCalendarForm.swift in Sources */,
-				262C3ED5281E226F00F07C01 /* ShowPriorCardsView.swift in Sources */,
+				262C3ED5281E226F00F07C01 /* Outbox.swift in Sources */,
 				260F6907281DC0E3002E864B /* LoginView.swift in Sources */,
 				2688D704285FA24300954120 /* SnapShotECard.swift in Sources */,
 				260F68FC281DBEA0002E864B /* UnsplashResponse.swift in Sources */,

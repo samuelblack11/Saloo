@@ -8,71 +8,75 @@
 import Foundation
 import SwiftUI
 import CloudKit
+import UIKit
 
-class OwnerOpeningShare: ObservableObject {
-    static let shared = OwnerOpeningShare()
-    @Published var owner: Bool?
-}
+class AppDelegate: UIResponder, UIApplicationDelegate  {
 
-class CardFromShare: ObservableObject {
-    static let shared = CardFromShare()
-    @Published var cardName: String?
-    @Published var collage: Data?
-    @Published var coverImage: Data?
-    @Published var date: Date?
-    @Published var message: String?
-    @Published var occassion: String?
-    @Published var recipient: String?
-    @Published var font: String?
-    @Published var an1: String?
-    @Published var an2: String?
-    @Published var an2URL: String?
-    @Published var an3: String?
-    @Published var an4: String?
-}
+    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+        true
+    }
 
-class AppDelegate: UIResponder, UIApplicationDelegate, ObservableObject {
-    @ObservedObject var oo1 = OwnerOpeningShare.shared
-    @ObservedObject var cardFromShare = CardFromShare.shared
+    // MARK: UISceneSession Lifecycle
+    func application(_ application: UIApplication, configurationForConnecting connectingSceneSession: UISceneSession, options: UIScene.ConnectionOptions) -> UISceneConfiguration {
+        // Called when a new scene session is being created.
+        // Use this method to select a configuration to create the new scene with.
+        return UISceneConfiguration(name: "Default Configuration", sessionRole: connectingSceneSession.role)
+    }
 
-    func application(_ application: UIApplication, configurationForConnecting
-        connectingSceneSession: UISceneSession,
-        options: UIScene.ConnectionOptions) -> UISceneConfiguration {
-
-        // Create a scene configuration object for the specified session role.
-        let config = UISceneConfiguration(name: nil,
-            sessionRole: connectingSceneSession.role)
-
-        // Set the configuration's delegate class to the scene delegate that implements the share acceptance method.
-        config.delegateClass = SceneDelegate.self
-        
-        return config
+    func application(_ application: UIApplication, didDiscardSceneSessions sceneSessions: Set<UISceneSession>) {
+        // Called when the user discards a scene session.
+        // If any sessions were discarded while the application was not running, this will be called shortly after application:didFinishLaunchingWithOptions.
+        // Use this method to release any resources that were specific to the discarded scenes, as they will not return.
     }
 }
 
-class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
-    @UIApplicationDelegateAdaptor var appDelegate: AppDelegate
+class SceneDelegate: UIResponder, UIWindowSceneDelegate {
+    
+    var window: UIWindow?
+    @EnvironmentObject private var cm: CKModel
 
-    func windowScene(_ windowScene: UIWindowScene,
-        userDidAcceptCloudKitShareWith cloudKitShareMetadata: CKShare.Metadata) {
-        //@EnvironmentObject var togg = false
-        let stack = CoreDataStack.shared
-        let store = stack.sharedPersistentStore
-        let container = stack.persistentContainer
-        
-        container.acceptShareInvitations(from: [cloudKitShareMetadata], into: store) { _, error in
-                if let error = error {
-                    print("acceptShareInvitation error :\(error)")
-                }
-            }
-        // if participant is owner
-        if cloudKitShareMetadata.participantRole.rawValue == 1 {
-            appDelegate.oo1.owner = true
+    func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
+        let contentView = ShowPriorCardsView().environmentObject(CKModel())
+        if let windowScene = scene as? UIWindowScene {
+            let window = UIWindow(windowScene: windowScene)
+            window.rootViewController = UIHostingController(rootView: contentView)
+            self.window = window
+            window.makeKeyAndVisible()
         }
     }
-            //DispatchQueue.main.async {
-            //let assetData = NSData(contentsOf: cloudKitShareMetadata.share.url!)
-            //UserDefaults.standard.set(assetData, forKey: "ownerCardImage")
-            //ownerBool.toggle()
-       //}
+    
+    func windowScene(_ windowScene: UIWindowScene, userDidAcceptCloudKitShareWith cloudKitShareMetadata: CKShare.Metadata) {
+        guard cloudKitShareMetadata.containerIdentifier == cm.container.containerIdentifier else {
+            print("Shared container identifier \(cloudKitShareMetadata.containerIdentifier) did not match known identifier.")
+            return
+        }
+        
+        // Create an operation to accept the share, running in the app's CKContainer.
+        let container = CKContainer(identifier: cm.container.containerIdentifier!)
+        let operation = CKAcceptSharesOperation(shareMetadatas: [cloudKitShareMetadata])
+        
+        debugPrint("Accepting CloudKit Share with metadata: \(cloudKitShareMetadata)")
+        
+        operation.perShareResultBlock = { metadata, result in
+            let rootRecordID = metadata.rootRecordID
+            
+            switch result {
+            case .failure(let error):
+                debugPrint("Error accepting share with root record ID: \(rootRecordID), \(error)")
+                
+            case .success:
+                debugPrint("Accepted CloudKit share for root record ID: \(rootRecordID)")
+            }
+        }
+        
+        operation.acceptSharesResultBlock = { result in
+            if case .failure(let error) = result {
+                debugPrint("Error accepting CloudKit Share: \(error)")
+            }
+        }
+        
+        operation.qualityOfService = .utility
+        container.add(operation)
+    }
+    
 }
