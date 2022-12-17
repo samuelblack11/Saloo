@@ -7,20 +7,19 @@
 // Create Calendar App
 //https://www.youtube.com/watch?v=5Jwlet8L84w
 //https://cocoapods.org/pods/CalendarKit
-// https://developer.apple.com/documentation/eventkit/retrieving_events_and_reminders
-// https://github.com/dmi3j/calendar-demo
+//https://developer.apple.com/documentation/eventkit/retrieving_events_and_reminders
+//https://github.com/dmi3j/calendar-demo
 
 import Foundation
 import SwiftUI
 import FSCalendar
 import CoreData
 
-
 public class ShowDetailView: ObservableObject {
     @Published public var showDetailView: Bool = false
 }
 
-struct MenuView: View {
+struct CalendarParent: View {
     
     @State private var createNew = false
     @State private var showSent = false
@@ -60,9 +59,6 @@ struct MenuView: View {
                     // Fallback on earlier versions
                     DateDetailView(eventsForShow: calViewModel.eventsForShow)
                 }
-                    
-                    
-                    
                 }
                     //.presentationDetents([.medium])}
                 .sheet(isPresented: $addEventToCalendarSheet) {AddEventToCalendarForm()}
@@ -70,7 +66,7 @@ struct MenuView: View {
         }
     }
 
-extension MenuView {
+extension CalendarParent {
     
     func loadCoreDataEvents() -> [CalendarDate] {
         let request = CalendarDate.createFetchRequest()

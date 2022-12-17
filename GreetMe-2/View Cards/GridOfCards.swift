@@ -10,54 +10,36 @@ import Foundation
 import SwiftUI
 import CloudKit
 
-struct GridOfCards: View {
+struct GridofCards: View {
     
     @EnvironmentObject private var cm: CKModel
-    @State private var isAddingCard = false
-    @State private var isSharing = false
-    @State private var isProcessingShare = false
-    @State private var activeShare: CKShare?
-    @State private var activeContainer: CKContainer?
+    @State var isAddingCard = false
+    @State var isSharing = false
+    @State var isProcessingShare = false
+    @State var activeShare: CKShare?
+    @State var activeContainer: CKContainer?
     
     @Environment(\.presentationMode) var presentationMode
     @State var cards = [Card]()
-    @State private var segueToEnlarge = false
-    @State private var chosenCard: Card!
+    @State var segueToEnlarge = false
+    @State var chosenCard: Card!
     //@ObservedObject var card: Card
     @State var share: CKShare?
-    @State private var showShareSheet = false
-    @State private var showEditSheet = false
+    @State var showShareSheet = false
+    @State var showEditSheet = false
     @State var returnRecord: CKRecord?
-    @State private var showDeliveryScheduler = false
-    @State private var privateCards: [Card]?
-    @State private var sharedCards: [Card]?
-    @State private var myCards: [Card]?
+    @State var showDeliveryScheduler = false
+    @State var cardsToDisplay: [Card]
 
-    let columns = [GridItem(.adaptive(minimum: 120))]
     var body: some View {
         NavigationView {
-            ScrollView {
-                LazyVGrid(columns: columns, spacing: 10) {
-                    switch cm.state {
-                    case .loading:
-                        VStack{EmptyView()}
-                    case .error(let error):
-                        VStack {
-                            Text("An error occurred: \(error.localizedDescription)").padding()
-                            Spacer()
-                        }
-                    case let .loaded(myCards):
-                        ForEach(myCards) {cardView(for: $0, shareable: false)}
-                    }
-                }
+            switch cm.whichBox {
+            case .inbox:
+                ForEach(cardsToDisplay) {cardView(for: $0, shareable: false)}
+            case .outbox:
+                ForEach(cardsToDisplay) {cardView(for: $0, shareable: false)}
             }
         }
-        .onAppear {
-            Task {
-                try await cm.initialize()
-                try await (privateCards, sharedCards) = cm.fetchPrivateAndSharedCards()
-                try await cm.refresh()
-            }}
     }
     
     private func cardView(for card: Card, shareable: Bool = true) -> some View {
@@ -110,7 +92,7 @@ struct GridOfCards: View {
 }
 
 // MARK: Returns CKShare participant permission, methods and properties to share
-extension GridOfCards {
+extension GridofCards {
     
     /// Builds a `CloudSharingView` with state after processing a share.
     private func shareView(_ card: Card) -> CloudSharingView? {

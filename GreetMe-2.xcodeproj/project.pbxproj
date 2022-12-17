@@ -21,7 +21,7 @@
 		260F68FC281DBEA0002E864B /* UnsplashResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 260F68FB281DBEA0002E864B /* UnsplashResponse.swift */; };
 		260F68FE281DBEBD002E864B /* PingDownloadResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 260F68FD281DBEBD002E864B /* PingDownloadResponse.swift */; };
 		260F6907281DC0E3002E864B /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 260F6906281DC0E3002E864B /* LoginView.swift */; };
-		262C3ED3281E1E9C00F07C01 /* MenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 262C3ED2281E1E9C00F07C01 /* MenuView.swift */; };
+		262C3ED3281E1E9C00F07C01 /* CalendarParent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 262C3ED2281E1E9C00F07C01 /* CalendarParent.swift */; };
 		262C3ED5281E226F00F07C01 /* Outbox.swift in Sources */ = {isa = PBXBuildFile; fileRef = 262C3ED4281E226F00F07C01 /* Outbox.swift */; };
 		2688D704285FA24300954120 /* SnapShotECard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2688D703285FA24200954120 /* SnapShotECard.swift */; };
 		2688D706285FA25100954120 /* SnapShotCardForPrint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2688D705285FA25100954120 /* SnapShotCardForPrint.swift */; };
@@ -72,7 +72,7 @@
 		260F68FD281DBEBD002E864B /* PingDownloadResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PingDownloadResponse.swift; sourceTree = "<group>"; };
 		260F6906281DC0E3002E864B /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
 		260F6908281DEAE7002E864B /* GreetMe-2.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "GreetMe-2.entitlements"; sourceTree = "<group>"; };
-		262C3ED2281E1E9C00F07C01 /* MenuView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuView.swift; sourceTree = "<group>"; };
+		262C3ED2281E1E9C00F07C01 /* CalendarParent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarParent.swift; sourceTree = "<group>"; };
 		262C3ED4281E226F00F07C01 /* Outbox.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Outbox.swift; sourceTree = "<group>"; };
 		2650FFCD285C9C340020980E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		2688D703285FA24200954120 /* SnapShotECard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SnapShotECard.swift; sourceTree = "<group>"; };
@@ -137,33 +137,26 @@
 			path = CollageViews;
 			sourceTree = "<group>";
 		};
-		260F6901281DBF28002E864B /* Menus */ = {
+		260F6901281DBF28002E864B /* Build Card WorkFlow */ = {
 			isa = PBXGroup;
 			children = (
+				260F6904281DBFAB002E864B /* UnsplashInteractions */,
 				260F6906281DC0E3002E864B /* LoginView.swift */,
-				262C3ED2281E1E9C00F07C01 /* MenuView.swift */,
-				C2DE5C97289EFECC00F8C556 /* AddEventToCalendarForm.swift */,
 				260F68F4281DBDCD002E864B /* OccassionsMenu.swift */,
 				260F68EE281DBD93002E864B /* CollageStyleMenu.swift */,
-				262C3ED4281E226F00F07C01 /* Outbox.swift */,
-				C237E6DE294E44D500E472AD /* Inbox.swift */,
-				C2163D0D28C1609C00DEE861 /* ScheduleDelivery.swift */,
-				C23A9D3928989B630059B97C /* DateDetailView.swift */,
-				C23A9D3B28989C340059B97C /* CalendarView.swift */,
+				260F68F8281DBDED002E864B /* CollageViews */,
+				26AD8126281F05160069C3F0 /* WriteNoteView.swift */,
+				26AD8128281F05310069C3F0 /* FinalizeCardView.swift */,
 			);
-			path = Menus;
+			path = "Build Card WorkFlow";
 			sourceTree = "<group>";
 		};
 		260F6902281DBF41002E864B /* Model */ = {
 			isa = PBXGroup;
 			children = (
-				C23524D12896D5F80052494F /* PreSetCalendarDates.swift */,
-				C23A9D212897ECA90059B97C /* Card.swift */,
 				C237E6DC294B3FE300E472AD /* CKModel.swift */,
 				C22803E5289358E500802452 /* CloudSharingController.swift */,
 				C22803E7289359AD00802452 /* CoreDataStack.swift */,
-				26A7218A281DB8D900ADAE44 /* GreetMe_2.xcdatamodeld */,
-				C237E6E0294E453600E472AD /* GridOfCards.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -180,10 +173,10 @@
 		260F6904281DBFAB002E864B /* UnsplashInteractions */ = {
 			isa = PBXGroup;
 			children = (
+				260F68F6281DBDD2002E864B /* UnsplashCollectionView.swift */,
 				26AD812A281F119A0069C3F0 /* ConfirmFrontCoverView.swift */,
 				260F68F9281DBE61002E864B /* PhotoAPI.swift */,
 				260F6903281DBF55002E864B /* Responses */,
-				260F68F6281DBDD2002E864B /* UnsplashCollectionView.swift */,
 			);
 			path = UnsplashInteractions;
 			sourceTree = "<group>";
@@ -199,12 +192,9 @@
 		26A72173281DB8D500ADAE44 = {
 			isa = PBXGroup;
 			children = (
-				C23340EC28C3D58D006222F5 /* FutureDelivery+CoreDataClass.swift */,
-				C23340EA28C3D589006222F5 /* FutureDelivery+CoreDataProperties.swift */,
-				C23A9D352897F3F00059B97C /* CalendarDate+CoreDataClass.swift */,
-				C23A9D362897F3F00059B97C /* CalendarDate+CoreDataProperties.swift */,
 				26A7217F281DB8D500ADAE44 /* GreetMe_2App.swift */,
 				C28B13F728E3E106008E2C4C /* AppDelegate.swift */,
+				26A7218A281DB8D900ADAE44 /* GreetMe_2.xcdatamodeld */,
 				26A7217E281DB8D500ADAE44 /* GreetMe-2 */,
 				26A7217D281DB8D500ADAE44 /* Products */,
 				C2B650C8287AFFF90002E252 /* Frameworks */,
@@ -223,14 +213,15 @@
 		26A7217E281DB8D500ADAE44 /* GreetMe-2 */ = {
 			isa = PBXGroup;
 			children = (
+				C237E6E6294E5FA100E472AD /* Schedule & Notify */,
+				C237E6E3294E5E3100E472AD /* Calendar */,
+				C237E6E2294E5DB100E472AD /* Data & Types */,
 				2650FFCD285C9C340020980E /* Info.plist */,
 				260F6908281DEAE7002E864B /* GreetMe-2.entitlements */,
-				C23B622028B5ABE300D88F85 /* Notify.swift */,
 				260F6902281DBF41002E864B /* Model */,
-				260F6901281DBF28002E864B /* Menus */,
-				260F68F8281DBDED002E864B /* CollageViews */,
-				260F6904281DBFAB002E864B /* UnsplashInteractions */,
-				C2729FFA286FA8B300FD6D0C /* Finalize & Save */,
+				260F6901281DBF28002E864B /* Build Card WorkFlow */,
+				C237E6E5294E5F4100E472AD /* Snapshot Cards */,
+				C237E6E4294E5EA200E472AD /* View Cards */,
 				C2729FFB286FB80100FD6D0C /* PhotoLibrary & Camera */,
 				260F6905281DC024002E864B /* Other */,
 				26A72185281DB8D900ADAE44 /* Preview Content */,
@@ -255,17 +246,57 @@
 			path = Pods;
 			sourceTree = "<group>";
 		};
-		C2729FFA286FA8B300FD6D0C /* Finalize & Save */ = {
+		C237E6E2294E5DB100E472AD /* Data & Types */ = {
 			isa = PBXGroup;
 			children = (
-				26AD8126281F05160069C3F0 /* WriteNoteView.swift */,
-				26AD8128281F05310069C3F0 /* FinalizeCardView.swift */,
-				2688D703285FA24200954120 /* SnapShotECard.swift */,
-				2688D705285FA25100954120 /* SnapShotCardForPrint.swift */,
+				C23A9D212897ECA90059B97C /* Card.swift */,
+				C23340EC28C3D58D006222F5 /* FutureDelivery+CoreDataClass.swift */,
+				C23340EA28C3D589006222F5 /* FutureDelivery+CoreDataProperties.swift */,
+				C23A9D352897F3F00059B97C /* CalendarDate+CoreDataClass.swift */,
+				C23A9D362897F3F00059B97C /* CalendarDate+CoreDataProperties.swift */,
+				C23524D12896D5F80052494F /* PreSetCalendarDates.swift */,
+			);
+			path = "Data & Types";
+			sourceTree = "<group>";
+		};
+		C237E6E3294E5E3100E472AD /* Calendar */ = {
+			isa = PBXGroup;
+			children = (
+				262C3ED2281E1E9C00F07C01 /* CalendarParent.swift */,
+				C23A9D3B28989C340059B97C /* CalendarView.swift */,
+				C23A9D3928989B630059B97C /* DateDetailView.swift */,
+				C2DE5C97289EFECC00F8C556 /* AddEventToCalendarForm.swift */,
+			);
+			path = Calendar;
+			sourceTree = "<group>";
+		};
+		C237E6E4294E5EA200E472AD /* View Cards */ = {
+			isa = PBXGroup;
+			children = (
+				C237E6E0294E453600E472AD /* GridOfCards.swift */,
+				262C3ED4281E226F00F07C01 /* Outbox.swift */,
+				C237E6DE294E44D500E472AD /* Inbox.swift */,
 				26EB55642827120C00178F0B /* EnlargeECard.swift */,
 			);
-			name = "Finalize & Save";
-			path = "../Finalize & Save";
+			path = "View Cards";
+			sourceTree = "<group>";
+		};
+		C237E6E5294E5F4100E472AD /* Snapshot Cards */ = {
+			isa = PBXGroup;
+			children = (
+				2688D703285FA24200954120 /* SnapShotECard.swift */,
+				2688D705285FA25100954120 /* SnapShotCardForPrint.swift */,
+			);
+			path = "Snapshot Cards";
+			sourceTree = "<group>";
+		};
+		C237E6E6294E5FA100E472AD /* Schedule & Notify */ = {
+			isa = PBXGroup;
+			children = (
+				C23B622028B5ABE300D88F85 /* Notify.swift */,
+				C2163D0D28C1609C00DEE861 /* ScheduleDelivery.swift */,
+			);
+			path = "Schedule & Notify";
 			sourceTree = "<group>";
 		};
 		C2729FFB286FB80100FD6D0C /* PhotoLibrary & Camera */ = {
@@ -414,7 +445,7 @@
 				C28B13F828E3E106008E2C4C /* AppDelegate.swift in Sources */,
 				260F68ED281DBD8D002E864B /* CollageSixView.swift in Sources */,
 				26A7218C281DB8D900ADAE44 /* GreetMe_2.xcdatamodeld in Sources */,
-				262C3ED3281E1E9C00F07C01 /* MenuView.swift in Sources */,
+				262C3ED3281E1E9C00F07C01 /* CalendarParent.swift in Sources */,
 				C27430FC286335F000E17B19 /* CameraCapture.swift in Sources */,
 				C22803E8289359AD00802452 /* CoreDataStack.swift in Sources */,
 				C23524D22896D5F80052494F /* PreSetCalendarDates.swift in Sources */,

@@ -26,14 +26,19 @@ final class CKModel: ObservableObject {
         case error(Error)
     }
     
+    enum SendReceive {
+        case inbox
+        case outbox
+    }
+    
     /// State directly observable by our view.
     @Published private(set) var state: State = .loading
+    @Published private(set) var whichBox: SendReceive = .inbox
     /// Use the specified iCloud container ID, which should also be present in the entitlements file.
     lazy var container = CKContainer(identifier: "iCloud.GreetMe_2")
     /// This project uses the user's private database.
     /// 
     private lazy var pdb = container.privateCloudDatabase
-    private lazy var sdb = container.privateCloudDatabase
 
     /// Sharing requires using a custom record zone.
     let recordZone = CKRecordZone(zoneName: "Cards")

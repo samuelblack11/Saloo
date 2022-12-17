@@ -90,7 +90,7 @@ struct OccassionsMenu: View {
                 }
             }
             .padding(.bottom, 30)
-            .sheet(isPresented: $showSent) {ShowPriorCardsView()}
+            .sheet(isPresented: $showSent) {Outbox()}
             //.sheet(isPresented: $showReceived) {}
     }
     
