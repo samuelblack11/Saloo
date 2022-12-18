@@ -30,8 +30,8 @@ struct Outbox: View {
                             Text("An error occurred: \(error.localizedDescription)").padding()
                             Spacer()
                         }
-                    case let .loaded(myCards):
-                        GridofCards(cardsToDisplay: myCards)
+                    case let .loaded(sentCards: myCards, receivedCards: myCards):
+                        GridofCards(sentCards: myCards, receivedCards: myCards)
                     }
                 }
             }

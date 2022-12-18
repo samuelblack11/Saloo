@@ -70,7 +70,7 @@ struct OccassionsMenu: View {
                 showCal = true
             }
             .sheet(isPresented: $showCal) {
-                MenuView(calViewModel: calViewModel, showDetailView: showDetailView)
+                CalendarParent(calViewModel: calViewModel, showDetailView: showDetailView)
                 }
         }.frame(width: (UIScreen.screenWidth/1.1), height: (UIScreen.screenHeight/12))
     }
@@ -121,8 +121,9 @@ struct OccassionsMenu: View {
                         CollageStyleMenu(collageImage: $collageImage, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenObject: $chosenObject, noteField: $noteField, searchObject: searchObject)
                     }
                 Text("Take Photo with Camera 📸 ").onTapGesture {
-                    self.showingImagePicker = false
-                    self.showingCameraCapture = true
+                    //self.showingImagePicker = false
+                    //self.showingCameraCapture = true
+                    createOccassionsMenuFromCollections()
                 }
                 .sheet(isPresented: $showingCameraCapture)
                 {CameraCapture(image: self.$coverImageFromCamera, isPresented: self.$showingCameraCapture, sourceType: .camera)}
@@ -152,7 +153,7 @@ struct OccassionsMenu: View {
             }
         }
         .sheet(isPresented: $presentPrior) {
-            MenuView(calViewModel: calViewModel, showDetailView: showDetailView)
+            CalendarParent(calViewModel: calViewModel, showDetailView: showDetailView)
         }
         //.onReceive(appDelegate.oo1.$owner) { (x) in
         //    print(appDelegate.oo1.$owner)
@@ -221,4 +222,24 @@ extension OccassionsMenu {
     }
     
     
+    func createOccassionsMenuFromCollections() {
+        print("***")
+        PhotoAPI.getUserCollections(username: "samuelblack11", completionHandler: { (response, error) in
+            print("###")
+            print(response)
+            print(error)
+            if response != nil {
+                print("-----------")
+                print(response)
+            }
+            else {
+                print("-----------")
+                debugPrint(error?.localizedDescription)
+            }
+            
+            
+            
+            
+        })
+    }
 }

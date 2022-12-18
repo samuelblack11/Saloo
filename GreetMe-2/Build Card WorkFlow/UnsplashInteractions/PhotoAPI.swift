@@ -16,10 +16,12 @@ class PhotoAPI {
     static let apiKey = "GXA9JqJgKZiIkvWmnKVuzq1wWNPUN7GiVDHOTiq7f3A"
     static let secretKey = "DKnRQDO4TVGHcmhJVAcgq1VoMpFzvuoMVzql9kvkCmI"
     static let baseURL = "https://api.unsplash.com/search/photos?"
+    static let baseURL2 = "https://api.unsplash.com/"
     static let downloadURL = "https://api.unsplash.com/photos?/"
     case searchedWords(page_num: Int, userSearch: String)
     case collection(page_num: Int, collectionID: String)
     case pingDownloadForTrigger(downloadLocation: String)
+    case user(user: String)
 
     var URLString: String{
         switch self {
@@ -30,11 +32,63 @@ class PhotoAPI {
         case .collection(let page_num, let collectionID ):
             return Endpoints.baseURL +
             "id=\(collectionID)&page=\(page_num)&per_page=50="
+        case .user(let user):
+            return Endpoints.baseURL2 + "users/\(user)/collections?" + "&client_id=\(PhotoAPI.Endpoints.apiKey)"
+        
             }
         }
     //print(URLString)
     var url: URL{ return URL(string: URLString)!}
     }
+    
+    
+    
+    
+    class func getUserCollections(username: String, completionHandler: @escaping ([PhotoCollection]?,Error?) -> Void) {
+        let url = Endpoints.user(user: username).url
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.setValue("v1", forHTTPHeaderField: "Accept-Version")
+        let task = URLSession.shared.dataTask(with: request, completionHandler: { (data, response, error) in
+            print(":::")
+            print(response)
+            
+            
+            if error != nil {
+                DispatchQueue.main.async {completionHandler(nil, error)}
+                return
+            }
+            do {
+                let collections = try JSONDecoder().decode([PhotoCollection].self, from: data!)
+                print("***")
+                print(collections)
+                print("------------")
+                DispatchQueue.main.async {completionHandler(collections, nil)}
+                }
+            catch {
+                    print("Invalid Response")
+                    print("Request failed: \(error)")
+                    DispatchQueue.main.async {completionHandler(nil, error)}
+                }
+            }
+        )
+        task.resume()
+    }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
     //Must make this a class func in order to call the function properly in ImportPhotoViewController
     class func getPhoto(pageNum: Int, userSearch: String, completionHandler: @escaping ([ResultDetails]?,Error?) -> Void) {

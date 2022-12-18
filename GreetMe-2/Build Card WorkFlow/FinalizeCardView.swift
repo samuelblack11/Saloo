@@ -153,6 +153,7 @@ struct FinalizeCardView: View {
                     //isAddingCard = true
                     Task {
                         print("trying to save....")
+                        try await cm.initialize()
                         try? await addCard(noteField: noteField, searchObject: searchObject, an1: text1, an2: text2, an2URL: text2URL.absoluteString, an3: text3, an4: text4, chosenObject: chosenObject, collageImage: collageImage)
                         //try? await shareCard(card)
                         print("saved")

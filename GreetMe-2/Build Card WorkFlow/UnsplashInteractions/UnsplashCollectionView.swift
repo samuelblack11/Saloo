@@ -30,6 +30,7 @@ struct CoverImageObject: Identifiable, Hashable {
 
 struct UnsplashCollectionView: View {
     @Environment(\.presentationMode) var presentationMode
+    @State var photoCollection: PhotoCollection?
     @State var searchParam: SearchParameter
     @State private var imageObjects: [CoverImageObject] = []
     @State private var segueToConfirmFrontCover = false

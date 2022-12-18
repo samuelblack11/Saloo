@@ -29,15 +29,17 @@ struct GridofCards: View {
     @State var showEditSheet = false
     @State var returnRecord: CKRecord?
     @State var showDeliveryScheduler = false
-    @State var cardsToDisplay: [Card]
+    //@State var cardsToDisplay: [Card]
+    @State var sentCards: [Card]
+    @State var receivedCards: [Card]
 
     var body: some View {
         NavigationView {
             switch cm.whichBox {
-            case .inbox:
-                ForEach(cardsToDisplay) {cardView(for: $0, shareable: false)}
             case .outbox:
-                ForEach(cardsToDisplay) {cardView(for: $0, shareable: false)}
+                ForEach(sentCards) {cardView(for: $0, shareable: false)}
+            case .inbox:
+                ForEach(receivedCards) {cardView(for: $0, shareable: false)}
             }
         }
     }
