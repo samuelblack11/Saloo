@@ -13,7 +13,12 @@ import UIKit
 import FSCalendar
 
 struct SearchParameter {
-    @Binding var searchText: String!
+    @State var searchText: String!
+}
+
+struct ChosenCollection {
+    @State var occassion: String!
+    @State var collectionID: String!
 }
 
 struct OccassionsMenu: View {
@@ -21,6 +26,9 @@ struct OccassionsMenu: View {
     @State private var presentUCV = false
     @State private var presentPrior = false
     @Binding var searchType: String!
+    @Binding var occassion: String!
+    @Binding var collectionID: String!
+    
     @State var searchObject: SearchParameter!
     @State private var showingImagePicker = false
     @State private var showingCameraCapture = false
@@ -37,7 +45,6 @@ struct OccassionsMenu: View {
     @State var pageCount = 1
     @State var test_a: Bool = false
     @Binding var noneSearch: String!
-    @State var occassion: String!
     @State private var createNew = false
     @State private var showSent = false
     @State private var showReceived = false
@@ -48,22 +55,20 @@ struct OccassionsMenu: View {
     //@EnvironmentObject var sceneDelegate: SceneDelegate
     @State var oo2: Bool
     @State var collections: [CollectionPair] = []
-    @State var chosenCollectionID: String?
-    
-    struct SearchItem {
-        let searchTitle: String
-        let searchTerm: String
-      }
+    //@State var chosenCollection: CollectionPair?
+    // @StateObject creates an instance of our Searches class
+    // @StateObject asks SwiftUI to watch the object for any change announcements. So any time on of our @Published properties changes the iew will refresh.
+    @StateObject var menuItems = Searches()
     //Class to store array of SearchItem(s)
     class Searches: ObservableObject {
         // @Published ensures change announcements get sent whenever the searchItems array gets modified
         @Published var searchItems = [SearchItem]()
     }
-    // @StateObject creates an instance of our Searches class
-    // @StateObject asks SwiftUI to watch the object for any change announcements. So any time on of our @Published properties changes the iew will refresh.
-    @StateObject var menuItems = Searches()
-    
-    
+    struct SearchItem {
+        let searchTitle: String
+        let searchTerm: String
+      }
+        
     var topBar: some View {
         HStack {
             Spacer()
@@ -118,7 +123,7 @@ struct OccassionsMenu: View {
                         noneSearch = "None"
                         }
                     .sheet(isPresented: $segueToCollageMenu){
-                        let searchObject = SearchParameter.init(searchText: $noneSearch)
+                        let searchObject = SearchParameter.init(searchText: noneSearch)
                         CollageStyleMenu(collageImage: $collageImage, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenObject: $chosenObject, noteField: $noteField, searchObject: searchObject)
                     }
                 Text("Take Photo with Camera 📸 ").onTapGesture {
@@ -137,7 +142,7 @@ struct OccassionsMenu: View {
                         noneSearch = "None"
                     }
                 .sheet(isPresented: $segueToCollageMenu2){
-                        let searchObject = SearchParameter.init(searchText: $noneSearch)
+                        let searchObject = SearchParameter.init(searchText: noneSearch)
                         CollageStyleMenu(collageImage: $collageImage, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenObject: $chosenObject, noteField: $noteField, searchObject: searchObject)
                         }
             }
@@ -146,11 +151,13 @@ struct OccassionsMenu: View {
                     Text(collection.title).onTapGesture {
                     presentUCV = true
                     frontCoverIsPersonalPhoto = 0
-                    
-                    self.chosenCollectionID = collection.id
+                    self.occassion = collection.title
+                    self.collectionID = collection.id
+                    self.searchType = collection.id
                 }.sheet(isPresented: $presentUCV) {
-                    let searchObject = SearchParameter.init(searchText: $searchType)
-                    UnsplashCollectionView(searchParam: searchObject, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, pageCount: $pageCount)
+                    let chosenCollection = ChosenCollection.init(occassion: occassion, collectionID: collectionID)
+                    let searchObject = SearchParameter.init(searchText: searchType)
+                    UnsplashCollectionView(searchParam: searchObject, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, pageCount: $pageCount, chosenCollection: chosenCollection)
                     }
                 
                 }
@@ -159,14 +166,8 @@ struct OccassionsMenu: View {
         .sheet(isPresented: $presentPrior) {
             CalendarParent(calViewModel: calViewModel, showDetailView: showDetailView)
         }
-        //.onReceive(appDelegate.oo1.$owner) { (x) in
-        //    print(appDelegate.oo1.$owner)
-        //    print("testing.......")
-        //    if x != nil {oo2 = true}
-       // }
         .font(.headline)
         .listStyle(GroupedListStyle())
-        .onAppear(perform: createOccassionsMenu)
         .onAppear{createOccassionsFromUserCollections()}
 
         }
@@ -207,45 +208,15 @@ extension OccassionsMenu {
         print("created chosenObject")
     }
     
-    func createOccassionsMenu() {
-        let birthday = SearchItem(searchTitle: "Birthday 🎈", searchTerm: "Birthday")
-        let valentine = SearchItem(searchTitle: "Valentine's Day ❤️", searchTerm: "Valentine")
-        let stpatsday = SearchItem(searchTitle: "St Patrick's Day 🍀", searchTerm: "Clover")
-        let mother = SearchItem(searchTitle: "Mother's Day 🌸", searchTerm: "Floral")
-        let thanksgiving = SearchItem(searchTitle: "Thanksgiving 🍁", searchTerm: "Thanksgiving")
-        let hanukkah = SearchItem(searchTitle: "Hanukkah 🕎", searchTerm: "Hanukkah")
-        let christmas = SearchItem(searchTitle: "Christmas 🎄", searchTerm: "Christmas")
-        let nye = SearchItem(searchTitle: "New Year's 🎇", searchTerm: "Fireworks")
-
-        menuItems.searchItems.append(birthday)
-        menuItems.searchItems.append(valentine)
-        menuItems.searchItems.append(stpatsday)
-        menuItems.searchItems.append(mother)
-        menuItems.searchItems.append(thanksgiving)
-        menuItems.searchItems.append(hanukkah)
-        menuItems.searchItems.append(christmas)
-        menuItems.searchItems.append(nye)
-    }
-    
-    
     func createOccassionsFromUserCollections() {
-        print("***")
         PhotoAPI.getUserCollections(username: "samuelblack11", completionHandler: { (response, error) in
             if response != nil {
                 DispatchQueue.main.async {
-                    for collection in response! {
-                        collections.append(CollectionPair(title: collection.title, id: collection.id))
-                    }
+                    for collection in response! {collections.append(CollectionPair(title: collection.title, id: collection.id))}
                 }
             }
-            if response != nil {
-                print("-----------")
-                print(response)
-            }
-            else {
-                print("-----------")
-                debugPrint(error?.localizedDescription)
-            }
+            if response != nil {print("No Response!")}
+            else {debugPrint(error?.localizedDescription)}
         })
     }
 }

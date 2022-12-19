@@ -22,6 +22,7 @@ class PhotoAPI {
     case collection(page_num: Int, collectionID: String)
     case pingDownloadForTrigger(downloadLocation: String)
     case user(user: String)
+    case collectionPhotos(collectionID: String)
 
     var URLString: String{
         switch self {
@@ -33,7 +34,9 @@ class PhotoAPI {
             return Endpoints.baseURL +
             "id=\(collectionID)&page=\(page_num)&per_page=50="
         case .user(let user):
-            return Endpoints.baseURL2 + "users/\(user)/collections?" + "&client_id=\(PhotoAPI.Endpoints.apiKey)"
+            return Endpoints.baseURL2 + "users/\(user)/collections?&client_id=\(PhotoAPI.Endpoints.apiKey)"
+        case .collectionPhotos(let collectionID):
+            return Endpoints.baseURL2 + "/collections/\(collectionID)/photos?&client_id=\(PhotoAPI.Endpoints.apiKey)"
         
             }
         }
@@ -51,19 +54,12 @@ class PhotoAPI {
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         request.setValue("v1", forHTTPHeaderField: "Accept-Version")
         let task = URLSession.shared.dataTask(with: request, completionHandler: { (data, response, error) in
-            print(":::")
-            print(response)
-            
-            
             if error != nil {
                 DispatchQueue.main.async {completionHandler(nil, error)}
                 return
             }
             do {
                 let collections = try JSONDecoder().decode([PhotoCollection].self, from: data!)
-                print("***")
-                print(collections)
-                print("------------")
                 DispatchQueue.main.async {completionHandler(collections, nil)}
                 }
             catch {
@@ -77,7 +73,30 @@ class PhotoAPI {
     }
     
     
-    
+    class func getPhotosFromCollection(collectionID: String, completionHandler: @escaping ([ResultDetails]?,Error?) -> Void) {
+        let url = Endpoints.collectionPhotos(collectionID: collectionID).url
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.setValue("v1", forHTTPHeaderField: "Accept-Version")
+        let task = URLSession.shared.dataTask(with: request, completionHandler: { (data, response, error) in
+            if error != nil {
+                DispatchQueue.main.async {completionHandler(nil, error)}
+                return
+            }
+            do {
+                let pics = try JSONDecoder().decode([ResultDetails].self, from: data!)
+                DispatchQueue.main.async {completionHandler(pics, nil)}
+                }
+            catch {
+                    print("Invalid Response")
+                    print("Request failed: \(error)")
+                    DispatchQueue.main.async {completionHandler(nil, error)}
+                }
+            }
+        )
+        task.resume()
+    }
     
     
     

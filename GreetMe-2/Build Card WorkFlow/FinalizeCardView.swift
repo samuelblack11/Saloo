@@ -161,7 +161,7 @@ struct FinalizeCardView: View {
                     //saveAndShareIsActive = true
                     showCompleteAlert = true
                 }
-                .sheet(isPresented: $presentMenu) {OccassionsMenu(searchType: $string1, noneSearch: $string2, calViewModel: CalViewModel(), showDetailView: ShowDetailView(), oo2: false)}
+                .sheet(isPresented: $presentMenu) {OccassionsMenu(searchType: $string1, occassion: $string1, collectionID: $string1, noneSearch: $string2, calViewModel: CalViewModel(), showDetailView: ShowDetailView(), oo2: false)}
                 .disabled(saveAndShareIsActive)
                 .alert("Save Complete", isPresented: $showCompleteAlert) {
                     Button("Ok", role: .cancel) {presentMenu = true}
@@ -181,7 +181,7 @@ struct FinalizeCardView: View {
             trailing: Button {presentMenu = true} label: {Image(systemName: "menucard.fill").foregroundColor(.blue)
             Text("Menu")}
             )
-        .sheet(isPresented: $presentMenu) {OccassionsMenu(searchType: $string1, noneSearch: $string2, calViewModel: CalViewModel(), showDetailView: ShowDetailView(), oo2: false)}
+        .sheet(isPresented: $presentMenu) {OccassionsMenu(searchType: $string1, occassion: $string1, collectionID: $string1, noneSearch: $string2, calViewModel: CalViewModel(), showDetailView: ShowDetailView(), oo2: false)}
         .sheet(isPresented: $showShareSheet, content: {if let share = share {CloudSharingView(share: share, container: CoreDataStack.shared.ckContainer, card: card)}})
         .sheet(isPresented: $showActivityController) {ActivityView(activityItems: $activityItemsArray, applicationActivities: nil)}
         }

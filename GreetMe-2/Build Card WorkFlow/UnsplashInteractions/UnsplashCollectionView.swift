@@ -53,6 +53,7 @@ struct UnsplashCollectionView: View {
     @Binding var pageCount: Int
     let timer = Timer.publish(every: 0.05, on: .main, in: .common).autoconnect()
     let columns = [GridItem(.fixed(150)),GridItem(.fixed(150))]
+    @State var chosenCollection: ChosenCollection
     
     func getMorePhotos() {
         pageCount = pageCount + 1
@@ -91,13 +92,13 @@ struct UnsplashCollectionView: View {
         .font(.headline)
         .padding(.horizontal)
         .frame(maxHeight: 600)
-        .onAppear {getUnsplashPhotos()}
+        .onAppear {getPhotosFromCollection(collectionID: searchParam.searchText)}
         
         .sheet(isPresented: $presentUCV2) {
-            UnsplashCollectionView(searchParam: searchParam, chosenSmallURL: chosenSmallURL, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, pageCount: $pageCount)
+            UnsplashCollectionView(searchParam: searchParam, chosenSmallURL: chosenSmallURL, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, pageCount: $pageCount, chosenCollection: chosenCollection)
         }
         
-        .sheet(isPresented: $segueToConfirmFrontCover) {ConfirmFrontCoverView(chosenObject: $chosenObject, collageImage: $collageImage, noteField: $noteField, searchObject: searchParam, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, pageCount: pageCount)}
+        .sheet(isPresented: $segueToConfirmFrontCover) {ConfirmFrontCoverView(chosenObject: $chosenObject, collageImage: $collageImage, noteField: $noteField, searchObject: searchParam, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, pageCount: pageCount, chosenCollection: chosenCollection)}
         }
     
     func handleTap(index: Int) {
@@ -136,11 +137,9 @@ struct UnsplashCollectionView: View {
                 print("Response is Nil")
             }}})}
     
-    
-    func getUnsplashCollection() {
-        PhotoAPI.getPhoto(pageNum: pageCount, userSearch: searchParam.searchText, completionHandler: { (response, error) in
+    func getPhotosFromCollection(collectionID: String) {
+        PhotoAPI.getPhotosFromCollection(collectionID: collectionID, completionHandler: { (response, error) in
             if response != nil {
-                self.picCount = response!.count
                 DispatchQueue.main.async {
                     for picture in response! {
                         if picture.urls.small != nil && picture.user.username != nil && picture.user.name != nil && picture.links.download_location != nil {
@@ -153,10 +152,9 @@ struct UnsplashCollectionView: View {
                             imageObjects.append(newObj)
                     }}
                 }
-            if self.picCount == 0 {
-                print("No Picture Available for that Search")
-                }
-            if response == nil {
-                print("Response is Nil")
-            }}})}
+            }
+            if response != nil {print("No Response!")}
+            else {debugPrint(error?.localizedDescription)}
+        })
+    }
 }
