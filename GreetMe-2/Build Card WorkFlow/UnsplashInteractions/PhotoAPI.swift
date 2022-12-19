@@ -22,7 +22,7 @@ class PhotoAPI {
     case collection(page_num: Int, collectionID: String)
     case pingDownloadForTrigger(downloadLocation: String)
     case user(user: String)
-    case collectionPhotos(collectionID: String)
+    case collectionPhotos(collectionID: String, page_num: Int)
 
     var URLString: String{
         switch self {
@@ -35,8 +35,10 @@ class PhotoAPI {
             "id=\(collectionID)&page=\(page_num)&per_page=50="
         case .user(let user):
             return Endpoints.baseURL2 + "users/\(user)/collections?&client_id=\(PhotoAPI.Endpoints.apiKey)"
-        case .collectionPhotos(let collectionID):
-            return Endpoints.baseURL2 + "/collections/\(collectionID)/photos?&client_id=\(PhotoAPI.Endpoints.apiKey)"
+        case .collectionPhotos(let collectionID, let page_num):
+            //return Endpoints.baseURL2 + "/collections/\(collectionID)/photos?&client_id=\(PhotoAPI.Endpoints.apiKey)"
+            return Endpoints.baseURL2 + "/collections/\(collectionID)/photos?page=\(page_num)&per_page=100&client_id=\(PhotoAPI.Endpoints.apiKey)"
+
         
             }
         }
@@ -73,8 +75,8 @@ class PhotoAPI {
     }
     
     
-    class func getPhotosFromCollection(collectionID: String, completionHandler: @escaping ([ResultDetails]?,Error?) -> Void) {
-        let url = Endpoints.collectionPhotos(collectionID: collectionID).url
+    class func getPhotosFromCollection(collectionID: String, page_num: Int, completionHandler: @escaping ([ResultDetails]?,Error?) -> Void) {
+        let url = Endpoints.collectionPhotos(collectionID: collectionID, page_num: page_num).url
         var request = URLRequest(url: url)
         request.httpMethod = "GET"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")

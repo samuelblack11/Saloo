@@ -25,9 +25,6 @@ struct OccassionsMenu: View {
     @Environment(\.presentationMode) var presentationMode
     @State private var presentUCV = false
     @State private var presentPrior = false
-    @Binding var searchType: String!
-    @Binding var occassion: String!
-    @Binding var collectionID: String!
     
     @State var searchObject: SearchParameter!
     @State private var showingImagePicker = false
@@ -68,6 +65,16 @@ struct OccassionsMenu: View {
         let searchTitle: String
         let searchTerm: String
       }
+    
+    @StateObject var occassionInstance = Occassion()
+    class Occassion: ObservableObject {
+        //@Published var searchType = String()
+        @Published var occassion = String()
+        @Published var collectionID = String()
+    }
+    
+    
+    
         
     var topBar: some View {
         HStack {
@@ -127,11 +134,8 @@ struct OccassionsMenu: View {
                         CollageStyleMenu(collageImage: $collageImage, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenObject: $chosenObject, noteField: $noteField, searchObject: searchObject)
                     }
                 Text("Take Photo with Camera 📸 ").onTapGesture {
-                    //self.showingImagePicker = false
-                    //self.showingCameraCapture = true
-                    print("&&")
-                    print(collections)
-                    
+                    self.showingImagePicker = false
+                    self.showingCameraCapture = true
                 }
                 .sheet(isPresented: $showingCameraCapture)
                 {CameraCapture(image: self.$coverImageFromCamera, isPresented: self.$showingCameraCapture, sourceType: .camera)}
@@ -151,13 +155,14 @@ struct OccassionsMenu: View {
                     Text(collection.title).onTapGesture {
                     presentUCV = true
                     frontCoverIsPersonalPhoto = 0
-                    self.occassion = collection.title
-                    self.collectionID = collection.id
-                    self.searchType = collection.id
+                    self.occassionInstance.occassion = collection.title
+                    self.occassionInstance.collectionID = collection.id
+                        print("***")
+                        print(occassionInstance.occassion)
                 }.sheet(isPresented: $presentUCV) {
-                    let chosenCollection = ChosenCollection.init(occassion: occassion, collectionID: collectionID)
-                    let searchObject = SearchParameter.init(searchText: searchType)
-                    UnsplashCollectionView(searchParam: searchObject, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, pageCount: $pageCount, chosenCollection: chosenCollection)
+                    let chosenCollection = ChosenCollection.init(occassion: occassionInstance.occassion, collectionID: occassionInstance.collectionID)
+                    let searchObject = SearchParameter.init(searchText: occassionInstance.collectionID)
+                    UnsplashCollectionView(searchParam: searchObject, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenCollection: chosenCollection)
                     }
                 
                 }

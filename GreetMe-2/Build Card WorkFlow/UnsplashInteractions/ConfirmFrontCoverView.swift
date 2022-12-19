@@ -22,7 +22,7 @@ struct ConfirmFrontCoverView: View {
     @State private var presentPrior = false
     @State var searchObject: SearchParameter
     @Binding var frontCoverIsPersonalPhoto: Int
-    @State var pageCount: Int
+    //@State var pageCount: Int
     @State var chosenCollection: ChosenCollection?
 
     var body: some View {
@@ -62,7 +62,7 @@ struct ConfirmFrontCoverView: View {
                 Text("Back")
             })
         .sheet(isPresented: $presentPrior) {
-            UnsplashCollectionView(searchParam: searchObject, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, pageCount: $pageCount, chosenCollection: chosenCollection!)
+            UnsplashCollectionView(searchParam: searchObject, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenCollection: chosenCollection!)
         }
         }
     }

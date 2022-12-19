@@ -32,7 +32,7 @@ struct UnsplashCollectionView: View {
     @Environment(\.presentationMode) var presentationMode
     @State var photoCollection: PhotoCollection?
     @State var searchParam: SearchParameter
-    @State private var imageObjects: [CoverImageObject] = []
+    @State var imageObjects: [CoverImageObject] = []
     @State private var segueToConfirmFrontCover = false
     @State private var picCount: Int!
     @State private var searchText: String!
@@ -50,13 +50,22 @@ struct UnsplashCollectionView: View {
     @State private var downloadAmount = 0.0
     @State var searchType: String!
     @State private var presentUCV2 = false
-    @Binding var pageCount: Int
     let timer = Timer.publish(every: 0.05, on: .main, in: .common).autoconnect()
     let columns = [GridItem(.fixed(150)),GridItem(.fixed(150))]
     @State var chosenCollection: ChosenCollection
+    @State var pageCount2: Int = 1
+    
+    
+    
+    
+    @StateObject var pageCount = PageCount()
+    class PageCount: ObservableObject {
+        @Published var pageCount = 1
+    }
+    
     
     func getMorePhotos() {
-        pageCount = pageCount + 1
+        pageCount.pageCount = pageCount.pageCount + 1
         presentUCV2 = true
     }
 
@@ -86,25 +95,26 @@ struct UnsplashCollectionView: View {
                 })
                 Button {
                     getMorePhotos()
+                    print("page count: \(pageCount.pageCount)")
                 } label: {Text("More...")}
             }
         }
         .font(.headline)
         .padding(.horizontal)
         .frame(maxHeight: 600)
-        .onAppear {getPhotosFromCollection(collectionID: searchParam.searchText)}
-        
+        .onAppear {
+            print("!!!!!: \(pageCount.pageCount)")
+            getPhotosFromCollection(collectionID: searchParam.searchText, page_num: pageCount.pageCount)}
         .sheet(isPresented: $presentUCV2) {
-            UnsplashCollectionView(searchParam: searchParam, chosenSmallURL: chosenSmallURL, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, pageCount: $pageCount, chosenCollection: chosenCollection)
+            UnsplashCollectionView(searchParam: searchParam, chosenSmallURL: chosenSmallURL, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenCollection: chosenCollection)
         }
-        
-        .sheet(isPresented: $segueToConfirmFrontCover) {ConfirmFrontCoverView(chosenObject: $chosenObject, collageImage: $collageImage, noteField: $noteField, searchObject: searchParam, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, pageCount: pageCount, chosenCollection: chosenCollection)}
+        .sheet(isPresented: $segueToConfirmFrontCover) {ConfirmFrontCoverView(chosenObject: $chosenObject, collageImage: $collageImage, noteField: $noteField, searchObject: searchParam, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenCollection: chosenCollection)}
         }
     
     func handleTap(index: Int) {
         Task {
+            var imageObjects = self.imageObjects
             let (data1, _) = try await URLSession.shared.data(from: imageObjects[index].smallImageURL)
-
             segueToConfirmFrontCover = true
             chosenSmallURL = imageObjects[index].smallImageURL
             chosenPhotographer = imageObjects[index].coverImagePhotographer
@@ -115,7 +125,7 @@ struct UnsplashCollectionView: View {
     }
 
     func getUnsplashPhotos() {
-        PhotoAPI.getPhoto(pageNum: pageCount, userSearch: searchParam.searchText, completionHandler: { (response, error) in
+        PhotoAPI.getPhoto(pageNum: pageCount.pageCount, userSearch: searchParam.searchText, completionHandler: { (response, error) in
             if response != nil {
                 self.picCount = response!.count
                 DispatchQueue.main.async {
@@ -137,8 +147,8 @@ struct UnsplashCollectionView: View {
                 print("Response is Nil")
             }}})}
     
-    func getPhotosFromCollection(collectionID: String) {
-        PhotoAPI.getPhotosFromCollection(collectionID: collectionID, completionHandler: { (response, error) in
+    func getPhotosFromCollection(collectionID: String, page_num: Int) {
+        PhotoAPI.getPhotosFromCollection(collectionID: collectionID, page_num: page_num, completionHandler: { (response, error) in
             if response != nil {
                 DispatchQueue.main.async {
                     for picture in response! {
