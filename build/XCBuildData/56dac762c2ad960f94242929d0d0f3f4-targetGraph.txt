@@ -1,0 +1,4 @@
+Target dependency graph (2 targets)
+FSCalendar in Pods, no dependencies
+Pods-GreetMe-2 in Pods, depends on:
+FSCalendar in Pods (explicit)

@@ -13,6 +13,11 @@ struct PhotoCollections: Decodable {
     let collections: [PhotoCollection]
 }
 
+struct CollectionPair: Decodable {
+    let title: String
+    let id: String
+}
+
 struct PhotoCollection: Decodable {
     let id: String
     let title: String
@@ -30,10 +35,10 @@ struct coverPhoto: Decodable {
     let width: Int
     let height: Int
     let color: String
-    let blu_hash: String
+    let blu_hash: String?
     let likes: Int
     let liked_by_user: Bool
-    let description: String
+    let description: String?
     let user: userDetails
     let urls: variousURLs
     let links: variousLinks

@@ -33,7 +33,6 @@
 		26AD8129281F05310069C3F0 /* FinalizeCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26AD8128281F05310069C3F0 /* FinalizeCardView.swift */; };
 		26AD812B281F119A0069C3F0 /* ConfirmFrontCoverView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26AD812A281F119A0069C3F0 /* ConfirmFrontCoverView.swift */; };
 		26EB55652827120C00178F0B /* EnlargeECard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26EB55642827120C00178F0B /* EnlargeECard.swift */; };
-		2FA2853DA68002C942D1B78C /* Pods_GreetMe_2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7F1AE8F60D22915F8D334B20 /* Pods_GreetMe_2.framework */; };
 		C2163D0E28C1609C00DEE861 /* ScheduleDelivery.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2163D0D28C1609C00DEE861 /* ScheduleDelivery.swift */; };
 		C22803E6289358E500802452 /* CloudSharingController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C22803E5289358E500802452 /* CloudSharingController.swift */; };
 		C22803E8289359AD00802452 /* CoreDataStack.swift in Sources */ = {isa = PBXBuildFile; fileRef = C22803E7289359AD00802452 /* CoreDataStack.swift */; };
@@ -55,6 +54,23 @@
 		C2D0B0A5287E2DC300198F0B /* ConfettiSwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = C2D0B0A4287E2DC300198F0B /* ConfettiSwiftUI */; };
 		C2DE5C98289EFECC00F8C556 /* AddEventToCalendarForm.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2DE5C97289EFECC00F8C556 /* AddEventToCalendarForm.swift */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		C217B02E294FE5F200544B17 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = C217B029294FE5F200544B17 /* Pods.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 95209B8BB966524BC76543F99C75F5FE;
+			remoteInfo = FSCalendar;
+		};
+		C217B030294FE5F200544B17 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = C217B029294FE5F200544B17 /* Pods.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = EF9B20CE03311E74EFCF470F4F9C59F5;
+			remoteInfo = "Pods-GreetMe-2";
+		};
+/* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
 		260F68E4281DBD62002E864B /* ImagePicker.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImagePicker.swift; sourceTree = "<group>"; };
@@ -86,9 +102,9 @@
 		26AD8128281F05310069C3F0 /* FinalizeCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FinalizeCardView.swift; sourceTree = "<group>"; };
 		26AD812A281F119A0069C3F0 /* ConfirmFrontCoverView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfirmFrontCoverView.swift; sourceTree = "<group>"; };
 		26EB55642827120C00178F0B /* EnlargeECard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnlargeECard.swift; sourceTree = "<group>"; };
-		7F1AE8F60D22915F8D334B20 /* Pods_GreetMe_2.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_GreetMe_2.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		93AAAE1CF8AE1CB82C760293 /* Pods-GreetMe-2.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-GreetMe-2.debug.xcconfig"; path = "Target Support Files/Pods-GreetMe-2/Pods-GreetMe-2.debug.xcconfig"; sourceTree = "<group>"; };
 		C2163D0D28C1609C00DEE861 /* ScheduleDelivery.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleDelivery.swift; sourceTree = "<group>"; };
+		C217B029294FE5F200544B17 /* Pods.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Pods.xcodeproj; path = Pods/Pods.xcodeproj; sourceTree = "<group>"; };
 		C22803E5289358E500802452 /* CloudSharingController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CloudSharingController.swift; path = "../../../../../Downloads/MyTravelJournal-3/final/MyTravelJournal/Controller/CloudSharingController.swift"; sourceTree = "<group>"; };
 		C22803E7289359AD00802452 /* CoreDataStack.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CoreDataStack.swift; path = "../../../../../Downloads/MyTravelJournal-3/final/MyTravelJournal/Helper/CoreDataStack.swift"; sourceTree = "<group>"; };
 		C23340EA28C3D589006222F5 /* FutureDelivery+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "FutureDelivery+CoreDataProperties.swift"; sourceTree = "<group>"; };
@@ -117,7 +133,6 @@
 			files = (
 				C2D0B0A5287E2DC300198F0B /* ConfettiSwiftUI in Frameworks */,
 				C2B650CA287AFFF90002E252 /* CloudKit.framework in Frameworks */,
-				2FA2853DA68002C942D1B78C /* Pods_GreetMe_2.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -246,6 +261,15 @@
 			path = Pods;
 			sourceTree = "<group>";
 		};
+		C217B02A294FE5F200544B17 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				C217B02F294FE5F200544B17 /* FSCalendar */,
+				C217B031294FE5F200544B17 /* Pods-GreetMe-2 */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 		C237E6E2294E5DB100E472AD /* Data & Types */ = {
 			isa = PBXGroup;
 			children = (
@@ -311,8 +335,8 @@
 		C2B650C8287AFFF90002E252 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				C217B029294FE5F200544B17 /* Pods.xcodeproj */,
 				C2B650C9287AFFF90002E252 /* CloudKit.framework */,
-				7F1AE8F60D22915F8D334B20 /* Pods_GreetMe_2.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -371,12 +395,37 @@
 			);
 			productRefGroup = 26A7217D281DB8D500ADAE44 /* Products */;
 			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = C217B02A294FE5F200544B17 /* Products */;
+					ProjectRef = C217B029294FE5F200544B17 /* Pods.xcodeproj */;
+				},
+			);
 			projectRoot = "";
 			targets = (
 				26A7217B281DB8D500ADAE44 /* GreetMe-2 */,
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		C217B02F294FE5F200544B17 /* FSCalendar */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			name = FSCalendar;
+			path = FSCalendar.framework;
+			remoteRef = C217B02E294FE5F200544B17 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		C217B031294FE5F200544B17 /* Pods-GreetMe-2 */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			name = "Pods-GreetMe-2";
+			path = Pods_GreetMe_2.framework;
+			remoteRef = C217B030294FE5F200544B17 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
 		26A7217A281DB8D500ADAE44 /* Resources */ = {

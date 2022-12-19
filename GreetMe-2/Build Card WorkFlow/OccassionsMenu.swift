@@ -47,7 +47,8 @@ struct OccassionsMenu: View {
     //@UIApplicationDelegateAdaptor var appDelegate: AppDelegate
     //@EnvironmentObject var sceneDelegate: SceneDelegate
     @State var oo2: Bool
-
+    @State var collections: [CollectionPair] = []
+    @State var chosenCollectionID: String?
     
     struct SearchItem {
         let searchTitle: String
@@ -123,7 +124,9 @@ struct OccassionsMenu: View {
                 Text("Take Photo with Camera 📸 ").onTapGesture {
                     //self.showingImagePicker = false
                     //self.showingCameraCapture = true
-                    createOccassionsMenuFromCollections()
+                    print("&&")
+                    print(collections)
+                    
                 }
                 .sheet(isPresented: $showingCameraCapture)
                 {CameraCapture(image: self.$coverImageFromCamera, isPresented: self.$showingCameraCapture, sourceType: .camera)}
@@ -139,11 +142,12 @@ struct OccassionsMenu: View {
                         }
             }
             Section(header: Text("Occassions & Holidays")) {
-            ForEach(menuItems.searchItems, id: \.searchTitle) { search in
-                Text(search.searchTitle).onTapGesture {
+                ForEach(collections, id: \.title) { collection in
+                    Text(collection.title).onTapGesture {
                     presentUCV = true
                     frontCoverIsPersonalPhoto = 0
-                    self.searchType = search.searchTerm
+                    
+                    self.chosenCollectionID = collection.id
                 }.sheet(isPresented: $presentUCV) {
                     let searchObject = SearchParameter.init(searchText: $searchType)
                     UnsplashCollectionView(searchParam: searchObject, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, pageCount: $pageCount)
@@ -163,6 +167,8 @@ struct OccassionsMenu: View {
         .font(.headline)
         .listStyle(GroupedListStyle())
         .onAppear(perform: createOccassionsMenu)
+        .onAppear{createOccassionsFromUserCollections()}
+
         }
         Spacer()
         bottomBar
@@ -222,12 +228,16 @@ extension OccassionsMenu {
     }
     
     
-    func createOccassionsMenuFromCollections() {
+    func createOccassionsFromUserCollections() {
         print("***")
         PhotoAPI.getUserCollections(username: "samuelblack11", completionHandler: { (response, error) in
-            print("###")
-            print(response)
-            print(error)
+            if response != nil {
+                DispatchQueue.main.async {
+                    for collection in response! {
+                        collections.append(CollectionPair(title: collection.title, id: collection.id))
+                    }
+                }
+            }
             if response != nil {
                 print("-----------")
                 print(response)
@@ -236,10 +246,6 @@ extension OccassionsMenu {
                 print("-----------")
                 debugPrint(error?.localizedDescription)
             }
-            
-            
-            
-            
         })
     }
 }

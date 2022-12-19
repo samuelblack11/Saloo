@@ -1,0 +1,48 @@
+{
+  "_buildCommand2" : {
+    "command" : "prepareForIndexing",
+    "enableIndexBuildArena" : false,
+    "targets" : null
+  },
+  "buildCommand" : "build",
+  "configuredTargets" : [
+    {
+      "guid" : "bfdfe7dc352907fc980b868725387e98169a3f24a830b32207daeec386ecf383"
+    },
+    {
+      "guid" : "bfdfe7dc352907fc980b868725387e988aa7a4aec561d1638b7e068a156b7748"
+    }
+  ],
+  "containerPath" : "/Users/samblack/Desktop/iOS Developer/GreetMe-2/Pods/Pods.xcodeproj",
+  "continueBuildingAfterErrors" : true,
+  "enableIndexBuildArena" : false,
+  "hideShellScriptEnvironment" : false,
+  "parameters" : {
+    "action" : "build",
+    "arenaInfo" : {
+      "buildIntermediatesPath" : "",
+      "buildProductsPath" : "",
+      "derivedDataPath" : "/Users/samblack/Library/Developer/Xcode/DerivedData",
+      "indexDataStoreFolderPath" : "/Users/samblack/Library/Developer/Xcode/DerivedData/Pods-gfxbqshvnxjwfghcnjvyeozoejxt/Index.noindex/DataStore",
+      "indexEnableDataStore" : true,
+      "indexPCHPath" : "/Users/samblack/Library/Developer/Xcode/DerivedData/Pods-gfxbqshvnxjwfghcnjvyeozoejxt/Index.noindex/PrecompiledHeaders",
+      "pchPath" : ""
+    },
+    "configurationName" : "Release",
+    "overrides" : {
+      "synthesized" : {
+        "table" : {
+          "ENABLE_PREVIEWS" : "NO"
+        }
+      }
+    }
+  },
+  "qos" : "default",
+  "schemeCommand" : "launch",
+  "schemeCommand2" : "launch",
+  "showNonLoggedProgress" : true,
+  "useDryRun" : true,
+  "useImplicitDependencies" : false,
+  "useLegacyBuildLocations" : false,
+  "useParallelTargets" : false
+}
