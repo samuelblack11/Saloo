@@ -10,7 +10,7 @@ import SwiftUI
 
 struct CollageOneView: View {
     @Environment(\.presentationMode) var presentationMode
-
+    @Environment(\.dismiss) private var dismiss
     @State private var showingImagePicker = false
     @State private var image: Image?
     @State private var chosenImage: UIImage?
@@ -63,7 +63,8 @@ struct CollageOneView: View {
             print("********")
             print(theSnapShot)
             collageImage = CollageImage.init(collageImage: theSnapShot)
-        }.padding(.bottom, 30).sheet(isPresented: $segueToWriteNote ) {WriteNoteView(frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenObject: $chosenObject, collageImage: $collageImage, noteField: $noteField, eCardText: $eCardText, printCardText: $printCardText, searchObject: searchObject)}
+        }.padding(.bottom, 30).sheet(isPresented: $segueToWriteNote ) {
+            WriteNoteView(frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenObject: $chosenObject, collageImage: $collageImage, noteField: $noteField, eCardText: $eCardText, printCardText: $printCardText, searchObject: searchObject)}
         }
         }
 

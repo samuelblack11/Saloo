@@ -46,6 +46,13 @@ struct FinalizeCardView: View {
     @State private var isProcessingShare = false
     @State private var activeShare: CKShare?
     @State private var activeContainer: CKContainer?
+    @State private var collageOneIsPresented = true
+    @State private var collageTwoIsPresented = true
+    @State private var collageThreeIsPresented = true
+    @State private var collageFourIsPresented = true
+    @State private var collageFiveIsPresented = true
+    @State private var collageSixIsPresented = true
+
     
     var eCardVertical: some View {
         VStack(spacing:1) {
@@ -164,7 +171,16 @@ struct FinalizeCardView: View {
                 .sheet(isPresented: $presentMenu) {OccassionsMenu(noneSearch: $string2, calViewModel: CalViewModel(), showDetailView: ShowDetailView(), oo2: false)}
                 .disabled(saveAndShareIsActive)
                 .alert("Save Complete", isPresented: $showCompleteAlert) {
-                    Button("Ok", role: .cancel) {presentMenu = true}
+                    Button("Ok", role: .cancel) {
+                        presentMenu = true
+                        let rootViewController = UIApplication.shared.connectedScenes
+                                .filter {$0.activationState == .foregroundActive }
+                                .map {$0 as? UIWindowScene }
+                                .compactMap { $0 }
+                                .first?.windows
+                                .filter({ $0.isKeyWindow }).first?.rootViewController
+                           rootViewController?.dismiss(animated: true)
+                    }
                 }
                 .sheet(isPresented: $isSharing, content: {shareView(card: card)})
                 Spacer()

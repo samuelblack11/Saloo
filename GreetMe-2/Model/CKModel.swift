@@ -33,16 +33,15 @@ final class CKModel: ObservableObject {
     
     /// State directly observable by our view.
     @Published private(set) var state: State = .loading
-    @Published private(set) var whichBox: SendReceive = .inbox
+    @Published private(set) var whichBox: SendReceive = .outbox
     /// Use the specified iCloud container ID, which should also be present in the entitlements file.
     lazy var container = CKContainer(identifier: "iCloud.GreetMe_2")
     /// This project uses the user's private database.
     /// 
-    private lazy var sdb = container.sharedCloudDatabase
+    private lazy var pdb = container.privateCloudDatabase
 
     /// Sharing requires using a custom record zone.
     let recordZone = CKRecordZone(zoneName: "Cards")
-    let sharedZone = CKRecordZone(zoneName: "Cards")
 
     var myCards: [Card]!
     var sentCards: [Card]!
@@ -86,7 +85,7 @@ final class CKModel: ObservableObject {
     /// - Returns: A tuple containing separated private and shared contacts.
     func fetchPrivateAndSharedCards() async throws -> (private: [Card], shared: [Card]) {
         // This will run each of these operations in parallel.
-        async let privateCards = fetchCards(scope: .private, in: [sharedZone])
+        async let privateCards = fetchCards(scope: .private, in: [recordZone])
         async let sharedCards = fetchSharedCards()
         print("**")
         try await print(privateCards)
@@ -117,7 +116,7 @@ final class CKModel: ObservableObject {
     /// Adds a new Card  to the database.
     func addCard(noteField: NoteField, searchObject: SearchParameter, an1: String, an2: String, an2URL: String, an3: String, an4: String, chosenObject: CoverImageObject, collageImage: CollageImage) async throws {
         
-        let id = CKRecord.ID(zoneID: sharedZone.zoneID)
+        let id = CKRecord.ID(zoneID: recordZone.zoneID)
         let cardRecord = CKRecord(recordType: "Card", recordID: id)
         //cardRecord["id"] = cardRecord.recordID.recordName as CKRecordValue
         cardRecord["cardName"] = noteField.cardName as CKRecordValue
@@ -135,7 +134,7 @@ final class CKModel: ObservableObject {
         cardRecord["collage"] = collageImage.collageImage.pngData()! as CKRecordValue
 
         do {
-            try await sdb.save(cardRecord)
+            try await pdb.save(cardRecord)
         } catch {
             debugPrint("ERROR: Failed to save new Card: \(error)")
             throw error
@@ -150,11 +149,11 @@ final class CKModel: ObservableObject {
            guard let existingShare = card.associatedRecord.share else {
                let share = CKShare(rootRecord: card.associatedRecord)
                share[CKShare.SystemFieldKey.title] = "Card: \(card.cardName)"
-               _ = try await sdb.modifyRecords(saving: [card.associatedRecord, share], deleting: [])
+               _ = try await pdb.modifyRecords(saving: [card.associatedRecord, share], deleting: [])
                return (share, container)
            }
 
-           guard let share = try await sdb.record(for: existingShare.recordID) as? CKShare else {
+           guard let share = try await pdb.record(for: existingShare.recordID) as? CKShare else {
                throw ViewModelError.invalidShare
            }
 
@@ -236,7 +235,7 @@ final class CKModel: ObservableObject {
            }
 
            do {
-               _ = try await sdb.modifyRecordZones(saving: [sharedZone], deleting: [])
+               _ = try await pdb.modifyRecordZones(saving: [recordZone], deleting: [])
            } catch {
                print("ERROR: Failed to create custom zone: \(error.localizedDescription)")
                throw error

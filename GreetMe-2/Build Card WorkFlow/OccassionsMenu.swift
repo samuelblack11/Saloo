@@ -25,7 +25,8 @@ struct OccassionsMenu: View {
     @Environment(\.presentationMode) var presentationMode
     @State private var presentUCV = false
     @State private var presentPrior = false
-    
+    @StateObject var cm = CKModel()
+
     @State var searchObject: SearchParameter!
     @State private var showingImagePicker = false
     @State private var showingCameraCapture = false
@@ -91,7 +92,10 @@ struct OccassionsMenu: View {
     
     var bottomBar: some View {
         HStack {
-            Button{showSent = true} label: {
+            Button{
+                showSent = true
+                
+            } label: {
                 Image(systemName: "tray.and.arrow.up.fill")
                     .foregroundColor(.blue)
                     .font(.system(size: 24))

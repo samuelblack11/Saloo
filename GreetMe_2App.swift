@@ -13,7 +13,7 @@ struct GreetMe_2App: App {
     let dataController = CoreDataStack.shared
     @State var string1: String!
     @State var string2: String!
-    @StateObject private var cm = CKModel()
+    @StateObject var cm = CKModel()
     //@UIApplicationDelegateAdaptor var appDelegate: AppDelegate
     
     var body: some Scene {

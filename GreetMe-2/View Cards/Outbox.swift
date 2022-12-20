@@ -11,7 +11,7 @@ import CloudKit
 
 struct Outbox: View {
     @EnvironmentObject private var cm: CKModel
-    @State private var privateCards: [Card]?
+    @State private var privateCards: [Card] = []
     @State private var sharedCards: [Card]?
     // mycards = private + shared
     @State private var myCards: [Card]?
@@ -30,8 +30,9 @@ struct Outbox: View {
                             Text("An error occurred: \(error.localizedDescription)").padding()
                             Spacer()
                         }
-                    case let .loaded(sentCards: myCards, receivedCards: myCards):
-                        GridofCards(sentCards: myCards, receivedCards: myCards)
+                    case let .loaded(sentCards: privateCards, receivedCards: privateCards):
+                        //Text("Great Success")
+                        GridofCards(privateCards: $privateCards, receivedCards: privateCards)
                     }
                 }
             }
@@ -41,6 +42,7 @@ struct Outbox: View {
                 try await cm.initialize()
                 try await (privateCards, sharedCards) = cm.fetchPrivateAndSharedCards()
                 try await cm.refresh()
+
             }
         }
     }
