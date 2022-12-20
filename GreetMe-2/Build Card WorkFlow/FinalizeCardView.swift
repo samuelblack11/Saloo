@@ -270,3 +270,4 @@ extension UIScreen{
 // https://swiftwithmajid.com/2022/03/29/zone-sharing-in-cloudkit/
 // https://www.techotopia.com/index.php/An_Introduction_to_CloudKit_Data_Storage_on_iOS_8#Record_Zones
 // https://github.com/apple/sample-cloudkit-sharing
+// https://stackoverflow.com/questions/66313845/swiftui-dismiss-all-active-sheet-views

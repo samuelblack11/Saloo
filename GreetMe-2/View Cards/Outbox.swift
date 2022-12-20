@@ -16,7 +16,6 @@ struct Outbox: View {
     // mycards = private + shared
     @State private var myCards: [Card]?
     
-
     var body: some View {
         NavigationView {
                     switch cm.state {

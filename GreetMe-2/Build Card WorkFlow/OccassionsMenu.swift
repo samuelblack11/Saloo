@@ -178,7 +178,13 @@ struct OccassionsMenu: View {
         }
         .font(.headline)
         .listStyle(GroupedListStyle())
-        .onAppear{createOccassionsFromUserCollections()}
+        .onAppear{
+            createOccassionsFromUserCollections()
+            
+            
+            
+            
+        }
 
         }
         Spacer()
@@ -194,6 +200,37 @@ struct OccassionsMenu: View {
 
 
 extension OccassionsMenu {
+    
+    
+    func groupCollections(collections: [CollectionPair]) -> ([CollectionPair], [CollectionPair], [CollectionPair], [CollectionPair], [CollectionPair], [CollectionPair]) {
+        let yearRoundOccassions = ["Birthday 🎈", "Anniversery 💒"]
+        let winterOccassions = ["Christmas 🎄, Hanukkah 🕎, New Year's Eve 🎆"]
+        let springOccassions = ["Mother's Day 🌸"]
+        let summerOccassions = ["4th of July 🎇", "Father's Day 🍻"]
+        let fallOccassions = ["Thanksgiving 🍁","Rosh Hashanah 🔯"]
+        let otherOccassions = ["Postcard ✈️","Animals 🐼"]
+        
+        let allOccassions = [yearRoundOccassions, winterOccassions, springOccassions, summerOccassions, fallOccassions, otherOccassions]
+        
+        var yearRound: [CollectionPair] = []
+        var winterCollection: [CollectionPair] = []
+        var springCollection: [CollectionPair] = []
+        var summerCollection: [CollectionPair] = []
+        var fallCollection: [CollectionPair] = []
+        var otherCollection: [CollectionPair] = []
+        
+        var subCollections = [yearRound, winterCollection, springCollection, summerCollection, fallCollection, otherCollection]
+        
+        for collection in collections {
+            for (index, occasionType) in allOccassions.enumerated() {
+                if occasionType.contains(collection.title) {
+                    subCollections[index].append(collection)
+                }
+            }
+        }
+        
+        return (yearRound, winterCollection, springCollection, summerCollection, fallCollection, otherCollection)
+    }
     
     func runIt() {
         print("ownerOpeningOwnShare is TRUE")
