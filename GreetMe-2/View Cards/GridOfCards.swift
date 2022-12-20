@@ -32,18 +32,23 @@ struct GridofCards: View {
     //@State var cardsToDisplay: [Card]
     @Binding var privateCards: [Card]
     @State var receivedCards: [Card]
+    let columns = [GridItem(.adaptive(minimum: 120))]
 
     var body: some View {
         NavigationView {
-            //Text("\(privateCards.count)")
-            ForEach(privateCards) {cardView(for: $0, shareable: false)}
-
-            //switch cm.whichBox {
-            //case .outbox:
-            //    ForEach(sentCards) {cardView(for: $0, shareable: false)}
-            //case .inbox:
-            //    ForEach(receivedCards) {cardView(for: $0, shareable: false)}
-            //}
+            ScrollView {
+                LazyVGrid(columns: columns, spacing: 10) {
+                    //Text("\(privateCards.count)")
+                    ForEach(privateCards) {cardView(for: $0, shareable: false)}
+                    
+                    //switch cm.whichBox {
+                    //case .outbox:
+                    //    ForEach(sentCards) {cardView(for: $0, shareable: false)}
+                    //case .inbox:
+                    //    ForEach(receivedCards) {cardView(for: $0, shareable: false)}
+                    //}
+                }
+            }
         }
     }
     

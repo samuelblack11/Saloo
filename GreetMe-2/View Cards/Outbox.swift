@@ -17,11 +17,8 @@ struct Outbox: View {
     @State private var myCards: [Card]?
     
 
-    let columns = [GridItem(.adaptive(minimum: 120))]
     var body: some View {
         NavigationView {
-            ScrollView {
-                LazyVGrid(columns: columns, spacing: 10) {
                     switch cm.state {
                     case .loading:
                         VStack{EmptyView()}
@@ -34,16 +31,14 @@ struct Outbox: View {
                         //Text("Great Success")
                         GridofCards(privateCards: $privateCards, receivedCards: privateCards)
                     }
-                }
             }
-        }
-        .onAppear {
-            Task {
-                try await cm.initialize()
-                try await (privateCards, sharedCards) = cm.fetchPrivateAndSharedCards()
-                try await cm.refresh()
+            .onAppear {
+                Task {
+                    try await cm.initialize()
+                    try await (privateCards, sharedCards) = cm.fetchPrivateAndSharedCards()
+                    try await cm.refresh()
 
-            }
+                }
         }
     }
 }

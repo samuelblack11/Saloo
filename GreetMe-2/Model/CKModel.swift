@@ -120,7 +120,7 @@ final class CKModel: ObservableObject {
         let cardRecord = CKRecord(recordType: "Card", recordID: id)
         //cardRecord["id"] = cardRecord.recordID.recordName as CKRecordValue
         cardRecord["cardName"] = noteField.cardName as CKRecordValue
-        cardRecord["occassion"] = searchObject.searchText as? CKRecordValue
+        cardRecord["occassion"] = noteField.cardName as CKRecordValue
         cardRecord["recipient"] = noteField.recipient as CKRecordValue
         cardRecord["an1"] = an1 as CKRecordValue
         cardRecord["an2"] = an2 as CKRecordValue

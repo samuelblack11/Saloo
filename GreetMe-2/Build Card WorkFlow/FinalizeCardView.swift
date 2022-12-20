@@ -46,14 +46,7 @@ struct FinalizeCardView: View {
     @State private var isProcessingShare = false
     @State private var activeShare: CKShare?
     @State private var activeContainer: CKContainer?
-    @State private var collageOneIsPresented = true
-    @State private var collageTwoIsPresented = true
-    @State private var collageThreeIsPresented = true
-    @State private var collageFourIsPresented = true
-    @State private var collageFiveIsPresented = true
-    @State private var collageSixIsPresented = true
 
-    
     var eCardVertical: some View {
         VStack(spacing:1) {
             Image(uiImage: UIImage(data: chosenObject.coverImage!)!)
