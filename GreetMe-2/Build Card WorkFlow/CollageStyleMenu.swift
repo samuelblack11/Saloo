@@ -28,6 +28,7 @@ struct CollageStyleMenu: View {
     @Binding var chosenObject: CoverImageObject!
     @Binding var noteField: NoteField!
     @State var searchObject: SearchParameter
+    @State var pageCount: Int = 1
 
     let columns = [GridItem(.fixed(150)),GridItem(.fixed(150))]
     
@@ -90,7 +91,7 @@ struct CollageStyleMenu: View {
                     Text("Back")
                 })
             .sheet(isPresented: $presentPrior) {
-                ConfirmFrontCoverView(chosenObject: $chosenObject, collageImage: $collageImage, noteField: $noteField, searchObject: searchObject, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto)
+                ConfirmFrontCoverView(chosenObject: $chosenObject, collageImage: $collageImage, noteField: $noteField, searchObject: searchObject, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, pageCount: $pageCount)
             }
             .frame(maxHeight: 800)
         }

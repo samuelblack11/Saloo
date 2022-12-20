@@ -53,19 +53,11 @@ struct UnsplashCollectionView: View {
     let timer = Timer.publish(every: 0.05, on: .main, in: .common).autoconnect()
     let columns = [GridItem(.fixed(150)),GridItem(.fixed(150))]
     @State var chosenCollection: ChosenCollection
-    @State var pageCount2: Int = 1
-    
-    
-    
-    
-    @StateObject var pageCount = PageCount()
-    class PageCount: ObservableObject {
-        @Published var pageCount = 1
-    }
+    @Binding var pageCount: Int
     
     
     func getMorePhotos() {
-        pageCount.pageCount = pageCount.pageCount + 1
+        pageCount = pageCount + 1
         presentUCV2 = true
     }
 
@@ -93,23 +85,41 @@ struct UnsplashCollectionView: View {
                     Image(systemName: "chevron.left").foregroundColor(.blue)
                     Text("Back")
                 })
-                Button {
+                Button("More...") {
                     getMorePhotos()
-                    print("page count: \(pageCount.pageCount)")
-                } label: {Text("More...")}
+                    print("page count: \(pageCount)")
+                }
+                .disabled(setButtonStatus(imageObjects: imageObjects))
             }
         }
         .font(.headline)
         .padding(.horizontal)
         .frame(maxHeight: 600)
         .onAppear {
-            print("!!!!!: \(pageCount.pageCount)")
-            getPhotosFromCollection(collectionID: searchParam.searchText, page_num: pageCount.pageCount)}
+            getPhotosFromCollection(collectionID: searchParam.searchText, page_num: pageCount)
+        }
         .sheet(isPresented: $presentUCV2) {
-            UnsplashCollectionView(searchParam: searchParam, chosenSmallURL: chosenSmallURL, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenCollection: chosenCollection)
+            UnsplashCollectionView(searchParam: searchParam, chosenSmallURL: chosenSmallURL, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenCollection: chosenCollection, pageCount: $pageCount)
         }
-        .sheet(isPresented: $segueToConfirmFrontCover) {ConfirmFrontCoverView(chosenObject: $chosenObject, collageImage: $collageImage, noteField: $noteField, searchObject: searchParam, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenCollection: chosenCollection)}
+        .sheet(isPresented: $segueToConfirmFrontCover) {ConfirmFrontCoverView(chosenObject: $chosenObject, collageImage: $collageImage, noteField: $noteField, searchObject: searchParam, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenCollection: chosenCollection, pageCount: $pageCount)}
         }
+    
+    
+    
+    func setButtonStatus(imageObjects: [CoverImageObject]) -> Bool {
+        var disableButton: Bool?
+        print(imageObjects.count)
+        if imageObjects.count < 30 {
+            disableButton = true
+        }
+        else {
+            disableButton = false
+        }
+        return disableButton!
+    }
+    
+    
+    
     
     func handleTap(index: Int) {
         Task {
@@ -123,9 +133,32 @@ struct UnsplashCollectionView: View {
             chosenObject = CoverImageObject.init(coverImage: data1, smallImageURL: chosenSmallURL, coverImagePhotographer: chosenPhotographer, coverImageUserName: chosenUserName, downloadLocation: chosenDownloadLocation, index: index)
         }
     }
-
+    
+    func getPhotosFromCollection(collectionID: String, page_num: Int) {
+        PhotoAPI.getPhotosFromCollection(collectionID: collectionID, page_num: page_num, completionHandler: { (response, error) in
+            if response != nil {
+                DispatchQueue.main.async {
+                    print("####")
+                    print(response!.count)
+                    for picture in response! {
+                        if picture.urls.small != nil && picture.user.username != nil && picture.user.name != nil && picture.links.download_location != nil {
+                            let thisPicture = picture.urls.small
+                            let imageURL = URL(string: thisPicture!)
+                            // These lines slow down the appearance of images significantly
+                            // let thisPhotoData = try? Data(contentsOf: imageURL!)
+                            // let image = UIImage(data: thisPhotoData!)!
+                            let newObj = CoverImageObject.init(coverImage: nil, smallImageURL: imageURL!, coverImagePhotographer: picture.user.name!, coverImageUserName: picture.user.username!, downloadLocation: picture.links.download_location!, index: imageObjects.count)
+                            imageObjects.append(newObj)
+                    }}
+                }
+            }
+            if response != nil {print("No Response!")}
+            else {debugPrint(error?.localizedDescription)}
+        })
+    }
+    
     func getUnsplashPhotos() {
-        PhotoAPI.getPhoto(pageNum: pageCount.pageCount, userSearch: searchParam.searchText, completionHandler: { (response, error) in
+        PhotoAPI.getPhoto(pageNum: pageCount, userSearch: searchParam.searchText, completionHandler: { (response, error) in
             if response != nil {
                 self.picCount = response!.count
                 DispatchQueue.main.async {
@@ -146,25 +179,4 @@ struct UnsplashCollectionView: View {
             if response == nil {
                 print("Response is Nil")
             }}})}
-    
-    func getPhotosFromCollection(collectionID: String, page_num: Int) {
-        PhotoAPI.getPhotosFromCollection(collectionID: collectionID, page_num: page_num, completionHandler: { (response, error) in
-            if response != nil {
-                DispatchQueue.main.async {
-                    for picture in response! {
-                        if picture.urls.small != nil && picture.user.username != nil && picture.user.name != nil && picture.links.download_location != nil {
-                            let thisPicture = picture.urls.small
-                            let imageURL = URL(string: thisPicture!)
-                            // These lines slow down the appearance of images significantly
-                            // let thisPhotoData = try? Data(contentsOf: imageURL!)
-                            // let image = UIImage(data: thisPhotoData!)!
-                            let newObj = CoverImageObject.init(coverImage: nil, smallImageURL: imageURL!, coverImagePhotographer: picture.user.name!, coverImageUserName: picture.user.username!, downloadLocation: picture.links.download_location!, index: imageObjects.count)
-                            imageObjects.append(newObj)
-                    }}
-                }
-            }
-            if response != nil {print("No Response!")}
-            else {debugPrint(error?.localizedDescription)}
-        })
-    }
 }

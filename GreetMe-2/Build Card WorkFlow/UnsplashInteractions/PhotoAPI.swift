@@ -36,7 +36,6 @@ class PhotoAPI {
         case .user(let user):
             return Endpoints.baseURL2 + "users/\(user)/collections?&client_id=\(PhotoAPI.Endpoints.apiKey)"
         case .collectionPhotos(let collectionID, let page_num):
-            //return Endpoints.baseURL2 + "/collections/\(collectionID)/photos?&client_id=\(PhotoAPI.Endpoints.apiKey)"
             return Endpoints.baseURL2 + "/collections/\(collectionID)/photos?page=\(page_num)&per_page=100&client_id=\(PhotoAPI.Endpoints.apiKey)"
 
         
@@ -88,6 +87,8 @@ class PhotoAPI {
             }
             do {
                 let pics = try JSONDecoder().decode([ResultDetails].self, from: data!)
+                print("****")
+                print(pics.count)
                 DispatchQueue.main.async {completionHandler(pics, nil)}
                 }
             catch {

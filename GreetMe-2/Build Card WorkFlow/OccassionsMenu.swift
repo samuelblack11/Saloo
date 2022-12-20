@@ -56,6 +56,7 @@ struct OccassionsMenu: View {
     // @StateObject creates an instance of our Searches class
     // @StateObject asks SwiftUI to watch the object for any change announcements. So any time on of our @Published properties changes the iew will refresh.
     @StateObject var menuItems = Searches()
+    
     //Class to store array of SearchItem(s)
     class Searches: ObservableObject {
         // @Published ensures change announcements get sent whenever the searchItems array gets modified
@@ -162,7 +163,7 @@ struct OccassionsMenu: View {
                 }.sheet(isPresented: $presentUCV) {
                     let chosenCollection = ChosenCollection.init(occassion: occassionInstance.occassion, collectionID: occassionInstance.collectionID)
                     let searchObject = SearchParameter.init(searchText: occassionInstance.collectionID)
-                    UnsplashCollectionView(searchParam: searchObject, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenCollection: chosenCollection)
+                    UnsplashCollectionView(searchParam: searchObject, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenCollection: chosenCollection, pageCount: $pageCount)
                     }
                 
                 }
