@@ -43,6 +43,7 @@ struct OccassionsMenu: View {
     @State var pageCount = 1
     @State var test_a: Bool = false
     @Binding var noneSearch: String!
+    @Binding var searchTerm: String!
     @State private var createNew = false
     @State private var showSent = false
     @State private var showReceived = false
@@ -52,11 +53,22 @@ struct OccassionsMenu: View {
     //@UIApplicationDelegateAdaptor var appDelegate: AppDelegate
     //@EnvironmentObject var sceneDelegate: SceneDelegate
     @State var oo2: Bool
+    @State private var customSearch: String = ""
+
     @State var collections: [CollectionPair] = []
     //@State var chosenCollection: CollectionPair?
     // @StateObject creates an instance of our Searches class
     // @StateObject asks SwiftUI to watch the object for any change announcements. So any time on of our @Published properties changes the iew will refresh.
     @StateObject var menuItems = Searches()
+    
+    @State var yearRoundCollection: [CollectionPair] = []
+    @State var winterCollection: [CollectionPair] = []
+    @State var springCollection: [CollectionPair] = []
+    @State var summerCollection: [CollectionPair] = []
+    @State var fallCollection: [CollectionPair] = []
+    @State var otherCollection: [CollectionPair] = []
+
+    
     
     //Class to store array of SearchItem(s)
     class Searches: ObservableObject {
@@ -120,7 +132,7 @@ struct OccassionsMenu: View {
         // Hold cmd + ctrl, then click space bar to show emoji menu
         NavigationView {
         List {
-            Section(header: Text("Personal")) {
+            Section(header: Text("Personal & Search")) {
                 Text("Select from Photo Library ").onTapGesture {
                     self.showingCameraCapture = false
                     self.showingImagePicker = true
@@ -154,36 +166,51 @@ struct OccassionsMenu: View {
                         let searchObject = SearchParameter.init(searchText: noneSearch)
                         CollageStyleMenu(collageImage: $collageImage, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenObject: $chosenObject, noteField: $noteField, searchObject: searchObject)
                         }
-            }
-            Section(header: Text("Occassions & Holidays")) {
-                ForEach(collections, id: \.title) { collection in
-                    Text(collection.title).onTapGesture {
-                    presentUCV = true
-                    frontCoverIsPersonalPhoto = 0
-                    self.occassionInstance.occassion = collection.title
-                    self.occassionInstance.collectionID = collection.id
-                        print("***")
-                        print(occassionInstance.occassion)
-                }.sheet(isPresented: $presentUCV) {
-                    let chosenCollection = ChosenCollection.init(occassion: occassionInstance.occassion, collectionID: occassionInstance.collectionID)
-                    let searchObject = SearchParameter.init(searchText: occassionInstance.collectionID)
-                    UnsplashCollectionView(searchParam: searchObject, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenCollection: chosenCollection, pageCount: $pageCount)
+                HStack {
+                    TextField("Custom Search", text: $customSearch)
+                        .padding(.leading, 5)
+                        .frame(height:35)
+                    Button {
+                        presentUCV = true
+                        frontCoverIsPersonalPhoto = 0
+                        self.searchTerm = customSearch
                     }
+                    label: {Image(systemName: "magnifyingglass.circle.fill")}
+                    .sheet(isPresented: $presentUCV) {let searchObject = SearchParameter.init(searchText: searchTerm)
+                        UnsplashCollectionView(searchParam: searchObject, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, pageCount: $pageCount)}
                 
                 }
             }
+            Section(header: Text("Year-Round Occassions")) {
+                ForEach(yearRoundCollection) {menuSection(for: $0, shareable: false)}
+            }
+            Section(header: Text("Winter Holidays")) {
+                ForEach(winterCollection) {menuSection(for: $0, shareable: false)}
+            }
+            Section(header: Text("Spring Holidays")) {
+                ForEach(springCollection) {menuSection(for: $0, shareable: false)}
+            }
+            Section(header: Text("Summer Holidays")) {
+                ForEach(summerCollection) {menuSection(for: $0, shareable: false)}
+            }
+            Section(header: Text("Fall Holidays")) {
+                ForEach(fallCollection) {menuSection(for: $0, shareable: false)}
+            }
+            Section(header: Text("Other Collections")) {
+                ForEach(otherCollection) {menuSection(for: $0, shareable: false)}
+            }
+            Section(header: Text("Custom Search")) {
+
+            }
+            
         }
         .sheet(isPresented: $presentPrior) {
             CalendarParent(calViewModel: calViewModel, showDetailView: showDetailView)
         }
         .font(.headline)
         .listStyle(GroupedListStyle())
-        .onAppear{
+        .onAppear {
             createOccassionsFromUserCollections()
-            
-            
-            
-            
         }
 
         }
@@ -199,41 +226,80 @@ struct OccassionsMenu: View {
 
 
 
+
 extension OccassionsMenu {
     
+    private func menuSection(for collection: CollectionPair, shareable: Bool = true) -> some View {
+        //ForEach(collections, id: \.title) { collection in
+            Text(collection.title).onTapGesture {
+                presentUCV = true
+                frontCoverIsPersonalPhoto = 0
+                self.occassionInstance.occassion = collection.title
+                self.occassionInstance.collectionID = collection.id
+            }.sheet(isPresented: $presentUCV) {
+                let chosenCollection = ChosenCollection.init(occassion: occassionInstance.occassion, collectionID: occassionInstance.collectionID)
+                let searchObject = SearchParameter.init(searchText: occassionInstance.collectionID)
+                UnsplashCollectionView(searchParam: searchObject, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenCollection: chosenCollection, pageCount: $pageCount)
+                }
+        //}
+    }
     
-    func groupCollections(collections: [CollectionPair]) -> ([CollectionPair], [CollectionPair], [CollectionPair], [CollectionPair], [CollectionPair], [CollectionPair]) {
-        let yearRoundOccassions = ["Birthday 🎈", "Anniversery 💒"]
-        let winterOccassions = ["Christmas 🎄, Hanukkah 🕎, New Year's Eve 🎆"]
+    func groupCollections(collections: [CollectionPair]) {
+        print("called groupCollections.....")
+        let yearRoundOccassions = ["Birthday 🎈", "Postcard ✈️", "Anniversery 💒", "Graduation 🎓"]
+        let winterOccassions = ["Christmas 🎄", "Hanukkah 🕎", "New Year's Eve 🎆"]
         let springOccassions = ["Mother's Day 🌸"]
         let summerOccassions = ["4th of July 🎇", "Father's Day 🍻"]
         let fallOccassions = ["Thanksgiving 🍁","Rosh Hashanah 🔯"]
-        let otherOccassions = ["Postcard ✈️","Animals 🐼"]
-        
-        let allOccassions = [yearRoundOccassions, winterOccassions, springOccassions, summerOccassions, fallOccassions, otherOccassions]
-        
-        var yearRound: [CollectionPair] = []
-        var winterCollection: [CollectionPair] = []
-        var springCollection: [CollectionPair] = []
-        var summerCollection: [CollectionPair] = []
-        var fallCollection: [CollectionPair] = []
-        var otherCollection: [CollectionPair] = []
-        
-        var subCollections = [yearRound, winterCollection, springCollection, summerCollection, fallCollection, otherCollection]
+        let otherOccassions = ["Animals 🐼"]
         
         for collection in collections {
-            for (index, occasionType) in allOccassions.enumerated() {
-                if occasionType.contains(collection.title) {
-                    subCollections[index].append(collection)
-                }
+            if yearRoundOccassions.contains(collection.title) {
+                yearRoundCollection.append(collection)
             }
+            if winterOccassions.contains(collection.title) {
+                winterCollection.append(collection)
+            }
+            if springOccassions.contains(collection.title) {
+                springCollection.append(collection)
+            }
+            if summerOccassions.contains(collection.title) {
+                summerCollection.append(collection)
+            }
+            if fallOccassions.contains(collection.title) {
+                fallCollection.append(collection)
+            }
+            if otherOccassions.contains(collection.title) {
+                otherCollection.append(collection)
+            }
+            
         }
-        
-        return (yearRound, winterCollection, springCollection, summerCollection, fallCollection, otherCollection)
     }
     
-    func runIt() {
-        print("ownerOpeningOwnShare is TRUE")
+    func createOccassionsFromUserCollections() {
+            PhotoAPI.getUserCollections(username: "samuelblack11", completionHandler: { (response, error) in
+                if response != nil {
+                    DispatchQueue.main.async {
+                        for collection in response! {collections.append(CollectionPair(title: collection.title, id: collection.id))
+                            
+                        }
+                        print("%%%")
+                        groupCollections(collections: collections)
+                        print("+++")
+                        print(yearRoundCollection)
+                        
+                    }
+                    print("====")
+                    print(collections)
+                }
+                if response != nil {print("No Response!")}
+                else {debugPrint(error?.localizedDescription)}
+                print("---")
+                print(collections)
+            })
+            print("@@@")
+            print(collections)
+
     }
     
     func loadImage(pic: UIImage) {
@@ -245,25 +311,10 @@ extension OccassionsMenu {
     
     func handlePhotoLibrarySelection() {
         chosenObject = CoverImageObject.init(coverImage: coverImage?.jpegData(compressionQuality: 1), smallImageURL: URL(string: "https://google.com")!, coverImagePhotographer: "", coverImageUserName: "", downloadLocation: "", index: 1)
-        print("created chosenObject")
     }
     
     func handleCameraPic() {
         chosenObject = CoverImageObject.init(coverImage: coverImage?.jpegData(compressionQuality: 1), smallImageURL: URL(string: "https://google.com")!, coverImagePhotographer: "", coverImageUserName: "", downloadLocation: "", index: 1)
-        print(segueToCollageMenu)
-        print(segueToCollageMenu2)
-        print("created chosenObject")
     }
     
-    func createOccassionsFromUserCollections() {
-        PhotoAPI.getUserCollections(username: "samuelblack11", completionHandler: { (response, error) in
-            if response != nil {
-                DispatchQueue.main.async {
-                    for collection in response! {collections.append(CollectionPair(title: collection.title, id: collection.id))}
-                }
-            }
-            if response != nil {print("No Response!")}
-            else {debugPrint(error?.localizedDescription)}
-        })
-    }
 }

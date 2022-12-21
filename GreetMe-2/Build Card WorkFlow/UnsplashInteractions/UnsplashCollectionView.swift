@@ -52,7 +52,7 @@ struct UnsplashCollectionView: View {
     @State private var presentUCV2 = false
     let timer = Timer.publish(every: 0.05, on: .main, in: .common).autoconnect()
     let columns = [GridItem(.fixed(150)),GridItem(.fixed(150))]
-    @State var chosenCollection: ChosenCollection
+    @State var chosenCollection: ChosenCollection?
     @Binding var pageCount: Int
     
     

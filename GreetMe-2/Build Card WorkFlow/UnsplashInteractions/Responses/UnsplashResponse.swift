@@ -13,7 +13,7 @@ struct PhotoCollections: Decodable {
     let collections: [PhotoCollection]
 }
 
-struct CollectionPair: Decodable {
+struct CollectionPair: Decodable, Identifiable {
     let title: String
     let id: String
 }
