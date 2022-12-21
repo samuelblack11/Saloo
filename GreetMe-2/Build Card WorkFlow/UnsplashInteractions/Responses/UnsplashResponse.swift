@@ -71,7 +71,7 @@ struct ResultDetails: Decodable {
     // current_user_collections showing as empty list
     let current_user_collections: [String]
     // sponsorships showing as None
-    let sponsorship: String?
+    //let sponsorship: String?
     // topc_submission showing as empty dictionary
     //let topic_submissions: topicSubmissionDetails
     let user: userDetails

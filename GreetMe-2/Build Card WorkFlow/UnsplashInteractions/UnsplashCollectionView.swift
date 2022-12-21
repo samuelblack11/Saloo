@@ -52,7 +52,7 @@ struct UnsplashCollectionView: View {
     @State private var presentUCV2 = false
     let timer = Timer.publish(every: 0.05, on: .main, in: .common).autoconnect()
     let columns = [GridItem(.fixed(150)),GridItem(.fixed(150))]
-    @State var chosenCollection: ChosenCollection?
+    @State var chosenCollection: ChosenCollection
     @Binding var pageCount: Int
     
     
@@ -96,7 +96,12 @@ struct UnsplashCollectionView: View {
         .padding(.horizontal)
         .frame(maxHeight: 600)
         .onAppear {
-            getPhotosFromCollection(collectionID: searchParam.searchText, page_num: pageCount)
+            if chosenCollection.occassion == "None" {
+                getUnsplashPhotos()
+            }
+            else {
+                getPhotosFromCollection(collectionID: searchParam.searchText, page_num: pageCount)
+            }
         }
         .sheet(isPresented: $presentUCV2) {
             UnsplashCollectionView(searchParam: searchParam, chosenSmallURL: chosenSmallURL, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenCollection: chosenCollection, pageCount: $pageCount)
@@ -117,10 +122,7 @@ struct UnsplashCollectionView: View {
         }
         return disableButton!
     }
-    
-    
-    
-    
+
     func handleTap(index: Int) {
         Task {
             var imageObjects = self.imageObjects
@@ -158,6 +160,8 @@ struct UnsplashCollectionView: View {
     }
     
     func getUnsplashPhotos() {
+        print("@#@#@#@#")
+        print(searchParam.searchText)
         PhotoAPI.getPhoto(pageNum: pageCount, userSearch: searchParam.searchText, completionHandler: { (response, error) in
             if response != nil {
                 self.picCount = response!.count

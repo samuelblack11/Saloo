@@ -174,10 +174,16 @@ struct OccassionsMenu: View {
                         presentUCV = true
                         frontCoverIsPersonalPhoto = 0
                         self.searchTerm = customSearch
+                        self.occassionInstance.occassion = "None"
+                        self.occassionInstance.collectionID = customSearch
                     }
                     label: {Image(systemName: "magnifyingglass.circle.fill")}
-                    .sheet(isPresented: $presentUCV) {let searchObject = SearchParameter.init(searchText: searchTerm)
-                        UnsplashCollectionView(searchParam: searchObject, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, pageCount: $pageCount)}
+                    .sheet(isPresented: $presentUCV) {
+                        let chosenCollection = ChosenCollection.init(occassion: occassionInstance.occassion, collectionID: occassionInstance.collectionID)
+                        let searchObject = SearchParameter.init(searchText: searchTerm)
+                        UnsplashCollectionView(searchParam: searchObject, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenCollection: chosenCollection, pageCount: $pageCount)
+                        
+                    }
                 
                 }
             }
@@ -281,25 +287,13 @@ extension OccassionsMenu {
                 if response != nil {
                     DispatchQueue.main.async {
                         for collection in response! {collections.append(CollectionPair(title: collection.title, id: collection.id))
-                            
-                        }
-                        print("%%%")
+                            }
                         groupCollections(collections: collections)
-                        print("+++")
-                        print(yearRoundCollection)
-                        
                     }
-                    print("====")
-                    print(collections)
                 }
                 if response != nil {print("No Response!")}
                 else {debugPrint(error?.localizedDescription)}
-                print("---")
-                print(collections)
             })
-            print("@@@")
-            print(collections)
-
     }
     
     func loadImage(pic: UIImage) {
