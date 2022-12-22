@@ -67,9 +67,7 @@ struct UnsplashCollectionView: View {
             LazyVGrid(columns: columns, spacing: 10) {
                     ForEach(imageObjects, id: \.self.id) {photoObj in
                             AsyncImage(url: photoObj.smallImageURL) { image in
-                                image.resizable()} placeholder: {
-                                    Color.gray
-                                }
+                                image.resizable()} placeholder: {Color.gray}
                                 .frame(width: 125, height: 125)
                                 .onTapGesture {handleTap(index: photoObj.index)
                     }
@@ -96,16 +94,10 @@ struct UnsplashCollectionView: View {
         .padding(.horizontal)
         .frame(maxHeight: 600)
         .onAppear {
-            if chosenCollection.occassion == "None" {
-                getUnsplashPhotos()
-            }
-            else {
-                getPhotosFromCollection(collectionID: searchParam.searchText, page_num: pageCount)
-            }
+            if chosenCollection.occassion == "None" {getUnsplashPhotos()}
+            else {getPhotosFromCollection(collectionID: searchParam.searchText, page_num: pageCount)}
         }
-        .sheet(isPresented: $presentUCV2) {
-            UnsplashCollectionView(searchParam: searchParam, chosenSmallURL: chosenSmallURL, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenCollection: chosenCollection, pageCount: $pageCount)
-        }
+        .sheet(isPresented: $presentUCV2) {UnsplashCollectionView(searchParam: searchParam, chosenSmallURL: chosenSmallURL, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenCollection: chosenCollection, pageCount: $pageCount)}
         .sheet(isPresented: $segueToConfirmFrontCover) {ConfirmFrontCoverView(chosenObject: $chosenObject, collageImage: $collageImage, noteField: $noteField, searchObject: searchParam, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenCollection: chosenCollection, pageCount: $pageCount)}
         }
     
@@ -113,13 +105,8 @@ struct UnsplashCollectionView: View {
     
     func setButtonStatus(imageObjects: [CoverImageObject]) -> Bool {
         var disableButton: Bool?
-        print(imageObjects.count)
-        if imageObjects.count < 30 {
-            disableButton = true
-        }
-        else {
-            disableButton = false
-        }
+        if imageObjects.count < 30 {disableButton = true}
+        else {disableButton = false}
         return disableButton!
     }
 
@@ -140,15 +127,10 @@ struct UnsplashCollectionView: View {
         PhotoAPI.getPhotosFromCollection(collectionID: collectionID, page_num: page_num, completionHandler: { (response, error) in
             if response != nil {
                 DispatchQueue.main.async {
-                    print("####")
-                    print(response!.count)
                     for picture in response! {
                         if picture.urls.small != nil && picture.user.username != nil && picture.user.name != nil && picture.links.download_location != nil {
                             let thisPicture = picture.urls.small
                             let imageURL = URL(string: thisPicture!)
-                            // These lines slow down the appearance of images significantly
-                            // let thisPhotoData = try? Data(contentsOf: imageURL!)
-                            // let image = UIImage(data: thisPhotoData!)!
                             let newObj = CoverImageObject.init(coverImage: nil, smallImageURL: imageURL!, coverImagePhotographer: picture.user.name!, coverImageUserName: picture.user.username!, downloadLocation: picture.links.download_location!, index: imageObjects.count)
                             imageObjects.append(newObj)
                     }}
@@ -162,6 +144,10 @@ struct UnsplashCollectionView: View {
     func getUnsplashPhotos() {
         print("@#@#@#@#")
         print(searchParam.searchText)
+
+        
+        
+        
         PhotoAPI.getPhoto(pageNum: pageCount, userSearch: searchParam.searchText, completionHandler: { (response, error) in
             if response != nil {
                 self.picCount = response!.count
@@ -170,9 +156,6 @@ struct UnsplashCollectionView: View {
                         if picture.urls.small != nil && picture.user.username != nil && picture.user.name != nil && picture.links.download_location != nil {
                             let thisPicture = picture.urls.small
                             let imageURL = URL(string: thisPicture!)
-                            // These lines slow down the appearance of images significantly
-                            // let thisPhotoData = try? Data(contentsOf: imageURL!)
-                            // let image = UIImage(data: thisPhotoData!)!
                             let newObj = CoverImageObject.init(coverImage: nil, smallImageURL: imageURL!, coverImagePhotographer: picture.user.name!, coverImageUserName: picture.user.username!, downloadLocation: picture.links.download_location!, index: imageObjects.count)
                             imageObjects.append(newObj)
                     }}

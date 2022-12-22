@@ -205,10 +205,6 @@ struct OccassionsMenu: View {
             Section(header: Text("Other Collections")) {
                 ForEach(otherCollection) {menuSection(for: $0, shareable: false)}
             }
-            Section(header: Text("Custom Search")) {
-
-            }
-            
         }
         .sheet(isPresented: $presentPrior) {
             CalendarParent(calViewModel: calViewModel, showDetailView: showDetailView)
@@ -252,18 +248,21 @@ extension OccassionsMenu {
     
     func groupCollections(collections: [CollectionPair]) {
         print("called groupCollections.....")
-        let yearRoundOccassions = ["Birthday 🎈", "Postcard ✈️", "Anniversery 💒", "Graduation 🎓"]
-        let winterOccassions = ["Christmas 🎄", "Hanukkah 🕎", "New Year's Eve 🎆"]
+        let yearRoundOccassions = ["Birthday 🎈", "Postcard ✈️", "Anniversary 💒", "Graduation 🎓"]
+        let winterOccassions = ["Christmas 🎄", "Hanukkah 🕎", "New Years Eve 🎆"]
         let springOccassions = ["Mother's Day 🌸"]
         let summerOccassions = ["4th of July 🎇", "Father's Day 🍻"]
         let fallOccassions = ["Thanksgiving 🍁","Rosh Hashanah 🔯"]
         let otherOccassions = ["Animals 🐼"]
         
         for collection in collections {
+            print("----")
+            print(collection)
             if yearRoundOccassions.contains(collection.title) {
                 yearRoundCollection.append(collection)
             }
             if winterOccassions.contains(collection.title) {
+                print(collection)
                 winterCollection.append(collection)
             }
             if springOccassions.contains(collection.title) {

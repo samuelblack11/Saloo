@@ -10,6 +10,7 @@ import SwiftUI
 import CoreData
 import CloudKit
 
+
 struct FinalizeCardView: View {
     @Environment(\.presentationMode) var presentationMode
     @State var card: Card!
