@@ -13,7 +13,7 @@ import UIKit
 import FSCalendar
 
 struct OccassionsMenu: View {
-    @Environment(\.presentationMode) var presentationMode
+    //@Environment(\.presentationMode) var presentationMode
     // Collection Variables. Use @State private for variables owned by this view and not accessible by external views
     @State private var collections: [CollectionPair] = []
     @State private var yearRoundCollection: [CollectionPair] = []
@@ -100,7 +100,8 @@ struct OccassionsMenu: View {
                         frontCoverIsPersonalPhoto = 1
                         }
                     .sheet(isPresented: $isShowingCollageMenu){
-                        CollageStyleMenu(isShowingCollageMenu: $isShowingCollageMenu, collageImage: $collageImage, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenObject: $chosenObject, noteField: $noteField)
+                        let blankCollection = ChosenCollection.init(occassion: "None", collectionID: "None")
+                        CollageStyleMenu(isShowingCollageMenu: $isShowingCollageMenu, collageImage: $collageImage, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenObject: $chosenObject, noteField: $noteField, chosenCollection: blankCollection)
                     }
                 Text("Take Photo with Camera 📸 ").onTapGesture {
                     self.isShowingImagePicker = false
@@ -114,8 +115,8 @@ struct OccassionsMenu: View {
                         frontCoverIsPersonalPhoto = 1
                     }
                 .sheet(isPresented: $isShowingCollageMenu){
-                    CollageStyleMenu(isShowingCollageMenu: $isShowingCollageMenu, collageImage: $collageImage, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenObject: $chosenObject, noteField: $noteField)
-                        }
+                    let blankCollection = ChosenCollection.init(occassion: "None", collectionID: "None")
+                    CollageStyleMenu(isShowingCollageMenu: $isShowingCollageMenu, collageImage: $collageImage, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenObject: $chosenObject, noteField: $noteField, chosenCollection: blankCollection)}
                 HStack {
                     TextField("Custom Search", text: $customSearch)
                         .padding(.leading, 5)

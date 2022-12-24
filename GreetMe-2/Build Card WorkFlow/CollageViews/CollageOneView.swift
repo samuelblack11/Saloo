@@ -25,6 +25,7 @@ struct CollageOneView: View {
     @State var fillColor = Color.secondary
     @Binding var isShowingCollageOne: Bool
     @State private var isShowingWriteNote = false
+    @State var chosenCollection: ChosenCollection
 
 
     
@@ -63,7 +64,7 @@ struct CollageOneView: View {
             let theSnapShot = collageOneView.snapshot()
             collageImage = CollageImage.init(collageImage: theSnapShot)
         }.padding(.bottom, 30).sheet(isPresented: $isShowingWriteNote ) {
-            WriteNoteView(isShowingWriteNote: $isShowingWriteNote, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenObject: $chosenObject, collageImage: $collageImage, noteField: $noteField, eCardText: $eCardText, printCardText: $printCardText, searchObject: searchObject)}
+            WriteNoteView(isShowingWriteNote: $isShowingWriteNote, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenObject: $chosenObject, collageImage: $collageImage, noteField: $noteField, eCardText: $eCardText, printCardText: $printCardText, chosenCollection: chosenCollection)}
         }
         }
 

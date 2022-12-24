@@ -13,7 +13,7 @@ import SwiftUI
 
 struct WriteNoteView: View {
     @Binding var isShowingWriteNote: Bool
-    @State private var isShowingFinalize = false
+    @State var isShowingFinalize = false
     
     
     
@@ -29,8 +29,8 @@ struct WriteNoteView: View {
     @StateObject var willHandWrite = HandWrite()
     @Binding var frontCoverIsPersonalPhoto: Int
     @State private var segueToFinalize = false
-    @Binding var chosenObject: CoverImageObject!
-    @Binding var collageImage: CollageImage!
+    @State var chosenObject: CoverImageObject!
+    @State var collageImage: CollageImage!
     @Binding var noteField: NoteField!
     @State private var selectedFont = "Papyrus"
     @State var text1: String = ""
@@ -41,7 +41,8 @@ struct WriteNoteView: View {
     @FocusState private var isNoteFieldFocused: Bool
     @Binding var eCardText: String
     @Binding var printCardText: String
-    @State var searchObject: SearchParameter
+    @State var chosenCollection: ChosenCollection
+
 
     let allFontNames = UIFont.familyNames
       .flatMap { UIFont.fontNames(forFamilyName: $0) }
@@ -107,7 +108,7 @@ struct WriteNoteView: View {
             }}
         .alert("Your typed message will only appear in your eCard", isPresented: $handWrite2) {Button("Ok", role: .cancel) {}}
         .padding(.bottom, 30)
-        .sheet(isPresented: $isShowingFinalize) {FinalizeCardView(isShowingFinalize: $isShowingFinalize, chosenObject: $chosenObject, collageImage: $collageImage, noteField: $noteField, frontCoverIsPersonalPhoto: frontCoverIsPersonalPhoto, text1: $text1, text2: $text2, text2URL: $text2URL, text3: $text3, text4: $text4, willHandWrite: willHandWrite, eCardText: $eCardText, printCardText: $printCardText, searchObject: searchObject)}
+        .sheet(isPresented: $isShowingFinalize) {FinalizeCardView(isShowingFinalize: $isShowingFinalize, chosenObject: $chosenObject, collageImage: $collageImage, noteField: $noteField, frontCoverIsPersonalPhoto: frontCoverIsPersonalPhoto, text1: $text1, text2: $text2, text2URL: $text2URL, text3: $text3, text4: $text4, willHandWrite: willHandWrite, eCardText: $eCardText, printCardText: $printCardText, chosenCollection: chosenCollection)}
         }
             .navigationBarItems(leading:
                                         Button {presentationMode.wrappedValue.dismiss()} label: {

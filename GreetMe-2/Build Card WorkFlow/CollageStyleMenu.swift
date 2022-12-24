@@ -30,6 +30,7 @@ struct CollageStyleMenu: View {
     @Binding var chosenObject: CoverImageObject!
     @Binding var noteField: NoteField!
     @State var pageCount: Int = 1
+    @State var chosenCollection: ChosenCollection
 
     let columns = [GridItem(.fixed(150)),GridItem(.fixed(150))]
     
@@ -93,16 +94,16 @@ struct CollageStyleMenu: View {
                     Text("Back")
                 })
             .sheet(isPresented: $isShowingConfirmFrontCover) {
-                ConfirmFrontCoverView(isShowingConfirmFrontCover: $isShowingConfirmFrontCover, chosenObject: $chosenObject, collageImage: $collageImage, noteField: $noteField, searchObject: searchObject, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, pageCount: $pageCount)
+                ConfirmFrontCoverView(isShowingConfirmFrontCover: $isShowingConfirmFrontCover, chosenObject: $chosenObject, collageImage: $collageImage, noteField: $noteField, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, pageCount: $pageCount)
             }
             .frame(maxHeight: 800)
         }
 
-        .sheet(isPresented: $isShowingCollageOne) {CollageOneView(collageImage: $collageImage, chosenObject: $chosenObject, noteField: $noteField,frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, searchObject: searchObject, isShowingCollageOne: $isShowingCollageOne)}
-        .sheet(isPresented: $isShowingCollageTwo) {CollageTwoView(collageImage: $collageImage, chosenObject: $chosenObject, noteField: $noteField, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, searchObject: searchObject, isShowingCollageTwo: $isShowingCollageTwo)}
-        .sheet(isPresented: $isShowingCollageThree) {CollageThreeView(collageImage: $collageImage, chosenObject: $chosenObject, noteField: $noteField, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, searchObject: searchObject, isShowingCollageThree: $isShowingCollageThree)}
-        .sheet(isPresented: $isShowingCollageFour) {CollageFourView(collageImage: $collageImage, chosenObject: $chosenObject, noteField: $noteField, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, searchObject: searchObject, isShowingCollageFour: $isShowingCollageFour)}
-        .sheet(isPresented: $isShowingCollageFive) {CollageFiveView(collageImage: $collageImage, chosenObject: $chosenObject, noteField: $noteField, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, searchObject: searchObject, isShowingCollageFive: $isShowingCollageFive)}
-        .sheet(isPresented: $isShowingCollageSix) {CollageSixView(collageImage: $collageImage, chosenObject: $chosenObject, noteField: $noteField, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, searchObject: searchObject, isShowingCollageSix: $isShowingCollageSix)}
+        .sheet(isPresented: $isShowingCollageOne) {CollageOneView(collageImage: $collageImage, chosenObject: $chosenObject, noteField: $noteField,frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto,  isShowingCollageOne: $isShowingCollageOne, chosenCollection: chosenCollection)}
+        .sheet(isPresented: $isShowingCollageTwo) {CollageTwoView(collageImage: $collageImage, chosenObject: $chosenObject, noteField: $noteField, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto,  isShowingCollageTwo: $isShowingCollageTwo, chosenCollection: chosenCollection)}
+        .sheet(isPresented: $isShowingCollageThree) {CollageThreeView(collageImage: $collageImage, chosenObject: $chosenObject, noteField: $noteField, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, isShowingCollageThree: $isShowingCollageThree, chosenCollection: chosenCollection)}
+        .sheet(isPresented: $isShowingCollageFour) {CollageFourView(collageImage: $collageImage, chosenObject: $chosenObject, noteField: $noteField, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, isShowingCollageFour: $isShowingCollageFour, chosenCollection: chosenCollection)}
+        .sheet(isPresented: $isShowingCollageFive) {CollageFiveView(collageImage: $collageImage, chosenObject: $chosenObject, noteField: $noteField, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, isShowingCollageFive: $isShowingCollageFive, chosenCollection: chosenCollection)}
+        .sheet(isPresented: $isShowingCollageSix) {CollageSixView(collageImage: $collageImage, chosenObject: $chosenObject, noteField: $noteField, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, isShowingCollageSix: $isShowingCollageSix, chosenCollection: chosenCollection)}
     }
 }

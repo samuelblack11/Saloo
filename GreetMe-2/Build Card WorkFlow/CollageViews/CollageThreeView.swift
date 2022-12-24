@@ -25,9 +25,9 @@ struct CollageThreeView: View {
     @State var willHandWrite = false
     @State var eCardText: String = ""
     @State var printCardText: String = ""
-    @State var searchObject: SearchParameter
     @Binding var isShowingCollageThree: Bool
     @State private var isShowingWriteNote = false
+    @State var chosenCollection: ChosenCollection
 
 
     var collageThreeView: some View {
@@ -66,10 +66,8 @@ struct CollageThreeView: View {
             //segueToWriteNote  = true
             isShowingWriteNote = true
             let theSnapShot = collageThreeView.snapshot()
-            print("********")
-            print(theSnapShot)
             collageImage = CollageImage.init(collageImage: theSnapShot)
-        }.padding(.bottom, 30).sheet(isPresented: $isShowingWriteNote ) {WriteNoteView(isShowingWriteNote: $isShowingWriteNote, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenObject: $chosenObject, collageImage: $collageImage, noteField: $noteField, eCardText: $eCardText, printCardText: $printCardText, searchObject: searchObject)}
+        }.padding(.bottom, 30).sheet(isPresented: $isShowingWriteNote ) {WriteNoteView(isShowingWriteNote: $isShowingWriteNote, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenObject: $chosenObject, collageImage: $collageImage, noteField: $noteField, eCardText: $eCardText, printCardText: $printCardText, chosenCollection: chosenCollection)}
         }
         }
     }

@@ -27,7 +27,6 @@ struct ConfirmFrontCoverView: View {
     @Binding var collageImage: CollageImage!
     @Binding var noteField: NoteField!
     @State private var presentPrior = false
-    @State var searchObject: SearchParameter
     @Binding var frontCoverIsPersonalPhoto: Int
     //@State var pageCount: Int
     @State var chosenCollection: ChosenCollection?
@@ -58,7 +57,7 @@ struct ConfirmFrontCoverView: View {
                         }
                     if response == nil {
                         debugPrint("Ping Failed!.......")}})
-            }.padding(.bottom, 10).sheet(isPresented: $isShowingCollageMenu) {CollageStyleMenu(isShowingCollageMenu: $isShowingCollageMenu, collageImage: $collageImage, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenObject: $chosenObject, noteField: $noteField, searchObject: searchObject)}
+            }.padding(.bottom, 10).sheet(isPresented: $isShowingCollageMenu) {CollageStyleMenu(isShowingCollageMenu: $isShowingCollageMenu, collageImage: $collageImage, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenObject: $chosenObject, noteField: $noteField, chosenCollection: chosenCollection!)}
             Text("(Attribution Will Be Included on Back Cover)").font(.system(size: 12)).padding(.bottom, 20)
             }
         .navigationBarItems(leading:
@@ -72,7 +71,7 @@ struct ConfirmFrontCoverView: View {
                 Text("Back")
             })
         .sheet(isPresented: $isShowingUCV) {
-            UnsplashCollectionView(isShowingUCV: $isShowingUCV, searchParam: searchObject, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenCollection: chosenCollection!, pageCount: $pageCount)
+            UnsplashCollectionView(isShowingUCV: $isShowingUCV, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenCollection: chosenCollection!, pageCount: $pageCount)
         }
         }
     }

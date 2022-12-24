@@ -114,7 +114,7 @@ final class CKModel: ObservableObject {
     
     
     /// Adds a new Card  to the database.
-    func addCard(noteField: NoteField, searchObject: SearchParameter, an1: String, an2: String, an2URL: String, an3: String, an4: String, chosenObject: CoverImageObject, collageImage: CollageImage) async throws {
+    func addCard(noteField: NoteField, chosenCollection: ChosenCollection, an1: String, an2: String, an2URL: String, an3: String, an4: String, chosenObject: CoverImageObject, collageImage: CollageImage) async throws {
         
         let id = CKRecord.ID(zoneID: recordZone.zoneID)
         let cardRecord = CKRecord(recordType: "Card", recordID: id)

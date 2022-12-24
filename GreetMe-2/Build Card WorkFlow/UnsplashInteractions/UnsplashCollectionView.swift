@@ -134,12 +134,8 @@ struct UnsplashCollectionView: View {
     
     func getUnsplashPhotos() {
         print("@#@#@#@#")
-        print(searchParam.searchText)
-
-        
-        
-        
-        PhotoAPI.getPhoto(pageNum: pageCount, userSearch: searchParam.searchText, completionHandler: { (response, error) in
+        print(chosenCollection.collectionID)
+        PhotoAPI.getPhoto(pageNum: pageCount, userSearch: chosenCollection.collectionID, completionHandler: { (response, error) in
             if response != nil {
                 self.picCount = response!.count
                 DispatchQueue.main.async {

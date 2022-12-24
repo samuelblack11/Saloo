@@ -38,7 +38,6 @@ struct FinalizeCardView: View {
     //@Binding var cardForExport: Data!
     @State private var showActivityController = false
     @State var activityItemsArray: [Any] = []
-    @State var searchObject: SearchParameter
     @State var saveAndShareIsActive = false
     @State private var showCompleteAlert = false
     var field1: String!
@@ -55,7 +54,7 @@ struct FinalizeCardView: View {
     @State private var activeShare: CKShare?
     @State private var activeContainer: CKContainer?
     @State private var pageCount = 1
-    @State private var blankCollection = ChosenCollection(occassion: "Dessert")
+    @State private var chosenCollection: ChosenCollection
 
     var eCardVertical: some View {
         VStack(spacing:1) {
@@ -164,16 +163,16 @@ struct FinalizeCardView: View {
                     Task {
                         print("trying to save....")
                         try await cm.initialize()
-                        try? await addCard(noteField: noteField, searchObject: searchObject, an1: text1, an2: text2, an2URL: text2URL.absoluteString, an3: text3, an4: text4, chosenObject: chosenObject, collageImage: collageImage)
+                        try? await addCard(noteField: noteField, chosenCollection: chosenCollection, an1: text1, an2: text2, an2URL: text2URL.absoluteString, an3: text3, an4: text4, chosenObject: chosenObject, collageImage: collageImage)
                         //try? await shareCard(card)
                         print("saved")
                     }
                     //saveAndShareIsActive = true
                     showCompleteAlert = true
                 }
-                .sheet(isPresented: $isShowingOccassions) {OccassionsMenu(isShowingOccassions: $isShowingOccassions, noneSearch: $string2, searchTerm: $string2, calViewModel: CalViewModel(), showDetailView: ShowDetailView(), oo2: false)}
-                .sheet(isPresented: $isShowingCollageMenu) {CollageStyleMenu(isShowingCollageMenu: $isShowingCollageMenu, collageImage: $collageImage, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenObject: $chosenObject, noteField: $noteField, searchObject: searchObject)}
-                .sheet(isPresented: $isShowingUCV) {UnsplashCollectionView(isShowingUCV: $isShowingUCV, searchParam: searchObject, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenCollection: blankCollection, pageCount: $pageCount)}
+                .sheet(isPresented: $isShowingOccassions) {OccassionsMenu(calViewModel: CalViewModel(), showDetailView: ShowDetailView(), isShowingOccassions: $isShowingOccassions)}
+                .sheet(isPresented: $isShowingCollageMenu) {CollageStyleMenu(isShowingCollageMenu: $isShowingCollageMenu, collageImage: $collageImage, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenObject: $chosenObject, noteField: $noteField, chosenCollection: chosenCollection)}
+                .sheet(isPresented: $isShowingUCV) {UnsplashCollectionView(isShowingUCV: $isShowingUCV, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenCollection: chosenCollection, pageCount: $pageCount)}
                 .disabled(saveAndShareIsActive)
                 .alert("Save Complete", isPresented: $showCompleteAlert) {
                     Button("Ok", role: .cancel) {
@@ -210,7 +209,7 @@ struct FinalizeCardView: View {
             trailing: Button {isShowingOccassions = true} label: {Image(systemName: "menucard.fill").foregroundColor(.blue)
             Text("Menu")}
             )
-        .sheet(isPresented: $isShowingOccassions) {OccassionsMenu(isShowingOccassions: $isShowingOccassions, noneSearch: $string2, searchTerm: $string2, calViewModel: CalViewModel(), showDetailView: ShowDetailView(), oo2: false)}
+        .sheet(isPresented: $isShowingOccassions) {OccassionsMenu(calViewModel: CalViewModel(), showDetailView: ShowDetailView(), isShowingOccassions: $isShowingOccassions)}
         .sheet(isPresented: $showShareSheet, content: {if let share = share {CloudSharingView(share: share, container: CoreDataStack.shared.ckContainer, card: card)}})
         .sheet(isPresented: $showActivityController) {ActivityView(activityItems: $activityItemsArray, applicationActivities: nil)}
         }
@@ -219,10 +218,9 @@ struct FinalizeCardView: View {
 
 extension FinalizeCardView {
     
-    private func addCard(noteField: NoteField, searchObject: SearchParameter
+    private func addCard(noteField: NoteField, chosenCollection: ChosenCollection
                          , an1: String, an2: String, an2URL: String, an3: String, an4: String, chosenObject: CoverImageObject, collageImage: CollageImage) async throws {
-        try await cm.addCard(noteField: noteField, searchObject: searchObject
-                             , an1: an1, an2: an2, an2URL: an2URL, an3: an3, an4: an4, chosenObject: chosenObject, collageImage: collageImage)
+        try await cm.addCard(noteField: noteField, chosenCollection: chosenCollection, an1: an1, an2: an2, an2URL: an2URL, an3: an3, an4: an4, chosenObject: chosenObject, collageImage: collageImage)
         try await cm.refresh()
         isAddingCard = false
     }

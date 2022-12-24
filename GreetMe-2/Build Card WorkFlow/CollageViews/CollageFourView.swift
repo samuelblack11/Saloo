@@ -28,9 +28,9 @@ struct CollageFourView: View {
     @State var willHandWrite = false
     @State var eCardText: String = ""
     @State var printCardText: String = ""
-    @State var searchObject: SearchParameter
     @Binding var isShowingCollageFour: Bool
     @State private var isShowingWriteNote = false
+    @State var chosenCollection: ChosenCollection
 
 
     
@@ -85,7 +85,7 @@ struct CollageFourView: View {
                 isShowingWriteNote = true
                 let theSnapShot = collageFourView.snapshot()
                 collageImage = CollageImage.init(collageImage: theSnapShot)
-            }.padding(.bottom, 30).sheet(isPresented: $isShowingWriteNote ) {WriteNoteView(isShowingWriteNote: $isShowingWriteNote, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenObject: $chosenObject, collageImage: $collageImage, noteField: $noteField, eCardText: $eCardText, printCardText: $printCardText, searchObject: searchObject)}
+            }.padding(.bottom, 30).sheet(isPresented: $isShowingWriteNote ) {WriteNoteView(isShowingWriteNote: $isShowingWriteNote, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenObject: $chosenObject, collageImage: $collageImage, noteField: $noteField, eCardText: $eCardText, printCardText: $printCardText, chosenCollection: chosenCollection)}
         }
         }
     }
