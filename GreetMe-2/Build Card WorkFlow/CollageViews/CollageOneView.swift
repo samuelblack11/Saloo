@@ -14,7 +14,6 @@ struct CollageOneView: View {
     @State private var showingImagePicker = false
     @State private var image: Image?
     @State private var chosenImage: UIImage?
-    @State private var segueToWriteNote = false
     @Binding var collageImage: CollageImage!
     @Binding var chosenObject: CoverImageObject!
     @Binding var noteField: NoteField!
@@ -24,7 +23,6 @@ struct CollageOneView: View {
     @State var eCardText: String = ""
     @State var printCardText: String = ""
     @State var fillColor = Color.secondary
-    @State var searchObject: SearchParameter
     @Binding var isShowingCollageOne: Bool
     @State private var isShowingWriteNote = false
 
@@ -61,7 +59,6 @@ struct CollageOneView: View {
         collageOneView
         Spacer()
         Button("Confirm Collage for Inside Cover") {
-            //segueToWriteNote  = true
             isShowingWriteNote = true
             let theSnapShot = collageOneView.snapshot()
             collageImage = CollageImage.init(collageImage: theSnapShot)

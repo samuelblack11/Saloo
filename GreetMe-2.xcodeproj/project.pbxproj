@@ -48,6 +48,7 @@
 		C23A9D3A28989B630059B97C /* DateDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C23A9D3928989B630059B97C /* DateDetailView.swift */; };
 		C23A9D3C28989C340059B97C /* CalendarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C23A9D3B28989C340059B97C /* CalendarView.swift */; };
 		C23B622128B5ABE300D88F85 /* Notify.swift in Sources */ = {isa = PBXBuildFile; fileRef = C23B622028B5ABE300D88F85 /* Notify.swift */; };
+		C24B3ABB29574A3D00884E4D /* CustomDataTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = C24B3ABA29574A3D00884E4D /* CustomDataTypes.swift */; };
 		C27430FC286335F000E17B19 /* CameraCapture.swift in Sources */ = {isa = PBXBuildFile; fileRef = C27430FB286335F000E17B19 /* CameraCapture.swift */; };
 		C28B13F828E3E106008E2C4C /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C28B13F728E3E106008E2C4C /* AppDelegate.swift */; };
 		C2B650CA287AFFF90002E252 /* CloudKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C2B650C9287AFFF90002E252 /* CloudKit.framework */; };
@@ -119,6 +120,7 @@
 		C23A9D3928989B630059B97C /* DateDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateDetailView.swift; sourceTree = "<group>"; };
 		C23A9D3B28989C340059B97C /* CalendarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarView.swift; sourceTree = "<group>"; };
 		C23B622028B5ABE300D88F85 /* Notify.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Notify.swift; sourceTree = "<group>"; };
+		C24B3ABA29574A3D00884E4D /* CustomDataTypes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomDataTypes.swift; sourceTree = "<group>"; };
 		C27430FB286335F000E17B19 /* CameraCapture.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraCapture.swift; sourceTree = "<group>"; };
 		C28B13F728E3E106008E2C4C /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		C2B650C9287AFFF90002E252 /* CloudKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CloudKit.framework; path = System/Library/Frameworks/CloudKit.framework; sourceTree = SDKROOT; };
@@ -172,6 +174,7 @@
 				C237E6DC294B3FE300E472AD /* CKModel.swift */,
 				C22803E5289358E500802452 /* CloudSharingController.swift */,
 				C22803E7289359AD00802452 /* CoreDataStack.swift */,
+				C24B3ABA29574A3D00884E4D /* CustomDataTypes.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -494,6 +497,7 @@
 				C28B13F828E3E106008E2C4C /* AppDelegate.swift in Sources */,
 				260F68ED281DBD8D002E864B /* CollageSixView.swift in Sources */,
 				26A7218C281DB8D900ADAE44 /* GreetMe_2.xcdatamodeld in Sources */,
+				C24B3ABB29574A3D00884E4D /* CustomDataTypes.swift in Sources */,
 				262C3ED3281E1E9C00F07C01 /* CalendarParent.swift in Sources */,
 				C27430FC286335F000E17B19 /* CameraCapture.swift in Sources */,
 				C22803E8289359AD00802452 /* CoreDataStack.swift in Sources */,

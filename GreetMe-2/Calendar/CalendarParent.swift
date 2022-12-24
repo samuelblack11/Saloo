@@ -15,17 +15,12 @@ import SwiftUI
 import FSCalendar
 import CoreData
 
-public class ShowDetailView: ObservableObject {
-    @Published public var showDetailView: Bool = false
-}
-
 struct CalendarParent: View {
     
     @State private var createNew = false
     @State private var showSent = false
     @State private var showReceived = false
     @State var cards = [Card]()
-    @State var searchObject: SearchParameter!
     @State var searchType: String!
     @State var noneSearch: String!
     @ObservedObject var calViewModel: CalViewModel

@@ -14,19 +14,6 @@ import SwiftUI
 // https://www.hackingwithswift.com/quick-start/swiftui/how-to-respond-to-view-lifecycle-events-onappear-and-ondisappear
 // https://www.hackingwithswift.com/quick-start/swiftui/how-to-fix-initializer-init-rowcontent-requires-that-sometype-conform-to-identifiable
 
-struct CoverImageObject: Identifiable, Hashable {
-    let id = UUID()
-    let coverImage: Data?
-    let smallImageURL: URL
-    let coverImagePhotographer: String
-    let coverImageUserName: String
-    let downloadLocation: String
-    let index: Int
-    func hash(into hasher: inout Hasher) {
-        hasher.combine(downloadLocation)
-    }
-}
-
 
 struct UnsplashCollectionView: View {
     @Binding var isShowingUCV: Bool
@@ -37,9 +24,7 @@ struct UnsplashCollectionView: View {
     
     @Environment(\.presentationMode) var presentationMode
     @State var photoCollection: PhotoCollection?
-    @State var searchParam: SearchParameter
     @State var imageObjects: [CoverImageObject] = []
-    @State private var segueToConfirmFrontCover = false
     @State private var picCount: Int!
     @State private var searchText: String!
     @State public var chosenImage: Data!
@@ -101,10 +86,10 @@ struct UnsplashCollectionView: View {
         .frame(maxHeight: 600)
         .onAppear {
             if chosenCollection.occassion == "None" {getUnsplashPhotos()}
-            else {getPhotosFromCollection(collectionID: searchParam.searchText, page_num: pageCount)}
+            else {getPhotosFromCollection(collectionID: chosenCollection.collectionID, page_num: pageCount)}
         }
-        .sheet(isPresented: $presentUCV2) {UnsplashCollectionView(isShowingUCV: $presentUCV2, searchParam: searchParam, chosenSmallURL: chosenSmallURL, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenCollection: chosenCollection, pageCount: $pageCount)}
-        .sheet(isPresented: $isShowingConfirmFrontCover) {ConfirmFrontCoverView(isShowingConfirmFrontCover: $isShowingConfirmFrontCover, chosenObject: $chosenObject, collageImage: $collageImage, noteField: $noteField, searchObject: searchParam, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenCollection: chosenCollection, pageCount: $pageCount)}
+        .sheet(isPresented: $presentUCV2) {UnsplashCollectionView(isShowingUCV: $presentUCV2, chosenSmallURL: chosenSmallURL, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenCollection: chosenCollection, pageCount: $pageCount)}
+        .sheet(isPresented: $isShowingConfirmFrontCover) {ConfirmFrontCoverView(isShowingConfirmFrontCover: $isShowingConfirmFrontCover, chosenObject: $chosenObject, collageImage: $collageImage, noteField: $noteField, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenCollection: chosenCollection, pageCount: $pageCount)}
         }
     
     
@@ -120,7 +105,6 @@ struct UnsplashCollectionView: View {
         Task {
             var imageObjects = self.imageObjects
             let (data1, _) = try await URLSession.shared.data(from: imageObjects[index].smallImageURL)
-            //segueToConfirmFrontCover = true
             isShowingConfirmFrontCover = true
             chosenSmallURL = imageObjects[index].smallImageURL
             chosenPhotographer = imageObjects[index].coverImagePhotographer

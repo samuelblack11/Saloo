@@ -12,121 +12,75 @@ import SwiftUI
 import UIKit
 import FSCalendar
 
-struct SearchParameter {
-    @State var searchText: String!
-}
-
-struct ChosenCollection {
-    @State var occassion: String!
-    @State var collectionID: String!
-}
-
 struct OccassionsMenu: View {
+    @Environment(\.presentationMode) var presentationMode
+    // Collection Variables. Use @State private for variables owned by this view and not accessible by external views
+    @State private var collections: [CollectionPair] = []
+    @State private var yearRoundCollection: [CollectionPair] = []
+    @State private var winterCollection: [CollectionPair] = []
+    @State private var springCollection: [CollectionPair] = []
+    @State private var summerCollection: [CollectionPair] = []
+    @State private var fallCollection: [CollectionPair] = []
+    @State private var otherCollection: [CollectionPair] = []
+    // Use @ObservedObject for complex properties shared across multiple views
+    @ObservedObject var calViewModel: CalViewModel
+    @ObservedObject var showDetailView: ShowDetailView
+    // Variables for showing different views. @Binding for variables which shows current view. @State private for others
+    // Variables have same names across different views, but different property wrappers
     @Binding var isShowingOccassions: Bool
     @State private var isShowingUCV = false
     @State private var isShowingCollageMenu = false
-    @State private var presentUCV = false
-    @State private var presentPrior = false
-    
-    
-    @Environment(\.presentationMode) var presentationMode
-    @StateObject var cm = CKModel()
-
-    @State var searchObject: SearchParameter!
-    @State private var showingImagePicker = false
-    @State private var showingCameraCapture = false
+    @State private var isShowingCalendar = false
+    @State private var isShowingImagePicker = false
+    @State private var isShowingCameraCapture = false
+    @State private var loadedImagefromLibraryOrCamera: Bool = false
+    @State private var isShowingSentCards = false
+    @State private var isShowingReceivedCards = false
+    //Custom Types used to create a Card object
+    @State var chosenObject: CoverImageObject!
+    @State var noteField: NoteField!
+    @State var collageImage: CollageImage!
+    // Cover Image Variables used dependent on the image's source
     @State private var coverImage: UIImage?
     @State private var coverImageFromLibrary: UIImage?
     @State private var coverImageFromCamera: UIImage?
-    @State private var image: Image?
-    @State var chosenObject: CoverImageObject!
-    @State private var segueToCollageMenu = false
-    @State private var segueToCollageMenu2 = false
-    @State var noteField: NoteField!
-    @State var collageImage: CollageImage!
+    // 0 or 1 Int used as bool to define whether front cover comes from Unsplash or not
     @State var frontCoverIsPersonalPhoto = 0
-    @State var pageCount = 1
-    @State var test_a: Bool = false
-    @Binding var noneSearch: String!
-    @Binding var searchTerm: String!
-    @State private var createNew = false
-    @State private var showSent = false
-    @State private var showReceived = false
-    @State private var showCal = false
-    @ObservedObject var calViewModel: CalViewModel
-    @ObservedObject var showDetailView: ShowDetailView
-    //@UIApplicationDelegateAdaptor var appDelegate: AppDelegate
-    //@EnvironmentObject var sceneDelegate: SceneDelegate
-    @State var oo2: Bool
+    // Variables for text field where user does custom photo search. Initialized as blank String
     @State private var customSearch: String = ""
-
-    @State var collections: [CollectionPair] = []
-    //@State var chosenCollection: CollectionPair?
-    // @StateObject creates an instance of our Searches class
-    // @StateObject asks SwiftUI to watch the object for any change announcements. So any time on of our @Published properties changes the iew will refresh.
-    @StateObject var menuItems = Searches()
-    
-    @State var yearRoundCollection: [CollectionPair] = []
-    @State var winterCollection: [CollectionPair] = []
-    @State var springCollection: [CollectionPair] = []
-    @State var summerCollection: [CollectionPair] = []
-    @State var fallCollection: [CollectionPair] = []
-    @State var otherCollection: [CollectionPair] = []
-
-    
-    
-    //Class to store array of SearchItem(s)
-    class Searches: ObservableObject {
-        // @Published ensures change announcements get sent whenever the searchItems array gets modified
-        @Published var searchItems = [SearchItem]()
-    }
-    struct SearchItem {
-        let searchTitle: String
-        let searchTerm: String
-      }
-    
+    // Defines page number to be used when displaying photo results on UCV
+    @State private var pageCount = 1
+    //
     @StateObject var occassionInstance = Occassion()
-    class Occassion: ObservableObject {
-        //@Published var searchType = String()
-        @Published var occassion = String()
-        @Published var collectionID = String()
-    }
     
     
-    
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         
     var topBar: some View {
         HStack {
             Spacer()
-            Button("Calendar") {
-                showCal = true
-            }
-            .sheet(isPresented: $showCal) {
-                CalendarParent(calViewModel: calViewModel, showDetailView: showDetailView)
-                }
+            Button("Calendar") {isShowingCalendar = true}
+            .sheet(isPresented: $isShowingCalendar) {CalendarParent(calViewModel: calViewModel, showDetailView: showDetailView)}
         }.frame(width: (UIScreen.screenWidth/1.1), height: (UIScreen.screenHeight/12))
     }
     
     var bottomBar: some View {
         HStack {
-            Button{
-                showSent = true
-                
-            } label: {
+            Button{isShowingSentCards = true} label: {
                 Image(systemName: "tray.and.arrow.up.fill")
                     .foregroundColor(.blue)
                     .font(.system(size: 24))
                 }
             Spacer()
-            Button{showReceived = true} label: {
+            Button{isShowingReceivedCards = true} label: {
                 Image(systemName: "tray.and.arrow.down.fill")
                     .foregroundColor(.blue)
                     .font(.system(size: 24))
                 }
             }
             .padding(.bottom, 30)
-            .sheet(isPresented: $showSent) {Outbox()}
-            //.sheet(isPresented: $showReceived) {}
+            .sheet(isPresented: $isShowingSentCards) {Outbox()}
+            //.sheet(isPresented: $isShowingReceivedCards) {}
     }
     
     
@@ -138,124 +92,77 @@ struct OccassionsMenu: View {
         NavigationView {
         List {
             Section(header: Text("Personal & Search")) {
-                Text("Select from Photo Library ").onTapGesture {
-                    self.showingCameraCapture = false
-                    self.showingImagePicker = true
-                }
-                    .sheet(isPresented: $showingImagePicker)
-                        {ImagePicker(image: $coverImageFromLibrary)}
-                //.navigationTitle("Select Front Cover")
+                Text("Select from Photo Library ").onTapGesture {self.isShowingCameraCapture = false; self.isShowingImagePicker = true}
+                    .sheet(isPresented: $isShowingImagePicker){ImagePicker(image: $coverImageFromLibrary)}
                     .onChange(of: coverImageFromLibrary) { _ in loadImage(pic: coverImageFromLibrary!)
                         handlePhotoLibrarySelection()
                         isShowingCollageMenu = true
                         frontCoverIsPersonalPhoto = 1
-                        noneSearch = "None"
                         }
                     .sheet(isPresented: $isShowingCollageMenu){
-                        let searchObject = SearchParameter.init(searchText: noneSearch)
-                        CollageStyleMenu(isShowingCollageMenu: $isShowingCollageMenu, collageImage: $collageImage, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenObject: $chosenObject, noteField: $noteField, searchObject: searchObject)
+                        CollageStyleMenu(isShowingCollageMenu: $isShowingCollageMenu, collageImage: $collageImage, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenObject: $chosenObject, noteField: $noteField)
                     }
                 Text("Take Photo with Camera 📸 ").onTapGesture {
-                    self.showingImagePicker = false
-                    self.showingCameraCapture = true
+                    self.isShowingImagePicker = false
+                    self.isShowingCameraCapture = true
                 }
-                .sheet(isPresented: $showingCameraCapture)
-                {CameraCapture(image: self.$coverImageFromCamera, isPresented: self.$showingCameraCapture, sourceType: .camera)}
+                .sheet(isPresented: $isShowingCameraCapture)
+                {CameraCapture(image: self.$coverImageFromCamera, isPresented: self.$isShowingCameraCapture, sourceType: .camera)}
                 .onChange(of: coverImageFromCamera) { _ in loadImage(pic: coverImageFromCamera!)
                         handleCameraPic()
-                        //segueToCollageMenu2 = true
                         isShowingCollageMenu = true
                         frontCoverIsPersonalPhoto = 1
-                        noneSearch = "None"
                     }
                 .sheet(isPresented: $isShowingCollageMenu){
-                        let searchObject = SearchParameter.init(searchText: noneSearch)
-                    CollageStyleMenu(isShowingCollageMenu: $isShowingCollageMenu, collageImage: $collageImage, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenObject: $chosenObject, noteField: $noteField, searchObject: searchObject)
+                    CollageStyleMenu(isShowingCollageMenu: $isShowingCollageMenu, collageImage: $collageImage, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenObject: $chosenObject, noteField: $noteField)
                         }
                 HStack {
                     TextField("Custom Search", text: $customSearch)
                         .padding(.leading, 5)
                         .frame(height:35)
-                    Button {
-                        //presentUCV = true
-                        isShowingUCV = true
-                        frontCoverIsPersonalPhoto = 0
-                        self.searchTerm = customSearch
+                    Button {isShowingUCV = true; frontCoverIsPersonalPhoto = 0
                         self.occassionInstance.occassion = "None"
                         self.occassionInstance.collectionID = customSearch
                     }
                     label: {Image(systemName: "magnifyingglass.circle.fill")}
                     .sheet(isPresented: $isShowingUCV) {
                         let chosenCollection = ChosenCollection.init(occassion: occassionInstance.occassion, collectionID: occassionInstance.collectionID)
-                        let searchObject = SearchParameter.init(searchText: searchTerm)
-                        UnsplashCollectionView(isShowingUCV: $isShowingUCV, searchParam: searchObject, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenCollection: chosenCollection, pageCount: $pageCount)
-                        
+                        UnsplashCollectionView(isShowingUCV: $isShowingUCV, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenCollection: chosenCollection, pageCount: $pageCount)
                     }
-                
                 }
             }
-            Section(header: Text("Year-Round Occassions")) {
-                ForEach(yearRoundCollection) {menuSection(for: $0, shareable: false)}
-            }
-            Section(header: Text("Winter Holidays")) {
-                ForEach(winterCollection) {menuSection(for: $0, shareable: false)}
-            }
-            Section(header: Text("Spring Holidays")) {
-                ForEach(springCollection) {menuSection(for: $0, shareable: false)}
-            }
-            Section(header: Text("Summer Holidays")) {
-                ForEach(summerCollection) {menuSection(for: $0, shareable: false)}
-            }
-            Section(header: Text("Fall Holidays")) {
-                ForEach(fallCollection) {menuSection(for: $0, shareable: false)}
-            }
-            Section(header: Text("Other Collections")) {
-                ForEach(otherCollection) {menuSection(for: $0, shareable: false)}
-            }
+            Section(header: Text("Year-Round Occassions")) {ForEach(yearRoundCollection) {menuSection(for: $0, shareable: false)}}
+            Section(header: Text("Winter Holidays")) {ForEach(winterCollection) {menuSection(for: $0, shareable: false)}}
+            Section(header: Text("Spring Holidays")) {ForEach(springCollection) {menuSection(for: $0, shareable: false)}}
+            Section(header: Text("Summer Holidays")) {ForEach(summerCollection) {menuSection(for: $0, shareable: false)}}
+            Section(header: Text("Fall Holidays")) {ForEach(fallCollection) {menuSection(for: $0, shareable: false)}}
+            Section(header: Text("Other Collections")) {ForEach(otherCollection) {menuSection(for: $0, shareable: false)}}
         }
-        .sheet(isPresented: $presentPrior) {
-            CalendarParent(calViewModel: calViewModel, showDetailView: showDetailView)
-        }
+        .sheet(isPresented: $isShowingCalendar) {CalendarParent(calViewModel: calViewModel, showDetailView: showDetailView)}
         .font(.headline)
         .listStyle(GroupedListStyle())
-        .onAppear {
-            createOccassionsFromUserCollections()
-        }
-
+        .onAppear {createOccassionsFromUserCollections()}
         }
         Spacer()
         bottomBar
     }
 }
 
-
-
-
-
-
-
-
-
 extension OccassionsMenu {
     
     private func menuSection(for collection: CollectionPair, shareable: Bool = true) -> some View {
-        //ForEach(collections, id: \.title) { collection in
             Text(collection.title).onTapGesture {
-                //presentUCV = true
                 isShowingUCV = true
                 frontCoverIsPersonalPhoto = 0
                 self.occassionInstance.occassion = collection.title
                 self.occassionInstance.collectionID = collection.id
             }.sheet(isPresented: $isShowingUCV) {
                 let chosenCollection = ChosenCollection.init(occassion: occassionInstance.occassion, collectionID: occassionInstance.collectionID)
-                let searchObject = SearchParameter.init(searchText: occassionInstance.collectionID)
-                UnsplashCollectionView(isShowingUCV: $isShowingUCV, searchParam: searchObject, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenCollection: chosenCollection, pageCount: $pageCount)
+                UnsplashCollectionView(isShowingUCV: $isShowingUCV, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenCollection: chosenCollection, pageCount: $pageCount)
                 }
-        //}
     }
     
     func groupCollections(collections: [CollectionPair]) {
-        print("called groupCollections.....")
         let yearRoundOccassions = ["Birthday 🎈", "Postcard ✈️", "Anniversary 💒", "Graduation 🎓"]
         let winterOccassions = ["Christmas 🎄", "Hanukkah 🕎", "New Years Eve 🎆"]
         let springOccassions = ["Mother's Day 🌸"]
@@ -264,28 +171,12 @@ extension OccassionsMenu {
         let otherOccassions = ["Animals 🐼"]
         
         for collection in collections {
-            print("----")
-            print(collection)
-            if yearRoundOccassions.contains(collection.title) {
-                yearRoundCollection.append(collection)
-            }
-            if winterOccassions.contains(collection.title) {
-                print(collection)
-                winterCollection.append(collection)
-            }
-            if springOccassions.contains(collection.title) {
-                springCollection.append(collection)
-            }
-            if summerOccassions.contains(collection.title) {
-                summerCollection.append(collection)
-            }
-            if fallOccassions.contains(collection.title) {
-                fallCollection.append(collection)
-            }
-            if otherOccassions.contains(collection.title) {
-                otherCollection.append(collection)
-            }
-            
+            if yearRoundOccassions.contains(collection.title) {yearRoundCollection.append(collection)}
+            if winterOccassions.contains(collection.title) {winterCollection.append(collection)}
+            if springOccassions.contains(collection.title) {springCollection.append(collection)}
+            if summerOccassions.contains(collection.title) {summerCollection.append(collection)}
+            if fallOccassions.contains(collection.title) {fallCollection.append(collection)}
+            if otherOccassions.contains(collection.title) {otherCollection.append(collection)}
         }
     }
     
@@ -305,9 +196,7 @@ extension OccassionsMenu {
     
     func loadImage(pic: UIImage) {
         coverImage = pic
-        if showingImagePicker  {
-            test_a = true
-        }
+        if isShowingImagePicker  {loadedImagefromLibraryOrCamera = true}
     }
     
     func handlePhotoLibrarySelection() {

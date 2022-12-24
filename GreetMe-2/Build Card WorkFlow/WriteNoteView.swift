@@ -11,17 +11,6 @@ import SwiftUI
 // https://www.hackingwithswift.com/quick-start/swiftui/how-to-create-multi-line-editable-text-with-texteditor
 // https://www.hackingwithswift.com/quick-start/swiftui/what-is-the-focusstate-property-wrapper
 
-struct NoteField {
-    var noteText: String
-    var recipient: String
-    var cardName: String
-    var font: String
-}
-
-class HandWrite: ObservableObject {
-    @Published var willHandWrite: Bool = false
-}
-
 struct WriteNoteView: View {
     @Binding var isShowingWriteNote: Bool
     @State private var isShowingFinalize = false

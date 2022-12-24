@@ -9,10 +9,6 @@
 import Foundation
 import SwiftUI
 
-struct CollageImage {
-    let collageImage: UIImage
-}
-
 struct CollageStyleMenu: View {
     @Binding var isShowingCollageMenu: Bool
     @State private var isShowingConfirmFrontCover = false
@@ -33,7 +29,6 @@ struct CollageStyleMenu: View {
     @State private var chosenCollageStyle = 0
     @Binding var chosenObject: CoverImageObject!
     @Binding var noteField: NoteField!
-    @State var searchObject: SearchParameter
     @State var pageCount: Int = 1
 
     let columns = [GridItem(.fixed(150)),GridItem(.fixed(150))]
