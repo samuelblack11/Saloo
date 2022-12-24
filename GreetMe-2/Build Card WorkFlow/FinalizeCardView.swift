@@ -12,6 +12,14 @@ import CloudKit
 
 
 struct FinalizeCardView: View {
+    @Binding var isShowingFinalize: Bool
+    @State private var isShowingOccassions = false
+    @State private var isShowingUCV = false
+    @State private var isShowingConfirmFrontCover = false
+    @State private var isShowingWriteNote = false
+    @State private var isShowingCollageOne = false
+    @State private var isShowingCollageMenu = false
+
     @Environment(\.presentationMode) var presentationMode
     @State var card: Card!
     @State var cardRecord: CKRecord!
@@ -24,7 +32,6 @@ struct FinalizeCardView: View {
     @Binding var text2URL: URL
     @Binding var text3: String
     @Binding var text4: String
-    @State var presentMenu = false
     @ObservedObject var willHandWrite: HandWrite
     @Binding var eCardText: String
     @Binding var printCardText: String
@@ -47,6 +54,8 @@ struct FinalizeCardView: View {
     @State private var isProcessingShare = false
     @State private var activeShare: CKShare?
     @State private var activeContainer: CKContainer?
+    @State private var pageCount = 1
+    @State private var blankCollection = ChosenCollection(occassion: "Dessert")
 
     var eCardVertical: some View {
         VStack(spacing:1) {
@@ -162,11 +171,21 @@ struct FinalizeCardView: View {
                     //saveAndShareIsActive = true
                     showCompleteAlert = true
                 }
-                .sheet(isPresented: $presentMenu) {OccassionsMenu(noneSearch: $string2, searchTerm: $string2, calViewModel: CalViewModel(), showDetailView: ShowDetailView(), oo2: false)}
+                .sheet(isPresented: $isShowingOccassions) {OccassionsMenu(isShowingOccassions: $isShowingOccassions, noneSearch: $string2, searchTerm: $string2, calViewModel: CalViewModel(), showDetailView: ShowDetailView(), oo2: false)}
+                .sheet(isPresented: $isShowingCollageMenu) {CollageStyleMenu(isShowingCollageMenu: $isShowingCollageMenu, collageImage: $collageImage, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenObject: $chosenObject, noteField: $noteField, searchObject: searchObject)}
+                .sheet(isPresented: $isShowingUCV) {UnsplashCollectionView(isShowingUCV: $isShowingUCV, searchParam: searchObject, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenCollection: blankCollection, pageCount: $pageCount)}
                 .disabled(saveAndShareIsActive)
                 .alert("Save Complete", isPresented: $showCompleteAlert) {
                     Button("Ok", role: .cancel) {
-                        presentMenu = true
+                        isShowingCollageOne = false
+                        isShowingWriteNote = false
+                        isShowingCollageMenu = false
+                        isShowingUCV = false
+                        
+                        
+                        
+                        
+                        isShowingOccassions = true
                         let rootViewController = UIApplication.shared.connectedScenes
                                 .filter {$0.activationState == .foregroundActive }
                                 .map {$0 as? UIWindowScene }
@@ -188,10 +207,10 @@ struct FinalizeCardView: View {
             leading:Button {presentationMode.wrappedValue.dismiss()}
             label: {Image(systemName: "chevron.left").foregroundColor(.blue)
             Text("Back")},
-            trailing: Button {presentMenu = true} label: {Image(systemName: "menucard.fill").foregroundColor(.blue)
+            trailing: Button {isShowingOccassions = true} label: {Image(systemName: "menucard.fill").foregroundColor(.blue)
             Text("Menu")}
             )
-        .sheet(isPresented: $presentMenu) {OccassionsMenu(noneSearch: $string2, searchTerm: $string2, calViewModel: CalViewModel(), showDetailView: ShowDetailView(), oo2: false)}
+        .sheet(isPresented: $isShowingOccassions) {OccassionsMenu(isShowingOccassions: $isShowingOccassions, noneSearch: $string2, searchTerm: $string2, calViewModel: CalViewModel(), showDetailView: ShowDetailView(), oo2: false)}
         .sheet(isPresented: $showShareSheet, content: {if let share = share {CloudSharingView(share: share, container: CoreDataStack.shared.ckContainer, card: card)}})
         .sheet(isPresented: $showActivityController) {ActivityView(activityItems: $activityItemsArray, applicationActivities: nil)}
         }

@@ -30,6 +30,8 @@ struct CollageFiveView: View {
     @State var eCardText: String = ""
     @State var printCardText: String = ""
     @State var searchObject: SearchParameter
+    @Binding var isShowingCollageFive: Bool
+    @State private var isShowingWriteNote = false
 
 
     var collageFiveView: some View {
@@ -77,12 +79,11 @@ struct CollageFiveView: View {
         collageFiveView
         Spacer()
         Button("Confirm Collage for Inside Cover") {
-            segueToWriteNote  = true
+            //segueToWriteNote  = true
+            isShowingWriteNote = true
             let theSnapShot = collageFiveView.snapshot()
-            print("********")
-            print(theSnapShot)
             collageImage = CollageImage.init(collageImage: theSnapShot)
-        }.padding(.bottom, 30).sheet(isPresented: $segueToWriteNote ) {WriteNoteView(frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenObject: $chosenObject, collageImage: $collageImage, noteField: $noteField, eCardText: $eCardText, printCardText: $printCardText, searchObject: searchObject)}
+        }.padding(.bottom, 30).sheet(isPresented: $isShowingWriteNote ) {WriteNoteView(isShowingWriteNote: $isShowingWriteNote, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenObject: $chosenObject, collageImage: $collageImage, noteField: $noteField, eCardText: $eCardText, printCardText: $printCardText, searchObject: searchObject)}
     }
     }
 

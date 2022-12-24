@@ -25,6 +25,9 @@ struct CollageOneView: View {
     @State var printCardText: String = ""
     @State var fillColor = Color.secondary
     @State var searchObject: SearchParameter
+    @Binding var isShowingCollageOne: Bool
+    @State private var isShowingWriteNote = false
+
 
     
     func changeFillColor() {
@@ -58,13 +61,12 @@ struct CollageOneView: View {
         collageOneView
         Spacer()
         Button("Confirm Collage for Inside Cover") {
-            segueToWriteNote  = true
+            //segueToWriteNote  = true
+            isShowingWriteNote = true
             let theSnapShot = collageOneView.snapshot()
-            print("********")
-            print(theSnapShot)
             collageImage = CollageImage.init(collageImage: theSnapShot)
-        }.padding(.bottom, 30).sheet(isPresented: $segueToWriteNote ) {
-            WriteNoteView(frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenObject: $chosenObject, collageImage: $collageImage, noteField: $noteField, eCardText: $eCardText, printCardText: $printCardText, searchObject: searchObject)}
+        }.padding(.bottom, 30).sheet(isPresented: $isShowingWriteNote ) {
+            WriteNoteView(isShowingWriteNote: $isShowingWriteNote, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenObject: $chosenObject, collageImage: $collageImage, noteField: $noteField, eCardText: $eCardText, printCardText: $printCardText, searchObject: searchObject)}
         }
         }
 

@@ -12,24 +12,6 @@ import CoreData
 import CloudKit
 import OSLog
 
-struct ViewBools {
-    @State var occassionsMenu = true
-    @State var UCV = false
-    @State var collageMenu = false
-    @State var confirmFrontCover = false
-    @State var collageOne = false
-    @State var collageTwo = false
-    @State var collageThree = false
-    @State var collageFour = false
-    @State var collageFive = false
-    @State var collageSix = false
-    @State var writeNote = false
-    @State var finalizeView = false
-    @State var outbox = false
-    @State var inbox = false
-    @State var enlargeECard = false
-}
-
 @MainActor
 final class CKModel: ObservableObject {
     

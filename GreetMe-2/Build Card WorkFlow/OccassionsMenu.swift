@@ -22,9 +22,14 @@ struct ChosenCollection {
 }
 
 struct OccassionsMenu: View {
-    @Environment(\.presentationMode) var presentationMode
+    @Binding var isShowingOccassions: Bool
+    @State private var isShowingUCV = false
+    @State private var isShowingCollageMenu = false
     @State private var presentUCV = false
     @State private var presentPrior = false
+    
+    
+    @Environment(\.presentationMode) var presentationMode
     @StateObject var cm = CKModel()
 
     @State var searchObject: SearchParameter!
@@ -142,13 +147,13 @@ struct OccassionsMenu: View {
                 //.navigationTitle("Select Front Cover")
                     .onChange(of: coverImageFromLibrary) { _ in loadImage(pic: coverImageFromLibrary!)
                         handlePhotoLibrarySelection()
-                        segueToCollageMenu = true
+                        isShowingCollageMenu = true
                         frontCoverIsPersonalPhoto = 1
                         noneSearch = "None"
                         }
-                    .sheet(isPresented: $segueToCollageMenu){
+                    .sheet(isPresented: $isShowingCollageMenu){
                         let searchObject = SearchParameter.init(searchText: noneSearch)
-                        CollageStyleMenu(collageImage: $collageImage, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenObject: $chosenObject, noteField: $noteField, searchObject: searchObject)
+                        CollageStyleMenu(isShowingCollageMenu: $isShowingCollageMenu, collageImage: $collageImage, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenObject: $chosenObject, noteField: $noteField, searchObject: searchObject)
                     }
                 Text("Take Photo with Camera 📸 ").onTapGesture {
                     self.showingImagePicker = false
@@ -158,30 +163,32 @@ struct OccassionsMenu: View {
                 {CameraCapture(image: self.$coverImageFromCamera, isPresented: self.$showingCameraCapture, sourceType: .camera)}
                 .onChange(of: coverImageFromCamera) { _ in loadImage(pic: coverImageFromCamera!)
                         handleCameraPic()
-                        segueToCollageMenu2 = true
+                        //segueToCollageMenu2 = true
+                        isShowingCollageMenu = true
                         frontCoverIsPersonalPhoto = 1
                         noneSearch = "None"
                     }
-                .sheet(isPresented: $segueToCollageMenu2){
+                .sheet(isPresented: $isShowingCollageMenu){
                         let searchObject = SearchParameter.init(searchText: noneSearch)
-                        CollageStyleMenu(collageImage: $collageImage, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenObject: $chosenObject, noteField: $noteField, searchObject: searchObject)
+                    CollageStyleMenu(isShowingCollageMenu: $isShowingCollageMenu, collageImage: $collageImage, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenObject: $chosenObject, noteField: $noteField, searchObject: searchObject)
                         }
                 HStack {
                     TextField("Custom Search", text: $customSearch)
                         .padding(.leading, 5)
                         .frame(height:35)
                     Button {
-                        presentUCV = true
+                        //presentUCV = true
+                        isShowingUCV = true
                         frontCoverIsPersonalPhoto = 0
                         self.searchTerm = customSearch
                         self.occassionInstance.occassion = "None"
                         self.occassionInstance.collectionID = customSearch
                     }
                     label: {Image(systemName: "magnifyingglass.circle.fill")}
-                    .sheet(isPresented: $presentUCV) {
+                    .sheet(isPresented: $isShowingUCV) {
                         let chosenCollection = ChosenCollection.init(occassion: occassionInstance.occassion, collectionID: occassionInstance.collectionID)
                         let searchObject = SearchParameter.init(searchText: searchTerm)
-                        UnsplashCollectionView(searchParam: searchObject, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenCollection: chosenCollection, pageCount: $pageCount)
+                        UnsplashCollectionView(isShowingUCV: $isShowingUCV, searchParam: searchObject, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenCollection: chosenCollection, pageCount: $pageCount)
                         
                     }
                 
@@ -234,14 +241,15 @@ extension OccassionsMenu {
     private func menuSection(for collection: CollectionPair, shareable: Bool = true) -> some View {
         //ForEach(collections, id: \.title) { collection in
             Text(collection.title).onTapGesture {
-                presentUCV = true
+                //presentUCV = true
+                isShowingUCV = true
                 frontCoverIsPersonalPhoto = 0
                 self.occassionInstance.occassion = collection.title
                 self.occassionInstance.collectionID = collection.id
-            }.sheet(isPresented: $presentUCV) {
+            }.sheet(isPresented: $isShowingUCV) {
                 let chosenCollection = ChosenCollection.init(occassion: occassionInstance.occassion, collectionID: occassionInstance.collectionID)
                 let searchObject = SearchParameter.init(searchText: occassionInstance.collectionID)
-                UnsplashCollectionView(searchParam: searchObject, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenCollection: chosenCollection, pageCount: $pageCount)
+                UnsplashCollectionView(isShowingUCV: $isShowingUCV, searchParam: searchObject, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenCollection: chosenCollection, pageCount: $pageCount)
                 }
         //}
     }

@@ -29,6 +29,12 @@ struct CoverImageObject: Identifiable, Hashable {
 
 
 struct UnsplashCollectionView: View {
+    @Binding var isShowingUCV: Bool
+    @State private var isShowingConfirmFrontCover = false
+    
+    
+    
+    
     @Environment(\.presentationMode) var presentationMode
     @State var photoCollection: PhotoCollection?
     @State var searchParam: SearchParameter
@@ -97,8 +103,8 @@ struct UnsplashCollectionView: View {
             if chosenCollection.occassion == "None" {getUnsplashPhotos()}
             else {getPhotosFromCollection(collectionID: searchParam.searchText, page_num: pageCount)}
         }
-        .sheet(isPresented: $presentUCV2) {UnsplashCollectionView(searchParam: searchParam, chosenSmallURL: chosenSmallURL, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenCollection: chosenCollection, pageCount: $pageCount)}
-        .sheet(isPresented: $segueToConfirmFrontCover) {ConfirmFrontCoverView(chosenObject: $chosenObject, collageImage: $collageImage, noteField: $noteField, searchObject: searchParam, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenCollection: chosenCollection, pageCount: $pageCount)}
+        .sheet(isPresented: $presentUCV2) {UnsplashCollectionView(isShowingUCV: $presentUCV2, searchParam: searchParam, chosenSmallURL: chosenSmallURL, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenCollection: chosenCollection, pageCount: $pageCount)}
+        .sheet(isPresented: $isShowingConfirmFrontCover) {ConfirmFrontCoverView(isShowingConfirmFrontCover: $isShowingConfirmFrontCover, chosenObject: $chosenObject, collageImage: $collageImage, noteField: $noteField, searchObject: searchParam, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenCollection: chosenCollection, pageCount: $pageCount)}
         }
     
     
@@ -114,7 +120,8 @@ struct UnsplashCollectionView: View {
         Task {
             var imageObjects = self.imageObjects
             let (data1, _) = try await URLSession.shared.data(from: imageObjects[index].smallImageURL)
-            segueToConfirmFrontCover = true
+            //segueToConfirmFrontCover = true
+            isShowingConfirmFrontCover = true
             chosenSmallURL = imageObjects[index].smallImageURL
             chosenPhotographer = imageObjects[index].coverImagePhotographer
             chosenUserName = imageObjects[index].coverImageUserName

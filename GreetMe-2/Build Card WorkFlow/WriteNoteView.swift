@@ -23,6 +23,11 @@ class HandWrite: ObservableObject {
 }
 
 struct WriteNoteView: View {
+    @Binding var isShowingWriteNote: Bool
+    @State private var isShowingFinalize = false
+    
+    
+    
     @Environment(\.presentationMode) var presentationMode
     @State private var message: String = "Write Your Note Here"
     @ObservedObject var input = TextLimiter(limit: 225)
@@ -113,7 +118,7 @@ struct WriteNoteView: View {
             }}
         .alert("Your typed message will only appear in your eCard", isPresented: $handWrite2) {Button("Ok", role: .cancel) {}}
         .padding(.bottom, 30)
-        .sheet(isPresented: $segueToFinalize) {FinalizeCardView(chosenObject: $chosenObject, collageImage: $collageImage, noteField: $noteField, frontCoverIsPersonalPhoto: frontCoverIsPersonalPhoto, text1: $text1, text2: $text2, text2URL: $text2URL, text3: $text3, text4: $text4, willHandWrite: willHandWrite, eCardText: $eCardText, printCardText: $printCardText, searchObject: searchObject)}
+        .sheet(isPresented: $isShowingFinalize) {FinalizeCardView(isShowingFinalize: $isShowingFinalize, chosenObject: $chosenObject, collageImage: $collageImage, noteField: $noteField, frontCoverIsPersonalPhoto: frontCoverIsPersonalPhoto, text1: $text1, text2: $text2, text2URL: $text2URL, text3: $text3, text4: $text4, willHandWrite: willHandWrite, eCardText: $eCardText, printCardText: $printCardText, searchObject: searchObject)}
         }
             .navigationBarItems(leading:
                                         Button {presentationMode.wrappedValue.dismiss()} label: {
@@ -189,7 +194,8 @@ extension WriteNoteView {
     func checkRequiredFields() {
         if recipient != "" && cardName != "" {
             namesNotEntered = false
-            segueToFinalize  = true
+            //segueToFinalize  = true
+            isShowingFinalize = true
             noteField = NoteField.init(noteText: message, recipient: recipient, cardName: cardName, font: selectedFont)
         }
         else {
