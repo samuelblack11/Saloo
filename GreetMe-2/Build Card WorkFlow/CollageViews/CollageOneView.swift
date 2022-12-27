@@ -16,7 +16,6 @@ struct CollageOneView: View {
     @State private var chosenImage: UIImage?
     @Binding var collageImage: CollageImage!
     @Binding var chosenObject: CoverImageObject!
-    @Binding var noteField: NoteField!
     //var theSnapShot: Image!
     @Binding var frontCoverIsPersonalPhoto: Int
     @State var willHandWrite = false
@@ -52,7 +51,7 @@ struct CollageOneView: View {
                     Text("Back")
                     })
                 .onChange(of: chosenImage) { _ in loadImage()}
-                .sheet(isPresented: $showingImagePicker) { ImagePicker(image: $chosenImage)}
+                .fullScreenCover(isPresented: $showingImagePicker) { ImagePicker(image: $chosenImage)}
         }
     var body: some View {
         NavigationView {
@@ -63,8 +62,8 @@ struct CollageOneView: View {
             isShowingWriteNote = true
             let theSnapShot = collageOneView.snapshot()
             collageImage = CollageImage.init(collageImage: theSnapShot)
-        }.padding(.bottom, 30).sheet(isPresented: $isShowingWriteNote ) {
-            WriteNoteView(viewTransitions: viewTransitions, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenObject: chosenObject, collageImage: collageImage, noteField: $noteField, eCardText: $eCardText, printCardText: $printCardText, chosenCollection: chosenCollection)}
+        }.padding(.bottom, 30).fullScreenCover(isPresented: $isShowingWriteNote ) {
+            WriteNoteView(viewTransitions: viewTransitions, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenObject: chosenObject, collageImage: collageImage, eCardText: $eCardText, printCardText: $printCardText, chosenCollection: chosenCollection)}
         }
         }
 

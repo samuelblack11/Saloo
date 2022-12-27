@@ -24,7 +24,6 @@ struct CollageFiveView: View {
     @State private var segueToWriteNote = false
     @Binding var collageImage: CollageImage!
     @Binding var chosenObject: CoverImageObject!
-    @Binding var noteField: NoteField!
     @Binding var frontCoverIsPersonalPhoto: Int
     @State var willHandWrite = false
     @State var eCardText: String = ""
@@ -49,7 +48,7 @@ struct CollageFiveView: View {
                                         Text("Back")
                                         })
                     .onChange(of: chosenImageA) { _ in loadImage(chosenImage: chosenImageA)}
-                    .sheet(isPresented: $showingImagePicker) { ImagePicker(image: $chosenImageA)}
+                    .fullScreenCover(isPresented: $showingImagePicker) { ImagePicker(image: $chosenImageA)}
                 Divider()
                 ZStack {
                     Rectangle().fill(.secondary)
@@ -58,7 +57,7 @@ struct CollageFiveView: View {
                     .onTapGesture {showingImagePicker = true; imageNumber = 2}
                     .frame(width: 150, height: 150)
                     .onChange(of: chosenImageB) { _ in loadImage(chosenImage: chosenImageB)}
-                    .sheet(isPresented: $showingImagePicker) { ImagePicker(image: $chosenImageB)}
+                    .fullScreenCover(isPresented: $showingImagePicker) { ImagePicker(image: $chosenImageB)}
                     }.frame(width: 300, height: 150)
             Divider()
             ZStack {
@@ -68,7 +67,7 @@ struct CollageFiveView: View {
                 .onTapGesture {showingImagePicker = true; imageNumber = 3}
                 .frame(width: 300, height: 150)
                 .onChange(of: chosenImageC) { _ in loadImage(chosenImage: chosenImageC)}
-                .sheet(isPresented: $showingImagePicker) { ImagePicker(image: $chosenImageC)}
+                .fullScreenCover(isPresented: $showingImagePicker) { ImagePicker(image: $chosenImageC)}
         }.frame(width: 300, height: 300)
         
     }
@@ -83,7 +82,7 @@ struct CollageFiveView: View {
             viewTransitions.isShowingWriteNote = true
             let theSnapShot = collageFiveView.snapshot()
             collageImage = CollageImage.init(collageImage: theSnapShot)
-        }.padding(.bottom, 30).sheet(isPresented: $viewTransitions.isShowingWriteNote ) {WriteNoteView(viewTransitions: viewTransitions, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenObject: chosenObject, collageImage: collageImage, noteField: $noteField, eCardText: $eCardText, printCardText: $printCardText, chosenCollection: chosenCollection)}
+        }.padding(.bottom, 30).sheet(isPresented: $viewTransitions.isShowingWriteNote ) {WriteNoteView(viewTransitions: viewTransitions, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenObject: chosenObject, collageImage: collageImage, eCardText: $eCardText, printCardText: $printCardText, chosenCollection: chosenCollection)}
     }
     }
 

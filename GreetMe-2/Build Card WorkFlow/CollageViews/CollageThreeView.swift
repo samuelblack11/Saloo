@@ -20,7 +20,6 @@ struct CollageThreeView: View {
     @State private var segueToWriteNote = false
     @Binding var collageImage: CollageImage!
     @Binding var chosenObject: CoverImageObject!
-    @Binding var noteField: NoteField!
     @Binding var frontCoverIsPersonalPhoto: Int
     @State var willHandWrite = false
     @State var eCardText: String = ""
@@ -44,7 +43,7 @@ struct CollageThreeView: View {
                                         Text("Back")
                                         })
                 .onChange(of: chosenImageA) { _ in loadImage(chosenImage: chosenImageA)}
-                .sheet(isPresented: $showingImagePicker) { ImagePicker(image: $chosenImageA)}
+                .fullScreenCover(isPresented: $showingImagePicker) { ImagePicker(image: $chosenImageA)}
             Divider()
             ZStack {
                 Rectangle().fill(.secondary)
@@ -53,7 +52,7 @@ struct CollageThreeView: View {
                 .onTapGesture {showingImagePicker = true; imageNumber = 2}
                 .frame(width: 150, height: 250)
                 .onChange(of: chosenImageB) { _ in loadImage(chosenImage: chosenImageB)}
-                .sheet(isPresented: $showingImagePicker) { ImagePicker(image: $chosenImageB)}
+                .fullScreenCover(isPresented: $showingImagePicker) { ImagePicker(image: $chosenImageB)}
                 }.frame(width: 300, height: 250)
             }
     
@@ -67,7 +66,7 @@ struct CollageThreeView: View {
             viewTransitions.isShowingWriteNote = true
             let theSnapShot = collageThreeView.snapshot()
             collageImage = CollageImage.init(collageImage: theSnapShot)
-        }.padding(.bottom, 30).sheet(isPresented: $viewTransitions.isShowingWriteNote ) {WriteNoteView(viewTransitions: viewTransitions, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenObject: chosenObject, collageImage: collageImage, noteField: $noteField, eCardText: $eCardText, printCardText: $printCardText, chosenCollection: chosenCollection)}
+        }.padding(.bottom, 30).sheet(isPresented: $viewTransitions.isShowingWriteNote ) {WriteNoteView(viewTransitions: viewTransitions, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenObject: chosenObject, collageImage: collageImage, eCardText: $eCardText, printCardText: $printCardText, chosenCollection: chosenCollection)}
         }
         }
     }

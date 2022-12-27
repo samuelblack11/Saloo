@@ -162,9 +162,11 @@ struct FinalizeCardView: View {
                     //saveAndShareIsActive = true
                     showCompleteAlert = true
                 }
-                .sheet(isPresented: $viewTransitions.isShowingOccassions) {OccassionsMenu(calViewModel: CalViewModel(), showDetailView: ShowDetailView(), viewTransitions: viewTransitions)}
-                .sheet(isPresented: $viewTransitions.isShowingCollageMenu) {CollageStyleMenu(viewTransitions: viewTransitions, collageImage: $collageImage, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenObject: $chosenObject, noteField: $noteField, chosenCollection: chosenCollection)}
-                .sheet(isPresented: $viewTransitions.isShowingUCV) {UnsplashCollectionView(viewTransitions: viewTransitions, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenCollection: chosenCollection, pageCount: $pageCount)}
+                .fullScreenCover(isPresented: $viewTransitions.isShowingOccassions) {OccassionsMenu(calViewModel: CalViewModel(), showDetailView: ShowDetailView(), viewTransitions: viewTransitions)}
+                .fullScreenCover(isPresented: $viewTransitions.isShowingCollageMenu) {CollageStyleMenu(viewTransitions: viewTransitions, collageImage: collageImage, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenObject: chosenObject, chosenCollection: chosenCollection)}
+                .fullScreenCover(isPresented: $viewTransitions.isShowingUCV) {
+                    UnsplashCollectionView(viewTransitions: viewTransitions, chosenCollection: chosenCollection, pageCount: pageCount, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto)
+                }
                 .disabled(saveAndShareIsActive)
                 .alert("Save Complete", isPresented: $showCompleteAlert) {
                     Button("Ok", role: .cancel) {
@@ -186,7 +188,7 @@ struct FinalizeCardView: View {
                            rootViewController?.dismiss(animated: true)
                     }
                 }
-                .sheet(isPresented: $isSharing, content: {shareView(card: card)})
+                .fullScreenCover(isPresented: $isSharing, content: {shareView(card: card)})
                 Spacer()
                 Button("Export for Print") {
                     showActivityController = true; let cardForExport = prepCardForExport()
@@ -201,9 +203,9 @@ struct FinalizeCardView: View {
             trailing: Button {viewTransitions.isShowingOccassions = true} label: {Image(systemName: "menucard.fill").foregroundColor(.blue)
             Text("Menu")}
             )
-        .sheet(isPresented: $viewTransitions.isShowingOccassions) {OccassionsMenu(calViewModel: CalViewModel(), showDetailView: ShowDetailView(), viewTransitions: viewTransitions)}
-        .sheet(isPresented: $showShareSheet, content: {if let share = share {CloudSharingView(share: share, container: CoreDataStack.shared.ckContainer, card: card)}})
-        .sheet(isPresented: $showActivityController) {ActivityView(activityItems: $activityItemsArray, applicationActivities: nil)}
+        .fullScreenCover(isPresented: $viewTransitions.isShowingOccassions) {OccassionsMenu(calViewModel: CalViewModel(), showDetailView: ShowDetailView(), viewTransitions: viewTransitions)}
+        .fullScreenCover(isPresented: $showShareSheet, content: {if let share = share {CloudSharingView(share: share, container: CoreDataStack.shared.ckContainer, card: card)}})
+        .fullScreenCover(isPresented: $showActivityController) {ActivityView(activityItems: $activityItemsArray, applicationActivities: nil)}
         }
     }
     }

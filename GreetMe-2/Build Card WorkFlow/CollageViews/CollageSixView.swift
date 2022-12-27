@@ -24,7 +24,6 @@ struct CollageSixView: View {
     @State private var segueToWriteNote = false
     @Binding var collageImage: CollageImage!
     @Binding var chosenObject: CoverImageObject!
-    @Binding var noteField: NoteField!
     @Binding var frontCoverIsPersonalPhoto: Int
     @State var willHandWrite = false
     @State var eCardText: String = ""
@@ -49,7 +48,7 @@ struct CollageSixView: View {
                                                 Text("Back")
                                                 })
                         .onChange(of: chosenImageA) { _ in loadImage(chosenImage: chosenImageA)}
-                        .sheet(isPresented: $showingImagePicker) { ImagePicker(image: $chosenImageA)}
+                        .fullScreenCover(isPresented: $showingImagePicker) { ImagePicker(image: $chosenImageA)}
                     Divider()
                     ZStack {
                         Rectangle().fill(.secondary)
@@ -58,7 +57,7 @@ struct CollageSixView: View {
                         .onTapGesture {showingImagePicker = true; imageNumber = 2}
                         .frame(width: 150, height: 150)
                         .onChange(of: chosenImageB) { _ in loadImage(chosenImage: chosenImageB)}
-                        .sheet(isPresented: $showingImagePicker) { ImagePicker(image: $chosenImageB)}
+                        .fullScreenCover(isPresented: $showingImagePicker) { ImagePicker(image: $chosenImageB)}
                         }.frame(width: 150, height: 150)
                     Divider()
                     HStack(spacing: 0) {
@@ -69,7 +68,7 @@ struct CollageSixView: View {
                         .onTapGesture {showingImagePicker = true; imageNumber = 3}
                         .frame(width: 150, height: 150)
                         .onChange(of: chosenImageC) { _ in loadImage(chosenImage: chosenImageC)}
-                        .sheet(isPresented: $showingImagePicker) { ImagePicker(image: $chosenImageC)}
+                        .fullScreenCover(isPresented: $showingImagePicker) { ImagePicker(image: $chosenImageC)}
                     Divider()
                     ZStack {
                         Rectangle().fill(.secondary)
@@ -78,7 +77,7 @@ struct CollageSixView: View {
                         .onTapGesture {showingImagePicker = true; imageNumber = 4}
                         .frame(width: 150, height: 150)
                         .onChange(of: chosenImageD) { _ in loadImage(chosenImage: chosenImageD)}
-                        .sheet(isPresented: $showingImagePicker) { ImagePicker(image: $chosenImageD)}
+                        .fullScreenCover(isPresented: $showingImagePicker) { ImagePicker(image: $chosenImageD)}
                         }.frame(width: 150, height: 150)
                 
             }.frame(width: 300, height: 300)
@@ -91,11 +90,10 @@ struct CollageSixView: View {
             collageSixView
             Spacer()
             Button("Confirm Collage for Inside Cover") {
-                //segueToWriteNote  = true
                 viewTransitions.isShowingWriteNote = true
                 let theSnapShot = collageSixView.snapshot()
                 collageImage = CollageImage.init(collageImage: theSnapShot)
-            }.padding(.bottom, 30).sheet(isPresented: $viewTransitions.isShowingWriteNote ) {WriteNoteView(viewTransitions: viewTransitions, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenObject: chosenObject, collageImage: collageImage, noteField: $noteField, eCardText: $eCardText, printCardText: $printCardText, chosenCollection: chosenCollection)}
+            }.padding(.bottom, 30).sheet(isPresented: $viewTransitions.isShowingWriteNote ) {WriteNoteView(viewTransitions: viewTransitions, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenObject: chosenObject, collageImage: collageImage, eCardText: $eCardText, printCardText: $printCardText, chosenCollection: chosenCollection)}
         }
     }
     }

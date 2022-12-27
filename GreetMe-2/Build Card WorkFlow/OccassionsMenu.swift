@@ -26,10 +26,8 @@ struct OccassionsMenu: View {
     @ObservedObject var calViewModel: CalViewModel
     @ObservedObject var showDetailView: ShowDetailView
     @ObservedObject var viewTransitions: ViewTransitions
-    //Custom Types used to create a Card object
-    @State var chosenObject: CoverImageObject!
-    @State var noteField: NoteField!
-    @State var collageImage: CollageImage!
+    // Object to pass to Collage Menu if photo not selcted from UCV
+    @State var chosenObject: CoverImageObject?
     // Cover Image Variables used dependent on the image's source
     @State private var coverImage: UIImage?
     @State private var coverImageFromLibrary: UIImage?
@@ -92,7 +90,7 @@ struct OccassionsMenu: View {
                         }
                     .fullScreenCover(isPresented: $viewTransitions.isShowingCollageMenu){
                         let blankCollection = ChosenCollection.init(occassion: "None", collectionID: "None")
-                        CollageStyleMenu(viewTransitions: viewTransitions, collageImage: $collageImage, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenObject: $chosenObject, noteField: $noteField, chosenCollection: blankCollection)
+                        CollageStyleMenu(viewTransitions: viewTransitions,  frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto,  chosenObject: chosenObject, chosenCollection: blankCollection)
                     }
                 Text("Take Photo with Camera 📸 ").onTapGesture {
                     self.viewTransitions.isShowingImagePicker = false
@@ -107,7 +105,7 @@ struct OccassionsMenu: View {
                     }
                 .fullScreenCover(isPresented: $viewTransitions.isShowingCollageMenu){
                     let blankCollection = ChosenCollection.init(occassion: "None", collectionID: "None")
-                    CollageStyleMenu(viewTransitions: viewTransitions, collageImage: $collageImage, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenObject: $chosenObject, noteField: $noteField, chosenCollection: blankCollection)}
+                    CollageStyleMenu(viewTransitions: viewTransitions,  frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenObject: chosenObject, chosenCollection: blankCollection)}
                 HStack {
                     TextField("Custom Search", text: $customSearch)
                         .padding(.leading, 5)
@@ -119,7 +117,7 @@ struct OccassionsMenu: View {
                     label: {Image(systemName: "magnifyingglass.circle.fill")}
                         .fullScreenCover(isPresented: $viewTransitions.isShowingUCV) {
                         let chosenCollection = ChosenCollection.init(occassion: occassionInstance.occassion, collectionID: occassionInstance.collectionID)
-                            UnsplashCollectionView(viewTransitions: viewTransitions, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenCollection: chosenCollection, pageCount: $pageCount)
+                            UnsplashCollectionView(viewTransitions: viewTransitions, chosenCollection: chosenCollection, pageCount: pageCount, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto)
                     }
                 }
             }
@@ -151,7 +149,7 @@ extension OccassionsMenu {
                 viewTransitions.isShowingOccassions = false
             }.fullScreenCover(isPresented: $viewTransitions.isShowingUCV) {
                 let chosenCollection = ChosenCollection.init(occassion: occassionInstance.occassion, collectionID: occassionInstance.collectionID)
-                UnsplashCollectionView(viewTransitions: viewTransitions, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenCollection: chosenCollection, pageCount: $pageCount)
+                UnsplashCollectionView(viewTransitions: viewTransitions, chosenCollection: chosenCollection, pageCount: pageCount, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto)
                 }
     }
     

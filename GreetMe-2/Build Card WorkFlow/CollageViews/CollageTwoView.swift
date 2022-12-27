@@ -9,8 +9,6 @@ import Foundation
 import SwiftUI
 
 struct CollageTwoView: View {
-    @Environment(\.presentationMode) var presentationMode
-
     @State private var showingImagePicker = false
     @State private var imageA: Image?
     @State private var imageB: Image?
@@ -20,7 +18,6 @@ struct CollageTwoView: View {
     @State private var segueToWriteNote = false
     @Binding var collageImage: CollageImage!
     @Binding var chosenObject: CoverImageObject!
-    @Binding var noteField: NoteField!
     @Binding var frontCoverIsPersonalPhoto: Int
     @State var willHandWrite = false
     @State var eCardText: String = ""
@@ -40,7 +37,7 @@ struct CollageTwoView: View {
             .onTapGesture {showingImagePicker = true; imageNumber = 1}
             .frame(width: 250, height: 150)
             .onChange(of: chosenImageA) { _ in loadImage(chosenImage: chosenImageA)}
-            .sheet(isPresented: $showingImagePicker) { ImagePicker(image: $chosenImageA)}
+            .fullScreenCover(isPresented: $showingImagePicker) { ImagePicker(image: $chosenImageA)}
         Divider().frame(width: 250)
         ZStack {
             Rectangle().fill(.secondary)
@@ -50,12 +47,12 @@ struct CollageTwoView: View {
             .onTapGesture {showingImagePicker = true; imageNumber = 2}
             .frame(width: 250, height: 150)
             .navigationBarItems(leading:
-                                    Button {presentationMode.wrappedValue.dismiss()} label: {
+                                    Button {} label: {
                                     Image(systemName: "chevron.left").foregroundColor(.blue)
                                     Text("Back")
                                     })
             .onChange(of: chosenImageB) { _ in loadImage(chosenImage: chosenImageB)}
-            .sheet(isPresented: $showingImagePicker) {ImagePicker(image: $chosenImageB)}
+            .fullScreenCover(isPresented: $showingImagePicker) {ImagePicker(image: $chosenImageB)}
             }
         }
 
@@ -69,7 +66,7 @@ struct CollageTwoView: View {
             viewTransitions.isShowingWriteNote = true
             let theSnapShot = collageTwoView.snapshot()
             collageImage = CollageImage.init(collageImage: theSnapShot)
-        }.padding(.bottom, 30).sheet(isPresented: $viewTransitions.isShowingWriteNote ) {WriteNoteView(viewTransitions: viewTransitions, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenObject: chosenObject, collageImage: collageImage, noteField: $noteField, eCardText: $eCardText, printCardText: $printCardText, chosenCollection: chosenCollection)}
+        }.padding(.bottom, 30).sheet(isPresented: $viewTransitions.isShowingWriteNote ) {WriteNoteView(viewTransitions: viewTransitions, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenObject: chosenObject, collageImage: collageImage, eCardText: $eCardText, printCardText: $printCardText, chosenCollection: chosenCollection)}
         }
         }
     }

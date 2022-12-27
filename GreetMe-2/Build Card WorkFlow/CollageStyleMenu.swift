@@ -13,12 +13,11 @@ struct CollageStyleMenu: View {
     @ObservedObject var viewTransitions: ViewTransitions
     
     @Environment(\.presentationMode) var presentationMode
-    @Binding var collageImage: CollageImage!
+    @State var collageImage: CollageImage?
     @State private var presentPrior = false
     @Binding var frontCoverIsPersonalPhoto: Int
     @State private var chosenCollageStyle = 0
-    @Binding var chosenObject: CoverImageObject!
-    @Binding var noteField: NoteField!
+    @State var chosenObject: CoverImageObject!
     @State var pageCount: Int = 1
     @State var chosenCollection: ChosenCollection
 
@@ -83,17 +82,17 @@ struct CollageStyleMenu: View {
                     Image(systemName: "chevron.left").foregroundColor(.blue)
                     Text("Back")
                 })
-            .sheet(isPresented: $viewTransitions.isShowingConfirmFrontCover) {
-                ConfirmFrontCoverView(viewTransitions: viewTransitions, chosenObject: $chosenObject, collageImage: $collageImage, noteField: $noteField, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, pageCount: $pageCount)
+            .fullScreenCover(isPresented: $viewTransitions.isShowingConfirmFrontCover) {
+                ConfirmFrontCoverView(viewTransitions: viewTransitions, chosenObject: chosenObject, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, pageCount: pageCount)
             }
             .frame(maxHeight: 800)
         }
 
-        .sheet(isPresented: $viewTransitions.isShowingCollageOne) {CollageOneView(collageImage: $collageImage, chosenObject: $chosenObject, noteField: $noteField,frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, viewTransitions: viewTransitions, chosenCollection: chosenCollection)}
-        .sheet(isPresented: $viewTransitions.isShowingCollageTwo) {CollageTwoView(collageImage: $collageImage, chosenObject: $chosenObject, noteField: $noteField, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto,  viewTransitions: viewTransitions, chosenCollection: chosenCollection)}
-        .sheet(isPresented: $viewTransitions.isShowingCollageThree) {CollageThreeView(collageImage: $collageImage, chosenObject: $chosenObject, noteField: $noteField, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, viewTransitions: viewTransitions, chosenCollection: chosenCollection)}
-        .sheet(isPresented: $viewTransitions.isShowingCollageFour) {CollageFourView(collageImage: $collageImage, chosenObject: $chosenObject, noteField: $noteField, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, viewTransitions: viewTransitions, chosenCollection: chosenCollection)}
-        .sheet(isPresented: $viewTransitions.isShowingCollageFive) {CollageFiveView(collageImage: $collageImage, chosenObject: $chosenObject, noteField: $noteField, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, viewTransitions: viewTransitions, chosenCollection: chosenCollection)}
-        .sheet(isPresented: $viewTransitions.isShowingCollageSix) {CollageSixView(collageImage: $collageImage, chosenObject: $chosenObject, noteField: $noteField, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, viewTransitions: viewTransitions, chosenCollection: chosenCollection)}
+        .fullScreenCover(isPresented: $viewTransitions.isShowingCollageOne) {CollageOneView(collageImage: $collageImage, chosenObject: $chosenObject, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, viewTransitions: viewTransitions, chosenCollection: chosenCollection)}
+        .fullScreenCover(isPresented: $viewTransitions.isShowingCollageTwo) {CollageTwoView(collageImage: $collageImage, chosenObject: $chosenObject, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto,  viewTransitions: viewTransitions, chosenCollection: chosenCollection)}
+        .fullScreenCover(isPresented: $viewTransitions.isShowingCollageThree) {CollageThreeView(collageImage: $collageImage, chosenObject: $chosenObject, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, viewTransitions: viewTransitions, chosenCollection: chosenCollection)}
+        .fullScreenCover(isPresented: $viewTransitions.isShowingCollageFour) {CollageFourView(collageImage: $collageImage, chosenObject: $chosenObject,frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, viewTransitions: viewTransitions, chosenCollection: chosenCollection)}
+        .fullScreenCover(isPresented: $viewTransitions.isShowingCollageFive) {CollageFiveView(collageImage: $collageImage, chosenObject: $chosenObject, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, viewTransitions: viewTransitions, chosenCollection: chosenCollection)}
+        .fullScreenCover(isPresented: $viewTransitions.isShowingCollageSix) {CollageSixView(collageImage: $collageImage, chosenObject: $chosenObject, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, viewTransitions: viewTransitions, chosenCollection: chosenCollection)}
     }
 }

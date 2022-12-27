@@ -12,19 +12,15 @@ import SwiftUI
 
 struct ConfirmFrontCoverView: View {
     @ObservedObject var viewTransitions: ViewTransitions
-    @Environment(\.presentationMode) var presentationMode
     @State var frontCoverImage: Image!
     @State var frontCoverPhotographer: String!
     @State var frontCoverUserName: String!
     @State private var segueToCollageMenu = false
-    @Binding var chosenObject: CoverImageObject!
-    @Binding var collageImage: CollageImage!
-    @Binding var noteField: NoteField!
+    @State var chosenObject: CoverImageObject
     @State private var presentPrior = false
     @Binding var frontCoverIsPersonalPhoto: Int
-    //@State var pageCount: Int
     @State var chosenCollection: ChosenCollection?
-    @Binding var pageCount: Int
+    @State var pageCount: Int
 
     var body: some View {
         NavigationView {
@@ -35,7 +31,6 @@ struct ConfirmFrontCoverView: View {
                 .padding(.top, 50)
             VStack(spacing: 0) {
                 Text("Photo By ")
-                
                 Link(String(chosenObject.coverImagePhotographer), destination: URL(string: "https://unsplash.com/@\(chosenObject.coverImageUserName)")!)
                 Text(" On ")
                 Link("Unsplash", destination: URL(string: "https://unsplash.com")!)
@@ -51,21 +46,19 @@ struct ConfirmFrontCoverView: View {
                         }
                     if response == nil {
                         debugPrint("Ping Failed!.......")}})
-            }.padding(.bottom, 10).sheet(isPresented: $viewTransitions.isShowingCollageMenu) {CollageStyleMenu(viewTransitions: viewTransitions, collageImage: $collageImage, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenObject: $chosenObject, noteField: $noteField, chosenCollection: chosenCollection!)}
+            }.padding(.bottom, 10).sheet(isPresented: $viewTransitions.isShowingCollageMenu) {CollageStyleMenu(viewTransitions: viewTransitions, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenObject: chosenObject, chosenCollection: chosenCollection!)}
             Text("(Attribution Will Be Included on Back Cover)").font(.system(size: 12)).padding(.bottom, 20)
             }
         .navigationBarItems(leading:
             Button {
                 print("Back button tapped")
-                //presentPrior = true
                 viewTransitions.isShowingUCV = true
-                presentationMode.wrappedValue.dismiss()
             } label: {
                 Image(systemName: "chevron.left").foregroundColor(.blue)
                 Text("Back")
             })
-        .sheet(isPresented: $viewTransitions.isShowingUCV) {
-            UnsplashCollectionView(viewTransitions: viewTransitions, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenCollection: chosenCollection!, pageCount: $pageCount)
+        .fullScreenCover(isPresented: $viewTransitions.isShowingUCV) {
+            UnsplashCollectionView(viewTransitions: viewTransitions, chosenCollection: chosenCollection!, pageCount: pageCount, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto)
         }
         }
     }
