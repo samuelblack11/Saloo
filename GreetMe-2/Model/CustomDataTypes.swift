@@ -10,6 +10,28 @@ import UIKit
 import SwiftUI
 import CloudKit
 
+class ViewTransitions: ObservableObject {
+    var isShowingOccassions = true
+    var isShowingUCV = false
+    var isShowingConfirmFrontCover = false
+    var isShowingCollageMenu = false
+    var isShowingCalendar = false
+    var isShowingImagePicker = false
+    var isShowingWriteNote = false
+    var isShowingCameraCapture = false
+    var loadedImagefromLibraryOrCamera = false
+    var isShowingFinalize = false
+    var isShowingSentCards = false
+    var isShowingReceivedCards = false
+    var isShowingCollageOne = false
+    var isShowingCollageTwo = false
+    var isShowingCollageThree = false
+    var isShowingCollageFour = false
+    var isShowingCollageFive = false
+    var isShowingCollageSix = false
+
+}
+
 struct ChosenCollection {
     @State var occassion: String!
     @State var collectionID: String!

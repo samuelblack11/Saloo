@@ -16,12 +16,8 @@ import SwiftUI
 
 
 struct UnsplashCollectionView: View {
-    @Binding var isShowingUCV: Bool
-    @State private var isShowingConfirmFrontCover = false
-    
-    
-    
-    
+    @ObservedObject var viewTransitions: ViewTransitions
+
     @Environment(\.presentationMode) var presentationMode
     @State var photoCollection: PhotoCollection?
     @State var imageObjects: [CoverImageObject] = []
@@ -88,8 +84,8 @@ struct UnsplashCollectionView: View {
             if chosenCollection.occassion == "None" {getUnsplashPhotos()}
             else {getPhotosFromCollection(collectionID: chosenCollection.collectionID, page_num: pageCount)}
         }
-        .sheet(isPresented: $presentUCV2) {UnsplashCollectionView(isShowingUCV: $presentUCV2, chosenSmallURL: chosenSmallURL, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenCollection: chosenCollection, pageCount: $pageCount)}
-        .sheet(isPresented: $isShowingConfirmFrontCover) {ConfirmFrontCoverView(isShowingConfirmFrontCover: $isShowingConfirmFrontCover, chosenObject: $chosenObject, collageImage: $collageImage, noteField: $noteField, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenCollection: chosenCollection, pageCount: $pageCount)}
+        .sheet(isPresented: $presentUCV2) {UnsplashCollectionView(viewTransitions: viewTransitions, chosenSmallURL: chosenSmallURL, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenCollection: chosenCollection, pageCount: $pageCount)}
+        .sheet(isPresented: $viewTransitions.isShowingConfirmFrontCover) {ConfirmFrontCoverView(viewTransitions: viewTransitions, chosenObject: $chosenObject, collageImage: $collageImage, noteField: $noteField, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenCollection: chosenCollection, pageCount: $pageCount)}
         }
     
     
@@ -105,7 +101,7 @@ struct UnsplashCollectionView: View {
         Task {
             var imageObjects = self.imageObjects
             let (data1, _) = try await URLSession.shared.data(from: imageObjects[index].smallImageURL)
-            isShowingConfirmFrontCover = true
+            viewTransitions.isShowingConfirmFrontCover = true
             chosenSmallURL = imageObjects[index].smallImageURL
             chosenPhotographer = imageObjects[index].coverImagePhotographer
             chosenUserName = imageObjects[index].coverImageUserName

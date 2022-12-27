@@ -12,10 +12,7 @@ import SwiftUI
 // https://www.hackingwithswift.com/quick-start/swiftui/what-is-the-focusstate-property-wrapper
 
 struct WriteNoteView: View {
-    @Binding var isShowingWriteNote: Bool
-    @State var isShowingFinalize = false
-    
-    
+    @ObservedObject var viewTransitions: ViewTransitions
     
     @Environment(\.presentationMode) var presentationMode
     @State private var message: String = "Write Your Note Here"
@@ -108,7 +105,7 @@ struct WriteNoteView: View {
             }}
         .alert("Your typed message will only appear in your eCard", isPresented: $handWrite2) {Button("Ok", role: .cancel) {}}
         .padding(.bottom, 30)
-        .sheet(isPresented: $isShowingFinalize) {FinalizeCardView(isShowingFinalize: $isShowingFinalize, chosenObject: $chosenObject, collageImage: $collageImage, noteField: $noteField, frontCoverIsPersonalPhoto: frontCoverIsPersonalPhoto, text1: $text1, text2: $text2, text2URL: $text2URL, text3: $text3, text4: $text4, willHandWrite: willHandWrite, eCardText: $eCardText, printCardText: $printCardText, chosenCollection: chosenCollection)}
+        .sheet(isPresented: $viewTransitions.isShowingFinalize) {FinalizeCardView(chosenObject: $chosenObject, collageImage: $collageImage, noteField: $noteField, frontCoverIsPersonalPhoto: frontCoverIsPersonalPhoto, text1: $text1, text2: $text2, text2URL: $text2URL, text3: $text3, text4: $text4, willHandWrite: willHandWrite, eCardText: $eCardText, printCardText: $printCardText, viewTransitions: viewTransitions, chosenCollection: chosenCollection)}
         }
             .navigationBarItems(leading:
                                         Button {presentationMode.wrappedValue.dismiss()} label: {
@@ -185,7 +182,7 @@ extension WriteNoteView {
         if recipient != "" && cardName != "" {
             namesNotEntered = false
             //segueToFinalize  = true
-            isShowingFinalize = true
+            viewTransitions.isShowingFinalize = true
             noteField = NoteField.init(noteText: message, recipient: recipient, cardName: cardName, font: selectedFont)
         }
         else {

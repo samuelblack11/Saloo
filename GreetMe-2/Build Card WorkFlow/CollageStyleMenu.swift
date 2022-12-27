@@ -10,17 +10,7 @@ import Foundation
 import SwiftUI
 
 struct CollageStyleMenu: View {
-    @Binding var isShowingCollageMenu: Bool
-    @State private var isShowingConfirmFrontCover = false
-    @State private var isShowingCollageOne = false
-    @State private var isShowingCollageTwo = false
-    @State private var isShowingCollageThree = false
-    @State private var isShowingCollageFour = false
-    @State private var isShowingCollageFive = false
-    @State private var isShowingCollageSix = false
-
-    
-    
+    @ObservedObject var viewTransitions: ViewTransitions
     
     @Environment(\.presentationMode) var presentationMode
     @Binding var collageImage: CollageImage!
@@ -73,12 +63,12 @@ struct CollageStyleMenu: View {
     var body: some View {
         NavigationView {
             LazyVGrid(columns: columns, spacing: 10) {
-                onePhotoView.onTapGesture{chosenCollageStyle = 1; isShowingCollageOne = true}
-                twoPhotoWide.onTapGesture{chosenCollageStyle = 2; isShowingCollageTwo = true}
-                twoPhotoLong.onTapGesture{chosenCollageStyle = 3; isShowingCollageThree = true}
-                threePhoto2Short1Long.onTapGesture{chosenCollageStyle = 4; isShowingCollageFour = true}
-                threePhoto2Narrow1Wide.onTapGesture{chosenCollageStyle = 5; isShowingCollageFive = true}
-                fourPhoto.onTapGesture{chosenCollageStyle = 6; isShowingCollageSix = true}
+                onePhotoView.onTapGesture{chosenCollageStyle = 1; viewTransitions.isShowingCollageOne = true}
+                twoPhotoWide.onTapGesture{chosenCollageStyle = 2; viewTransitions.isShowingCollageTwo = true}
+                twoPhotoLong.onTapGesture{chosenCollageStyle = 3; viewTransitions.isShowingCollageThree = true}
+                threePhoto2Short1Long.onTapGesture{chosenCollageStyle = 4; viewTransitions.isShowingCollageFour = true}
+                threePhoto2Narrow1Wide.onTapGesture{chosenCollageStyle = 5; viewTransitions.isShowingCollageFive = true}
+                fourPhoto.onTapGesture{chosenCollageStyle = 6; viewTransitions.isShowingCollageSix = true}
             }
             .navigationTitle("Pick Collage Style")
             .font(.headline)
@@ -88,22 +78,22 @@ struct CollageStyleMenu: View {
                     print("Back button tapped")
                     presentationMode.wrappedValue.dismiss()
                     //presentPrior = true
-                    isShowingConfirmFrontCover = true
+                viewTransitions.isShowingConfirmFrontCover = true
                 } label: {
                     Image(systemName: "chevron.left").foregroundColor(.blue)
                     Text("Back")
                 })
-            .sheet(isPresented: $isShowingConfirmFrontCover) {
-                ConfirmFrontCoverView(isShowingConfirmFrontCover: $isShowingConfirmFrontCover, chosenObject: $chosenObject, collageImage: $collageImage, noteField: $noteField, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, pageCount: $pageCount)
+            .sheet(isPresented: $viewTransitions.isShowingConfirmFrontCover) {
+                ConfirmFrontCoverView(viewTransitions: viewTransitions, chosenObject: $chosenObject, collageImage: $collageImage, noteField: $noteField, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, pageCount: $pageCount)
             }
             .frame(maxHeight: 800)
         }
 
-        .sheet(isPresented: $isShowingCollageOne) {CollageOneView(collageImage: $collageImage, chosenObject: $chosenObject, noteField: $noteField,frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto,  isShowingCollageOne: $isShowingCollageOne, chosenCollection: chosenCollection)}
-        .sheet(isPresented: $isShowingCollageTwo) {CollageTwoView(collageImage: $collageImage, chosenObject: $chosenObject, noteField: $noteField, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto,  isShowingCollageTwo: $isShowingCollageTwo, chosenCollection: chosenCollection)}
-        .sheet(isPresented: $isShowingCollageThree) {CollageThreeView(collageImage: $collageImage, chosenObject: $chosenObject, noteField: $noteField, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, isShowingCollageThree: $isShowingCollageThree, chosenCollection: chosenCollection)}
-        .sheet(isPresented: $isShowingCollageFour) {CollageFourView(collageImage: $collageImage, chosenObject: $chosenObject, noteField: $noteField, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, isShowingCollageFour: $isShowingCollageFour, chosenCollection: chosenCollection)}
-        .sheet(isPresented: $isShowingCollageFive) {CollageFiveView(collageImage: $collageImage, chosenObject: $chosenObject, noteField: $noteField, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, isShowingCollageFive: $isShowingCollageFive, chosenCollection: chosenCollection)}
-        .sheet(isPresented: $isShowingCollageSix) {CollageSixView(collageImage: $collageImage, chosenObject: $chosenObject, noteField: $noteField, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, isShowingCollageSix: $isShowingCollageSix, chosenCollection: chosenCollection)}
+        .sheet(isPresented: $viewTransitions.isShowingCollageOne) {CollageOneView(collageImage: $collageImage, chosenObject: $chosenObject, noteField: $noteField,frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, viewTransitions: viewTransitions, chosenCollection: chosenCollection)}
+        .sheet(isPresented: $viewTransitions.isShowingCollageTwo) {CollageTwoView(collageImage: $collageImage, chosenObject: $chosenObject, noteField: $noteField, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto,  viewTransitions: viewTransitions, chosenCollection: chosenCollection)}
+        .sheet(isPresented: $viewTransitions.isShowingCollageThree) {CollageThreeView(collageImage: $collageImage, chosenObject: $chosenObject, noteField: $noteField, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, viewTransitions: viewTransitions, chosenCollection: chosenCollection)}
+        .sheet(isPresented: $viewTransitions.isShowingCollageFour) {CollageFourView(collageImage: $collageImage, chosenObject: $chosenObject, noteField: $noteField, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, viewTransitions: viewTransitions, chosenCollection: chosenCollection)}
+        .sheet(isPresented: $viewTransitions.isShowingCollageFive) {CollageFiveView(collageImage: $collageImage, chosenObject: $chosenObject, noteField: $noteField, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, viewTransitions: viewTransitions, chosenCollection: chosenCollection)}
+        .sheet(isPresented: $viewTransitions.isShowingCollageSix) {CollageSixView(collageImage: $collageImage, chosenObject: $chosenObject, noteField: $noteField, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, viewTransitions: viewTransitions, chosenCollection: chosenCollection)}
     }
 }

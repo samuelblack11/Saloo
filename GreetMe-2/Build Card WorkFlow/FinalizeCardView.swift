@@ -12,14 +12,6 @@ import CloudKit
 
 
 struct FinalizeCardView: View {
-    @Binding var isShowingFinalize: Bool
-    @State private var isShowingOccassions = false
-    @State private var isShowingUCV = false
-    @State private var isShowingConfirmFrontCover = false
-    @State private var isShowingWriteNote = false
-    @State private var isShowingCollageOne = false
-    @State private var isShowingCollageMenu = false
-
     @Environment(\.presentationMode) var presentationMode
     @State var card: Card!
     @State var cardRecord: CKRecord!
@@ -46,7 +38,7 @@ struct FinalizeCardView: View {
     @State var string2: String!
     @State private var showShareSheet = false
     @State var share: CKShare?
-    
+    @ObservedObject var viewTransitions: ViewTransitions
     @EnvironmentObject private var cm: CKModel
     @State private var isAddingCard = false
     @State private var isSharing = false
@@ -54,7 +46,7 @@ struct FinalizeCardView: View {
     @State private var activeShare: CKShare?
     @State private var activeContainer: CKContainer?
     @State private var pageCount = 1
-    @State private var chosenCollection: ChosenCollection
+    @State var chosenCollection: ChosenCollection
 
     var eCardVertical: some View {
         VStack(spacing:1) {
@@ -170,21 +162,21 @@ struct FinalizeCardView: View {
                     //saveAndShareIsActive = true
                     showCompleteAlert = true
                 }
-                .sheet(isPresented: $isShowingOccassions) {OccassionsMenu(calViewModel: CalViewModel(), showDetailView: ShowDetailView(), isShowingOccassions: $isShowingOccassions)}
-                .sheet(isPresented: $isShowingCollageMenu) {CollageStyleMenu(isShowingCollageMenu: $isShowingCollageMenu, collageImage: $collageImage, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenObject: $chosenObject, noteField: $noteField, chosenCollection: chosenCollection)}
-                .sheet(isPresented: $isShowingUCV) {UnsplashCollectionView(isShowingUCV: $isShowingUCV, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenCollection: chosenCollection, pageCount: $pageCount)}
+                .sheet(isPresented: $viewTransitions.isShowingOccassions) {OccassionsMenu(calViewModel: CalViewModel(), showDetailView: ShowDetailView(), viewTransitions: viewTransitions)}
+                .sheet(isPresented: $viewTransitions.isShowingCollageMenu) {CollageStyleMenu(viewTransitions: viewTransitions, collageImage: $collageImage, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenObject: $chosenObject, noteField: $noteField, chosenCollection: chosenCollection)}
+                .sheet(isPresented: $viewTransitions.isShowingUCV) {UnsplashCollectionView(viewTransitions: viewTransitions, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenCollection: chosenCollection, pageCount: $pageCount)}
                 .disabled(saveAndShareIsActive)
                 .alert("Save Complete", isPresented: $showCompleteAlert) {
                     Button("Ok", role: .cancel) {
-                        isShowingCollageOne = false
-                        isShowingWriteNote = false
-                        isShowingCollageMenu = false
-                        isShowingUCV = false
+                        viewTransitions.isShowingCollageOne = false
+                        viewTransitions.isShowingWriteNote = false
+                        viewTransitions.isShowingCollageMenu = false
+                        viewTransitions.isShowingUCV = false
                         
                         
                         
                         
-                        isShowingOccassions = true
+                        viewTransitions.isShowingOccassions = true
                         let rootViewController = UIApplication.shared.connectedScenes
                                 .filter {$0.activationState == .foregroundActive }
                                 .map {$0 as? UIWindowScene }
@@ -206,10 +198,10 @@ struct FinalizeCardView: View {
             leading:Button {presentationMode.wrappedValue.dismiss()}
             label: {Image(systemName: "chevron.left").foregroundColor(.blue)
             Text("Back")},
-            trailing: Button {isShowingOccassions = true} label: {Image(systemName: "menucard.fill").foregroundColor(.blue)
+            trailing: Button {viewTransitions.isShowingOccassions = true} label: {Image(systemName: "menucard.fill").foregroundColor(.blue)
             Text("Menu")}
             )
-        .sheet(isPresented: $isShowingOccassions) {OccassionsMenu(calViewModel: CalViewModel(), showDetailView: ShowDetailView(), isShowingOccassions: $isShowingOccassions)}
+        .sheet(isPresented: $viewTransitions.isShowingOccassions) {OccassionsMenu(calViewModel: CalViewModel(), showDetailView: ShowDetailView(), viewTransitions: viewTransitions)}
         .sheet(isPresented: $showShareSheet, content: {if let share = share {CloudSharingView(share: share, container: CoreDataStack.shared.ckContainer, card: card)}})
         .sheet(isPresented: $showActivityController) {ActivityView(activityItems: $activityItemsArray, applicationActivities: nil)}
         }

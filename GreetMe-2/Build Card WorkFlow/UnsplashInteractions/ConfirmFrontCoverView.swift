@@ -11,13 +11,7 @@ import Foundation
 import SwiftUI
 
 struct ConfirmFrontCoverView: View {
-    @Binding var isShowingConfirmFrontCover: Bool
-    @State private var isShowingUCV = false
-    @State private var isShowingCollageMenu = false
-
-    
-    
-    
+    @ObservedObject var viewTransitions: ViewTransitions
     @Environment(\.presentationMode) var presentationMode
     @State var frontCoverImage: Image!
     @State var frontCoverPhotographer: String!
@@ -49,7 +43,7 @@ struct ConfirmFrontCoverView: View {
             Spacer()
             Button("Confirm Image for Front Cover") {
                 //segueToCollageMenu = true
-                isShowingCollageMenu = true
+                viewTransitions.isShowingCollageMenu = true
                 PhotoAPI.pingDownloadURL(downloadLocation: chosenObject.downloadLocation, completionHandler: { (response, error) in
                     if response != nil {
                         debugPrint("Ping Success!.......")
@@ -57,21 +51,21 @@ struct ConfirmFrontCoverView: View {
                         }
                     if response == nil {
                         debugPrint("Ping Failed!.......")}})
-            }.padding(.bottom, 10).sheet(isPresented: $isShowingCollageMenu) {CollageStyleMenu(isShowingCollageMenu: $isShowingCollageMenu, collageImage: $collageImage, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenObject: $chosenObject, noteField: $noteField, chosenCollection: chosenCollection!)}
+            }.padding(.bottom, 10).sheet(isPresented: $viewTransitions.isShowingCollageMenu) {CollageStyleMenu(viewTransitions: viewTransitions, collageImage: $collageImage, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenObject: $chosenObject, noteField: $noteField, chosenCollection: chosenCollection!)}
             Text("(Attribution Will Be Included on Back Cover)").font(.system(size: 12)).padding(.bottom, 20)
             }
         .navigationBarItems(leading:
             Button {
                 print("Back button tapped")
                 //presentPrior = true
-                isShowingUCV = true
+                viewTransitions.isShowingUCV = true
                 presentationMode.wrappedValue.dismiss()
             } label: {
                 Image(systemName: "chevron.left").foregroundColor(.blue)
                 Text("Back")
             })
-        .sheet(isPresented: $isShowingUCV) {
-            UnsplashCollectionView(isShowingUCV: $isShowingUCV, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenCollection: chosenCollection!, pageCount: $pageCount)
+        .sheet(isPresented: $viewTransitions.isShowingUCV) {
+            UnsplashCollectionView(viewTransitions: viewTransitions, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenCollection: chosenCollection!, pageCount: $pageCount)
         }
         }
     }
