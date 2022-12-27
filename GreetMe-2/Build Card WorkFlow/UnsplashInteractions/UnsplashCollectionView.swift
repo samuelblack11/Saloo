@@ -14,10 +14,9 @@ import SwiftUI
 // https://www.hackingwithswift.com/quick-start/swiftui/how-to-respond-to-view-lifecycle-events-onappear-and-ondisappear
 // https://www.hackingwithswift.com/quick-start/swiftui/how-to-fix-initializer-init-rowcontent-requires-that-sometype-conform-to-identifiable
 
-
 struct UnsplashCollectionView: View {
     @ObservedObject var viewTransitions: ViewTransitions
-
+    
     @Environment(\.presentationMode) var presentationMode
     @State var photoCollection: PhotoCollection?
     @State var imageObjects: [CoverImageObject] = []
@@ -42,35 +41,23 @@ struct UnsplashCollectionView: View {
     @State var chosenCollection: ChosenCollection
     @Binding var pageCount: Int
     
-    
-    func getMorePhotos() {
-        pageCount = pageCount + 1
-        presentUCV2 = true
-    }
-
     var body: some View {
         NavigationView {
             ScrollView {
-            LazyVGrid(columns: columns, spacing: 10) {
+                LazyVGrid(columns: columns, spacing: 10) {
                     ForEach(imageObjects, id: \.self.id) {photoObj in
-                            AsyncImage(url: photoObj.smallImageURL) { image in
-                                image.resizable()} placeholder: {Color.gray}
-                                .frame(width: 125, height: 125)
-                                .onTapGesture {handleTap(index: photoObj.index)
+                        AsyncImage(url: photoObj.smallImageURL) { image in
+                            image.resizable()} placeholder: {Color.gray}
+                            .frame(width: 125, height: 125)
+                            .onTapGesture {Task {try? await handleTap(index: photoObj.index)};
+                                viewTransitions.isShowingConfirmFrontCover = true
+                            }
                     }
                 }
-            }
-            .navigationTitle("Choose Front Cover")
-            .navigationBarItems(leading:
-                Button {
-                    print("Back button tapped")
-                    //presentPrior = true
-                    presentationMode.wrappedValue.dismiss()
-                } label: {
-                    Image(systemName: "chevron.left").foregroundColor(.blue)
-                    Text("Back")
-                })
+                .navigationTitle("Choose Front Cover")
+                .navigationBarItems(leading:Button {viewTransitions.isShowingOccassions.toggle(); viewTransitions.isShowingUCV.toggle(); print("----"); print(viewTransitions.isShowingOccassions)} label: {Image(systemName: "chevron.left").foregroundColor(.blue); Text("Back")})
                 Button("More...") {
+                    print("Why is this running now.....")
                     getMorePhotos()
                     print("page count: \(pageCount)")
                 }
@@ -81,15 +68,22 @@ struct UnsplashCollectionView: View {
         .padding(.horizontal)
         .frame(maxHeight: 600)
         .onAppear {
+            print("-----")
+            print(viewTransitions.isShowingOccassions)
+            print(viewTransitions.isShowingUCV)
+            
             if chosenCollection.occassion == "None" {getUnsplashPhotos()}
             else {getPhotosFromCollection(collectionID: chosenCollection.collectionID, page_num: pageCount)}
         }
-        .sheet(isPresented: $presentUCV2) {UnsplashCollectionView(viewTransitions: viewTransitions, chosenSmallURL: chosenSmallURL, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenCollection: chosenCollection, pageCount: $pageCount)}
-        .sheet(isPresented: $viewTransitions.isShowingConfirmFrontCover) {ConfirmFrontCoverView(viewTransitions: viewTransitions, chosenObject: $chosenObject, collageImage: $collageImage, noteField: $noteField, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenCollection: chosenCollection, pageCount: $pageCount)}
-        }
+        .fullScreenCover(isPresented: $viewTransitions.isShowingOccassions) {OccassionsMenu(calViewModel: CalViewModel(), showDetailView: ShowDetailView(), viewTransitions: viewTransitions)}
+        .fullScreenCover(isPresented: $viewTransitions.isShowingConfirmFrontCover) {ConfirmFrontCoverView(viewTransitions: viewTransitions, chosenObject: $chosenObject, collageImage: $collageImage, noteField: $noteField, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenCollection: chosenCollection, pageCount: $pageCount)}
+        //.fullScreenCover(isPresented: $presentUCV2) {UnsplashCollectionView(viewTransitions: viewTransitions, chosenSmallURL: chosenSmallURL, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenCollection: chosenCollection, pageCount: $pageCount)}
+    }
     
-    
-    
+}
+
+extension UnsplashCollectionView {
+
     func setButtonStatus(imageObjects: [CoverImageObject]) -> Bool {
         var disableButton: Bool?
         if imageObjects.count < 30 {disableButton = true}
@@ -97,17 +91,20 @@ struct UnsplashCollectionView: View {
         return disableButton!
     }
 
-    func handleTap(index: Int) {
-        Task {
-            var imageObjects = self.imageObjects
-            let (data1, _) = try await URLSession.shared.data(from: imageObjects[index].smallImageURL)
-            viewTransitions.isShowingConfirmFrontCover = true
-            chosenSmallURL = imageObjects[index].smallImageURL
-            chosenPhotographer = imageObjects[index].coverImagePhotographer
-            chosenUserName = imageObjects[index].coverImageUserName
-            chosenDownloadLocation = imageObjects[index].downloadLocation
-            chosenObject = CoverImageObject.init(coverImage: data1, smallImageURL: chosenSmallURL, coverImagePhotographer: chosenPhotographer, coverImageUserName: chosenUserName, downloadLocation: chosenDownloadLocation, index: index)
-        }
+    func handleTap(index: Int) async throws {
+        viewTransitions.isShowingConfirmFrontCover = true
+            do {
+                var imageObjects = self.imageObjects
+                let (data1, _) = try await URLSession.shared.data(from: imageObjects[index].smallImageURL)
+                chosenSmallURL = imageObjects[index].smallImageURL
+                chosenPhotographer = imageObjects[index].coverImagePhotographer
+                chosenUserName = imageObjects[index].coverImageUserName
+                chosenDownloadLocation = imageObjects[index].downloadLocation
+                chosenObject = CoverImageObject.init(coverImage: data1, smallImageURL: chosenSmallURL, coverImagePhotographer: chosenPhotographer, coverImageUserName: chosenUserName, downloadLocation: chosenDownloadLocation, index: index)
+            }
+            catch {
+                debugPrint("Error handling tap .... : \(error)")
+            }
     }
     
     func getPhotosFromCollection(collectionID: String, page_num: Int) {
@@ -149,4 +146,10 @@ struct UnsplashCollectionView: View {
             if response == nil {
                 print("Response is Nil")
             }}})}
+    
+    func getMorePhotos() {
+        pageCount = pageCount + 1
+        presentUCV2 = true
+    }
+
 }

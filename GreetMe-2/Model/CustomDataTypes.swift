@@ -11,24 +11,24 @@ import SwiftUI
 import CloudKit
 
 class ViewTransitions: ObservableObject {
-    var isShowingOccassions = true
-    var isShowingUCV = false
-    var isShowingConfirmFrontCover = false
-    var isShowingCollageMenu = false
-    var isShowingCalendar = false
-    var isShowingImagePicker = false
-    var isShowingWriteNote = false
-    var isShowingCameraCapture = false
-    var loadedImagefromLibraryOrCamera = false
-    var isShowingFinalize = false
-    var isShowingSentCards = false
-    var isShowingReceivedCards = false
-    var isShowingCollageOne = false
-    var isShowingCollageTwo = false
-    var isShowingCollageThree = false
-    var isShowingCollageFour = false
-    var isShowingCollageFive = false
-    var isShowingCollageSix = false
+    @Published var isShowingOccassions = true
+    @Published var isShowingUCV = false
+    @Published var isShowingConfirmFrontCover = false
+    @Published var isShowingCollageMenu = false
+    @Published var isShowingCalendar = false
+    @Published var isShowingImagePicker = false
+    @Published var isShowingWriteNote = false
+    @Published var isShowingCameraCapture = false
+    @Published var loadedImagefromLibraryOrCamera = false
+    @Published var isShowingFinalize = false
+    @Published var isShowingSentCards = false
+    @Published var isShowingReceivedCards = false
+    @Published var isShowingCollageOne = false
+    @Published var isShowingCollageTwo = false
+    @Published var isShowingCollageThree = false
+    @Published var isShowingCollageFour = false
+    @Published var isShowingCollageFive = false
+    @Published var isShowingCollageSix = false
 
 }
 

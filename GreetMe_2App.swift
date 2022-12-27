@@ -21,6 +21,7 @@ struct GreetMe_2App: App {
                 //.environmentObject(appDelegate)
                 //.environment(\.managedObjectContext, dataController.context)
                 .environmentObject(cm)
+                .environmentObject(viewTransitions)
 
         }
     }

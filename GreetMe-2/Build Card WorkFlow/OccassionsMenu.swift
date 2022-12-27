@@ -51,7 +51,7 @@ struct OccassionsMenu: View {
         HStack {
             Spacer()
             Button("Calendar") {viewTransitions.isShowingCalendar = true}
-            .sheet(isPresented: $viewTransitions.isShowingCalendar ) {CalendarParent(calViewModel: calViewModel, showDetailView: showDetailView)}
+            .fullScreenCover(isPresented: $viewTransitions.isShowingCalendar ) {CalendarParent(calViewModel: calViewModel, showDetailView: showDetailView)}
         }.frame(width: (UIScreen.screenWidth/1.1), height: (UIScreen.screenHeight/12))
     }
     
@@ -70,8 +70,8 @@ struct OccassionsMenu: View {
                 }
             }
             .padding(.bottom, 30)
-            .sheet(isPresented: $viewTransitions.isShowingSentCards) {Outbox()}
-            //.sheet(isPresented: $isShowingReceivedCards) {}
+            .fullScreenCover(isPresented: $viewTransitions.isShowingSentCards) {Outbox()}
+            //.fullScreenCover(isPresented: $isShowingReceivedCards) {}
     }
     
     
@@ -84,13 +84,13 @@ struct OccassionsMenu: View {
         List {
             Section(header: Text("Personal & Search")) {
                 Text("Select from Photo Library ").onTapGesture {self.viewTransitions.isShowingCameraCapture = false; self.viewTransitions.isShowingImagePicker = true}
-                    .sheet(isPresented: $viewTransitions.isShowingImagePicker){ImagePicker(image: $coverImageFromLibrary)}
+                    .fullScreenCover(isPresented: $viewTransitions.isShowingImagePicker){ImagePicker(image: $coverImageFromLibrary)}
                     .onChange(of: coverImageFromLibrary) { _ in loadImage(pic: coverImageFromLibrary!)
                         handlePhotoLibrarySelection()
                         viewTransitions.isShowingCollageMenu = true
                         frontCoverIsPersonalPhoto = 1
                         }
-                    .sheet(isPresented: $viewTransitions.isShowingCollageMenu){
+                    .fullScreenCover(isPresented: $viewTransitions.isShowingCollageMenu){
                         let blankCollection = ChosenCollection.init(occassion: "None", collectionID: "None")
                         CollageStyleMenu(viewTransitions: viewTransitions, collageImage: $collageImage, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenObject: $chosenObject, noteField: $noteField, chosenCollection: blankCollection)
                     }
@@ -98,14 +98,14 @@ struct OccassionsMenu: View {
                     self.viewTransitions.isShowingImagePicker = false
                     self.viewTransitions.isShowingCameraCapture = true
                 }
-                .sheet(isPresented: $viewTransitions.isShowingCameraCapture)
+                .fullScreenCover(isPresented: $viewTransitions.isShowingCameraCapture)
                 {CameraCapture(image: self.$coverImageFromCamera, isPresented: self.$viewTransitions.isShowingCameraCapture, sourceType: .camera)}
                 .onChange(of: coverImageFromCamera) { _ in loadImage(pic: coverImageFromCamera!)
                         handleCameraPic()
                     viewTransitions.isShowingCollageMenu = true
                         frontCoverIsPersonalPhoto = 1
                     }
-                .sheet(isPresented: $viewTransitions.isShowingCollageMenu){
+                .fullScreenCover(isPresented: $viewTransitions.isShowingCollageMenu){
                     let blankCollection = ChosenCollection.init(occassion: "None", collectionID: "None")
                     CollageStyleMenu(viewTransitions: viewTransitions, collageImage: $collageImage, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenObject: $chosenObject, noteField: $noteField, chosenCollection: blankCollection)}
                 HStack {
@@ -117,7 +117,7 @@ struct OccassionsMenu: View {
                         self.occassionInstance.collectionID = customSearch
                     }
                     label: {Image(systemName: "magnifyingglass.circle.fill")}
-                        .sheet(isPresented: $viewTransitions.isShowingUCV) {
+                        .fullScreenCover(isPresented: $viewTransitions.isShowingUCV) {
                         let chosenCollection = ChosenCollection.init(occassion: occassionInstance.occassion, collectionID: occassionInstance.collectionID)
                             UnsplashCollectionView(viewTransitions: viewTransitions, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenCollection: chosenCollection, pageCount: $pageCount)
                     }
@@ -130,7 +130,7 @@ struct OccassionsMenu: View {
             Section(header: Text("Fall Holidays")) {ForEach(fallCollection) {menuSection(for: $0, shareable: false)}}
             Section(header: Text("Other Collections")) {ForEach(otherCollection) {menuSection(for: $0, shareable: false)}}
         }
-        .sheet(isPresented: $viewTransitions.isShowingCalendar) {CalendarParent(calViewModel: calViewModel, showDetailView: showDetailView)}
+        .fullScreenCover(isPresented: $viewTransitions.isShowingCalendar) {CalendarParent(calViewModel: calViewModel, showDetailView: showDetailView)}
         .font(.headline)
         .listStyle(GroupedListStyle())
         .onAppear {createOccassionsFromUserCollections()}
@@ -144,11 +144,12 @@ extension OccassionsMenu {
     
     private func menuSection(for collection: CollectionPair, shareable: Bool = true) -> some View {
             Text(collection.title).onTapGesture {
-                viewTransitions.isShowingUCV = true
                 frontCoverIsPersonalPhoto = 0
                 self.occassionInstance.occassion = collection.title
                 self.occassionInstance.collectionID = collection.id
-            }.sheet(isPresented: $viewTransitions.isShowingUCV) {
+                viewTransitions.isShowingUCV = true
+                viewTransitions.isShowingOccassions = false
+            }.fullScreenCover(isPresented: $viewTransitions.isShowingUCV) {
                 let chosenCollection = ChosenCollection.init(occassion: occassionInstance.occassion, collectionID: occassionInstance.collectionID)
                 UnsplashCollectionView(viewTransitions: viewTransitions, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenCollection: chosenCollection, pageCount: $pageCount)
                 }
