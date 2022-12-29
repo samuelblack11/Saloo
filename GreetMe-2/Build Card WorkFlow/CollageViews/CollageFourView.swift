@@ -22,7 +22,7 @@ struct CollageFourView: View {
     @State private var chosenImageC: UIImage?
     @State private var segueToWriteNote = false
     @Binding var collageImage: CollageImage!
-    @Binding var chosenObject: CoverImageObject!
+    @ObservedObject var chosenObject: ChosenCoverImageObject
     @Binding var frontCoverIsPersonalPhoto: Int
     @State var willHandWrite = false
     @State var eCardText: String = ""

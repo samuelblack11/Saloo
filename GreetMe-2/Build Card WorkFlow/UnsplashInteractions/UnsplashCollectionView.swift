@@ -26,7 +26,7 @@ struct UnsplashCollectionView: View {
     // Counts the page of the response being viewed by the user. 30 images per page maximum
     @State var pageCount: Int
     // The image, and it's components, selected by the user
-    @State var chosenObject: CoverImageObject!
+    @ObservedObject var chosenObject: ChosenCoverImageObject
     // Componentes which comprise the chosenObject
     @State public var chosenImage: Data!
     @State public var chosenSmallURL: URL!
@@ -50,7 +50,7 @@ struct UnsplashCollectionView: View {
                         AsyncImage(url: photoObj.smallImageURL) { image in
                             image.resizable()} placeholder: {Color.gray}
                             .frame(width: 125, height: 125)
-                            .onTapGesture {Task {try? await handleTap(index: photoObj.index)}; viewTransitions.isShowingConfirmFrontCover = true}
+                            .onTapGesture {Task {try? await handleTap(index: photoObj.index)}}
                     }
                 }
                 .navigationTitle("Choose Front Cover")
@@ -80,18 +80,22 @@ extension UnsplashCollectionView {
     }
 
     func handleTap(index: Int) async throws {
+        print("handle tap has been called....")
             do {
                 let imageObjects = self.imageObjects
                 let (data1, _) = try await URLSession.shared.data(from: imageObjects[index].smallImageURL)
-                chosenSmallURL = imageObjects[index].smallImageURL
-                chosenPhotographer = imageObjects[index].coverImagePhotographer
-                chosenUserName = imageObjects[index].coverImageUserName
-                chosenDownloadLocation = imageObjects[index].downloadLocation
-                chosenObject = CoverImageObject.init(coverImage: data1, smallImageURL: chosenSmallURL, coverImagePhotographer: chosenPhotographer, coverImageUserName: chosenUserName, downloadLocation: chosenDownloadLocation, index: index)
+                chosenObject.smallImageURLString = imageObjects[index].smallImageURL.absoluteString
+                chosenObject.coverImage = data1
+                chosenObject.coverImagePhotographer = imageObjects[index].coverImagePhotographer
+                chosenObject.coverImageUserName = imageObjects[index].coverImageUserName
+                chosenObject.downloadLocation = imageObjects[index].downloadLocation
+                chosenObject.index = index
+                print("Tap Handled....")
+                viewTransitions.isShowingConfirmFrontCover = true
+                viewTransitions.isShowingUCV = false
+
             }
-            catch {debugPrint("Error handling tap .... : \(error)")}
-        
-            viewTransitions.isShowingConfirmFrontCover = true
+        catch {debugPrint("Error handling tap .... : \(error)"); viewTransitions.isShowingConfirmFrontCover = true; viewTransitions.isShowingUCV = false}    
     }
     
     func getPhotosFromCollection(collectionID: String, page_num: Int) {
@@ -102,6 +106,10 @@ extension UnsplashCollectionView {
                         if picture.urls.small != nil && picture.user.username != nil && picture.user.name != nil && picture.links.download_location != nil {
                             let thisPicture = picture.urls.small
                             let imageURL = URL(string: thisPicture!)
+                            
+                            
+                            
+                            
                             let newObj = CoverImageObject.init(coverImage: nil, smallImageURL: imageURL!, coverImagePhotographer: picture.user.name!, coverImageUserName: picture.user.username!, downloadLocation: picture.links.download_location!, index: imageObjects.count)
                             imageObjects.append(newObj)
                     }}

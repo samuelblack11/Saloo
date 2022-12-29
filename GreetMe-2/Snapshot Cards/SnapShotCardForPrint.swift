@@ -10,7 +10,7 @@ import SwiftUI
 
 struct SnapShotCardForPrint: View {
     
-    @Binding var chosenObject: CoverImageObject!
+    @ObservedObject var chosenObject: ChosenCoverImageObject
     @Binding var collageImage: CollageImage!
     @Binding var noteField: NoteField!
     @Binding var text1: String
@@ -22,10 +22,10 @@ struct SnapShotCardForPrint: View {
     
     func coverSource() -> Image {
         if chosenObject.coverImage != nil {
-            return Image(uiImage: UIImage(data: chosenObject.coverImage!)!)
+            return Image(uiImage: UIImage(data: chosenObject.coverImage)!)
         }
         else {
-            return Image(uiImage: UIImage(data: try! Data(contentsOf: chosenObject.smallImageURL))!)
+            return Image(uiImage: UIImage(data: try! Data(contentsOf: URL(string: chosenObject.smallImageURLString)!))!)
         }
     }
     

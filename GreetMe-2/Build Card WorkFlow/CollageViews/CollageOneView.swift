@@ -15,7 +15,7 @@ struct CollageOneView: View {
     @State private var image: Image?
     @State private var chosenImage: UIImage?
     @Binding var collageImage: CollageImage!
-    @Binding var chosenObject: CoverImageObject!
+    @ObservedObject var chosenObject: ChosenCoverImageObject
     //var theSnapShot: Image!
     @Binding var frontCoverIsPersonalPhoto: Int
     @State var willHandWrite = false

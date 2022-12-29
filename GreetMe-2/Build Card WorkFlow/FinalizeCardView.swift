@@ -15,7 +15,7 @@ struct FinalizeCardView: View {
     @Environment(\.presentationMode) var presentationMode
     @State var card: Card!
     @State var cardRecord: CKRecord!
-    @Binding var chosenObject: CoverImageObject!
+    @ObservedObject var chosenObject: ChosenCoverImageObject
     @Binding var collageImage: CollageImage!
     @Binding var noteField: NoteField!
     @State var frontCoverIsPersonalPhoto: Int
@@ -50,7 +50,7 @@ struct FinalizeCardView: View {
 
     var eCardVertical: some View {
         VStack(spacing:1) {
-            Image(uiImage: UIImage(data: chosenObject.coverImage!)!)
+            Image(uiImage: UIImage(data: chosenObject.coverImage)!)
                 .interpolation(.none).resizable().scaledToFit()
                 .frame(width: (UIScreen.screenWidth/4), height: (UIScreen.screenHeight/8))
             Text(eCardText)
@@ -127,7 +127,7 @@ struct FinalizeCardView: View {
             .frame(width: (UIScreen.screenWidth/4.5), height: (UIScreen.screenHeight/7))
             // Front Cover
             HStack(spacing: 1)  {
-                Image(uiImage: UIImage(data: chosenObject.coverImage!)!)
+                Image(uiImage: UIImage(data: chosenObject.coverImage)!)
                     .resizable()
             }.frame(width: (UIScreen.screenWidth/4.5), height: (UIScreen.screenHeight/7))
             }.frame(width: (UIScreen.screenWidth/2.25))
@@ -165,7 +165,7 @@ struct FinalizeCardView: View {
                 .fullScreenCover(isPresented: $viewTransitions.isShowingOccassions) {OccassionsMenu(calViewModel: CalViewModel(), showDetailView: ShowDetailView(), viewTransitions: viewTransitions)}
                 .fullScreenCover(isPresented: $viewTransitions.isShowingCollageMenu) {CollageStyleMenu(viewTransitions: viewTransitions, collageImage: collageImage, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenObject: chosenObject, chosenCollection: chosenCollection)}
                 .fullScreenCover(isPresented: $viewTransitions.isShowingUCV) {
-                    UnsplashCollectionView(viewTransitions: viewTransitions, chosenCollection: chosenCollection, pageCount: pageCount, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto)
+                    UnsplashCollectionView(viewTransitions: viewTransitions, chosenCollection: chosenCollection, pageCount: pageCount, chosenObject: chosenObject, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto)
                 }
                 .disabled(saveAndShareIsActive)
                 .alert("Save Complete", isPresented: $showCompleteAlert) {
@@ -213,7 +213,7 @@ struct FinalizeCardView: View {
 extension FinalizeCardView {
     
     private func addCard(noteField: NoteField, chosenCollection: ChosenCollection
-                         , an1: String, an2: String, an2URL: String, an3: String, an4: String, chosenObject: CoverImageObject, collageImage: CollageImage) async throws {
+                         , an1: String, an2: String, an2URL: String, an3: String, an4: String, chosenObject: ChosenCoverImageObject, collageImage: CollageImage) async throws {
         try await cm.addCard(noteField: noteField, chosenCollection: chosenCollection, an1: an1, an2: an2, an2URL: an2URL, an3: an3, an4: an4, chosenObject: chosenObject, collageImage: collageImage)
         try await cm.refresh()
         isAddingCard = false
@@ -242,7 +242,7 @@ extension FinalizeCardView {
     }
     
     func prepCardForExport() -> Data {
-        let image = SnapShotCardForPrint(chosenObject: $chosenObject, collageImage: $collageImage, noteField: $noteField, text1: $text1, text2: $text2, text2URL: $text2URL, text3: $text3, text4: $text4, printCardText: $printCardText).snapshot()
+        let image = SnapShotCardForPrint(chosenObject: chosenObject, collageImage: $collageImage, noteField: $noteField, text1: $text1, text2: $text2, text2URL: $text2URL, text3: $text3, text4: $text4, printCardText: $printCardText).snapshot()
         let a4_width = 595.2 - 20
         let a4_height = 841.8
         let pageRect = CGRect(x: 0, y: 0, width: a4_width, height: a4_height)

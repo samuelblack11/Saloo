@@ -114,7 +114,7 @@ final class CKModel: ObservableObject {
     
     
     /// Adds a new Card  to the database.
-    func addCard(noteField: NoteField, chosenCollection: ChosenCollection, an1: String, an2: String, an2URL: String, an3: String, an4: String, chosenObject: CoverImageObject, collageImage: CollageImage) async throws {
+    func addCard(noteField: NoteField, chosenCollection: ChosenCollection, an1: String, an2: String, an2URL: String, an3: String, an4: String, chosenObject: ChosenCoverImageObject, collageImage: CollageImage) async throws {
         
         let id = CKRecord.ID(zoneID: recordZone.zoneID)
         let cardRecord = CKRecord(recordType: "Card", recordID: id)
@@ -130,7 +130,7 @@ final class CKModel: ObservableObject {
         cardRecord["font"] = noteField.font as CKRecordValue
         cardRecord["date"] = Date.now as CKRecordValue
         cardRecord["message"] = noteField.noteText as CKRecordValue
-        cardRecord["coverImage"] = chosenObject.coverImage! as CKRecordValue
+        cardRecord["coverImage"] = chosenObject.coverImage as CKRecordValue
         cardRecord["collage"] = collageImage.collageImage.pngData()! as CKRecordValue
 
         do {

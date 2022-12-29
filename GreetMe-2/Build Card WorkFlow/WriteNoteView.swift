@@ -26,7 +26,7 @@ struct WriteNoteView: View {
     @StateObject var willHandWrite = HandWrite()
     @Binding var frontCoverIsPersonalPhoto: Int
     @State private var segueToFinalize = false
-    @State var chosenObject: CoverImageObject!
+    @ObservedObject var chosenObject: ChosenCoverImageObject
     @State var collageImage: CollageImage!
     @State var noteField: NoteField?
     @State private var selectedFont = "Papyrus"
@@ -105,7 +105,7 @@ struct WriteNoteView: View {
             }}
         .alert("Your typed message will only appear in your eCard", isPresented: $handWrite2) {Button("Ok", role: .cancel) {}}
         .padding(.bottom, 30)
-        .fullScreenCover(isPresented: $viewTransitions.isShowingFinalize) {FinalizeCardView(chosenObject: $chosenObject, collageImage: $collageImage, noteField: $noteField, frontCoverIsPersonalPhoto: frontCoverIsPersonalPhoto, text1: $text1, text2: $text2, text2URL: $text2URL, text3: $text3, text4: $text4, willHandWrite: willHandWrite, eCardText: $eCardText, printCardText: $printCardText, viewTransitions: viewTransitions, chosenCollection: chosenCollection)}
+        .fullScreenCover(isPresented: $viewTransitions.isShowingFinalize) {FinalizeCardView(chosenObject: chosenObject, collageImage: $collageImage, noteField: $noteField, frontCoverIsPersonalPhoto: frontCoverIsPersonalPhoto, text1: $text1, text2: $text2, text2URL: $text2URL, text3: $text3, text4: $text4, willHandWrite: willHandWrite, eCardText: $eCardText, printCardText: $printCardText, viewTransitions: viewTransitions, chosenCollection: chosenCollection)}
         }
             .navigationBarItems(leading:
                                         Button {presentationMode.wrappedValue.dismiss()} label: {
@@ -113,33 +113,6 @@ struct WriteNoteView: View {
                                                 Text("Back")})
         }
     }
-    
-
-
-    // https://programmingwithswift.com/swiftui-textfield-character-limit/
-    class TextLimiter: ObservableObject {
-        // variable for character limit
-        private let limit: Int
-        
-        init(limit: Int) {
-            self.limit = limit
-        }
-        // value that text field displays
-        @Published var value = "Write Your Note Here" {
-            didSet {
-                if value.count > self.limit {
-                    value = String(value.prefix(self.limit))
-                    self.hasReachedLimit = true
-                } else {
-                    self.hasReachedLimit = false
-                }
-            }
-        }
-        @Published var hasReachedLimit = false
-    }
-    
-    
-    
 }
 
 

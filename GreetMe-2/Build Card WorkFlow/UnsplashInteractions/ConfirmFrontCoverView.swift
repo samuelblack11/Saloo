@@ -16,7 +16,7 @@ struct ConfirmFrontCoverView: View {
     @State var frontCoverPhotographer: String!
     @State var frontCoverUserName: String!
     @State private var segueToCollageMenu = false
-    @State var chosenObject: CoverImageObject
+    @ObservedObject var chosenObject: ChosenCoverImageObject
     @State private var presentPrior = false
     @Binding var frontCoverIsPersonalPhoto: Int
     @State var chosenCollection: ChosenCollection?
@@ -25,7 +25,7 @@ struct ConfirmFrontCoverView: View {
     var body: some View {
         NavigationView {
         VStack {
-            Image(uiImage: UIImage(data: chosenObject.coverImage!)!)
+            Image(uiImage: UIImage(data: chosenObject.coverImage)!)
                 .resizable()
                 .frame(width: 250, height: 250)
                 .padding(.top, 50)
@@ -58,7 +58,7 @@ struct ConfirmFrontCoverView: View {
                 Text("Back")
             })
         .fullScreenCover(isPresented: $viewTransitions.isShowingUCV) {
-            UnsplashCollectionView(viewTransitions: viewTransitions, chosenCollection: chosenCollection!, pageCount: pageCount, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto)
+            UnsplashCollectionView(viewTransitions: viewTransitions, chosenCollection: chosenCollection!, pageCount: pageCount, chosenObject: chosenObject, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto)
         }
         }
     }

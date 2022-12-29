@@ -46,6 +46,20 @@ public class ShowDetailView: ObservableObject {
     @Published public var showDetailView: Bool = false
 }
 
+class ChosenCoverImageObject: ObservableObject {
+    @Published var id = UUID()
+    @Published var coverImage = Data()
+    @Published var smallImageURLString = String()
+    @Published var coverImagePhotographer = String()
+    @Published var coverImageUserName = String()
+    @Published var downloadLocation = String()
+    @Published var index = Int()
+    //func hash(into hasher: inout Hasher) {
+    //    hasher.combine(downloadLocation)
+    //}
+}
+
+
 struct CoverImageObject: Identifiable, Hashable {
     let id = UUID()
     let coverImage: Data?
@@ -73,3 +87,25 @@ struct NoteField {
 class HandWrite: ObservableObject {
     @Published var willHandWrite: Bool = false
 }
+// https://programmingwithswift.com/swiftui-textfield-character-limit/
+class TextLimiter: ObservableObject {
+    // variable for character limit
+    private let limit: Int
+    
+    init(limit: Int) {
+        self.limit = limit
+    }
+    // value that text field displays
+    @Published var value = "Write Your Note Here" {
+        didSet {
+            if value.count > self.limit {
+                value = String(value.prefix(self.limit))
+                self.hasReachedLimit = true
+            } else {
+                self.hasReachedLimit = false
+            }
+        }
+    }
+    @Published var hasReachedLimit = false
+}
+

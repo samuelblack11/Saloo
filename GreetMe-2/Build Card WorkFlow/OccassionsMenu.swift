@@ -27,7 +27,7 @@ struct OccassionsMenu: View {
     @ObservedObject var showDetailView: ShowDetailView
     @ObservedObject var viewTransitions: ViewTransitions
     // Object to pass to Collage Menu if photo not selcted from UCV
-    @State var chosenObject: CoverImageObject?
+    @StateObject var chosenObject = ChosenCoverImageObject()
     // Cover Image Variables used dependent on the image's source
     @State private var coverImage: UIImage?
     @State private var coverImageFromLibrary: UIImage?
@@ -117,7 +117,7 @@ struct OccassionsMenu: View {
                     label: {Image(systemName: "magnifyingglass.circle.fill")}
                         .fullScreenCover(isPresented: $viewTransitions.isShowingUCV) {
                         let chosenCollection = ChosenCollection.init(occassion: occassionInstance.occassion, collectionID: occassionInstance.collectionID)
-                            UnsplashCollectionView(viewTransitions: viewTransitions, chosenCollection: chosenCollection, pageCount: pageCount, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto)
+                            UnsplashCollectionView(viewTransitions: viewTransitions, chosenCollection: chosenCollection, pageCount: pageCount, chosenObject: chosenObject, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto)
                     }
                 }
             }
@@ -149,7 +149,7 @@ extension OccassionsMenu {
                 viewTransitions.isShowingOccassions = false
             }.fullScreenCover(isPresented: $viewTransitions.isShowingUCV) {
                 let chosenCollection = ChosenCollection.init(occassion: occassionInstance.occassion, collectionID: occassionInstance.collectionID)
-                UnsplashCollectionView(viewTransitions: viewTransitions, chosenCollection: chosenCollection, pageCount: pageCount, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto)
+                UnsplashCollectionView(viewTransitions: viewTransitions, chosenCollection: chosenCollection, pageCount: pageCount, chosenObject: chosenObject, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto)
                 }
     }
     
@@ -191,11 +191,21 @@ extension OccassionsMenu {
     }
     
     func handlePhotoLibrarySelection() {
-        chosenObject = CoverImageObject.init(coverImage: coverImage?.jpegData(compressionQuality: 1), smallImageURL: URL(string: "https://google.com")!, coverImagePhotographer: "", coverImageUserName: "", downloadLocation: "", index: 1)
+        chosenObject.smallImageURLString = "https://google.com"
+        chosenObject.coverImage = coverImage!.jpegData(compressionQuality: 1)!
+        chosenObject.coverImagePhotographer = ""
+        chosenObject.coverImageUserName = ""
+        chosenObject.downloadLocation = ""
+        chosenObject.index = 1
     }
     
     func handleCameraPic() {
-        chosenObject = CoverImageObject.init(coverImage: coverImage?.jpegData(compressionQuality: 1), smallImageURL: URL(string: "https://google.com")!, coverImagePhotographer: "", coverImageUserName: "", downloadLocation: "", index: 1)
+        chosenObject.smallImageURLString = "https://google.com"
+        chosenObject.coverImage = coverImage!.jpegData(compressionQuality: 1)!
+        chosenObject.coverImagePhotographer = ""
+        chosenObject.coverImageUserName = ""
+        chosenObject.downloadLocation = ""
+        chosenObject.index = 1
     }
     
 }
