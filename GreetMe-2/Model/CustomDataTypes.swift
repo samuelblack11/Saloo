@@ -98,39 +98,36 @@ class CollageStyles {
 }
 
 public class CollageBuildingBlocks {
+    var menuSize: Bool
+    var smallDim: CGFloat
+    var largeDim: CGFloat
     
-    func determineSize(menuSize: Bool) -> (CGFloat, CGFloat) {
-        var smallDimension: CGFloat?
-        var largeDimension: CGFloat?
-        if menuSize {smallDimension = 0.225; largeDimension = 0.45}
-        else {smallDimension = 0.45; largeDimension = 0.9}
-        return (smallDimension!, largeDimension!)
+    init(menuSize: Bool) {
+        self.menuSize = menuSize
+        if menuSize {smallDim = 0.225; largeDim = 0.45}
+        else {smallDim = 0.45; largeDim = 0.9}
     }
     
-    func createSmallSquare(smallDim: CGFloat, largeDim: CGFloat) -> GeometryReader<HStack<some View>> {
+    func createSmallSquare()-> GeometryReader<HStack<some View>> {
         return GeometryReader {geometry in
-            HStack(spacing: 0) {Rectangle().fill(Color.gray).frame(width: geometry.size.width * smallDim, height: geometry.size.width * smallDim ).border(Color.black)}}
+            HStack(spacing: 0) {Rectangle().fill(Color.gray).frame(width: geometry.size.width * self.smallDim, height: geometry.size.width * self.smallDim ).border(Color.black)}}
     }
     
     
-    func createWideRectangle(smallDim: CGFloat, largeDim: CGFloat) -> GeometryReader<HStack<some View>> {
+    func createWideRectangle() -> GeometryReader<HStack<some View>> {
         return GeometryReader {geometry in
-            HStack(spacing: 0) {Rectangle().fill(Color.gray).frame(width: geometry.size.width * largeDim, height: geometry.size.width * smallDim).border(Color.black)}}
+            HStack(spacing: 0) {Rectangle().fill(Color.gray).frame(width: geometry.size.width * self.largeDim, height: geometry.size.width * self.smallDim).border(Color.black)}}
     }
     
-    func createTallRectangle(smallDim: CGFloat, largeDim: CGFloat) -> GeometryReader<HStack<some View>> {
+    func createTallRectangle() -> GeometryReader<HStack<some View>> {
         return GeometryReader {geometry in
-            HStack(spacing: 0) {Rectangle().fill(Color.gray).frame(width: geometry.size.width * smallDim, height: geometry.size.width * largeDim).border(Color.black)}}
+            HStack(spacing: 0) {Rectangle().fill(Color.gray).frame(width: geometry.size.width * self.smallDim, height: geometry.size.width * self.largeDim).border(Color.black)}}
     }
     
-    func createLargeSquare(smallDim: CGFloat, largeDim: CGFloat) -> GeometryReader<VStack<some View>> {
+    func createLargeSquare() -> GeometryReader<VStack<some View>> {
         return GeometryReader {geometry in
-            VStack {Rectangle().fill(Color.gray).frame(width: geometry.size.width * largeDim, height: geometry.size.width * largeDim).padding(.vertical)}}
+            VStack {Rectangle().fill(Color.gray).frame(width: geometry.size.width * self.largeDim, height: geometry.size.width * self.largeDim).padding(.vertical)}}
     }
-
-    
-    
-    
 }
 
 

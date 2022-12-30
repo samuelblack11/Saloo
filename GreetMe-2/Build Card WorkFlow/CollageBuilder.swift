@@ -35,6 +35,7 @@ struct CollageBuilder: View {
             case .six: fourPhoto()
         }
     }
+    @State var menuSizeBlocks = CollageBuildingBlocks(menuSize: false)
     
     @State private var showingImagePicker = false
     @State private var image: Image?
@@ -67,6 +68,9 @@ extension CollageBuilder {
     }
         
     // Each of the collage styles
+    
+    struct onePhotoView2 {menuSizeBlocks.createLargeSquare()}
+    
     struct onePhotoView: View {var body: some View {largeSquare()}}
     struct twoPhotoWide: View {var body: some View {VStack(spacing: 0){wideRectangle(); wideRectangle()}}}
     struct twoPhotoLong: View {var body: some View {HStack(spacing: 0){tallRectangle(); tallRectangle()}}}
