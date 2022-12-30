@@ -145,8 +145,8 @@ extension OccassionsMenu {
                 frontCoverIsPersonalPhoto = 0
                 self.occassionInstance.occassion = collection.title
                 self.occassionInstance.collectionID = collection.id
-                viewTransitions.isShowingUCV = true
-                viewTransitions.isShowingOccassions = false
+                viewTransitions.isShowingUCV.toggle()
+                viewTransitions.isShowingOccassions.toggle()
             }.fullScreenCover(isPresented: $viewTransitions.isShowingUCV) {
                 let chosenCollection = ChosenCollection.init(occassion: occassionInstance.occassion, collectionID: occassionInstance.collectionID)
                 UnsplashCollectionView(viewTransitions: viewTransitions, chosenCollection: chosenCollection, pageCount: pageCount, chosenObject: chosenObject, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto)

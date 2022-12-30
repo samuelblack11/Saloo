@@ -63,8 +63,8 @@ struct UnsplashCollectionView: View {
             if chosenCollection.occassion == "None" {getUnsplashPhotos()}
             else {getPhotosFromCollection(collectionID: chosenCollection.collectionID, page_num: pageCount)}
         }
-        .fullScreenCover(isPresented: $viewTransitions.isShowingOccassions) {OccassionsMenu(calViewModel: CalViewModel(), showDetailView: ShowDetailView(), viewTransitions: viewTransitions)}
         .fullScreenCover(isPresented: $viewTransitions.isShowingConfirmFrontCover) {ConfirmFrontCoverView(viewTransitions: viewTransitions, chosenObject: chosenObject, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenCollection: chosenCollection, pageCount: pageCount)}
+        .fullScreenCover(isPresented: $viewTransitions.isShowingOccassions) {OccassionsMenu(calViewModel: CalViewModel(), showDetailView: ShowDetailView(), viewTransitions: viewTransitions)}
         //.fullScreenCover(isPresented: $presentUCV2) {UnsplashCollectionView(viewTransitions: viewTransitions, chosenSmallURL: chosenSmallURL, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenCollection: chosenCollection, pageCount: $pageCount)}
     }
     
@@ -91,11 +91,14 @@ extension UnsplashCollectionView {
                 chosenObject.downloadLocation = imageObjects[index].downloadLocation
                 chosenObject.index = index
                 print("Tap Handled....")
-                viewTransitions.isShowingConfirmFrontCover = true
-                viewTransitions.isShowingUCV = false
-
+                viewTransitions.isShowingConfirmFrontCover.toggle()
+                viewTransitions.isShowingUCV.toggle()
+                print(viewTransitions.isShowingConfirmFrontCover)
+                print(viewTransitions.isShowingUCV)
+                print(viewTransitions.isShowingOccassions)
+                print("---")
             }
-        catch {debugPrint("Error handling tap .... : \(error)"); viewTransitions.isShowingConfirmFrontCover = true; viewTransitions.isShowingUCV = false}    
+        catch {debugPrint("Error handling tap .... : \(error)")}
     }
     
     func getPhotosFromCollection(collectionID: String, page_num: Int) {

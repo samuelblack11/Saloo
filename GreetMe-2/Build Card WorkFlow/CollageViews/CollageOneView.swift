@@ -18,12 +18,10 @@ struct CollageOneView: View {
     @ObservedObject var chosenObject: ChosenCoverImageObject
     //var theSnapShot: Image!
     @Binding var frontCoverIsPersonalPhoto: Int
-    @State var willHandWrite = false
     @State var eCardText: String = ""
     @State var printCardText: String = ""
     @State var fillColor = Color.secondary
     @ObservedObject var viewTransitions: ViewTransitions
-    @State private var isShowingWriteNote = false
     @State var chosenCollection: ChosenCollection
 
 
@@ -59,10 +57,10 @@ struct CollageOneView: View {
         collageOneView
         Spacer()
         Button("Confirm Collage for Inside Cover") {
-            isShowingWriteNote = true
+            viewTransitions.isShowingWriteNote = true
             let theSnapShot = collageOneView.snapshot()
             collageImage = CollageImage.init(collageImage: theSnapShot)
-        }.padding(.bottom, 30).fullScreenCover(isPresented: $isShowingWriteNote ) {
+        }.padding(.bottom, 30).fullScreenCover(isPresented: $viewTransitions.isShowingWriteNote ) {
             WriteNoteView(viewTransitions: viewTransitions, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenObject: chosenObject, collageImage: collageImage, eCardText: $eCardText, printCardText: $printCardText, chosenCollection: chosenCollection)}
         }
         }

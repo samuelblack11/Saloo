@@ -12,7 +12,7 @@ struct SnapShotCardForPrint: View {
     
     @ObservedObject var chosenObject: ChosenCoverImageObject
     @Binding var collageImage: CollageImage!
-    @Binding var noteField: NoteField!
+    @ObservedObject var noteField: NoteField
     @Binding var text1: String
     @Binding var text2: String
     @Binding var text2URL: URL

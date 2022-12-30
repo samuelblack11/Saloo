@@ -17,7 +17,7 @@ struct FinalizeCardView: View {
     @State var cardRecord: CKRecord!
     @ObservedObject var chosenObject: ChosenCoverImageObject
     @Binding var collageImage: CollageImage!
-    @Binding var noteField: NoteField!
+    @ObservedObject var noteField: NoteField
     @State var frontCoverIsPersonalPhoto: Int
     @Binding var text1: String
     @Binding var text2: String
@@ -242,7 +242,7 @@ extension FinalizeCardView {
     }
     
     func prepCardForExport() -> Data {
-        let image = SnapShotCardForPrint(chosenObject: chosenObject, collageImage: $collageImage, noteField: $noteField, text1: $text1, text2: $text2, text2URL: $text2URL, text3: $text3, text4: $text4, printCardText: $printCardText).snapshot()
+        let image = SnapShotCardForPrint(chosenObject: chosenObject, collageImage: $collageImage, noteField: noteField, text1: $text1, text2: $text2, text2URL: $text2URL, text3: $text3, text4: $text4, printCardText: $printCardText).snapshot()
         let a4_width = 595.2 - 20
         let a4_height = 841.8
         let pageRect = CGRect(x: 0, y: 0, width: a4_width, height: a4_height)

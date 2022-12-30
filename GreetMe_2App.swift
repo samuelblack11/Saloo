@@ -7,6 +7,9 @@
 import SwiftUI
 import CloudKit
 
+
+
+
 @main
 struct GreetMe_2App: App {
     
@@ -17,6 +20,7 @@ struct GreetMe_2App: App {
     
     var body: some Scene {
         WindowGroup {
+            //ContentView()
             OccassionsMenu(calViewModel: CalViewModel(), showDetailView: ShowDetailView(), viewTransitions: viewTransitions)
                 //.environmentObject(appDelegate)
                 //.environment(\.managedObjectContext, dataController.context)
@@ -27,8 +31,8 @@ struct GreetMe_2App: App {
     }
 }
 
-struct bindingVariables {
-    var chosenObject: CoverImageObject!
-    var collageImage: CollageImage!
-    var noteField: NoteField!
-}
+//struct bindingVariables {
+//    var chosenObject: CoverImageObject!
+//    var collageImage: CollageImage!
+//    var noteField: NoteField!
+//}

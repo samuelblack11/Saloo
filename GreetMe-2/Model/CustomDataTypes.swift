@@ -59,6 +59,14 @@ class ChosenCoverImageObject: ObservableObject {
     //}
 }
 
+class NoteField: ObservableObject  {
+    @Published var noteText = String()
+    @Published var recipient =  String()
+    @Published var cardName = String()
+    @Published var font = String()
+    @Published var willHandWrite = Bool()
+}
+
 
 struct CoverImageObject: Identifiable, Hashable {
     let id = UUID()
@@ -77,12 +85,12 @@ struct CollageImage {
     let collageImage: UIImage
 }
 
-struct NoteField {
-    var noteText: String
-    var recipient: String
-    var cardName: String
-    var font: String
-}
+//struct NoteField {
+//    var noteText: String
+//    var recipient: String
+//    var cardName: String
+//    var font: String
+//}
 
 class HandWrite: ObservableObject {
     @Published var willHandWrite: Bool = false
@@ -108,4 +116,5 @@ class TextLimiter: ObservableObject {
     }
     @Published var hasReachedLimit = false
 }
+
 

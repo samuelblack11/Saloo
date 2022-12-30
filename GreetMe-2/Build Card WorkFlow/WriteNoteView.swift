@@ -25,10 +25,9 @@ struct WriteNoteView: View {
     @State private var handWrite2 = false
     @StateObject var willHandWrite = HandWrite()
     @Binding var frontCoverIsPersonalPhoto: Int
-    @State private var segueToFinalize = false
     @ObservedObject var chosenObject: ChosenCoverImageObject
     @State var collageImage: CollageImage!
-    @State var noteField: NoteField?
+    @StateObject var noteField = NoteField()
     @State private var selectedFont = "Papyrus"
     @State var text1: String = ""
     @State var text2: String = ""
@@ -105,7 +104,7 @@ struct WriteNoteView: View {
             }}
         .alert("Your typed message will only appear in your eCard", isPresented: $handWrite2) {Button("Ok", role: .cancel) {}}
         .padding(.bottom, 30)
-        .fullScreenCover(isPresented: $viewTransitions.isShowingFinalize) {FinalizeCardView(chosenObject: chosenObject, collageImage: $collageImage, noteField: $noteField, frontCoverIsPersonalPhoto: frontCoverIsPersonalPhoto, text1: $text1, text2: $text2, text2URL: $text2URL, text3: $text3, text4: $text4, willHandWrite: willHandWrite, eCardText: $eCardText, printCardText: $printCardText, viewTransitions: viewTransitions, chosenCollection: chosenCollection)}
+        .fullScreenCover(isPresented: $viewTransitions.isShowingFinalize) {FinalizeCardView(chosenObject: chosenObject, collageImage: $collageImage, noteField: noteField, frontCoverIsPersonalPhoto: frontCoverIsPersonalPhoto, text1: $text1, text2: $text2, text2URL: $text2URL, text3: $text3, text4: $text4, willHandWrite: willHandWrite, eCardText: $eCardText, printCardText: $printCardText, viewTransitions: viewTransitions, chosenCollection: chosenCollection)}
         }
             .navigationBarItems(leading:
                                         Button {presentationMode.wrappedValue.dismiss()} label: {
@@ -134,15 +133,11 @@ extension WriteNoteView {
     }
     
     func willHandWritePrintCard() {
-        print("called willHandWritePrintCard")
-        print(willHandWrite.willHandWrite)
         if willHandWrite.willHandWrite == true {
             if input.value == "Write Note Here" {
                 input.value = ""
             }
             eCardText = input.value
-            print("eCardText.......")
-            print(eCardText)
             printCardText = ""
         }
         else {
@@ -154,9 +149,11 @@ extension WriteNoteView {
     func checkRequiredFields() {
         if recipient != "" && cardName != "" {
             namesNotEntered = false
-            //segueToFinalize  = true
             viewTransitions.isShowingFinalize = true
-            noteField = NoteField.init(noteText: message, recipient: recipient, cardName: cardName, font: selectedFont)
+            noteField.noteText = message
+            noteField.recipient = recipient
+            noteField.cardName = cardName
+            noteField.font = selectedFont
         }
         else {
             namesNotEntered = true
