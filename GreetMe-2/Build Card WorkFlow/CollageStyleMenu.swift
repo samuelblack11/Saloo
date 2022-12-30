@@ -9,6 +9,8 @@
 import Foundation
 import SwiftUI
 
+
+
 struct CollageStyleMenu: View {
     // Object holding Bools for all views to be displayed.
     @ObservedObject var viewTransitions: ViewTransitions
@@ -23,18 +25,20 @@ struct CollageStyleMenu: View {
     // Is front cover a personal photo? (selected from camera or library)
     @Binding var frontCoverIsPersonalPhoto: Int
     // Tracks which collage type (#) was selected by the user
-    @State private var chosenCollageStyle = 0
+    //@State private var chosenCollageStyleInt = 0
     let columns = [GridItem(.fixed(150)),GridItem(.fixed(150))]
+    @State var chosenCollageStyle: CollageStyles.choices?
 
+    
     var body: some View {
         NavigationView {
             LazyVGrid(columns: columns, spacing: 10) {
-                onePhotoView().onTapGesture{chosenCollageStyle = 1; viewTransitions.isShowingCollageOne = true}
-                twoPhotoWide().onTapGesture{chosenCollageStyle = 2; viewTransitions.isShowingCollageTwo = true}
-                twoPhotoLong().onTapGesture{chosenCollageStyle = 3; viewTransitions.isShowingCollageThree = true}
-                threePhoto2Short1Long().onTapGesture{chosenCollageStyle = 4; viewTransitions.isShowingCollageFour = true}
-                threePhoto2Narrow1Wide().onTapGesture{chosenCollageStyle = 5; viewTransitions.isShowingCollageFive = true}
-                fourPhoto().onTapGesture{chosenCollageStyle = 6; viewTransitions.isShowingCollageSix = true}
+                onePhotoView().onTapGesture{chosenCollageStyle = CollageStyles.choices.one; viewTransitions.isShowingCollageOne = true}
+                twoPhotoWide().onTapGesture{chosenCollageStyle = CollageStyles.choices.two; viewTransitions.isShowingCollageTwo = true}
+                twoPhotoLong().onTapGesture{chosenCollageStyle = CollageStyles.choices.three; viewTransitions.isShowingCollageThree = true}
+                threePhoto2Short1Long().onTapGesture{chosenCollageStyle = CollageStyles.choices.four; viewTransitions.isShowingCollageFour = true}
+                threePhoto2Narrow1Wide().onTapGesture{chosenCollageStyle = CollageStyles.choices.five; viewTransitions.isShowingCollageFive = true}
+                fourPhoto().onTapGesture{chosenCollageStyle = CollageStyles.choices.six; viewTransitions.isShowingCollageSix = true}
             }
             .navigationTitle("Pick Collage Style").font(.headline).padding(.horizontal)
             .navigationBarItems(leading:

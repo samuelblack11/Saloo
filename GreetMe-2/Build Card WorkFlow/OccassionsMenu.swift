@@ -90,7 +90,8 @@ struct OccassionsMenu: View {
                         }
                     .fullScreenCover(isPresented: $viewTransitions.isShowingCollageMenu){
                         let blankCollection = ChosenCollection.init(occassion: "None", collectionID: "None")
-                        CollageStyleMenu(viewTransitions: viewTransitions,  frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto,  chosenObject: chosenObject, chosenCollection: blankCollection)
+                        CollageStyleMenu(viewTransitions: viewTransitions, chosenObject: chosenObject, chosenCollection: blankCollection, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto)
+
                     }
                 Text("Take Photo with Camera 📸 ").onTapGesture {
                     self.viewTransitions.isShowingImagePicker = false
@@ -105,7 +106,7 @@ struct OccassionsMenu: View {
                     }
                 .fullScreenCover(isPresented: $viewTransitions.isShowingCollageMenu){
                     let blankCollection = ChosenCollection.init(occassion: "None", collectionID: "None")
-                    CollageStyleMenu(viewTransitions: viewTransitions,  frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenObject: chosenObject, chosenCollection: blankCollection)}
+                    CollageStyleMenu(viewTransitions: viewTransitions, chosenObject: chosenObject, chosenCollection: blankCollection, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto)}
                 HStack {
                     TextField("Custom Search", text: $customSearch)
                         .padding(.leading, 5)

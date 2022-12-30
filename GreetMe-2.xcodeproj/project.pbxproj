@@ -49,6 +49,7 @@
 		C23A9D3C28989C340059B97C /* CalendarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C23A9D3B28989C340059B97C /* CalendarView.swift */; };
 		C23B622128B5ABE300D88F85 /* Notify.swift in Sources */ = {isa = PBXBuildFile; fileRef = C23B622028B5ABE300D88F85 /* Notify.swift */; };
 		C24B3ABB29574A3D00884E4D /* CustomDataTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = C24B3ABA29574A3D00884E4D /* CustomDataTypes.swift */; };
+		C2514788295EFDA900480C19 /* CollageBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2514787295EFDA900480C19 /* CollageBuilder.swift */; };
 		C27430FC286335F000E17B19 /* CameraCapture.swift in Sources */ = {isa = PBXBuildFile; fileRef = C27430FB286335F000E17B19 /* CameraCapture.swift */; };
 		C28B13F828E3E106008E2C4C /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C28B13F728E3E106008E2C4C /* AppDelegate.swift */; };
 		C2B650CA287AFFF90002E252 /* CloudKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C2B650C9287AFFF90002E252 /* CloudKit.framework */; };
@@ -121,6 +122,7 @@
 		C23A9D3B28989C340059B97C /* CalendarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarView.swift; sourceTree = "<group>"; };
 		C23B622028B5ABE300D88F85 /* Notify.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Notify.swift; sourceTree = "<group>"; };
 		C24B3ABA29574A3D00884E4D /* CustomDataTypes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomDataTypes.swift; sourceTree = "<group>"; };
+		C2514787295EFDA900480C19 /* CollageBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollageBuilder.swift; sourceTree = "<group>"; };
 		C27430FB286335F000E17B19 /* CameraCapture.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraCapture.swift; sourceTree = "<group>"; };
 		C28B13F728E3E106008E2C4C /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		C2B650C9287AFFF90002E252 /* CloudKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CloudKit.framework; path = System/Library/Frameworks/CloudKit.framework; sourceTree = SDKROOT; };
@@ -160,6 +162,7 @@
 				260F6904281DBFAB002E864B /* UnsplashInteractions */,
 				260F6906281DC0E3002E864B /* LoginView.swift */,
 				260F68F4281DBDCD002E864B /* OccassionsMenu.swift */,
+				C2514787295EFDA900480C19 /* CollageBuilder.swift */,
 				260F68EE281DBD93002E864B /* CollageStyleMenu.swift */,
 				260F68F8281DBDED002E864B /* CollageViews */,
 				26AD8126281F05160069C3F0 /* WriteNoteView.swift */,
@@ -518,6 +521,7 @@
 				260F68E5281DBD63002E864B /* ImagePicker.swift in Sources */,
 				C23A9D222897ECA90059B97C /* Card.swift in Sources */,
 				C23B622128B5ABE300D88F85 /* Notify.swift in Sources */,
+				C2514788295EFDA900480C19 /* CollageBuilder.swift in Sources */,
 				C23A9D372897F3F00059B97C /* CalendarDate+CoreDataClass.swift in Sources */,
 				260F68F1281DBDA2002E864B /* CollageTwoView.swift in Sources */,
 				C2DE5C98289EFECC00F8C556 /* AddEventToCalendarForm.swift in Sources */,
