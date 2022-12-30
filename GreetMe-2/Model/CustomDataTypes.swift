@@ -29,6 +29,8 @@ class ViewTransitions: ObservableObject {
     @Published var isShowingCollageFour = false
     @Published var isShowingCollageFive = false
     @Published var isShowingCollageSix = false
+    @Published var isShowingCollageBuilder = false
+
 
 }
 
@@ -55,6 +57,8 @@ class NoteField: ObservableObject  {
     @Published var cardName = String()
     @Published var font = String()
     @Published var willHandWrite = Bool()
+    @Published var eCardText = String()
+    @Published var printCardText = String()
 }
 
 
@@ -92,9 +96,7 @@ class TextLimiter: ObservableObject {
 }
 
 class CollageStyles {
-    enum choices {
-        case one; case two; case three; case four; case five; case six
-    }
+    enum choices {case one; case two; case three; case four; case five; case six}
 }
 
 public class CollageBuildingBlocks {
@@ -107,6 +109,24 @@ public class CollageBuildingBlocks {
         if menuSize {smallDim = 0.225; largeDim = 0.45}
         else {smallDim = 0.45; largeDim = 0.9}
     }
+    
+    @ViewBuilder var smallSquare: some View {
+        GeometryReader {geometry in
+            HStack(spacing: 0) {Rectangle().fill(Color.gray).frame(width: geometry.size.width * self.smallDim, height: geometry.size.width * self.smallDim ).border(Color.black)}}
+    }
+    @ViewBuilder var wideRectangle: some View {
+        GeometryReader {geometry in
+            HStack(spacing: 0) {Rectangle().fill(Color.gray).frame(width: geometry.size.width * self.largeDim, height: geometry.size.width * self.smallDim).border(Color.black)}}
+    }
+    @ViewBuilder var tallRectangle: some View {
+        GeometryReader {geometry in
+            HStack(spacing: 0) {Rectangle().fill(Color.gray).frame(width: geometry.size.width * self.smallDim, height: geometry.size.width * self.largeDim).border(Color.black)}}
+    }
+    @ViewBuilder var largeSquare: some View {
+        GeometryReader {geometry in
+            VStack {Rectangle().fill(Color.gray).frame(width: geometry.size.width * self.largeDim, height: geometry.size.width * self.largeDim).padding(.vertical)}}
+    }
+    
     
     func createSmallSquare()-> GeometryReader<HStack<some View>> {
         return GeometryReader {geometry in
@@ -123,6 +143,7 @@ public class CollageBuildingBlocks {
         return GeometryReader {geometry in
             HStack(spacing: 0) {Rectangle().fill(Color.gray).frame(width: geometry.size.width * self.smallDim, height: geometry.size.width * self.largeDim).border(Color.black)}}
     }
+    
     
     func createLargeSquare() -> GeometryReader<VStack<some View>> {
         return GeometryReader {geometry in

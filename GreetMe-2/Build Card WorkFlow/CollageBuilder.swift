@@ -8,7 +8,6 @@
 import Foundation
 import SwiftUI
 
-
 struct CollageBuilder: View {
     // Object holding Bools for all views to be displayed.
     @ObservedObject var viewTransitions: ViewTransitions
@@ -24,63 +23,60 @@ struct CollageBuilder: View {
     @Binding var frontCoverIsPersonalPhoto: Int
     // Tracks which collage type (#) was selected by the user
     @State var chosenCollageStyle: CollageStyles.choices
-    // Creates collage visual based on user selction from CollageStyleMenu
-    @ViewBuilder var collageVisual: some View {
-        switch chosenCollageStyle {
-            case .one: onePhotoView()
-            case .two: twoPhotoWide()
-            case .three: twoPhotoLong()
-            case .four: threePhoto2Short1Long()
-            case .five: threePhoto2Narrow1Wide()
-            case .six: fourPhoto()
-        }
-    }
-    @State var menuSizeBlocks = CollageBuildingBlocks(menuSize: false)
-    
+    // Create instance of CollageBuildingBlocks, with blocks sized to fit the CollageBuilder view (menuSize = false)
+    @State var largeSizeBlocks = CollageBuildingBlocks(menuSize: false)
     @State private var showingImagePicker = false
     @State private var image: Image?
     @State private var chosenImage: UIImage?
     @State var eCardText: String = ""
     @State var printCardText: String = ""
     @State var fillColor = Color.secondary
+    @State private var imageA: Image?
+    @State private var imageB: Image?
+    @State private var imageC: Image?
+    @State private var imageD: Image?
+
+    @State private var imageNumber: Int?
+    @State private var chosenImageA: UIImage?
+    @State private var chosenImageB: UIImage?
+    @State private var chosenImageC: UIImage?
+    @State private var chosenImageD: UIImage?
+
+    // Creates collage visual based on user selction from CollageStyleMenu
+    @ViewBuilder var collageVisual: some View {
+        switch chosenCollageStyle {
+            // onePhoto
+            case .one: largeSizeBlocks.createLargeSquare()
+            // twoPhotoWide, stacked vertically
+            case .two: VStack{largeSizeBlocks.wideRectangle; largeSizeBlocks.wideRectangle}
+            // twoPhotoLong, stacked horizontally
+            case .three: HStack{largeSizeBlocks.tallRectangle; largeSizeBlocks.tallRectangle}
+            // 2Short1Long
+            case .four: VStack{largeSizeBlocks.smallSquare; largeSizeBlocks.smallSquare}; largeSizeBlocks.tallRectangle
+            // 2Narrow1Wide
+            case .five: VStack{HStack{largeSizeBlocks.smallSquare; largeSizeBlocks.smallSquare}; largeSizeBlocks.wideRectangle}
+            // fourPhoto
+            case .six: HStack{largeSizeBlocks.smallSquare; largeSizeBlocks.smallSquare}; HStack{largeSizeBlocks.smallSquare; largeSizeBlocks.smallSquare}
+        }
+    }
     
     var body: some View {
         collageVisual
+            .navigationBarItems(leading: Button {viewTransitions.isShowingCollageMenu = true; viewTransitions.isShowingCollageBuilder = false} label: {
+                Image(systemName: "chevron.left").foregroundColor(.blue)
+                Text("Back")
+                })
     }
 }
 
 extension CollageBuilder {
-    // Building Blocks for each of the collage styles
-    struct smallSquare: View {var body: some View {GeometryReader { geometry in
-        HStack(spacing: 0) {Rectangle().fill(Color.gray).frame(width: geometry.size.width * 0.45, height: geometry.size.width * 0.45 ).border(Color.black)}}}
-    }
-    
-    struct wideRectangle: View {var body: some View {GeometryReader { geometry in
-        HStack(spacing: 0) {Rectangle().fill(Color.gray).frame(width: geometry.size.width * 0.9, height: geometry.size.width * 0.45).border(Color.black)}}}
-    }
-    
-    struct tallRectangle: View {var body: some View {GeometryReader { geometry in
-        HStack(spacing: 0) {Rectangle().fill(Color.gray).frame(width: geometry.size.width * 0.45, height: geometry.size.width * 0.9).border(Color.black)}}}
-        }
-    
-    struct largeSquare: View {var body: some View {GeometryReader { geometry in
-        VStack {Rectangle().fill(Color.gray).frame(width: geometry.size.width * 0.9, height: geometry.size.width * 0.9 ).padding(.vertical)}}}
-    }
-        
-    // Each of the collage styles
-    
-    struct onePhotoView2 {menuSizeBlocks.createLargeSquare()}
-    
-    struct onePhotoView: View {var body: some View {largeSquare()}}
-    struct twoPhotoWide: View {var body: some View {VStack(spacing: 0){wideRectangle(); wideRectangle()}}}
-    struct twoPhotoLong: View {var body: some View {HStack(spacing: 0){tallRectangle(); tallRectangle()}}}
-    struct threePhoto2Short1Long: View {var body: some View {VStack(spacing: 0){VStack(spacing: 0){smallSquare(); smallSquare()}; tallRectangle()}}}
-    struct threePhoto2Narrow1Wide : View {var body: some View {VStack(spacing: 0) {HStack(spacing: 0) {smallSquare(); smallSquare()}; wideRectangle()}}}
-    struct fourPhoto: View {var body: some View {VStack(spacing: 0) {HStack(spacing: 0) {smallSquare(); smallSquare()}.border(Color.black); HStack(spacing: 0)  {smallSquare(); smallSquare()}.border(Color.black)}}}
-    
-    func loadImage() {
+
+    func loadImage(chosenImage: UIImage?) {
         guard let chosenImage = chosenImage else {return print("loadImage() failed....")}
-        image = Image(uiImage: chosenImage)
+        if imageNumber == 1 {imageA = Image(uiImage: chosenImage)}
+        if imageNumber == 2 {imageB = Image(uiImage: chosenImage)}
+        if imageNumber == 3 {imageC = Image(uiImage: chosenImage)}
+        if imageNumber == 4 {imageD = Image(uiImage: chosenImage)}
     }
     
 }

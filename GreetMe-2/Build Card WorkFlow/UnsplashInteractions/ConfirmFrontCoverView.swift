@@ -46,7 +46,7 @@ struct ConfirmFrontCoverView: View {
                         }
                     if response == nil {
                         debugPrint("Ping Failed!.......")}})
-            }.padding(.bottom, 10).sheet(isPresented: $viewTransitions.isShowingCollageMenu) {CollageStyleMenu(viewTransitions: viewTransitions, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenObject: chosenObject, chosenCollection: chosenCollection!)}
+            }.padding(.bottom, 10).sheet(isPresented: $viewTransitions.isShowingCollageMenu) {CollageStyleMenu(viewTransitions: viewTransitions, chosenObject: chosenObject, chosenCollection: chosenCollection!, pageCount: pageCount, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto)}
             Text("(Attribution Will Be Included on Back Cover)").font(.system(size: 12)).padding(.bottom, 20)
             }
         .navigationBarItems(leading:

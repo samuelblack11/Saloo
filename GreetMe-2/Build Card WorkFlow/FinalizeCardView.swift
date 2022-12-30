@@ -163,7 +163,7 @@ struct FinalizeCardView: View {
                     showCompleteAlert = true
                 }
                 .fullScreenCover(isPresented: $viewTransitions.isShowingOccassions) {OccassionsMenu(calViewModel: CalViewModel(), showDetailView: ShowDetailView(), viewTransitions: viewTransitions)}
-                .fullScreenCover(isPresented: $viewTransitions.isShowingCollageMenu) {CollageStyleMenu(viewTransitions: viewTransitions, collageImage: collageImage, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenObject: chosenObject, chosenCollection: chosenCollection)}
+                .fullScreenCover(isPresented: $viewTransitions.isShowingCollageMenu) {CollageStyleMenu(viewTransitions: viewTransitions, chosenObject: chosenObject, chosenCollection: chosenCollection, pageCount: pageCount, collageImage: collageImage, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto)}
                 .fullScreenCover(isPresented: $viewTransitions.isShowingUCV) {
                     UnsplashCollectionView(viewTransitions: viewTransitions, chosenCollection: chosenCollection, pageCount: pageCount, chosenObject: chosenObject, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto)
                 }

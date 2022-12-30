@@ -8,13 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		260F68E5281DBD63002E864B /* ImagePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 260F68E4281DBD62002E864B /* ImagePicker.swift */; };
-		260F68E7281DBD68002E864B /* CollageFiveView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 260F68E6281DBD68002E864B /* CollageFiveView.swift */; };
-		260F68E9281DBD75002E864B /* CollageFourView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 260F68E8281DBD75002E864B /* CollageFourView.swift */; };
 		260F68EB281DBD7A002E864B /* CollageOneView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 260F68EA281DBD7A002E864B /* CollageOneView.swift */; };
-		260F68ED281DBD8D002E864B /* CollageSixView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 260F68EC281DBD8D002E864B /* CollageSixView.swift */; };
 		260F68EF281DBD93002E864B /* CollageStyleMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 260F68EE281DBD93002E864B /* CollageStyleMenu.swift */; };
-		260F68F1281DBDA2002E864B /* CollageTwoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 260F68F0281DBDA2002E864B /* CollageTwoView.swift */; };
-		260F68F3281DBDA7002E864B /* CollageThreeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 260F68F2281DBDA7002E864B /* CollageThreeView.swift */; };
 		260F68F5281DBDCD002E864B /* OccassionsMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 260F68F4281DBDCD002E864B /* OccassionsMenu.swift */; };
 		260F68F7281DBDD2002E864B /* UnsplashCollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 260F68F6281DBDD2002E864B /* UnsplashCollectionView.swift */; };
 		260F68FA281DBE61002E864B /* PhotoAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 260F68F9281DBE61002E864B /* PhotoAPI.swift */; };
@@ -76,13 +71,8 @@
 
 /* Begin PBXFileReference section */
 		260F68E4281DBD62002E864B /* ImagePicker.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImagePicker.swift; sourceTree = "<group>"; };
-		260F68E6281DBD68002E864B /* CollageFiveView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CollageFiveView.swift; sourceTree = "<group>"; };
-		260F68E8281DBD75002E864B /* CollageFourView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CollageFourView.swift; sourceTree = "<group>"; };
 		260F68EA281DBD7A002E864B /* CollageOneView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CollageOneView.swift; sourceTree = "<group>"; };
-		260F68EC281DBD8D002E864B /* CollageSixView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CollageSixView.swift; sourceTree = "<group>"; };
 		260F68EE281DBD93002E864B /* CollageStyleMenu.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CollageStyleMenu.swift; sourceTree = "<group>"; };
-		260F68F0281DBDA2002E864B /* CollageTwoView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CollageTwoView.swift; sourceTree = "<group>"; };
-		260F68F2281DBDA7002E864B /* CollageThreeView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CollageThreeView.swift; sourceTree = "<group>"; };
 		260F68F4281DBDCD002E864B /* OccassionsMenu.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OccassionsMenu.swift; sourceTree = "<group>"; };
 		260F68F6281DBDD2002E864B /* UnsplashCollectionView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UnsplashCollectionView.swift; sourceTree = "<group>"; };
 		260F68F9281DBE61002E864B /* PhotoAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoAPI.swift; sourceTree = "<group>"; };
@@ -147,11 +137,6 @@
 			isa = PBXGroup;
 			children = (
 				260F68EA281DBD7A002E864B /* CollageOneView.swift */,
-				260F68F0281DBDA2002E864B /* CollageTwoView.swift */,
-				260F68F2281DBDA7002E864B /* CollageThreeView.swift */,
-				260F68E8281DBD75002E864B /* CollageFourView.swift */,
-				260F68E6281DBD68002E864B /* CollageFiveView.swift */,
-				260F68EC281DBD8D002E864B /* CollageSixView.swift */,
 			);
 			path = CollageViews;
 			sourceTree = "<group>";
@@ -498,7 +483,6 @@
 				C23340EB28C3D589006222F5 /* FutureDelivery+CoreDataProperties.swift in Sources */,
 				260F68EF281DBD93002E864B /* CollageStyleMenu.swift in Sources */,
 				C28B13F828E3E106008E2C4C /* AppDelegate.swift in Sources */,
-				260F68ED281DBD8D002E864B /* CollageSixView.swift in Sources */,
 				26A7218C281DB8D900ADAE44 /* GreetMe_2.xcdatamodeld in Sources */,
 				C24B3ABB29574A3D00884E4D /* CustomDataTypes.swift in Sources */,
 				262C3ED3281E1E9C00F07C01 /* CalendarParent.swift in Sources */,
@@ -509,21 +493,17 @@
 				26AD812B281F119A0069C3F0 /* ConfirmFrontCoverView.swift in Sources */,
 				C237E6DF294E44D500E472AD /* Inbox.swift in Sources */,
 				C23A9D3A28989B630059B97C /* DateDetailView.swift in Sources */,
-				260F68E9281DBD75002E864B /* CollageFourView.swift in Sources */,
 				C23A9D3C28989C340059B97C /* CalendarView.swift in Sources */,
 				26AD8129281F05310069C3F0 /* FinalizeCardView.swift in Sources */,
 				260F68EB281DBD7A002E864B /* CollageOneView.swift in Sources */,
 				260F68F5281DBDCD002E864B /* OccassionsMenu.swift in Sources */,
 				260F68FA281DBE61002E864B /* PhotoAPI.swift in Sources */,
 				2688D706285FA25100954120 /* SnapShotCardForPrint.swift in Sources */,
-				260F68E7281DBD68002E864B /* CollageFiveView.swift in Sources */,
-				260F68F3281DBDA7002E864B /* CollageThreeView.swift in Sources */,
 				260F68E5281DBD63002E864B /* ImagePicker.swift in Sources */,
 				C23A9D222897ECA90059B97C /* Card.swift in Sources */,
 				C23B622128B5ABE300D88F85 /* Notify.swift in Sources */,
 				C2514788295EFDA900480C19 /* CollageBuilder.swift in Sources */,
 				C23A9D372897F3F00059B97C /* CalendarDate+CoreDataClass.swift in Sources */,
-				260F68F1281DBDA2002E864B /* CollageTwoView.swift in Sources */,
 				C2DE5C98289EFECC00F8C556 /* AddEventToCalendarForm.swift in Sources */,
 				262C3ED5281E226F00F07C01 /* Outbox.swift in Sources */,
 				260F6907281DC0E3002E864B /* LoginView.swift in Sources */,
