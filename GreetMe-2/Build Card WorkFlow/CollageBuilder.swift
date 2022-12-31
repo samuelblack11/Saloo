@@ -24,7 +24,7 @@ struct CollageBuilder: View {
     // Tracks which collage type (#) was selected by the user
     @State var chosenCollageStyle: CollageStyles.choices
     // Create instance of CollageBuildingBlocks, with blocks sized to fit the CollageBuilder view (menuSize = false)
-    @State var largeBlocks = CollageBuildingBlocks(menuSize: false)
+    @State var largeBlocks = CollageBuildingBlocks()
     @State private var showingImagePicker = false
     @State private var image: Image?
     @State private var chosenImage: UIImage?
@@ -46,17 +46,17 @@ struct CollageBuilder: View {
     @ViewBuilder var collageVisual: some View {
         switch chosenCollageStyle {
             // onePhoto
-            case .one: largeBlocks.largeSquare
+            case .one: largeBlocks.onePhotoView
             // twoPhotoWide, stacked vertically
-            case .two: VStack{largeBlocks.wideRectangle; largeBlocks.wideRectangle}
+            case .two: largeBlocks.twoPhotoWide
             // twoPhotoLong, stacked horizontally
-            case .three: HStack{largeBlocks.tallRectangle; largeBlocks.tallRectangle}
+            case .three: largeBlocks.twoPhotoLong
             // 2Short1Long
-            case .four: VStack{largeBlocks.smallSquare; largeBlocks.smallSquare}; largeBlocks.tallRectangle
+            case .four: largeBlocks.twoShortOneLong
             // 2Narrow1Wide
-            case .five: VStack{HStack{largeBlocks.smallSquare; largeBlocks.smallSquare}; largeBlocks.wideRectangle}
+            case .five: largeBlocks.twoNarrowOneWide
             // fourPhoto
-            case .six: HStack{largeBlocks.smallSquare; largeBlocks.smallSquare}; HStack{largeBlocks.smallSquare; largeBlocks.smallSquare}
+            case .six: largeBlocks.fourPhoto
         }
     }
     

@@ -76,41 +76,23 @@ class CollageStyles {
 }
 
 public class CollageBuildingBlocks {
-    var menuSize: Bool
-    var smallDim: CGFloat
-    var largeDim: CGFloat
-    
-    init(menuSize: Bool) {
-        self.menuSize = menuSize
-        if menuSize {smallDim = 0.45; largeDim = 0.9}
-        else {smallDim = 0.45; largeDim = 0.9}
-    }
-    
-    @ViewBuilder var smallSquare: some View {
-        GeometryReader {geometry in
-            HStack(spacing: 0) {Rectangle().fill(Color.gray).frame(width: geometry.size.width * self.smallDim, height: geometry.size.width * self.smallDim ).border(Color.black)}}
-    }
-    @ViewBuilder var wideRectangle: some View {
-        GeometryReader {geometry in
-            HStack(spacing: 0) {Rectangle().fill(Color.gray).frame(width: geometry.size.width * self.largeDim, height: geometry.size.width * self.smallDim).border(Color.black)}}
-    }
-    @ViewBuilder var tallRectangle: some View {
-        GeometryReader {geometry in
-            HStack(spacing: 0) {Rectangle().fill(Color.gray).frame(width: geometry.size.width * self.smallDim, height: geometry.size.width * self.largeDim).border(Color.black)}}
-    }
 
-    func createLargeSquare() -> GeometryReader<VStack<some View>> {
-        return GeometryReader {geometry in
-            VStack {Rectangle().fill(Color.gray).frame(width: geometry.size.width * self.largeDim, height: geometry.size.width * self.largeDim).padding(.vertical)}}
+    @ViewBuilder var block: some View {
+        GeometryReader {geometry in
+            HStack(spacing: 0) {Rectangle().fill(Color.gray).border(Color.black)}}
     }
     
-    @ViewBuilder var onePhotoView: some View {createLargeSquare()}
-    @ViewBuilder var twoPhotoWide: some View {VStack(spacing:0){wideRectangle; wideRectangle}}
-    @ViewBuilder var twoPhotoLong: some View {HStack(spacing:0){tallRectangle; tallRectangle}}
-    @ViewBuilder var twoShortOneLong: some View {HStack(spacing:0){VStack(spacing:0){smallSquare; smallSquare}; tallRectangle}}
-    @ViewBuilder var twoNarrowOneWide: some View {VStack(spacing:0){HStack(spacing:0){smallSquare; smallSquare}; wideRectangle}}
-    @ViewBuilder var fourPhoto: some View {HStack(spacing:0){smallSquare; smallSquare}; HStack(spacing:0){smallSquare; smallSquare}}
+    @ViewBuilder var onePhotoView: some View {block}
+    @ViewBuilder var twoPhotoWide: some View {VStack(spacing:0){block;block}}
+    @ViewBuilder var twoPhotoLong: some View {HStack(spacing:0){block; block}}
+    @ViewBuilder var twoShortOneLong: some View {HStack(spacing:0){VStack(spacing:0){block; block}; block}}
+    @ViewBuilder var twoNarrowOneWide: some View {VStack(spacing:0){HStack(spacing:0){block; block}; block}}
+    @ViewBuilder var fourPhoto: some View {HStack(spacing:0){block; block}; HStack(spacing:0){block; block}}
     
+    //func createBlock() -> GeometryReader<VStack<some View>> {
+    //    return GeometryReader {geometry in
+    //        VStack {Rectangle().fill(Color.gray).padding(.vertical)}}
+   //}
 
 }
 
