@@ -12,7 +12,13 @@ import CloudKit
 
 
 struct FinalizeCardView: View {
-    @Environment(\.presentationMode) var presentationMode
+    
+    @State private var showOccassions = false
+    @State private var showUCV = false
+    @State private var showCollageMenu = false
+    @State private var showCollageBuilder = false
+    @State private var showWriteNote = false
+    
     @State var card: Card!
     @State var cardRecord: CKRecord!
     @ObservedObject var chosenObject: ChosenCoverImageObject
@@ -38,7 +44,6 @@ struct FinalizeCardView: View {
     @State var string2: String!
     @State private var showShareSheet = false
     @State var share: CKShare?
-    @ObservedObject var viewTransitions: ViewTransitions
     @EnvironmentObject private var cm: CKModel
     @State private var isAddingCard = false
     @State private var isSharing = false
@@ -162,23 +167,19 @@ struct FinalizeCardView: View {
                     //saveAndShareIsActive = true
                     showCompleteAlert = true
                 }
-                .fullScreenCover(isPresented: $viewTransitions.isShowingOccassions) {OccassionsMenu(calViewModel: CalViewModel(), showDetailView: ShowDetailView(), viewTransitions: viewTransitions)}
-                .fullScreenCover(isPresented: $viewTransitions.isShowingCollageMenu) {CollageStyleMenu(viewTransitions: viewTransitions, chosenObject: chosenObject, chosenCollection: chosenCollection, pageCount: pageCount, collageImage: collageImage, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto)}
-                .fullScreenCover(isPresented: $viewTransitions.isShowingUCV) {
-                    UnsplashCollectionView(viewTransitions: viewTransitions, chosenCollection: chosenCollection, pageCount: pageCount, chosenObject: chosenObject, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto)
+                .fullScreenCover(isPresented: $showOccassions) {OccassionsMenu(calViewModel: CalViewModel(), showDetailView: ShowDetailView())}
+                .fullScreenCover(isPresented: $showCollageMenu) {CollageStyleMenu(chosenObject: chosenObject, chosenCollection: chosenCollection, pageCount: pageCount, collageImage: collageImage, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto)}
+                .fullScreenCover(isPresented: $showUCV) {
+                    UnsplashCollectionView(chosenCollection: chosenCollection, pageCount: pageCount, chosenObject: chosenObject, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto)
                 }
                 .disabled(saveAndShareIsActive)
                 .alert("Save Complete", isPresented: $showCompleteAlert) {
                     Button("Ok", role: .cancel) {
-                        viewTransitions.isShowingCollageOne = false
-                        viewTransitions.isShowingWriteNote = false
-                        viewTransitions.isShowingCollageMenu = false
-                        viewTransitions.isShowingUCV = false
-                        
-                        
-                        
-                        
-                        viewTransitions.isShowingOccassions = true
+                        showCollageBuilder = false
+                        showWriteNote = false
+                        showCollageMenu = false
+                        showUCV = false
+                        showOccassions = true
                         let rootViewController = UIApplication.shared.connectedScenes
                                 .filter {$0.activationState == .foregroundActive }
                                 .map {$0 as? UIWindowScene }
@@ -197,13 +198,13 @@ struct FinalizeCardView: View {
             }
         }
         .navigationBarItems(
-            leading:Button {presentationMode.wrappedValue.dismiss()}
+            leading:Button {}
             label: {Image(systemName: "chevron.left").foregroundColor(.blue)
             Text("Back")},
-            trailing: Button {viewTransitions.isShowingOccassions = true} label: {Image(systemName: "menucard.fill").foregroundColor(.blue)
+            trailing: Button {showOccassions = true} label: {Image(systemName: "menucard.fill").foregroundColor(.blue)
             Text("Menu")}
             )
-        .fullScreenCover(isPresented: $viewTransitions.isShowingOccassions) {OccassionsMenu(calViewModel: CalViewModel(), showDetailView: ShowDetailView(), viewTransitions: viewTransitions)}
+        .fullScreenCover(isPresented: $showOccassions) {OccassionsMenu(calViewModel: CalViewModel(), showDetailView: ShowDetailView())}
         .fullScreenCover(isPresented: $showShareSheet, content: {if let share = share {CloudSharingView(share: share, container: CoreDataStack.shared.ckContainer, card: card)}})
         .fullScreenCover(isPresented: $showActivityController) {ActivityView(activityItems: $activityItemsArray, applicationActivities: nil)}
         }

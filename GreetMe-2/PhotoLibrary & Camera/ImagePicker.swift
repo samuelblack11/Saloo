@@ -1,8 +1,8 @@
 //
-//  ImagePicker.swift
-//  LearningSwiftUI
+//  ImagePicker2.swift
+//  GreetMe-2
 //
-//  Created by Sam Black on 4/30/22.
+//  Created by Sam Black on 12/30/22.
 //
 
 import Foundation
@@ -51,6 +51,3 @@ struct ImagePicker: UIViewControllerRepresentable {
         }
     }
 }
-
-
-

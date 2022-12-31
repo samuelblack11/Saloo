@@ -15,17 +15,15 @@ struct GreetMe_2App: App {
     
     let dataController = CoreDataStack.shared
     @StateObject var cm = CKModel()
-    @StateObject var viewTransitions = ViewTransitions()
     //@UIApplicationDelegateAdaptor var appDelegate: AppDelegate
     
     var body: some Scene {
         WindowGroup {
             //ContentView()
-            OccassionsMenu(calViewModel: CalViewModel(), showDetailView: ShowDetailView(), viewTransitions: viewTransitions)
+            OccassionsMenu(calViewModel: CalViewModel(), showDetailView: ShowDetailView())
                 //.environmentObject(appDelegate)
                 //.environment(\.managedObjectContext, dataController.context)
                 .environmentObject(cm)
-                .environmentObject(viewTransitions)
 
         }
     }

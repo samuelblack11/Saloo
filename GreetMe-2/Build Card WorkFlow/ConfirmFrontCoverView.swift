@@ -11,7 +11,9 @@ import Foundation
 import SwiftUI
 
 struct ConfirmFrontCoverView: View {
-    @ObservedObject var viewTransitions: ViewTransitions
+    @State private var showUCV = false
+    @State private var showCollageMenu = false
+
     @State var frontCoverImage: Image!
     @State var frontCoverPhotographer: String!
     @State var frontCoverUserName: String!
@@ -38,7 +40,7 @@ struct ConfirmFrontCoverView: View {
             Spacer()
             Button("Confirm Image for Front Cover") {
                 //segueToCollageMenu = true
-                viewTransitions.isShowingCollageMenu = true
+                showCollageMenu = true
                 PhotoAPI.pingDownloadURL(downloadLocation: chosenObject.downloadLocation, completionHandler: { (response, error) in
                     if response != nil {
                         debugPrint("Ping Success!.......")
@@ -46,20 +48,20 @@ struct ConfirmFrontCoverView: View {
                         }
                     if response == nil {
                         debugPrint("Ping Failed!.......")}})
-            }.padding(.bottom, 10).sheet(isPresented: $viewTransitions.isShowingCollageMenu) {CollageStyleMenu(viewTransitions: viewTransitions, chosenObject: chosenObject, chosenCollection: chosenCollection!, pageCount: pageCount, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto)}
+            }.padding(.bottom, 10).fullScreenCover(isPresented: $showCollageMenu) {CollageStyleMenu(chosenObject: chosenObject, chosenCollection: chosenCollection!, pageCount: pageCount, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto)}
             Text("(Attribution Will Be Included on Back Cover)").font(.system(size: 12)).padding(.bottom, 20)
             }
         .navigationBarItems(leading:
             Button {
                 print("Back button tapped")
-                viewTransitions.isShowingUCV = true
+                showUCV = true
             } label: {
                 Image(systemName: "chevron.left").foregroundColor(.blue)
                 Text("Back")
             })
-        .fullScreenCover(isPresented: $viewTransitions.isShowingUCV) {
-            UnsplashCollectionView(viewTransitions: viewTransitions, chosenCollection: chosenCollection!, pageCount: pageCount, chosenObject: chosenObject, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto)
-        }
+        //.fullScreenCover(isPresented: $viewTransitions.isShowingUCV) {
+           // UnsplashCollectionView(viewTransitions: viewTransitions, chosenCollection: chosenCollection!, pageCount: pageCount, chosenObject: chosenObject, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto)
+        //}
         }
     }
 }

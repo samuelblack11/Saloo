@@ -15,8 +15,11 @@ import SwiftUI
 // https://www.hackingwithswift.com/quick-start/swiftui/how-to-fix-initializer-init-rowcontent-requires-that-sometype-conform-to-identifiable
 
 struct UnsplashCollectionView: View {
+    
+    @State private var showOccassions = false
+    @State private var showConfirmFrontCover = false
+
     // Object holding Bools for all views to be displayed.
-    @ObservedObject var viewTransitions: ViewTransitions
     // Object for collection selected by user
     @State var chosenCollection: ChosenCollection
     // Array of all images displayed in the view
@@ -54,7 +57,7 @@ struct UnsplashCollectionView: View {
                     }
                 }
                 .navigationTitle("Choose Front Cover")
-                .navigationBarItems(leading:Button {viewTransitions.isShowingOccassions.toggle(); viewTransitions.isShowingUCV.toggle()} label: {Image(systemName: "chevron.left").foregroundColor(.blue); Text("Back")})
+                .navigationBarItems(leading:Button {showOccassions.toggle()} label: {Image(systemName: "chevron.left").foregroundColor(.blue); Text("Back")})
                 Button("More...") {getMorePhotos(); print("page count: \(pageCount)")}.disabled(setButtonStatus(imageObjects: imageObjects))
             }
         }
@@ -63,8 +66,10 @@ struct UnsplashCollectionView: View {
             if chosenCollection.occassion == "None" {getUnsplashPhotos()}
             else {getPhotosFromCollection(collectionID: chosenCollection.collectionID, page_num: pageCount)}
         }
-        .fullScreenCover(isPresented: $viewTransitions.isShowingConfirmFrontCover) {ConfirmFrontCoverView(viewTransitions: viewTransitions, chosenObject: chosenObject, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenCollection: chosenCollection, pageCount: pageCount)}
-        .fullScreenCover(isPresented: $viewTransitions.isShowingOccassions) {OccassionsMenu(calViewModel: CalViewModel(), showDetailView: ShowDetailView(), viewTransitions: viewTransitions)}
+        .fullScreenCover(isPresented: $showConfirmFrontCover) {
+            
+            ConfirmFrontCoverView(chosenObject: chosenObject, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenCollection: chosenCollection, pageCount: pageCount)}
+        .fullScreenCover(isPresented: $showOccassions) {OccassionsMenu(calViewModel: CalViewModel(), showDetailView: ShowDetailView())}
         //.fullScreenCover(isPresented: $presentUCV2) {UnsplashCollectionView(viewTransitions: viewTransitions, chosenSmallURL: chosenSmallURL, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenCollection: chosenCollection, pageCount: $pageCount)}
     }
     
@@ -91,12 +96,7 @@ extension UnsplashCollectionView {
                 chosenObject.downloadLocation = imageObjects[index].downloadLocation
                 chosenObject.index = index
                 print("Tap Handled....")
-                viewTransitions.isShowingConfirmFrontCover.toggle()
-                viewTransitions.isShowingUCV.toggle()
-                print(viewTransitions.isShowingConfirmFrontCover)
-                print(viewTransitions.isShowingUCV)
-                print(viewTransitions.isShowingOccassions)
-                print("---")
+                showConfirmFrontCover.toggle()
             }
         catch {debugPrint("Error handling tap .... : \(error)")}
     }

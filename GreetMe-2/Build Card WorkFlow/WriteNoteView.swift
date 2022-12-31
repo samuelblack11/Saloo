@@ -12,9 +12,9 @@ import SwiftUI
 // https://www.hackingwithswift.com/quick-start/swiftui/what-is-the-focusstate-property-wrapper
 
 struct WriteNoteView: View {
-    @ObservedObject var viewTransitions: ViewTransitions
+    @State private var showFinalize = false
+    @State private var showCollageBuilder = false
     
-    @Environment(\.presentationMode) var presentationMode
     @State private var message: String = "Write Your Note Here"
     @ObservedObject var input = TextLimiter(limit: 225)
     @State private var recipient: String = ""
@@ -104,10 +104,10 @@ struct WriteNoteView: View {
             }}
         .alert("Your typed message will only appear in your eCard", isPresented: $handWrite2) {Button("Ok", role: .cancel) {}}
         .padding(.bottom, 30)
-        .fullScreenCover(isPresented: $viewTransitions.isShowingFinalize) {FinalizeCardView(chosenObject: chosenObject, collageImage: $collageImage, noteField: noteField, frontCoverIsPersonalPhoto: frontCoverIsPersonalPhoto, text1: $text1, text2: $text2, text2URL: $text2URL, text3: $text3, text4: $text4, willHandWrite: willHandWrite, eCardText: $eCardText, printCardText: $printCardText, viewTransitions: viewTransitions, chosenCollection: chosenCollection)}
+        .fullScreenCover(isPresented: $showFinalize) {FinalizeCardView(chosenObject: chosenObject, collageImage: $collageImage, noteField: noteField, frontCoverIsPersonalPhoto: frontCoverIsPersonalPhoto, text1: $text1, text2: $text2, text2URL: $text2URL, text3: $text3, text4: $text4, willHandWrite: willHandWrite, eCardText: $eCardText, printCardText: $printCardText, chosenCollection: chosenCollection)}
         }
             .navigationBarItems(leading:
-                                        Button {presentationMode.wrappedValue.dismiss()} label: {
+                                        Button {} label: {
                                             Image(systemName: "chevron.left").foregroundColor(.blue)
                                                 Text("Back")})
         }
@@ -149,7 +149,7 @@ extension WriteNoteView {
     func checkRequiredFields() {
         if recipient != "" && cardName != "" {
             namesNotEntered = false
-            viewTransitions.isShowingFinalize = true
+            showFinalize = true
             noteField.noteText = message
             noteField.recipient = recipient
             noteField.cardName = cardName

@@ -10,8 +10,9 @@ import Foundation
 import SwiftUI
 
 struct CollageStyleMenu: View {
-    // Object holding Bools for all views to be displayed.
-    @ObservedObject var viewTransitions: ViewTransitions
+    @State private var showConfirmFrontCover = false
+    @State private var showCollageBuilder = false
+
     // The image, and it's components, selected by the user
     @ObservedObject var chosenObject: ChosenCoverImageObject
     // Object for collection selected by user
@@ -25,37 +26,67 @@ struct CollageStyleMenu: View {
     // Tracks which collage type (#) was selected by the user
     @State var chosenCollageStyle: CollageStyles.choices?
     //
-    @State var menuSizeBlocks = CollageBuildingBlocks(menuSize: true)
-    
-    //let columns = [GridItem(.fixed(150)),GridItem(.fixed(150))]
-    
+    @State private var menuSizeBlocks = CollageBuildingBlocks(menuSize: true)
+        
     let columns = [GridItem(.flexible()),GridItem(.flexible())]
-
-
+    
     var body: some View {
         NavigationView {
-            LazyVGrid(columns: columns, spacing: 10) {
+            GridStack(rows: 3, columns: 2) { row, col in
+            HStack(spacing:10) {
                 //onePhotoView
-                menuSizeBlocks.largeSquare.onTapGesture{chosenCollageStyle = CollageStyles.choices.one; viewTransitions.isShowingCollageBuilder = true}
+                menuSizeBlocks.largeSquare.onTapGesture{self.chosenCollageStyle = CollageStyles.choices.one; showCollageBuilder = true}
                 //twoPhotoWide
-                VStack{menuSizeBlocks.wideRectangle; menuSizeBlocks.wideRectangle}.onTapGesture{chosenCollageStyle = CollageStyles.choices.two; viewTransitions.isShowingCollageBuilder = true}
+                VStack(spacing:0){menuSizeBlocks.wideRectangle; menuSizeBlocks.wideRectangle}.onTapGesture{chosenCollageStyle = CollageStyles.choices.two; showCollageBuilder = true}
+            }
+            HStack(spacing:10) {
                 //twoPhotoLong
-                HStack{menuSizeBlocks.tallRectangle; menuSizeBlocks.tallRectangle}.onTapGesture{chosenCollageStyle = CollageStyles.choices.three; viewTransitions.isShowingCollageBuilder = true}
+                HStack(spacing:0){menuSizeBlocks.tallRectangle; menuSizeBlocks.tallRectangle}.onTapGesture{chosenCollageStyle = CollageStyles.choices.three; showCollageBuilder = true}
                 //2Short1Long
-                HStack{VStack{menuSizeBlocks.smallSquare; menuSizeBlocks.smallSquare}; menuSizeBlocks.tallRectangle}.onTapGesture{chosenCollageStyle = CollageStyles.choices.four; viewTransitions.isShowingCollageBuilder = true}
+                HStack(spacing:0){VStack(spacing:0){menuSizeBlocks.smallSquare; menuSizeBlocks.smallSquare}; menuSizeBlocks.tallRectangle}.onTapGesture{chosenCollageStyle = CollageStyles.choices.four; showCollageBuilder = true}
+            }
+            HStack(spacing:10) {
                 //2Narrow1Wide
-                VStack{HStack{menuSizeBlocks.smallSquare; menuSizeBlocks.smallSquare}; menuSizeBlocks.wideRectangle}.onTapGesture{chosenCollageStyle = CollageStyles.choices.five; viewTransitions.isShowingCollageBuilder = true}
+                VStack(spacing:0){HStack(spacing:0){menuSizeBlocks.smallSquare; menuSizeBlocks.smallSquare}; menuSizeBlocks.wideRectangle}.onTapGesture{chosenCollageStyle = CollageStyles.choices.five; showCollageBuilder = true}
                 //fourPhoto
-                HStack{menuSizeBlocks.smallSquare; menuSizeBlocks.smallSquare}; HStack{menuSizeBlocks.smallSquare; menuSizeBlocks.smallSquare}.onTapGesture{chosenCollageStyle = CollageStyles.choices.six; viewTransitions.isShowingCollageBuilder = true}
+                HStack(spacing:0){menuSizeBlocks.smallSquare; menuSizeBlocks.smallSquare}; HStack(spacing:0){menuSizeBlocks.smallSquare; menuSizeBlocks.smallSquare}.onTapGesture{chosenCollageStyle = CollageStyles.choices.six; showCollageBuilder = true}
+            }
             }
             .navigationTitle("Pick Collage Style").font(.headline).padding(.horizontal)
-            .navigationBarItems(leading:Button {viewTransitions.isShowingConfirmFrontCover = true
+            .navigationBarItems(leading:Button {showConfirmFrontCover = true
             } label: {Image(systemName: "chevron.left").foregroundColor(.blue); Text("Back")})
-            .fullScreenCover(isPresented: $viewTransitions.isShowingConfirmFrontCover) {
-                ConfirmFrontCoverView(viewTransitions: viewTransitions, chosenObject: chosenObject, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, pageCount: pageCount)
+            .fullScreenCover(isPresented: $showConfirmFrontCover) {
+                ConfirmFrontCoverView(chosenObject: chosenObject, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, pageCount: pageCount)
             }
-            .frame(maxHeight: 800)
+            //.frame(maxHeight: 800)
         }
-        .fullScreenCover(isPresented: $viewTransitions.isShowingCollageBuilder) {CollageBuilder(viewTransitions: viewTransitions, chosenObject: chosenObject, chosenCollection: chosenCollection, collageImage: $collageImage, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenCollageStyle: chosenCollageStyle!)}
+        .frame(maxHeight: 800)
+        .fullScreenCover(isPresented: $showCollageBuilder) {CollageBuilder(chosenObject: chosenObject, chosenCollection: chosenCollection, collageImage: $collageImage, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenCollageStyle: chosenCollageStyle!)}
+    }
+}
+
+extension CollageStyleMenu {
+    
+    struct GridStack<Content: View>: View {
+       let rows: Intå
+       let columns: Int
+       let content: (Int, Int) -> Content
+       var body: some View {
+          VStack {
+             ForEach(0 ..< rows, id: \.self) { row in
+                HStack {
+                   ForEach(0 ..< columns, id: \.self) { column in
+                      content(row, column)
+                   }
+                }
+             }
+          }
+       }
+    init(rows: Int, columns: Int, @ViewBuilder content:
+    @escaping (Int, Int) -> Content) {
+          self.rows = rows
+          self.columns = columns
+          self.content = content
+        }
     }
 }

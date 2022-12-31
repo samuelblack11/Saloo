@@ -9,8 +9,7 @@ import Foundation
 import SwiftUI
 
 struct CollageOneView: View {
-    @Environment(\.presentationMode) var presentationMode
-    @Environment(\.dismiss) private var dismiss
+    @State private var showWriteNote = false
     @State private var showingImagePicker = false
     @State private var image: Image?
     @State private var chosenImage: UIImage?
@@ -21,7 +20,6 @@ struct CollageOneView: View {
     @State var eCardText: String = ""
     @State var printCardText: String = ""
     @State var fillColor = Color.secondary
-    @ObservedObject var viewTransitions: ViewTransitions
     @State var chosenCollection: ChosenCollection
 
 
@@ -44,7 +42,7 @@ struct CollageOneView: View {
                 .onTapGesture {showingImagePicker = true}
                 .frame(width: 300, height: 300)
                 .navigationBarItems(leading:
-                    Button {presentationMode.wrappedValue.dismiss()} label: {
+                    Button {} label: {
                     Image(systemName: "chevron.left").foregroundColor(.blue)
                     Text("Back")
                     })
@@ -57,11 +55,11 @@ struct CollageOneView: View {
         collageOneView
         Spacer()
         Button("Confirm Collage for Inside Cover") {
-            viewTransitions.isShowingWriteNote = true
+            showWriteNote = true
             let theSnapShot = collageOneView.snapshot()
             collageImage = CollageImage.init(collageImage: theSnapShot)
-        }.padding(.bottom, 30).fullScreenCover(isPresented: $viewTransitions.isShowingWriteNote ) {
-            WriteNoteView(viewTransitions: viewTransitions, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenObject: chosenObject, collageImage: collageImage, eCardText: $eCardText, printCardText: $printCardText, chosenCollection: chosenCollection)}
+        }.padding(.bottom, 30).fullScreenCover(isPresented: $showWriteNote ) {
+            WriteNoteView(frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenObject: chosenObject, collageImage: collageImage, eCardText: $eCardText, printCardText: $printCardText, chosenCollection: chosenCollection)}
         }
         }
 

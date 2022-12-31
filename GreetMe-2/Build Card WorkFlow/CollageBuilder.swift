@@ -1,5 +1,5 @@
 //
-//  CollageBuilder.swift
+//  CollageBuilder2.swift
 //  GreetMe-2
 //
 //  Created by Sam Black on 12/30/22.
@@ -9,8 +9,8 @@ import Foundation
 import SwiftUI
 
 struct CollageBuilder: View {
-    // Object holding Bools for all views to be displayed.
-    @ObservedObject var viewTransitions: ViewTransitions
+    @State private var showCollageMenu = false
+    @State private var showCollageBuilder = false
     // The image, and it's components, selected by the user
     @ObservedObject var chosenObject: ChosenCoverImageObject
     // Object for collection selected by user
@@ -24,7 +24,7 @@ struct CollageBuilder: View {
     // Tracks which collage type (#) was selected by the user
     @State var chosenCollageStyle: CollageStyles.choices
     // Create instance of CollageBuildingBlocks, with blocks sized to fit the CollageBuilder view (menuSize = false)
-    @State var largeSizeBlocks = CollageBuildingBlocks(menuSize: false)
+    @State var largeBlocks = CollageBuildingBlocks(menuSize: false)
     @State private var showingImagePicker = false
     @State private var image: Image?
     @State private var chosenImage: UIImage?
@@ -46,23 +46,24 @@ struct CollageBuilder: View {
     @ViewBuilder var collageVisual: some View {
         switch chosenCollageStyle {
             // onePhoto
-            case .one: largeSizeBlocks.createLargeSquare()
+            case .one: largeBlocks.largeSquare
             // twoPhotoWide, stacked vertically
-            case .two: VStack{largeSizeBlocks.wideRectangle; largeSizeBlocks.wideRectangle}
+            case .two: VStack{largeBlocks.wideRectangle; largeBlocks.wideRectangle}
             // twoPhotoLong, stacked horizontally
-            case .three: HStack{largeSizeBlocks.tallRectangle; largeSizeBlocks.tallRectangle}
+            case .three: HStack{largeBlocks.tallRectangle; largeBlocks.tallRectangle}
             // 2Short1Long
-            case .four: VStack{largeSizeBlocks.smallSquare; largeSizeBlocks.smallSquare}; largeSizeBlocks.tallRectangle
+            case .four: VStack{largeBlocks.smallSquare; largeBlocks.smallSquare}; largeBlocks.tallRectangle
             // 2Narrow1Wide
-            case .five: VStack{HStack{largeSizeBlocks.smallSquare; largeSizeBlocks.smallSquare}; largeSizeBlocks.wideRectangle}
+            case .five: VStack{HStack{largeBlocks.smallSquare; largeBlocks.smallSquare}; largeBlocks.wideRectangle}
             // fourPhoto
-            case .six: HStack{largeSizeBlocks.smallSquare; largeSizeBlocks.smallSquare}; HStack{largeSizeBlocks.smallSquare; largeSizeBlocks.smallSquare}
+            case .six: HStack{largeBlocks.smallSquare; largeBlocks.smallSquare}; HStack{largeBlocks.smallSquare; largeBlocks.smallSquare}
         }
     }
     
     var body: some View {
-        collageVisual
-            .navigationBarItems(leading: Button {viewTransitions.isShowingCollageMenu = true; viewTransitions.isShowingCollageBuilder = false} label: {
+        //largeSizeBlocks.createLargeSquare()
+          collageVisual
+            .navigationBarItems(leading: Button {showCollageMenu = true; showCollageBuilder = false} label: {
                 Image(systemName: "chevron.left").foregroundColor(.blue)
                 Text("Back")
                 })
