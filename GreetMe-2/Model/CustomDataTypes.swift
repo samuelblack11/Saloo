@@ -71,35 +71,24 @@ class TextLimiter: ObservableObject {
     @Published var hasReachedLimit = false
 }
 
-class CollageStyles {
-    enum choices {
-        case one; case two; case three; case four; case five; case six
-    }
-    
-}
-
-class ChosenCollageStyle: ObservableObject {
-    @Published var chosenStyle: CollageStyles.choices?
-}
+class ChosenCollageStyle: ObservableObject {@Published var chosenStyle: Int?}
 
 public class CBB {
     var image: Image?
     @State private var chosenImage: UIImage?
     @State private var transitionVariable = false
     
-    func blockForStyle() -> some View {
-        return GeometryReader {geometry in
-            HStack(spacing: 0) {Rectangle().fill(Color.gray).border(Color.black)}}
-    }
+    func blockForStyle() -> some View {return GeometryReader {geometry in HStack(spacing: 0) {Rectangle().fill(Color.gray).border(Color.black)}}}
     
     func blockForPhotoSelection() -> some View {
         return GeometryReader {geometry in
-            ZStack {
-                Rectangle().fill(Color.gray).border(Color.black)}
+            ZStack(alignment: .center) {
+                Rectangle().fill(Color.gray).border(Color.black)
                 Text("Tap to select a picture").foregroundColor(.white).font(.headline)
                 self.image?.resizable()
             }
-        .onTapGesture{self.transitionVariable = true}
+        }
+        .onTapGesture{self.transitionVariable = true; print("tap successful...")}
         .onChange(of: chosenImage) { _ in self.loadImage()}
         .fullScreenCover(isPresented: $transitionVariable) { ImagePicker(image: self.$chosenImage)}
     }
@@ -108,26 +97,9 @@ public class CBB {
     func onePhotoView(block: some View) -> some View {return block}
     func twoPhotoWide(block: some View) -> some View {return VStack{block; block}}
     func twoPhotoLong(block: some View) -> some View {return HStack{block; block}}
-    
-    func twoShortOneLong(block: some View) -> some View {
-        return HStack(spacing:0){VStack(spacing:0){block; block}; block}
-    }
-    func twoNarrowOneWide(block: some View) -> some View {
-        return VStack(spacing:0){HStack(spacing:0){blockForStyle(); blockForStyle()}; blockForStyle()}
-    }
-    func fourPhoto(block: some View) -> some View {
-        return VStack(spacing:0){HStack(spacing:0){blockForStyle(); blockForStyle()}; HStack(spacing:0){blockForStyle(); blockForStyle()}}
-    }
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+    func twoShortOneLong(block: some View) -> some View {return HStack(spacing:0){VStack(spacing:0){block; block}; block}}
+    func twoNarrowOneWide(block: some View) -> some View {return VStack(spacing:0){HStack(spacing:0){blockForStyle(); blockForStyle()}; blockForStyle()}}
+    func fourPhoto(block: some View) -> some View {return VStack(spacing:0){HStack(spacing:0){blockForStyle(); blockForStyle()}; HStack(spacing:0){blockForStyle(); blockForStyle()}}}
     
     func loadImage() {
         guard let chosenImage = chosenImage else {return print("loadImage() failed....")}

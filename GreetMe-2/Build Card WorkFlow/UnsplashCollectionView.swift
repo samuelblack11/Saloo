@@ -66,9 +66,7 @@ struct UnsplashCollectionView: View {
             if chosenCollection.occassion == "None" {getUnsplashPhotos()}
             else {getPhotosFromCollection(collectionID: chosenCollection.collectionID, page_num: pageCount)}
         }
-        .fullScreenCover(isPresented: $showConfirmFrontCover) {
-            
-            ConfirmFrontCoverView(chosenObject: chosenObject, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenCollection: chosenCollection, pageCount: pageCount)}
+        .fullScreenCover(isPresented: $showConfirmFrontCover) {ConfirmFrontCoverView(chosenObject: chosenObject, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenCollection: chosenCollection, pageCount: pageCount)}
         .fullScreenCover(isPresented: $showOccassions) {OccassionsMenu(calViewModel: CalViewModel(), showDetailView: ShowDetailView())}
         //.fullScreenCover(isPresented: $presentUCV2) {UnsplashCollectionView(viewTransitions: viewTransitions, chosenSmallURL: chosenSmallURL, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenCollection: chosenCollection, pageCount: $pageCount)}
     }

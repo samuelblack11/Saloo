@@ -24,10 +24,8 @@ struct CollageBuilder: View {
     @Binding var frontCoverIsPersonalPhoto: Int
     // Tracks which collage type (#) was selected by the user
     //@State public var chosenCollageStyle: CollageStyles.choices
-    @State public var chosenCollageStyle: CollageStyles.choices
+    @ObservedObject public var chosenCollageStyle: ChosenCollageStyle
     @State private var cBB = CBB()
-
-    
     
     // Create instance of CollageBuildingBlocks, with blocks sized to fit the CollageBuilder view (menuSize = false)
     @State private var showingImagePicker = false
@@ -46,17 +44,6 @@ struct CollageBuilder: View {
     @State private var chosenImageC: UIImage?
     @State private var chosenImageD: UIImage?
     
-    @ViewBuilder var chosenTemplate: some View {
-        if chosenCollageStyle == .one {cBB.onePhotoView(block: cBB.blockForStyle()) }
-        if chosenCollageStyle == .two {cBB.twoPhotoWide(block: cBB.blockForStyle()) }
-        if chosenCollageStyle == .three {cBB.twoPhotoLong(block: cBB.blockForStyle()) }
-        if chosenCollageStyle == .four {cBB.twoShortOneLong(block: cBB.blockForStyle()) }
-        if chosenCollageStyle == .five {cBB.twoNarrowOneWide(block: cBB.blockForStyle()) }
-        if chosenCollageStyle == .six {cBB.fourPhoto(block: cBB.blockForStyle()) }
-        
-    }
-    
-    
     var body: some View {
         NavigationView {
             VStack {
@@ -70,15 +57,24 @@ struct CollageBuilder: View {
                 }.padding(.bottom, 30).fullScreenCover(isPresented: $showWriteNote ) {
                     WriteNoteView(frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenObject: chosenObject, collageImage: collageImage, eCardText: $eCardText, printCardText: $printCardText, chosenCollection: chosenCollection)}
             }
-            .onAppear{print("---"); print(chosenCollageStyle)}
             .navigationBarItems(leading: Button {showCollageMenu = true} label: {
                 Image(systemName: "chevron.left").foregroundColor(.blue)
                 Text("Back")})
         }
+        .fullScreenCover(isPresented: $showCollageMenu) {CollageStyleMenu(chosenObject: chosenObject, chosenCollection: chosenCollection, pageCount: pageCount, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto)}
     }
 }
 
 extension CollageBuilder {
+    
+    @ViewBuilder var chosenTemplate: some View {
+        if chosenCollageStyle.chosenStyle == 1 {cBB.onePhotoView(block: cBB.blockForPhotoSelection())}
+        if chosenCollageStyle.chosenStyle == 2 {cBB.twoPhotoWide(block: cBB.blockForPhotoSelection())}
+        if chosenCollageStyle.chosenStyle == 3 {cBB.twoPhotoLong(block: cBB.blockForPhotoSelection())}
+        if chosenCollageStyle.chosenStyle == 4 {cBB.twoShortOneLong(block: cBB.blockForPhotoSelection())}
+        if chosenCollageStyle.chosenStyle == 5 {cBB.twoNarrowOneWide(block: cBB.blockForPhotoSelection())}
+        if chosenCollageStyle.chosenStyle == 6 {cBB.fourPhoto(block: cBB.blockForPhotoSelection())}
+    }
 
     func loadImage(chosenImage: UIImage?) {
         guard let chosenImage = chosenImage else {return print("loadImage() failed....")}
