@@ -71,8 +71,9 @@ class TextLimiter: ObservableObject {
     @Published var hasReachedLimit = false
 }
 
-class CollageStyles {
-    enum choices {case one; case two; case three; case four; case five; case six}
+class CollageStyles: ObservableObject {
+    //@Published var choice = choices
+    enum choices: String {case one = "onePhotoView"; case two = "twoPhotoWide"; case three = "twoPhotoLong"; case four = "twoShortOneLong"; case five = "twoNarrowOneWide"; case six = "fourPhoto"}
 }
 
 public class CollageBuildingBlocks {
@@ -87,7 +88,7 @@ public class CollageBuildingBlocks {
     @ViewBuilder var twoPhotoLong: some View {HStack(spacing:0){block; block}}
     @ViewBuilder var twoShortOneLong: some View {HStack(spacing:0){VStack(spacing:0){block; block}; block}}
     @ViewBuilder var twoNarrowOneWide: some View {VStack(spacing:0){HStack(spacing:0){block; block}; block}}
-    @ViewBuilder var fourPhoto: some View {HStack(spacing:0){block; block}; HStack(spacing:0){block; block}}
+    @ViewBuilder var fourPhoto: some View {VStack(spacing:0){HStack(spacing:0){block; block}; HStack(spacing:0){block; block}}}
     
     //func createBlock() -> GeometryReader<VStack<some View>> {
     //    return GeometryReader {geometry in

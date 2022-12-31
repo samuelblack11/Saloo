@@ -45,17 +45,11 @@ struct CollageBuilder: View {
     // Creates collage visual based on user selction from CollageStyleMenu
     @ViewBuilder var collageVisual: some View {
         switch chosenCollageStyle {
-            // onePhoto
             case .one: largeBlocks.onePhotoView
-            // twoPhotoWide, stacked vertically
             case .two: largeBlocks.twoPhotoWide
-            // twoPhotoLong, stacked horizontally
             case .three: largeBlocks.twoPhotoLong
-            // 2Short1Long
             case .four: largeBlocks.twoShortOneLong
-            // 2Narrow1Wide
             case .five: largeBlocks.twoNarrowOneWide
-            // fourPhoto
             case .six: largeBlocks.fourPhoto
         }
     }

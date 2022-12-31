@@ -24,7 +24,7 @@ struct CollageStyleMenu: View {
     // Is front cover a personal photo? (selected from camera or library)
     @Binding var frontCoverIsPersonalPhoto: Int
     // Tracks which collage type (#) was selected by the user
-    @State var chosenCollageStyle: CollageStyles.choices?
+    @StateObject var chosenCollageStyle = CollageStyles()
     //
     @State private var menuSizeBlocks = CollageBuildingBlocks()
     @State private var collageStyles = []
@@ -39,16 +39,41 @@ struct CollageStyleMenu: View {
     
     //.onTapGesture{self.chosenCollageStyle = CollageStyles.choices.one; showCollageBuilder = true}
     
+    
+    func getCollageStyle(style: CollageStyles.choices) {
+        if style == .one {}
+        if style == .two {}
+        if style == .three {}
+        if style == .four {}
+        if style == .five {}
+        if style == .six {}
+
+    }
+    
     var body: some View {
         NavigationView {
             //LazyVGrid(columns: columns, spacing: 10) {
-            GridStack(rows: 3, columns: 2) { row, col in
-                //menuSizeBlocks.onePhotoView.onTapGesture{self.chosenCollageStyle = CollageStyles.choices.one; showCollageBuilder = true}
-                //menuSizeBlocks.twoPhotoWide
-                //menuSizeBlocks.twoPhotoLong
-                menuSizeBlocks.twoNarrowOneWide
-                //menuSizeBlocks.twoShortOneLong
-                //menuSizeBlocks.fourPhoto
+            //GridStack(rows: 3, columns: 2) { row, col in
+            VStack {
+                HStack {
+                    menuSizeBlocks.onePhotoView.onTapGesture{
+                        
+                        chosenCollageStyle.s
+                        
+                        
+                        showCollageBuilder = true; print("***\(chosenCollageStyle)")}
+                    
+                    
+                    menuSizeBlocks.twoPhotoWide
+                }
+                HStack {
+                    menuSizeBlocks.twoPhotoLong
+                    menuSizeBlocks.twoNarrowOneWide
+                }
+                HStack {
+                    menuSizeBlocks.twoShortOneLong
+                    menuSizeBlocks.fourPhoto
+                }
             }
             .navigationTitle("Pick Collage Style").font(.headline).padding(.horizontal)
             .fullScreenCover(isPresented: $showConfirmFrontCover) {ConfirmFrontCoverView(chosenObject: chosenObject, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, pageCount: pageCount)}
