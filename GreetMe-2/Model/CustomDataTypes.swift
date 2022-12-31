@@ -71,46 +71,67 @@ class TextLimiter: ObservableObject {
     @Published var hasReachedLimit = false
 }
 
-class CollageStyles: ObservableObject {
-    //@Published var choice = choices
-    enum choices: String {case one = "onePhotoView"; case two = "twoPhotoWide"; case three = "twoPhotoLong"; case four = "twoShortOneLong"; case five = "twoNarrowOneWide"; case six = "fourPhoto"}
+class CollageStyles {
+    enum choices {
+        case onePhotoView; case twoPhotoWide; case twoPhotoLong; case twoShortOneLong; case twoNarrowOneWide; case fourPhoto}
+}
+
+class ChosenCollageStyle: ObservableObject {
+    @Published var chosenStyle: CollageStyles.choices?
 }
 
 public class CollageBuildingBlocks {
-
-    @ViewBuilder var block: some View {
+    var image: Image?
+    @State private var chosenImage: UIImage?
+    @State private var transitionVariable = false
+    
+    @ViewBuilder var blockForStyleVB: some View {
         GeometryReader {geometry in
             HStack(spacing: 0) {Rectangle().fill(Color.gray).border(Color.black)}}
     }
     
-    @ViewBuilder var onePhotoView: some View {block}
-    @ViewBuilder var twoPhotoWide: some View {VStack(spacing:0){block;block}}
-    @ViewBuilder var twoPhotoLong: some View {HStack(spacing:0){block; block}}
-    @ViewBuilder var twoShortOneLong: some View {HStack(spacing:0){VStack(spacing:0){block; block}; block}}
-    @ViewBuilder var twoNarrowOneWide: some View {VStack(spacing:0){HStack(spacing:0){block; block}; block}}
-    @ViewBuilder var fourPhoto: some View {VStack(spacing:0){HStack(spacing:0){block; block}; HStack(spacing:0){block; block}}}
+    func blockForStyle() -> any View {
+        return GeometryReader {geometry in
+            HStack(spacing: 0) {Rectangle().fill(Color.gray).border(Color.black)}}
+    }
     
-    //func createBlock() -> GeometryReader<VStack<some View>> {
-    //    return GeometryReader {geometry in
-    //        VStack {Rectangle().fill(Color.gray).padding(.vertical)}}
-   //}
-
+    func blockForPhotoSelection() -> any View {
+        
+        return GeometryReader {geometry in
+            ZStack {
+                Rectangle().fill(Color.gray).border(Color.black)}
+                Text("Tap to select a picture")
+                    .foregroundColor(.white)
+                    .font(.headline)
+                self.image?
+                    .resizable()
+        }
+        .onTapGesture{self.transitionVariable = true}
+        .onChange(of: chosenImage) { _ in self.loadImage()}
+        .fullScreenCover(isPresented: $transitionVariable) { ImagePicker(image: self.$chosenImage)}
+    }
+    
+    
+    func onePhotoView(block: any View) -> any View {
+        return block
+    }
+    
+    
+    
+    
+    
+    @ViewBuilder var onePhotoStyle: some View {blockForStyle}
+    @ViewBuilder var twoPhotoWideStyle: some View {VStack(spacing:0){blockForStyle;blockForStyle}}
+    @ViewBuilder var twoPhotoLongStyle: some View {HStack(spacing:0){blockForStyle; blockForStyle}}
+    @ViewBuilder var twoShortOneLongStyle: some View {HStack(spacing:0){VStack(spacing:0){blockForStyle; blockForStyle}; blockForStyle}}
+    @ViewBuilder var twoNarrowOneWideStyle: some View {VStack(spacing:0){HStack(spacing:0){blockForStyle; blockForStyle}; blockForStyle}}
+    @ViewBuilder var fourPhotoStyle: some View {VStack(spacing:0){HStack(spacing:0){blockForStyle; blockForStyle}; HStack(spacing:0){blockForStyle; blockForStyle}}}
+    
+    func loadImage() {
+        guard let chosenImage = chosenImage else {return print("loadImage() failed....")}
+        image = Image(uiImage: chosenImage)
+    }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

@@ -24,99 +24,33 @@ struct CollageStyleMenu: View {
     // Is front cover a personal photo? (selected from camera or library)
     @Binding var frontCoverIsPersonalPhoto: Int
     // Tracks which collage type (#) was selected by the user
-    @StateObject var chosenCollageStyle = CollageStyles()
-    //
-    @State private var menuSizeBlocks = CollageBuildingBlocks()
+    @State private var collageBlocks = CollageBuildingBlocks()
     @State private var collageStyles = []
+    @State var chosenCollageStyle: CollageStyles.choices = .onePhotoView
     
     let columns = [GridItem(.flexible()),GridItem(.flexible())]
-    let topLeft = (1,1)
-    let topRight = (1,2)
-    let midLeft = (2,1)
-    let midRight = (2,2)
-    let bottomLeft = (3,1)
-    let bottomRight = (3,2)
-    
-    //.onTapGesture{self.chosenCollageStyle = CollageStyles.choices.one; showCollageBuilder = true}
-    
-    
-    func getCollageStyle(style: CollageStyles.choices) {
-        if style == .one {}
-        if style == .two {}
-        if style == .three {}
-        if style == .four {}
-        if style == .five {}
-        if style == .six {}
-
-    }
     
     var body: some View {
         NavigationView {
-            //LazyVGrid(columns: columns, spacing: 10) {
-            //GridStack(rows: 3, columns: 2) { row, col in
             VStack {
                 HStack {
-                    menuSizeBlocks.onePhotoView.onTapGesture{
-                        
-                        chosenCollageStyle.s
-                        
-                        
-                        showCollageBuilder = true; print("***\(chosenCollageStyle)")}
-                    
-                    
-                    menuSizeBlocks.twoPhotoWide
+                    collageBlocks.onePhotoStyle.onTapGesture{chosenCollageStyle  = .onePhotoView; showCollageBuilder = true}
+                    collageBlocks.twoPhotoWideStyle.onTapGesture{chosenCollageStyle  = .twoPhotoWide; showCollageBuilder = true}
                 }
                 HStack {
-                    menuSizeBlocks.twoPhotoLong
-                    menuSizeBlocks.twoNarrowOneWide
+                    collageBlocks.twoPhotoLongStyle.onTapGesture{chosenCollageStyle  = .twoPhotoLong; showCollageBuilder = true}
+                    collageBlocks.twoNarrowOneWideStyle.onTapGesture{chosenCollageStyle  = .twoNarrowOneWide; showCollageBuilder = true}
                 }
                 HStack {
-                    menuSizeBlocks.twoShortOneLong
-                    menuSizeBlocks.fourPhoto
+                    collageBlocks.twoShortOneLongStyle.onTapGesture{chosenCollageStyle  = .twoShortOneLong; showCollageBuilder = true}
+                    collageBlocks.fourPhotoStyle.onTapGesture{chosenCollageStyle  = .fourPhoto; showCollageBuilder = true}
                 }
             }
             .navigationTitle("Pick Collage Style").font(.headline).padding(.horizontal)
-            .fullScreenCover(isPresented: $showConfirmFrontCover) {ConfirmFrontCoverView(chosenObject: chosenObject, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, pageCount: pageCount)}
-            }
-            //.onAppear{createListofCollageStyles()}
-            .navigationBarItems(leading:Button {showConfirmFrontCover = true
-            } label: {Image(systemName: "chevron.left").foregroundColor(.blue); Text("Back")})
-            .fullScreenCover(isPresented: $showCollageBuilder) {CollageBuilder(chosenObject: chosenObject, chosenCollection: chosenCollection, collageImage: $collageImage, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenCollageStyle: chosenCollageStyle!)}
+            .navigationBarItems(leading:Button {showConfirmFrontCover = true} label: {Image(systemName: "chevron.left").foregroundColor(.blue); Text("Back")})
         }
+        .fullScreenCover(isPresented: $showCollageBuilder) {CollageBuilder(chosenObject: chosenObject, chosenCollection: chosenCollection, collageImage: $collageImage, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenCollageStyle: chosenCollageStyle)}
+        .fullScreenCover(isPresented: $showConfirmFrontCover) {ConfirmFrontCoverView(chosenObject: chosenObject, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, pageCount: pageCount)}
+    }
 }
 
-extension CollageStyleMenu {
-    
-    func createListofCollageStyles() {
-        collageStyles.append(menuSizeBlocks.onePhotoView)
-        collageStyles.append(menuSizeBlocks.twoPhotoWide)
-        collageStyles.append(menuSizeBlocks.twoPhotoLong)
-        collageStyles.append(menuSizeBlocks.twoShortOneLong)
-        collageStyles.append(menuSizeBlocks.twoNarrowOneWide)
-        collageStyles.append(menuSizeBlocks.fourPhoto)
-    }
-    
-    // HackingWithSwift SwiftUI by Example, Page 230
-    struct GridStack<Content: View>: View {
-       let rows: Int
-       let columns: Int
-       let content: (Int, Int) -> Content
-       var body: some View {
-          VStack {
-             ForEach(0 ..< rows, id: \.self) { row in
-                HStack {
-                   ForEach(0 ..< columns, id: \.self) { column in
-                      content(row, column)
-                   }
-                }
-             }
-          }
-       }
-    init(rows: Int, columns: Int, @ViewBuilder content:
-    @escaping (Int, Int) -> Content) {
-          self.rows = rows
-          self.columns = columns
-          self.content = content
-        }
-    }
-}

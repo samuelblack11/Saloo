@@ -11,6 +11,7 @@ import SwiftUI
 struct CollageBuilder: View {
     @State private var showCollageMenu = false
     @State private var showCollageBuilder = false
+    @State private var showWriteNote = false
     // The image, and it's components, selected by the user
     @ObservedObject var chosenObject: ChosenCoverImageObject
     // Object for collection selected by user
@@ -22,9 +23,13 @@ struct CollageBuilder: View {
     // Is front cover a personal photo? (selected from camera or library)
     @Binding var frontCoverIsPersonalPhoto: Int
     // Tracks which collage type (#) was selected by the user
-    @State var chosenCollageStyle: CollageStyles.choices
+    //@State public var chosenCollageStyle: CollageStyles.choices
+    @State public var chosenCollageStyle: CollageStyles.choices
+
+    
+    
     // Create instance of CollageBuildingBlocks, with blocks sized to fit the CollageBuilder view (menuSize = false)
-    @State var largeBlocks = CollageBuildingBlocks()
+    @State var collageBlocks = CollageBuildingBlocks()
     @State private var showingImagePicker = false
     @State private var image: Image?
     @State private var chosenImage: UIImage?
@@ -35,7 +40,6 @@ struct CollageBuilder: View {
     @State private var imageB: Image?
     @State private var imageC: Image?
     @State private var imageD: Image?
-
     @State private var imageNumber: Int?
     @State private var chosenImageA: UIImage?
     @State private var chosenImageB: UIImage?
@@ -43,24 +47,35 @@ struct CollageBuilder: View {
     @State private var chosenImageD: UIImage?
 
     // Creates collage visual based on user selction from CollageStyleMenu
-    @ViewBuilder var collageVisual: some View {
+    @ViewBuilder var collageStyleVisual: some View {
         switch chosenCollageStyle {
-            case .one: largeBlocks.onePhotoView
-            case .two: largeBlocks.twoPhotoWide
-            case .three: largeBlocks.twoPhotoLong
-            case .four: largeBlocks.twoShortOneLong
-            case .five: largeBlocks.twoNarrowOneWide
-            case .six: largeBlocks.fourPhoto
+            case .onePhotoView: collageBlocks.onePhotoView
+            case .twoPhotoWide: collageBlocks.twoPhotoWide
+            case .twoPhotoLong: collageBlocks.twoPhotoLong
+            case .twoShortOneLong: collageBlocks.twoShortOneLong
+            case .twoNarrowOneWide: collageBlocks.twoNarrowOneWide
+            case .fourPhoto: collageBlocks.fourPhoto
         }
     }
     
     var body: some View {
-        //largeSizeBlocks.createLargeSquare()
-          collageVisual
-            .navigationBarItems(leading: Button {showCollageMenu = true; showCollageBuilder = false} label: {
+        NavigationView {
+            VStack {
+                Spacer()
+                collageStyleVisual
+                Spacer()
+                Button("Confirm Collage for Inside Cover") {
+                    showWriteNote = true
+                    let theSnapShot = collageVisual.snapshot()
+                    collageImage = CollageImage.init(collageImage: theSnapShot)
+                }.padding(.bottom, 30).fullScreenCover(isPresented: $showWriteNote ) {
+                    WriteNoteView(frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenObject: chosenObject, collageImage: collageImage, eCardText: $eCardText, printCardText: $printCardText, chosenCollection: chosenCollection)}
+            }
+            .onAppear{print("---"); print(chosenCollageStyle)}
+            .navigationBarItems(leading: Button {showCollageMenu = true} label: {
                 Image(systemName: "chevron.left").foregroundColor(.blue)
-                Text("Back")
-                })
+                Text("Back")})
+        }
     }
 }
 
