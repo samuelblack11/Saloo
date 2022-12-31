@@ -24,7 +24,7 @@ struct CollageStyleMenu: View {
     // Is front cover a personal photo? (selected from camera or library)
     @Binding var frontCoverIsPersonalPhoto: Int
     // Tracks which collage type (#) was selected by the user
-    @State private var collageBlocks = CollageBuildingBlocks()
+    @State private var collageBlocks = CBB()
     @State private var collageStyles = []
     @State var chosenCollageStyle: CollageStyles.choices = .onePhotoView
     
@@ -34,16 +34,16 @@ struct CollageStyleMenu: View {
         NavigationView {
             VStack {
                 HStack {
-                    collageBlocks.onePhotoStyle.onTapGesture{chosenCollageStyle  = .onePhotoView; showCollageBuilder = true}
-                    collageBlocks.twoPhotoWideStyle.onTapGesture{chosenCollageStyle  = .twoPhotoWide; showCollageBuilder = true}
+                    collageBlocks.onePhotoView(block: collageBlocks.blockForStyle()).onTapGesture{chosenCollageStyle = .onePhotoView; showCollageBuilder = true}
+                    collageBlocks.twoPhotoWide(block: collageBlocks.blockForStyle()).onTapGesture{chosenCollageStyle = .twoPhotoWide; showCollageBuilder = true}
                 }
                 HStack {
-                    collageBlocks.twoPhotoLongStyle.onTapGesture{chosenCollageStyle  = .twoPhotoLong; showCollageBuilder = true}
-                    collageBlocks.twoNarrowOneWideStyle.onTapGesture{chosenCollageStyle  = .twoNarrowOneWide; showCollageBuilder = true}
+                    collageBlocks.twoPhotoLong(block: collageBlocks.blockForStyle()).onTapGesture{chosenCollageStyle = .twoPhotoLong; showCollageBuilder = true}
+                    collageBlocks.twoShortOneLong(block: collageBlocks.blockForStyle()).onTapGesture{chosenCollageStyle = .twoShortOneLong; showCollageBuilder = true}
                 }
                 HStack {
-                    collageBlocks.twoShortOneLongStyle.onTapGesture{chosenCollageStyle  = .twoShortOneLong; showCollageBuilder = true}
-                    collageBlocks.fourPhotoStyle.onTapGesture{chosenCollageStyle  = .fourPhoto; showCollageBuilder = true}
+                    collageBlocks.twoNarrowOneWide(block: collageBlocks.blockForStyle()).onTapGesture{chosenCollageStyle = .twoNarrowOneWide; showCollageBuilder = true}
+                    collageBlocks.fourPhoto(block: collageBlocks.blockForStyle()).onTapGesture{chosenCollageStyle = .fourPhoto; showCollageBuilder = true}
                 }
             }
             .navigationTitle("Pick Collage Style").font(.headline).padding(.horizontal)
@@ -52,5 +52,9 @@ struct CollageStyleMenu: View {
         .fullScreenCover(isPresented: $showCollageBuilder) {CollageBuilder(chosenObject: chosenObject, chosenCollection: chosenCollection, collageImage: $collageImage, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenCollageStyle: chosenCollageStyle)}
         .fullScreenCover(isPresented: $showConfirmFrontCover) {ConfirmFrontCoverView(chosenObject: chosenObject, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, pageCount: pageCount)}
     }
+}
+
+extension CollageStyleMenu {
+    
 }
 

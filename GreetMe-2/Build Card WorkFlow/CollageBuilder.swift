@@ -25,11 +25,11 @@ struct CollageBuilder: View {
     // Tracks which collage type (#) was selected by the user
     //@State public var chosenCollageStyle: CollageStyles.choices
     @State public var chosenCollageStyle: CollageStyles.choices
+    @State private var collageBlocks = CBB()
 
     
     
     // Create instance of CollageBuildingBlocks, with blocks sized to fit the CollageBuilder view (menuSize = false)
-    @State var collageBlocks = CollageBuildingBlocks()
     @State private var showingImagePicker = false
     @State private var image: Image?
     @State private var chosenImage: UIImage?
@@ -47,22 +47,28 @@ struct CollageBuilder: View {
     @State private var chosenImageD: UIImage?
 
     // Creates collage visual based on user selction from CollageStyleMenu
-    @ViewBuilder var collageStyleVisual: some View {
+    @ViewBuilder var collageVisual: some View {
         switch chosenCollageStyle {
-            case .onePhotoView: collageBlocks.onePhotoView
-            case .twoPhotoWide: collageBlocks.twoPhotoWide
-            case .twoPhotoLong: collageBlocks.twoPhotoLong
-            case .twoShortOneLong: collageBlocks.twoShortOneLong
-            case .twoNarrowOneWide: collageBlocks.twoNarrowOneWide
-            case .fourPhoto: collageBlocks.fourPhoto
+            case .onePhotoView: collageBlocks.onePhotoView(block: collageBlocks.blockForPhotoSelection())
+            //case .twoPhotoWide: collageBlocks.twoPhotoWide
+            //case .twoPhotoLong: collageBlocks.twoPhotoLong
+            //case .twoShortOneLong: collageBlocks.twoShortOneLong
+            //case .twoNarrowOneWide: collageBlocks.twoNarrowOneWide
+            //case .fourPhoto: collageBlocks.fourPhoto
         }
+    }
+    
+    
+    
+    func createCollageTemplate(style: CollageStyles.choices) {
+        
     }
     
     var body: some View {
         NavigationView {
             VStack {
                 Spacer()
-                collageStyleVisual
+                collageVisual
                 Spacer()
                 Button("Confirm Collage for Inside Cover") {
                     showWriteNote = true
