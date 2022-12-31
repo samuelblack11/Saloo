@@ -73,7 +73,9 @@ class TextLimiter: ObservableObject {
 
 class CollageStyles {
     enum choices {
-        case onePhotoView; case twoPhotoWide; case twoPhotoLong; case twoShortOneLong; case twoNarrowOneWide; case fourPhoto}
+        case one; case two; case three; case four; case five; case six
+    }
+    
 }
 
 class ChosenCollageStyle: ObservableObject {
@@ -90,7 +92,7 @@ public class CBB {
             HStack(spacing: 0) {Rectangle().fill(Color.gray).border(Color.black)}}
     }
     
-    func blockForPhotoSelection() -> any View {
+    func blockForPhotoSelection() -> some View {
         return GeometryReader {geometry in
             ZStack {
                 Rectangle().fill(Color.gray).border(Color.black)}
@@ -116,6 +118,16 @@ public class CBB {
     func fourPhoto(block: some View) -> some View {
         return VStack(spacing:0){HStack(spacing:0){blockForStyle(); blockForStyle()}; HStack(spacing:0){blockForStyle(); blockForStyle()}}
     }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
     func loadImage() {
         guard let chosenImage = chosenImage else {return print("loadImage() failed....")}

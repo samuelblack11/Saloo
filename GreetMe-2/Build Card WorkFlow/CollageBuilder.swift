@@ -25,7 +25,7 @@ struct CollageBuilder: View {
     // Tracks which collage type (#) was selected by the user
     //@State public var chosenCollageStyle: CollageStyles.choices
     @State public var chosenCollageStyle: CollageStyles.choices
-    @State private var collageBlocks = CBB()
+    @State private var cBB = CBB()
 
     
     
@@ -45,34 +45,27 @@ struct CollageBuilder: View {
     @State private var chosenImageB: UIImage?
     @State private var chosenImageC: UIImage?
     @State private var chosenImageD: UIImage?
-
-    // Creates collage visual based on user selction from CollageStyleMenu
-    @ViewBuilder var collageVisual: some View {
-        switch chosenCollageStyle {
-            case .onePhotoView: collageBlocks.onePhotoView(block: collageBlocks.blockForPhotoSelection())
-            //case .twoPhotoWide: collageBlocks.twoPhotoWide
-            //case .twoPhotoLong: collageBlocks.twoPhotoLong
-            //case .twoShortOneLong: collageBlocks.twoShortOneLong
-            //case .twoNarrowOneWide: collageBlocks.twoNarrowOneWide
-            //case .fourPhoto: collageBlocks.fourPhoto
-        }
-    }
     
-    
-    
-    func createCollageTemplate(style: CollageStyles.choices) {
+    @ViewBuilder var chosenTemplate: some View {
+        if chosenCollageStyle == .one {cBB.onePhotoView(block: cBB.blockForStyle()) }
+        if chosenCollageStyle == .two {cBB.twoPhotoWide(block: cBB.blockForStyle()) }
+        if chosenCollageStyle == .three {cBB.twoPhotoLong(block: cBB.blockForStyle()) }
+        if chosenCollageStyle == .four {cBB.twoShortOneLong(block: cBB.blockForStyle()) }
+        if chosenCollageStyle == .five {cBB.twoNarrowOneWide(block: cBB.blockForStyle()) }
+        if chosenCollageStyle == .six {cBB.fourPhoto(block: cBB.blockForStyle()) }
         
     }
+    
     
     var body: some View {
         NavigationView {
             VStack {
                 Spacer()
-                collageVisual
+                chosenTemplate
                 Spacer()
                 Button("Confirm Collage for Inside Cover") {
                     showWriteNote = true
-                    let theSnapShot = collageVisual.snapshot()
+                    let theSnapShot = chosenTemplate.snapshot()
                     collageImage = CollageImage.init(collageImage: theSnapShot)
                 }.padding(.bottom, 30).fullScreenCover(isPresented: $showWriteNote ) {
                     WriteNoteView(frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenObject: chosenObject, collageImage: collageImage, eCardText: $eCardText, printCardText: $printCardText, chosenCollection: chosenCollection)}

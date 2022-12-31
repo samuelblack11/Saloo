@@ -26,7 +26,7 @@ struct CollageStyleMenu: View {
     // Tracks which collage type (#) was selected by the user
     @State private var collageBlocks = CBB()
     @State private var collageStyles = []
-    @State var chosenCollageStyle: CollageStyles.choices = .onePhotoView
+    @State var chosenCollageStyle: CollageStyles.choices = .one
     
     let columns = [GridItem(.flexible()),GridItem(.flexible())]
     
@@ -34,16 +34,16 @@ struct CollageStyleMenu: View {
         NavigationView {
             VStack {
                 HStack {
-                    collageBlocks.onePhotoView(block: collageBlocks.blockForStyle()).onTapGesture{chosenCollageStyle = .onePhotoView; showCollageBuilder = true}
-                    collageBlocks.twoPhotoWide(block: collageBlocks.blockForStyle()).onTapGesture{chosenCollageStyle = .twoPhotoWide; showCollageBuilder = true}
+                    collageBlocks.onePhotoView(block: collageBlocks.blockForStyle()).onTapGesture{chosenCollageStyle = .one; showCollageBuilder = true}
+                    collageBlocks.twoPhotoWide(block: collageBlocks.blockForStyle()).onTapGesture{chosenCollageStyle = .two; showCollageBuilder = true}
                 }
                 HStack {
-                    collageBlocks.twoPhotoLong(block: collageBlocks.blockForStyle()).onTapGesture{chosenCollageStyle = .twoPhotoLong; showCollageBuilder = true}
-                    collageBlocks.twoShortOneLong(block: collageBlocks.blockForStyle()).onTapGesture{chosenCollageStyle = .twoShortOneLong; showCollageBuilder = true}
+                    collageBlocks.twoPhotoLong(block: collageBlocks.blockForStyle()).onTapGesture{chosenCollageStyle = .three; showCollageBuilder = true}
+                    collageBlocks.twoShortOneLong(block: collageBlocks.blockForStyle()).onTapGesture{chosenCollageStyle = .four; showCollageBuilder = true}
                 }
                 HStack {
-                    collageBlocks.twoNarrowOneWide(block: collageBlocks.blockForStyle()).onTapGesture{chosenCollageStyle = .twoNarrowOneWide; showCollageBuilder = true}
-                    collageBlocks.fourPhoto(block: collageBlocks.blockForStyle()).onTapGesture{chosenCollageStyle = .fourPhoto; showCollageBuilder = true}
+                    collageBlocks.twoNarrowOneWide(block: collageBlocks.blockForStyle()).onTapGesture{chosenCollageStyle = .five; showCollageBuilder = true}
+                    collageBlocks.fourPhoto(block: collageBlocks.blockForStyle()).onTapGesture{chosenCollageStyle = .six; showCollageBuilder = true}
                 }
             }
             .navigationTitle("Pick Collage Style").font(.headline).padding(.horizontal)
