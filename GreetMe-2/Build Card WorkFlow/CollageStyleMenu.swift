@@ -27,15 +27,22 @@ struct CollageStyleMenu: View {
     @State var chosenCollageStyle: CollageStyles.choices?
     //
     @State private var menuSizeBlocks = CollageBuildingBlocks(menuSize: true)
+    @State private var listofCollageStyles = []
         
     let columns = [GridItem(.flexible()),GridItem(.flexible())]
+    let topLeft = (1,1)
+    let topRight = (1,2)
+    let midLeft = (2,1)
+    let midRight = (2,2)
+    let bottomLeft = (3,1)
+    let bottomRight = (3,2)
     
     var body: some View {
         NavigationView {
             GridStack(rows: 3, columns: 2) { row, col in
             HStack(spacing:10) {
                 //onePhotoView
-                menuSizeBlocks.largeSquare.onTapGesture{self.chosenCollageStyle = CollageStyles.choices.one; showCollageBuilder = true}
+                menuSizeBlocks.onePhotoView.onTapGesture{self.chosenCollageStyle = CollageStyles.choices.one; showCollageBuilder = true}
                 //twoPhotoWide
                 VStack(spacing:0){menuSizeBlocks.wideRectangle; menuSizeBlocks.wideRectangle}.onTapGesture{chosenCollageStyle = CollageStyles.choices.two; showCollageBuilder = true}
             }
@@ -60,6 +67,7 @@ struct CollageStyleMenu: View {
             }
             //.frame(maxHeight: 800)
         }
+        .onAppear{createListofCollageStyles()}
         .frame(maxHeight: 800)
         .fullScreenCover(isPresented: $showCollageBuilder) {CollageBuilder(chosenObject: chosenObject, chosenCollection: chosenCollection, collageImage: $collageImage, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenCollageStyle: chosenCollageStyle!)}
     }
@@ -67,8 +75,18 @@ struct CollageStyleMenu: View {
 
 extension CollageStyleMenu {
     
+    func createListofCollageStyles() {
+        listofCollageStyles.append(menuSizeBlocks.onePhotoView)
+        listofCollageStyles.append(menuSizeBlocks.twoPhotoWide)
+        listofCollageStyles.append(menuSizeBlocks.twoPhotoLong)
+        listofCollageStyles.append(menuSizeBlocks.twoShortOneLong)
+        listofCollageStyles.append(menuSizeBlocks.twoNarrowOneWide)
+        listofCollageStyles.append(menuSizeBlocks.fourPhoto)
+    }
+    
+    // HackingWithSwift SwiftUI by Example, Page 230
     struct GridStack<Content: View>: View {
-       let rows: Intå
+       let rows: Int
        let columns: Int
        let content: (Int, Int) -> Content
        var body: some View {
