@@ -28,13 +28,7 @@ struct CollageStyleMenu: View {
     // Tracks which collage type (#) was selected by the user
     @State private var collageStyles = []
     @StateObject var chosenStyle = ChosenCollageStyle()
-    
-    //var collageBlocks = CBB(image: imageTest, chosenImage: chosenImage)
     @State private var collageBlocks = CollageBlocksAndViews()
-    //init(collageBlocks: CollageBlocksAndViews, transitionVariable: Bool) {
-    //    self.collageBlocks = collageBlocks
-    //    self.transitionVariable = transitionVariable
-    //}
     
     let columns = [GridItem(.flexible()),GridItem(.flexible())]
     
@@ -61,8 +55,3 @@ struct CollageStyleMenu: View {
         .fullScreenCover(isPresented: $showConfirmFrontCover) {ConfirmFrontCoverView(chosenObject: chosenObject, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, pageCount: pageCount)}
     }
 }
-
-extension CollageStyleMenu {
-    
-}
-

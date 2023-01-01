@@ -59,9 +59,9 @@ struct ConfirmFrontCoverView: View {
                 Image(systemName: "chevron.left").foregroundColor(.blue)
                 Text("Back")
             })
-        //.fullScreenCover(isPresented: $viewTransitions.isShowingUCV) {
-           // UnsplashCollectionView(viewTransitions: viewTransitions, chosenCollection: chosenCollection!, pageCount: pageCount, chosenObject: chosenObject, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto)
-        //}
+        .fullScreenCover(isPresented: $showUCV) {
+           UnsplashCollectionView(chosenCollection: chosenCollection!, pageCount: pageCount, chosenObject: chosenObject, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto)
+        }
         }
     }
 }

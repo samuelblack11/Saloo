@@ -90,7 +90,7 @@ struct OccassionsMenu: View {
         List {
             Section(header: Text("Personal & Search")) {
                 Text("Select from Photo Library ").onTapGesture {self.showCameraCapture = false; self.showImagePicker = true}
-                    .fullScreenCover(isPresented: $showImagePicker){ImagePicker(image: $coverImageFromLibrary)}
+                    .fullScreenCover(isPresented: $showImagePicker){ImagePicker(image: coverImageFromLibrary)}
                     .onChange(of: coverImageFromLibrary) { _ in loadImage(pic: coverImageFromLibrary!)
                         handlePhotoLibrarySelection()
                         showCollageMenu = true

@@ -49,6 +49,7 @@ struct CollageBuilder: View {
             VStack {
                 Spacer()
                 chosenTemplate
+                    .frame(minWidth: 100, maxWidth: 300, minHeight: 100,maxHeight: 325)
                 Spacer()
                 Button("Confirm Collage for Inside Cover") {
                     showWriteNote = true
@@ -67,13 +68,58 @@ struct CollageBuilder: View {
 
 extension CollageBuilder {
     
+    func blockForPhotoSelection(chosenImageForBlock: UIImage?, imageForBlock: Image?, imageNum: Int) -> some View {
+        return GeometryReader {geometry in
+            ZStack(alignment: .center) {
+                Rectangle().fill(Color.gray).border(Color.black)
+                Text("Tap to select a picture").foregroundColor(.white).font(.headline)
+                imageForBlock?.resizable()
+            }
+        }
+        .onTapGesture{self.showImagePicker.toggle(); imageNumber = imageNum}
+        .onChange(of: chosenImageForBlock) { _ in self.loadImage(chosenImage: chosenImageForBlock)}
+        .fullScreenCover(isPresented: $showImagePicker) { ImagePicker(image: chosenImageForBlock)}
+    }
+    
+    func onePhotoView(block: some View) -> some View {return block}
+    
+    func twoPhotoWide(block1: some View, block2: some View) -> some View {return VStack(spacing:0){block1; block2}}
+    func twoPhotoLong(block1: some View, block2: some View) -> some View {return HStack(spacing:0){block1; block2}}
+    func twoShortOneLong(block1: some View, block2: some View, block3: some View) -> some View {return HStack(spacing:0){VStack(spacing:0){block1; block2}; block3}}
+    func twoNarrowOneWide(block1: some View, block2: some View, block3: some View) -> some View {return VStack(spacing:0){HStack(spacing:0){block1; block2}; block3}}
+    func fourPhoto(block1: some View, block2: some View, block3: some View, block4: some View) -> some View {return VStack(spacing:0){HStack(spacing:0){block1; block2}; HStack(spacing:0){block3; block4}}}
+    
     @ViewBuilder var chosenTemplate: some View {
-        if chosenCollageStyle.chosenStyle == 1 {cBB.onePhotoView(block: cBB.blockForPhotoSelection())}
-        if chosenCollageStyle.chosenStyle == 2 {cBB.twoPhotoWide(block: cBB.blockForPhotoSelection())}
-        if chosenCollageStyle.chosenStyle == 3 {cBB.twoPhotoLong(block: cBB.blockForPhotoSelection())}
-        if chosenCollageStyle.chosenStyle == 4 {cBB.twoShortOneLong(block: cBB.blockForPhotoSelection())}
-        if chosenCollageStyle.chosenStyle == 5 {cBB.twoNarrowOneWide(block: cBB.blockForPhotoSelection())}
-        if chosenCollageStyle.chosenStyle == 6 {cBB.fourPhoto(block: cBB.blockForPhotoSelection())}
+        if chosenCollageStyle.chosenStyle == 1 {onePhotoView(block: blockForPhotoSelection(chosenImageForBlock: chosenImageA, imageForBlock: imageA, imageNum: 1))}
+        
+        if chosenCollageStyle.chosenStyle == 2 {
+            twoPhotoWide(block1: blockForPhotoSelection(chosenImageForBlock: chosenImageA, imageForBlock: imageA, imageNum: 1),
+                         block2: blockForPhotoSelection(chosenImageForBlock: chosenImageB, imageForBlock: imageB, imageNum: 2))
+        }
+        
+        if chosenCollageStyle.chosenStyle == 3 {
+            twoPhotoLong(block1: blockForPhotoSelection(chosenImageForBlock: chosenImageA, imageForBlock: imageA, imageNum: 1),
+                         block2: blockForPhotoSelection(chosenImageForBlock: chosenImageB, imageForBlock: imageB, imageNum: 2))
+        }
+        
+        if chosenCollageStyle.chosenStyle == 4 {
+            twoShortOneLong(block1: blockForPhotoSelection(chosenImageForBlock: chosenImageA, imageForBlock: imageA, imageNum: 1),
+                            block2: blockForPhotoSelection(chosenImageForBlock: chosenImageB, imageForBlock: imageB, imageNum: 2),
+                            block3: blockForPhotoSelection(chosenImageForBlock: chosenImageC, imageForBlock: imageC, imageNum: 3))
+        }
+        
+        if chosenCollageStyle.chosenStyle == 5 {
+            twoNarrowOneWide(block1: blockForPhotoSelection(chosenImageForBlock: chosenImageA, imageForBlock: imageA, imageNum: 1),
+                             block2: blockForPhotoSelection(chosenImageForBlock: chosenImageB, imageForBlock: imageB, imageNum: 2),
+                             block3: blockForPhotoSelection(chosenImageForBlock: chosenImageC, imageForBlock: imageC, imageNum: 3))
+        }
+        
+        if chosenCollageStyle.chosenStyle == 6 {
+            fourPhoto(block1: blockForPhotoSelection(chosenImageForBlock: chosenImageA, imageForBlock: imageA, imageNum: 1),
+                      block2: blockForPhotoSelection(chosenImageForBlock: chosenImageB, imageForBlock: imageB, imageNum: 2),
+                      block3: blockForPhotoSelection(chosenImageForBlock: chosenImageC, imageForBlock: imageC, imageNum: 3),
+                      block4: blockForPhotoSelection(chosenImageForBlock: chosenImageD, imageForBlock: imageD, imageNum: 4))
+        }
     }
 
     func loadImage(chosenImage: UIImage?) {
