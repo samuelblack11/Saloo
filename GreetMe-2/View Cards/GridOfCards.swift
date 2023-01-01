@@ -6,6 +6,7 @@
 //
 // https://www.hackingwithswift.com/read/38/5/loading-core-data-objects-using-nsfetchrequest-and-nssortdescriptor
 ///// https://www.hackingwithswift.com/read/33/4/writing-to-icloud-with-cloudkit-ckrecord-and-ckasset
+///// https://www.hackingwithswift.com/quick-start/swiftui/how-to-add-a-search-bar-to-filter-your-data
 import Foundation
 import SwiftUI
 import CloudKit
@@ -18,6 +19,7 @@ struct GridofCards: View {
     @State var isProcessingShare = false
     @State var activeShare: CKShare?
     @State var activeContainer: CKContainer?
+    @State private var showOccassions = false
     
     @Environment(\.presentationMode) var presentationMode
     @State var cards = [Card]()
@@ -35,12 +37,13 @@ struct GridofCards: View {
     let columns = [GridItem(.adaptive(minimum: 120))]
     @State private var sortByValue = "Date"
     @State private var searchText = ""
-    var searchResults: [Card] {
-        if searchText.isEmpty {
-            return privateCards
-        } else {
-            return privateCards.filter { $0.cardName.contains(searchText) }
-        }
+    var filteredCards: [Card] {
+        if searchText.isEmpty { return privateCards}
+        //else if sortByValue == "Card Name" {return privateCards.filter { $0.cardName.contains(searchText)}}
+        //else if sortByValue == "Date" {return privateCards.filter { $0.cardName.contains(searchText)}}
+        //else if sortByValue == "Occassion" {return privateCards.filter { $0.occassion!.contains(searchText)}}
+        else {return privateCards.filter { $0.cardName.contains(searchText)}}
+        
     }
     var sortOptions = ["Date","Card Name","Occassion"]
     
@@ -50,7 +53,7 @@ struct GridofCards: View {
                 sortResults
                 LazyVGrid(columns: columns, spacing: 10) {
                     //Text("\(privateCards.count)")
-                    ForEach(sortedCards(cards: privateCards, sortBy: sortByValue)) {
+                    ForEach(sortedCards(cards: filteredCards, sortBy: sortByValue)) {
                         //NavigationLink("SearchByField"){Text("\(card.cardName)")}
                         cardView(for: $0, shareable: false)
                     }
@@ -63,8 +66,11 @@ struct GridofCards: View {
                 }
             }
             .navigationTitle("Your Cards")
+            .navigationBarItems(leading:Button {showOccassions.toggle()} label: {Image(systemName: "chevron.left").foregroundColor(.blue); Text("Back")})
         }
-        .searchable(text: $searchText)
+        // "Search by \(sortByValue)"
+        .searchable(text: $searchText, prompt: "Search by Card Name")
+        .fullScreenCover(isPresented: $showOccassions) {OccassionsMenu(calViewModel: CalViewModel(), showDetailView: ShowDetailView())}
     }
     
     private func cardView(for card: Card, shareable: Bool = true) -> some View {
@@ -129,7 +135,7 @@ extension GridofCards {
     
     var sortResults: some View {
         HStack {
-            Text("Sort By").padding(.leading, 5).font(Font.custom(sortByValue, size: 12))
+            Text("Sort By:").padding(.leading, 5).font(Font.custom(sortByValue, size: 12))
             Picker("", selection: $sortByValue) {
                 ForEach(sortOptions, id:\.self) {sortOption in
                     Text(sortOption)
