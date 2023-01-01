@@ -74,18 +74,24 @@ class TextLimiter: ObservableObject {
 
 
 
-struct ChosenImages: Equatable {
-    static func == (lhs: ChosenImages, rhs: ChosenImages) -> Bool {
-        return lhs.chosenImageA == rhs.chosenImageA && lhs.chosenImageB == rhs.chosenImageB && lhs.chosenImageC == rhs.chosenImageC && lhs.chosenImageD == rhs.chosenImageD
-    }
-    @State var chosenImageA: UIImage?
-    @State var chosenImageB: UIImage?
-    @State var chosenImageC: UIImage?
-    @State var chosenImageD: UIImage?
+//struct ChosenImages: Equatable {
+//    static func == (lhs: ChosenImages, rhs: ChosenImages) -> Bool {
+//        return lhs.chosenImageA == rhs.chosenImageA && lhs.chosenImageB == rhs.chosenImageB && lhs.chosenImageC == rhs.chosenImageC && lhs.chosenImageD == rhs.chosenImageD
+ //   }
+ //   @State var chosenImageA: UIImage?
+ //   @State var chosenImageB: UIImage?
+ //   @State var chosenImageC: UIImage?
+ //   @State var chosenImageD: UIImage?
+//}
+
+
+public class ChosenImages: ObservableObject {
+    @Published var imagePlaceHolder: Image?
+    @Published var chosenImageA: UIImage?
+    @Published var chosenImageB: UIImage?
+    @Published var chosenImageC: UIImage?
+    @Published var chosenImageD: UIImage?
 }
-
-
-
 
 
 

@@ -40,11 +40,10 @@ struct CollageBuilder: View {
     @State private var imageC: Image?
     @State private var imageD: Image?
     @State private var imageNumber: Int?
-    @State var chosenImageA: UIImage?
-    @State var chosenImageB: UIImage?
-    @State var chosenImageC: UIImage?
-    @State var chosenImageD: UIImage?
-    @State var chosenImagesObject: ChosenImages?
+    @StateObject var chosenImagesObject = ChosenImages()
+    
+    
+    
     var body: some View {
         NavigationView {
             VStack {
@@ -63,34 +62,24 @@ struct CollageBuilder: View {
                 Image(systemName: "chevron.left").foregroundColor(.blue)
                 Text("Back")})
         }
-        .onAppear{chosenImagesObject = ChosenImages.init(chosenImageA: chosenImageA, chosenImageB: chosenImageB, chosenImageC: chosenImageC, chosenImageD: chosenImageD)}
-            .fullScreenCover(isPresented: $showCollageMenu) {CollageStyleMenu(chosenObject: chosenObject, chosenCollection: chosenCollection, pageCount: pageCount, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto)}
+        .fullScreenCover(isPresented: $showCollageMenu) {CollageStyleMenu(chosenObject: chosenObject, chosenCollection: chosenCollection, pageCount: pageCount, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto)}
         }
 }
+
 extension CollageBuilder {
     
-    //func blockForPhotoSelection(chosenImageForBlock: Binding<UIImage?>, imageForBlock: Image?, imageNum: Int) -> some View {
-      //  return GeometryReader {geometry in
-     //       ZStack(alignment: .center) {
-      //          Rectangle().fill(Color.gray).border(Color.black)
-      //          Text("Tap to select a picture").foregroundColor(.white).font(.headline)
-     //           imageForBlock?.resizable()
-     //       }
-      //  }
-     //   .onTapGesture{self.showImagePicker.toggle(); imageNumber = imageNum}
-     //   .onChange(of: chosenImageForBlock) { _ in loadImage(chosenImage: chosenImageForBlock)}
-     //   .fullScreenCover(isPresented: $showImagePicker) { ImagePicker(image: chosenImageForBlock)}
-   // }
-    
-    
+    func specifyImage(imageNumber: Int) -> UIImage? {
+        let imageDict: [Int : UIImage?] = [
+            1 : chosenImagesObject.chosenImageA,
+            2 : chosenImagesObject.chosenImageB,
+            3 : chosenImagesObject.chosenImageC,
+            4 : chosenImagesObject.chosenImageD,
+        ]
+        return imageDict[imageNumber]!
+    }
 
-    func blockForPhotoSelection(chosenImages: ChosenImages, imageForBlock: Image?, imageNum: Int) -> some View {
-        @State var chosenImageForBlock: UIImage?
-        if imageNum == 1 {chosenImageForBlock = chosenImages.chosenImageA!}
-        if imageNum == 2 {chosenImageForBlock = chosenImages.chosenImageB!}
-        if imageNum == 3 {chosenImageForBlock = chosenImages.chosenImageC!}
-        if imageNum == 4 {chosenImageForBlock = chosenImages.chosenImageD!}
-        
+    
+    func blockForPhotoSelection(imageForBlock: Image?, imageNum: Int) -> some View {
         return GeometryReader {geometry in
             ZStack(alignment: .center) {
                 Rectangle().fill(Color.gray).border(Color.black)
@@ -99,9 +88,37 @@ extension CollageBuilder {
             }
         }
         .onTapGesture{self.showImagePicker.toggle(); imageNumber = imageNum}
-        .onChange(of: chosenImageForBlock) { _ in
-            loadImage(chosenImage: chosenImageForBlock)}
-        .fullScreenCover(isPresented: $showImagePicker) {ImagePicker(image: $chosenImageForBlock)}
+        .onChange(of: specifyImage(imageNumber: imageNum)) { _ in
+            loadImage(chosenImage: specifyImage(imageNumber: imageNum))
+        }
+    }
+    
+    func block1() -> some View {
+        return blockForPhotoSelection(imageForBlock: imageA, imageNum: 1)
+            .fullScreenCover(isPresented: $showImagePicker) {
+                ImagePicker(image: $chosenImagesObject.chosenImageA)
+            }
+    }
+    
+    func block2() -> some View {
+        return blockForPhotoSelection(imageForBlock: imageB, imageNum: 2)
+            .fullScreenCover(isPresented: $showImagePicker) {
+                ImagePicker(image: $chosenImagesObject.chosenImageB)
+            }
+    }
+    
+    func block3() -> some View {
+        return blockForPhotoSelection(imageForBlock: imageC, imageNum: 3)
+            .fullScreenCover(isPresented: $showImagePicker) {
+                ImagePicker(image: $chosenImagesObject.chosenImageC)
+            }
+    }
+    
+    func block4() -> some View {
+        return blockForPhotoSelection(imageForBlock: imageD, imageNum: 4)
+            .fullScreenCover(isPresented: $showImagePicker) {
+                ImagePicker(image: $chosenImagesObject.chosenImageD)
+            }
     }
     
     func onePhotoView(block: some View) -> some View {return block}
@@ -112,39 +129,18 @@ extension CollageBuilder {
     func fourPhoto(block1: some View, block2: some View, block3: some View, block4: some View) -> some View {return VStack(spacing:0){HStack(spacing:0){block1; block2}; HStack(spacing:0){block3; block4}}}
     
     @ViewBuilder var chosenTemplate: some View {
-        if chosenCollageStyle.chosenStyle == 1 {onePhotoView(block: blockForPhotoSelection(chosenImages: chosenImagesObject!, imageForBlock: imageA, imageNum: 1)) }
-        
-        if chosenCollageStyle.chosenStyle == 2 {
-            twoPhotoWide(block1: blockForPhotoSelection(chosenImages: chosenImagesObject!, imageForBlock: imageA, imageNum: 1),
-                         block2: blockForPhotoSelection(chosenImages: chosenImagesObject!, imageForBlock: imageB, imageNum: 2))
-        }
-        
-        if chosenCollageStyle.chosenStyle == 3 {
-            twoPhotoLong(block1: blockForPhotoSelection(chosenImages: chosenImagesObject!, imageForBlock: imageA, imageNum: 1),
-                         block2: blockForPhotoSelection(chosenImages: chosenImagesObject!, imageForBlock: imageB, imageNum: 2))
-        }
-        
-        if chosenCollageStyle.chosenStyle == 4 {
-            twoShortOneLong(block1: blockForPhotoSelection(chosenImages: chosenImagesObject!, imageForBlock: imageA, imageNum: 1),
-                            block2: blockForPhotoSelection(chosenImages: chosenImagesObject!, imageForBlock: imageB, imageNum: 2),
-                            block3: blockForPhotoSelection(chosenImages: chosenImagesObject!, imageForBlock: imageC, imageNum: 3))
-        }
-        
-        if chosenCollageStyle.chosenStyle == 5 {
-            twoNarrowOneWide(block1: blockForPhotoSelection(chosenImages: chosenImagesObject!, imageForBlock: imageA, imageNum: 1),
-                             block2: blockForPhotoSelection(chosenImages: chosenImagesObject!, imageForBlock: imageB, imageNum: 2),
-                             block3: blockForPhotoSelection(chosenImages: chosenImagesObject!, imageForBlock: imageC, imageNum: 3))
-        }
-        
-        if chosenCollageStyle.chosenStyle == 6 {
-            fourPhoto(block1: blockForPhotoSelection(chosenImages: chosenImagesObject!, imageForBlock: imageA, imageNum: 1),
-                      block2: blockForPhotoSelection(chosenImages: chosenImagesObject!, imageForBlock: imageB, imageNum: 2),
-                      block3: blockForPhotoSelection(chosenImages: chosenImagesObject!, imageForBlock: imageC, imageNum: 3),
-                      block4: blockForPhotoSelection(chosenImages: chosenImagesObject!, imageForBlock: imageD, imageNum: 4))
-        }
+        if chosenCollageStyle.chosenStyle == 1 {onePhotoView(block: block1()) }
+        if chosenCollageStyle.chosenStyle == 2 {twoPhotoWide(block1: block1(),block2: block2())}
+        if chosenCollageStyle.chosenStyle == 3 {twoPhotoLong(block1: block1(),block2: block2())}
+        if chosenCollageStyle.chosenStyle == 4 { twoShortOneLong(block1: block1(), block2: block2(), block3: block3())}
+        if chosenCollageStyle.chosenStyle == 5 {twoNarrowOneWide(block1: block1(),block2: block2(),block3: block3())}
+        if chosenCollageStyle.chosenStyle == 6 {fourPhoto(block1: block1(),block2: block2(), block3: block3(), block4: block4())}
     }
 
     func loadImage(chosenImage: UIImage?) {
+        
+        //chosenImagesObject.imagePlaceHolder = Image(systemName: "rays")
+        
         print("called load image.....")
         guard let chosenImage = chosenImage else {return print("loadImage() failed....")}
         if imageNumber == 1 {imageA = Image(uiImage: chosenImage)}
