@@ -11,7 +11,7 @@ import SwiftUI
 // https://www.hackingwithswift.com/books/ios-swiftui/importing-an-image-into-swiftui-using-phpickerviewcontroller
 
 struct ImagePicker: UIViewControllerRepresentable {
-    @State var image: UIImage?
+    @Binding var image: UIImage?
     //var sourceType: PHPickerViewController.SourceType
     
     

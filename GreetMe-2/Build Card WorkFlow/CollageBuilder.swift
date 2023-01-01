@@ -27,23 +27,24 @@ struct CollageBuilder: View {
     //@State public var chosenCollageStyle: CollageStyles.choices
     @ObservedObject public var chosenCollageStyle: ChosenCollageStyle
     @State private var cBB = CollageBlocksAndViews()
-
+    
     // Create instance of CollageBuildingBlocks, with blocks sized to fit the CollageBuilder view (menuSize = false)
     @State private var image: Image?
     @State private var chosenImage: UIImage?
     @State var eCardText: String = ""
     @State var printCardText: String = ""
     @State var fillColor = Color.secondary
+    
     @State private var imageA: Image?
     @State private var imageB: Image?
     @State private var imageC: Image?
     @State private var imageD: Image?
     @State private var imageNumber: Int?
-    @State private var chosenImageA: UIImage?
-    @State private var chosenImageB: UIImage?
-    @State private var chosenImageC: UIImage?
-    @State private var chosenImageD: UIImage?
-    
+    @Binding var chosenImageA: UIImage?
+    @Binding var chosenImageB: UIImage?
+    @Binding var chosenImageC: UIImage?
+    @Binding var chosenImageD: UIImage?
+    @State var chosenImagesObject: ChosenImages?
     var body: some View {
         NavigationView {
             VStack {
@@ -62,13 +63,38 @@ struct CollageBuilder: View {
                 Image(systemName: "chevron.left").foregroundColor(.blue)
                 Text("Back")})
         }
-        .fullScreenCover(isPresented: $showCollageMenu) {CollageStyleMenu(chosenObject: chosenObject, chosenCollection: chosenCollection, pageCount: pageCount, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto)}
-    }
+        .onAppear{chosenImagesObject = ChosenImages.init(chosenImageA: $chosenImageA, chosenImageB: $chosenImageB, chosenImageC: $chosenImageC, chosenImageD: $chosenImageD)}
+            .fullScreenCover(isPresented: $showCollageMenu) {CollageStyleMenu(chosenObject: chosenObject, chosenCollection: chosenCollection, pageCount: pageCount, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto)}
+        }
 }
-
 extension CollageBuilder {
     
-    func blockForPhotoSelection(chosenImageForBlock: UIImage?, imageForBlock: Image?, imageNum: Int) -> some View {
+    //func blockForPhotoSelection(chosenImageForBlock: Binding<UIImage?>, imageForBlock: Image?, imageNum: Int) -> some View {
+      //  return GeometryReader {geometry in
+     //       ZStack(alignment: .center) {
+      //          Rectangle().fill(Color.gray).border(Color.black)
+      //          Text("Tap to select a picture").foregroundColor(.white).font(.headline)
+     //           imageForBlock?.resizable()
+     //       }
+      //  }
+     //   .onTapGesture{self.showImagePicker.toggle(); imageNumber = imageNum}
+     //   .onChange(of: chosenImageForBlock) { _ in loadImage(chosenImage: chosenImageForBlock)}
+     //   .fullScreenCover(isPresented: $showImagePicker) { ImagePicker(image: chosenImageForBlock)}
+   // }
+    
+    
+
+    func blockForPhotoSelection(chosenImages: ChosenImages, imageForBlock: Image?, imageNum: Int) -> some View {
+        var chosenImageForBlock: Binding<UIImage?>
+        if imageNum == 1 {chosenImageForBlock = chosenImages.$chosenImageA}
+        if imageNum == 2 {chosenImageForBlock = chosenImages.$chosenImageB}
+        if imageNum == 3 {chosenImageForBlock = chosenImages.$chosenImageC}
+        if imageNum == 4 {chosenImageForBlock = chosenImages.$chosenImageD}
+
+        
+        
+        //
+        
         return GeometryReader {geometry in
             ZStack(alignment: .center) {
                 Rectangle().fill(Color.gray).border(Color.black)
@@ -77,12 +103,11 @@ extension CollageBuilder {
             }
         }
         .onTapGesture{self.showImagePicker.toggle(); imageNumber = imageNum}
-        .onChange(of: chosenImageForBlock) { _ in self.loadImage(chosenImage: chosenImageForBlock)}
-        .fullScreenCover(isPresented: $showImagePicker) { ImagePicker(image: chosenImageForBlock)}
+        .onChange(of: chosenImageForBlock) { _ in loadImage(chosenImage: $chosenImageForBlock)}
+        .fullScreenCover(isPresented: $showImagePicker) {ImagePicker(image: chosenImageForBlock)}
     }
     
     func onePhotoView(block: some View) -> some View {return block}
-    
     func twoPhotoWide(block1: some View, block2: some View) -> some View {return VStack(spacing:0){block1; block2}}
     func twoPhotoLong(block1: some View, block2: some View) -> some View {return HStack(spacing:0){block1; block2}}
     func twoShortOneLong(block1: some View, block2: some View, block3: some View) -> some View {return HStack(spacing:0){VStack(spacing:0){block1; block2}; block3}}
@@ -122,7 +147,8 @@ extension CollageBuilder {
         }
     }
 
-    func loadImage(chosenImage: UIImage?) {
+    func loadImage(chosenImage: Binding<UIImage>) {
+        print("called load image.....")
         guard let chosenImage = chosenImage else {return print("loadImage() failed....")}
         if imageNumber == 1 {imageA = Image(uiImage: chosenImage)}
         if imageNumber == 2 {imageB = Image(uiImage: chosenImage)}
