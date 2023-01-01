@@ -47,7 +47,7 @@ struct CollageOneView: View {
                     Text("Back")
                     })
                 .onChange(of: chosenImage) { _ in loadImage()}
-                .fullScreenCover(isPresented: $showingImagePicker) { ImagePicker(image: chosenImage)}
+                .fullScreenCover(isPresented: $showingImagePicker) { ImagePicker(image: $chosenImage)}
         }
     var body: some View {
         NavigationView {

@@ -78,10 +78,10 @@ struct ChosenImages: Equatable {
     static func == (lhs: ChosenImages, rhs: ChosenImages) -> Bool {
         return lhs.chosenImageA == rhs.chosenImageA && lhs.chosenImageB == rhs.chosenImageB && lhs.chosenImageC == rhs.chosenImageC && lhs.chosenImageD == rhs.chosenImageD
     }
-    @Binding var chosenImageA: UIImage?
-    @Binding var chosenImageB: UIImage?
-    @Binding var chosenImageC: UIImage?
-    @Binding var chosenImageD: UIImage?
+    @State var chosenImageA: UIImage?
+    @State var chosenImageB: UIImage?
+    @State var chosenImageC: UIImage?
+    @State var chosenImageD: UIImage?
 }
 
 

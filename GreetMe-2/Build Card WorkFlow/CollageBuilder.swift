@@ -40,10 +40,10 @@ struct CollageBuilder: View {
     @State private var imageC: Image?
     @State private var imageD: Image?
     @State private var imageNumber: Int?
-    @Binding var chosenImageA: UIImage?
-    @Binding var chosenImageB: UIImage?
-    @Binding var chosenImageC: UIImage?
-    @Binding var chosenImageD: UIImage?
+    @State var chosenImageA: UIImage?
+    @State var chosenImageB: UIImage?
+    @State var chosenImageC: UIImage?
+    @State var chosenImageD: UIImage?
     @State var chosenImagesObject: ChosenImages?
     var body: some View {
         NavigationView {
@@ -63,7 +63,7 @@ struct CollageBuilder: View {
                 Image(systemName: "chevron.left").foregroundColor(.blue)
                 Text("Back")})
         }
-        .onAppear{chosenImagesObject = ChosenImages.init(chosenImageA: $chosenImageA, chosenImageB: $chosenImageB, chosenImageC: $chosenImageC, chosenImageD: $chosenImageD)}
+        .onAppear{chosenImagesObject = ChosenImages.init(chosenImageA: chosenImageA, chosenImageB: chosenImageB, chosenImageC: chosenImageC, chosenImageD: chosenImageD)}
             .fullScreenCover(isPresented: $showCollageMenu) {CollageStyleMenu(chosenObject: chosenObject, chosenCollection: chosenCollection, pageCount: pageCount, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto)}
         }
 }
@@ -85,15 +85,11 @@ extension CollageBuilder {
     
 
     func blockForPhotoSelection(chosenImages: ChosenImages, imageForBlock: Image?, imageNum: Int) -> some View {
-        var chosenImageForBlock: Binding<UIImage?>
-        if imageNum == 1 {chosenImageForBlock = chosenImages.$chosenImageA}
-        if imageNum == 2 {chosenImageForBlock = chosenImages.$chosenImageB}
-        if imageNum == 3 {chosenImageForBlock = chosenImages.$chosenImageC}
-        if imageNum == 4 {chosenImageForBlock = chosenImages.$chosenImageD}
-
-        
-        
-        //
+        @State var chosenImageForBlock: UIImage?
+        if imageNum == 1 {chosenImageForBlock = chosenImages.chosenImageA!}
+        if imageNum == 2 {chosenImageForBlock = chosenImages.chosenImageB!}
+        if imageNum == 3 {chosenImageForBlock = chosenImages.chosenImageC!}
+        if imageNum == 4 {chosenImageForBlock = chosenImages.chosenImageD!}
         
         return GeometryReader {geometry in
             ZStack(alignment: .center) {
@@ -103,8 +99,9 @@ extension CollageBuilder {
             }
         }
         .onTapGesture{self.showImagePicker.toggle(); imageNumber = imageNum}
-        .onChange(of: chosenImageForBlock) { _ in loadImage(chosenImage: $chosenImageForBlock)}
-        .fullScreenCover(isPresented: $showImagePicker) {ImagePicker(image: chosenImageForBlock)}
+        .onChange(of: chosenImageForBlock) { _ in
+            loadImage(chosenImage: chosenImageForBlock)}
+        .fullScreenCover(isPresented: $showImagePicker) {ImagePicker(image: $chosenImageForBlock)}
     }
     
     func onePhotoView(block: some View) -> some View {return block}
@@ -115,39 +112,39 @@ extension CollageBuilder {
     func fourPhoto(block1: some View, block2: some View, block3: some View, block4: some View) -> some View {return VStack(spacing:0){HStack(spacing:0){block1; block2}; HStack(spacing:0){block3; block4}}}
     
     @ViewBuilder var chosenTemplate: some View {
-        if chosenCollageStyle.chosenStyle == 1 {onePhotoView(block: blockForPhotoSelection(chosenImageForBlock: chosenImageA, imageForBlock: imageA, imageNum: 1))}
+        if chosenCollageStyle.chosenStyle == 1 {onePhotoView(block: blockForPhotoSelection(chosenImages: chosenImagesObject!, imageForBlock: imageA, imageNum: 1)) }
         
         if chosenCollageStyle.chosenStyle == 2 {
-            twoPhotoWide(block1: blockForPhotoSelection(chosenImageForBlock: chosenImageA, imageForBlock: imageA, imageNum: 1),
-                         block2: blockForPhotoSelection(chosenImageForBlock: chosenImageB, imageForBlock: imageB, imageNum: 2))
+            twoPhotoWide(block1: blockForPhotoSelection(chosenImages: chosenImagesObject!, imageForBlock: imageA, imageNum: 1),
+                         block2: blockForPhotoSelection(chosenImages: chosenImagesObject!, imageForBlock: imageB, imageNum: 2))
         }
         
         if chosenCollageStyle.chosenStyle == 3 {
-            twoPhotoLong(block1: blockForPhotoSelection(chosenImageForBlock: chosenImageA, imageForBlock: imageA, imageNum: 1),
-                         block2: blockForPhotoSelection(chosenImageForBlock: chosenImageB, imageForBlock: imageB, imageNum: 2))
+            twoPhotoLong(block1: blockForPhotoSelection(chosenImages: chosenImagesObject!, imageForBlock: imageA, imageNum: 1),
+                         block2: blockForPhotoSelection(chosenImages: chosenImagesObject!, imageForBlock: imageB, imageNum: 2))
         }
         
         if chosenCollageStyle.chosenStyle == 4 {
-            twoShortOneLong(block1: blockForPhotoSelection(chosenImageForBlock: chosenImageA, imageForBlock: imageA, imageNum: 1),
-                            block2: blockForPhotoSelection(chosenImageForBlock: chosenImageB, imageForBlock: imageB, imageNum: 2),
-                            block3: blockForPhotoSelection(chosenImageForBlock: chosenImageC, imageForBlock: imageC, imageNum: 3))
+            twoShortOneLong(block1: blockForPhotoSelection(chosenImages: chosenImagesObject!, imageForBlock: imageA, imageNum: 1),
+                            block2: blockForPhotoSelection(chosenImages: chosenImagesObject!, imageForBlock: imageB, imageNum: 2),
+                            block3: blockForPhotoSelection(chosenImages: chosenImagesObject!, imageForBlock: imageC, imageNum: 3))
         }
         
         if chosenCollageStyle.chosenStyle == 5 {
-            twoNarrowOneWide(block1: blockForPhotoSelection(chosenImageForBlock: chosenImageA, imageForBlock: imageA, imageNum: 1),
-                             block2: blockForPhotoSelection(chosenImageForBlock: chosenImageB, imageForBlock: imageB, imageNum: 2),
-                             block3: blockForPhotoSelection(chosenImageForBlock: chosenImageC, imageForBlock: imageC, imageNum: 3))
+            twoNarrowOneWide(block1: blockForPhotoSelection(chosenImages: chosenImagesObject!, imageForBlock: imageA, imageNum: 1),
+                             block2: blockForPhotoSelection(chosenImages: chosenImagesObject!, imageForBlock: imageB, imageNum: 2),
+                             block3: blockForPhotoSelection(chosenImages: chosenImagesObject!, imageForBlock: imageC, imageNum: 3))
         }
         
         if chosenCollageStyle.chosenStyle == 6 {
-            fourPhoto(block1: blockForPhotoSelection(chosenImageForBlock: chosenImageA, imageForBlock: imageA, imageNum: 1),
-                      block2: blockForPhotoSelection(chosenImageForBlock: chosenImageB, imageForBlock: imageB, imageNum: 2),
-                      block3: blockForPhotoSelection(chosenImageForBlock: chosenImageC, imageForBlock: imageC, imageNum: 3),
-                      block4: blockForPhotoSelection(chosenImageForBlock: chosenImageD, imageForBlock: imageD, imageNum: 4))
+            fourPhoto(block1: blockForPhotoSelection(chosenImages: chosenImagesObject!, imageForBlock: imageA, imageNum: 1),
+                      block2: blockForPhotoSelection(chosenImages: chosenImagesObject!, imageForBlock: imageB, imageNum: 2),
+                      block3: blockForPhotoSelection(chosenImages: chosenImagesObject!, imageForBlock: imageC, imageNum: 3),
+                      block4: blockForPhotoSelection(chosenImages: chosenImagesObject!, imageForBlock: imageD, imageNum: 4))
         }
     }
 
-    func loadImage(chosenImage: Binding<UIImage>) {
+    func loadImage(chosenImage: UIImage?) {
         print("called load image.....")
         guard let chosenImage = chosenImage else {return print("loadImage() failed....")}
         if imageNumber == 1 {imageA = Image(uiImage: chosenImage)}
