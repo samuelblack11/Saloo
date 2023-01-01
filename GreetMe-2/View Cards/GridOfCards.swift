@@ -33,14 +33,27 @@ struct GridofCards: View {
     @Binding var privateCards: [Card]
     @State var receivedCards: [Card]
     let columns = [GridItem(.adaptive(minimum: 120))]
-
+    @State private var sortByValue = "Date"
+    @State private var searchText = ""
+    var searchResults: [Card] {
+        if searchText.isEmpty {
+            return privateCards
+        } else {
+            return privateCards.filter { $0.cardName.contains(searchText) }
+        }
+    }
+    var sortOptions = ["Date","Card Name","Occassion"]
+    
     var body: some View {
-        NavigationView {
+        NavigationStack {
             ScrollView {
+                sortResults
                 LazyVGrid(columns: columns, spacing: 10) {
                     //Text("\(privateCards.count)")
-                    ForEach(privateCards) {cardView(for: $0, shareable: false)}
-                    
+                    ForEach(sortedCards(cards: privateCards, sortBy: sortByValue)) {
+                        //NavigationLink("SearchByField"){Text("\(card.cardName)")}
+                        cardView(for: $0, shareable: false)
+                    }
                     //switch cm.whichBox {
                     //case .outbox:
                     //    ForEach(sentCards) {cardView(for: $0, shareable: false)}
@@ -49,7 +62,9 @@ struct GridofCards: View {
                     //}
                 }
             }
+            .navigationTitle("Your Cards")
         }
+        .searchable(text: $searchText)
     }
     
     private func cardView(for card: Card, shareable: Bool = true) -> some View {
@@ -103,6 +118,31 @@ struct GridofCards: View {
 
 // MARK: Returns CKShare participant permission, methods and properties to share
 extension GridofCards {
+    
+    func sortedCards(cards: [Card], sortBy: String) -> [Card] {
+        var sortedCards = cards
+        if sortBy == "Date" {sortedCards.sort {$0.date! < $1.date!}}
+        if sortBy == "Card Name" {sortedCards.sort {$0.cardName < $1.cardName}}
+        if sortBy == "Occasion" {sortedCards.sort {$0.occassion! < $1.occassion!}}
+        return sortedCards
+    }
+    
+    var sortResults: some View {
+        HStack {
+            Text("Sort By").padding(.leading, 5).font(Font.custom(sortByValue, size: 12))
+            Picker("", selection: $sortByValue) {
+                ForEach(sortOptions, id:\.self) {sortOption in
+                    Text(sortOption)
+                }
+            }
+            Spacer()
+        }
+    }
+    
+    
+    
+    
+    
     
     /// Builds a `CloudSharingView` with state after processing a share.
     private func shareView(_ card: Card) -> CloudSharingView? {

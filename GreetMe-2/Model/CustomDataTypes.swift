@@ -73,10 +73,17 @@ class TextLimiter: ObservableObject {
 
 class ChosenCollageStyle: ObservableObject {@Published var chosenStyle: Int?}
 
-public class CBB {
-    var image: Image?
+class CollageBlocksAndViews {
+    @State private var image: Image?
     @State private var chosenImage: UIImage?
-    @State private var transitionVariable = false
+    @State private var transitionVariable: Bool = false
+    
+    //init(image: Image?, chosenImage: UIImage?, transitionVariable: Bool) {
+    //    self.image = image
+    //    self.chosenImage = chosenImage
+    //    self.transitionVariable = transitionVariable
+    //}
+    
     
     func blockForStyle() -> some View {return GeometryReader {geometry in HStack(spacing: 0) {Rectangle().fill(Color.gray).border(Color.black)}}}
     
@@ -88,15 +95,15 @@ public class CBB {
                 self.image?.resizable()
             }
         }
-        .onTapGesture{self.transitionVariable = true; print("tap successful...")}
+        .onTapGesture{self.transitionVariable.toggle(); print("tap successful...\(self.transitionVariable)!!")}
         .onChange(of: chosenImage) { _ in self.loadImage()}
-        .fullScreenCover(isPresented: $transitionVariable) { ImagePicker(image: self.$chosenImage)}
+        //.fullScreenCover(isPresented: $transitionVariable) { ImagePicker(image: self.$chosenImage)}
     }
     
     
     func onePhotoView(block: some View) -> some View {return block}
-    func twoPhotoWide(block: some View) -> some View {return VStack{block; block}}
-    func twoPhotoLong(block: some View) -> some View {return HStack{block; block}}
+    func twoPhotoWide(block: some View) -> some View {return VStack(spacing:0){block; block}}
+    func twoPhotoLong(block: some View) -> some View {return HStack(spacing:0){block; block}}
     func twoShortOneLong(block: some View) -> some View {return HStack(spacing:0){VStack(spacing:0){block; block}; block}}
     func twoNarrowOneWide(block: some View) -> some View {return VStack(spacing:0){HStack(spacing:0){blockForStyle(); blockForStyle()}; blockForStyle()}}
     func fourPhoto(block: some View) -> some View {return VStack(spacing:0){HStack(spacing:0){blockForStyle(); blockForStyle()}; HStack(spacing:0){blockForStyle(); blockForStyle()}}}

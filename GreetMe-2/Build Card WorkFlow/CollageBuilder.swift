@@ -12,6 +12,7 @@ struct CollageBuilder: View {
     @State private var showCollageMenu = false
     @State private var showCollageBuilder = false
     @State private var showWriteNote = false
+    @State var showImagePicker: Bool
     // The image, and it's components, selected by the user
     @ObservedObject var chosenObject: ChosenCoverImageObject
     // Object for collection selected by user
@@ -25,10 +26,9 @@ struct CollageBuilder: View {
     // Tracks which collage type (#) was selected by the user
     //@State public var chosenCollageStyle: CollageStyles.choices
     @ObservedObject public var chosenCollageStyle: ChosenCollageStyle
-    @State private var cBB = CBB()
-    
+    @State private var cBB = CollageBlocksAndViews()
+
     // Create instance of CollageBuildingBlocks, with blocks sized to fit the CollageBuilder view (menuSize = false)
-    @State private var showingImagePicker = false
     @State private var image: Image?
     @State private var chosenImage: UIImage?
     @State var eCardText: String = ""

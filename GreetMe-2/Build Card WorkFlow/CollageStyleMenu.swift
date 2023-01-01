@@ -12,7 +12,9 @@ import SwiftUI
 struct CollageStyleMenu: View {
     @State private var showConfirmFrontCover = false
     @State private var showCollageBuilder = false
-    
+    @State private var showImagePicker = false
+    @State private var transitionVariable = false
+
     // The image, and it's components, selected by the user
     @ObservedObject var chosenObject: ChosenCoverImageObject
     // Object for collection selected by user
@@ -24,9 +26,15 @@ struct CollageStyleMenu: View {
     // Is front cover a personal photo? (selected from camera or library)
     @Binding var frontCoverIsPersonalPhoto: Int
     // Tracks which collage type (#) was selected by the user
-    @State private var collageBlocks = CBB()
     @State private var collageStyles = []
     @StateObject var chosenStyle = ChosenCollageStyle()
+    
+    //var collageBlocks = CBB(image: imageTest, chosenImage: chosenImage)
+    @State private var collageBlocks = CollageBlocksAndViews()
+    //init(collageBlocks: CollageBlocksAndViews, transitionVariable: Bool) {
+    //    self.collageBlocks = collageBlocks
+    //    self.transitionVariable = transitionVariable
+    //}
     
     let columns = [GridItem(.flexible()),GridItem(.flexible())]
     
@@ -49,7 +57,7 @@ struct CollageStyleMenu: View {
             .navigationTitle("Pick Collage Style").font(.headline).padding(.horizontal)
             .navigationBarItems(leading:Button {showConfirmFrontCover = true} label: {Image(systemName: "chevron.left").foregroundColor(.blue); Text("Back")})
         }
-        .fullScreenCover(isPresented: $showCollageBuilder) {CollageBuilder(chosenObject: chosenObject, chosenCollection: chosenCollection, collageImage: $collageImage, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenCollageStyle: chosenStyle)}
+        .fullScreenCover(isPresented: $showCollageBuilder) {CollageBuilder(showImagePicker: false, chosenObject: chosenObject, chosenCollection: chosenCollection, collageImage: $collageImage, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenCollageStyle: chosenStyle)}
         .fullScreenCover(isPresented: $showConfirmFrontCover) {ConfirmFrontCoverView(chosenObject: chosenObject, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, pageCount: pageCount)}
     }
 }
