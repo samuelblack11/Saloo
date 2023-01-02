@@ -30,17 +30,20 @@ struct GridofCards: View {
     @State var returnRecord: CKRecord?
     @State var showDeliveryScheduler = false
     //@State var cardsToDisplay: [Card]
-    @Binding var privateCards: [Card]
-    @State var receivedCards: [Card]
+    //@Binding var privateCards: [Card]
+    //@State var receivedCards: [Card]
+    @State var privateCoreCards: [CoreCard]
+    @State var receivedCoreCards: [CoreCard]
+    
     let columns = [GridItem(.adaptive(minimum: 120))]
     @State private var sortByValue = "Date"
     @State private var searchText = ""
-    var filteredCards: [Card] {
-        if searchText.isEmpty { return privateCards}
+    var filteredCards: [CoreCard] {
+        if searchText.isEmpty { return privateCoreCards}
         //else if sortByValue == "Card Name" {return privateCards.filter { $0.cardName.contains(searchText)}}
         //else if sortByValue == "Date" {return privateCards.filter { $0.cardName.contains(searchText)}}
         //else if sortByValue == "Occassion" {return privateCards.filter { $0.occassion!.contains(searchText)}}
-        else {return privateCards.filter { $0.cardName.contains(searchText)}}
+        else {return privateCoreCards.filter { $0.cardName.contains(searchText)}}
         
     }
     var sortOptions = ["Date","Card Name","Occassion"]
@@ -69,27 +72,26 @@ struct GridofCards: View {
         // "Search by \(sortByValue)"
         .searchable(text: $searchText, prompt: "Search by Card Name")
         .fullScreenCover(isPresented: $showOccassions) {OccassionsMenu(calViewModel: CalViewModel(), showDetailView: ShowDetailView())}
-        .onAppear{loadCoreDataEvents()}
     }
     
-    private func cardView(for card: Card, shareable: Bool = true) -> some View {
+    private func cardView(for card: CoreCard, shareable: Bool = true) -> some View {
             VStack(spacing: 0) {
                 VStack(spacing:1) {
                     Image(uiImage: UIImage(data: card.coverImage!)!)
                         .resizable()
                         .frame(width: (UIScreen.screenWidth/4), height: (UIScreen.screenHeight/7))
-                    Text(card.message!)
-                        .font(Font.custom(card.font!, size: 500)).minimumScaleFactor(0.01)
+                    Text(card.message)
+                        .font(Font.custom(card.font, size: 500)).minimumScaleFactor(0.01)
                         .frame(width: (UIScreen.screenWidth/4), height: (UIScreen.screenHeight/8))
                     Image(uiImage: UIImage(data: card.collage!)!)
                         .resizable()
                         .frame(maxWidth: (UIScreen.screenWidth/4), maxHeight: (UIScreen.screenHeight/7))
                     HStack(spacing: 0) {
                         VStack(spacing: 0) {
-                            Text(card.an1!).font(.system(size: 4))
-                            Link(card.an2!, destination: URL(string: card.an2URL!)!).font(.system(size: 4))
-                            Text(card.an3!).font(.system(size: 4))
-                            Link(card.an4!, destination: URL(string: "https://unsplash.com")!).font(.system(size: 4))
+                            Text(card.an1).font(.system(size: 4))
+                            Link(card.an2, destination: URL(string: card.an2URL)!).font(.system(size: 4))
+                            Text(card.an3).font(.system(size: 4))
+                            Link(card.an4, destination: URL(string: "https://unsplash.com")!).font(.system(size: 4))
                         }.padding(.trailing, 5)
                         Spacer()
                         Image(systemName: "greetingcard.fill").foregroundColor(.blue).font(.system(size: 24))
@@ -100,12 +102,12 @@ struct GridofCards: View {
                             Text("GreetMe Inc.").font(.system(size: 4)).padding(.bottom,10).padding(.leading, 5)
                         }}.frame(width: (UIScreen.screenWidth/4), height: (UIScreen.screenHeight/15))
                 }
-                .sheet(isPresented: $showDeliveryScheduler) {ScheduleDelivery(card: card)}
+                //.sheet(isPresented: $showDeliveryScheduler) {ScheduleDelivery(card: card)}
                 .sheet(isPresented: $segueToEnlarge) {EnlargeECardView(chosenCard: $chosenCard, share: $share)}
-                .sheet(isPresented: $isSharing, content: {shareView(card)})
+                //.sheet(isPresented: $isSharing, content: {shareView(card)})
                 Divider().padding(.bottom, 5)
                 HStack(spacing: 3) {
-                    Text(card.recipient!)
+                    Text(card.recipient)
                         .font(.system(size: 8)).minimumScaleFactor(0.1)
                     Spacer()
                     Text(card.cardName)
@@ -114,9 +116,9 @@ struct GridofCards: View {
             }.padding().overlay(RoundedRectangle(cornerRadius: 6).stroke(.blue, lineWidth: 2))
                 .font(.headline).padding(.horizontal).frame(maxHeight: 600)
                 .contextMenu {
-                    Button {chosenCard = card; segueToEnlarge = true} label: {Text("Enlarge eCard"); Image(systemName: "plus.magnifyingglass")}
-                    Button {} label: {Text("Delete eCard"); Image(systemName: "trash").foregroundColor(.red)}
-                    Button {Task {try? await shareCard(card)}; isSharing = true} label: {Text("Share eCard Now")}
+                    //Button {chosenCard = card; segueToEnlarge = true} label: {Text("Enlarge eCard"); Image(systemName: "plus.magnifyingglass")}
+                    Button {deleteCoreCard(coreCard: card)} label: {Text("Delete eCard"); Image(systemName: "trash").foregroundColor(.red)}
+                    //Button {Task {try? await shareCard(card)}; isSharing = true} label: {Text("Share eCard Now")}
                     Button {showDeliveryScheduler = true} label: {Text("Schedule eCard Delivery")}
                 }}
 }
@@ -124,11 +126,11 @@ struct GridofCards: View {
 // MARK: Returns CKShare participant permission, methods and properties to share
 extension GridofCards {
     
-    func sortedCards(cards: [Card], sortBy: String) -> [Card] {
+    func sortedCards(cards: [CoreCard], sortBy: String) -> [CoreCard] {
         var sortedCards = cards
-        if sortBy == "Date" {sortedCards.sort {$0.date! < $1.date!}}
+        if sortBy == "Date" {sortedCards.sort {$0.date < $1.date}}
         if sortBy == "Card Name" {sortedCards.sort {$0.cardName < $1.cardName}}
-        if sortBy == "Occasion" {sortedCards.sort {$0.occassion! < $1.occassion!}}
+        if sortBy == "Occasion" {sortedCards.sort {$0.occassion < $1.occassion}}
         return sortedCards
     }
     
@@ -140,25 +142,20 @@ extension GridofCards {
         }
     }
     
-    func loadCoreDataEvents() -> [CardForCore] {
-        let request = CardForCore.createFetchRequest()
+    func reloadCoreCards() {
+        let request = CoreCard.createFetchRequest()
         let sort = NSSortDescriptor(key: "date", ascending: false)
         request.sortDescriptors = [sort]
-        var cardsFromCore: [CardForCore] = []
-        do {
-            cardsFromCore = try CoreDataStack.shared.context.fetch(request)
-            print("Got \(cardsFromCore.count) Cards From Core")
-            print("loadCoreDataEvents Called....")
-            print(cardsFromCore)
-        }
-        catch {
-            print("Fetch failed")
-        }
-        return cardsFromCore
+        do {privateCoreCards = try CoreDataStack.shared.context.fetch(request)}
+        catch {print("Fetch failed")}
     }
     
     
-    
+    func deleteCoreCard(coreCard: CoreCard) {
+        do {CoreDataStack.shared.context.delete(coreCard);try CoreDataStack.shared.context.save()}
+        catch {}
+        self.reloadCoreCards()
+    }
     
     
     /// Builds a `CloudSharingView` with state after processing a share.

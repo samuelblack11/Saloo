@@ -4,13 +4,13 @@
         <attribute name="eventDateCore" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="eventNameCore" optional="YES" attributeType="String"/>
     </entity>
-    <entity name="CardForCore" representedClassName=".CardForCore" syncable="YES">
+    <entity name="CoreCard" representedClassName=".CoreCard" syncable="YES">
         <attribute name="an1" optional="YES" attributeType="String"/>
         <attribute name="an2" optional="YES" attributeType="String"/>
         <attribute name="an2URL" optional="YES" attributeType="String"/>
         <attribute name="an3" optional="YES" attributeType="String"/>
         <attribute name="an4" optional="YES" attributeType="String"/>
-        <attribute name="card" optional="YES" attributeType="Binary"/>
+        <attribute name="associatedRecord" optional="YES" attributeType="Transformable"/>
         <attribute name="cardName" optional="YES" attributeType="String"/>
         <attribute name="collage" optional="YES" attributeType="Binary"/>
         <attribute name="coverImage" optional="YES" attributeType="Binary"/>

@@ -11,17 +11,17 @@ import CoreData
 import SwiftUI
 import CloudKit
 
-public class CardForCore: NSManagedObject {
+public class CoreCard: NSManagedObject, Identifiable {
     
 }
 
-extension CardForCore {
+extension CoreCard {
 
-    @nonobjc public class func createFetchRequest() -> NSFetchRequest<CardForCore> {
-        return NSFetchRequest<CardForCore>(entityName: "CardForCore")
+    @nonobjc public class func createFetchRequest() -> NSFetchRequest<CoreCard> {
+        return NSFetchRequest<CoreCard>(entityName: "CoreCard")
     }
 
-    @NSManaged public var id: String
+    //@NSManaged public var id: String
     @NSManaged public var cardName: String
     @NSManaged public var occassion: String
     @NSManaged public var recipient: String

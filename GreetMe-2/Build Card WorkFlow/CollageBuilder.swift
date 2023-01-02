@@ -58,7 +58,7 @@ struct CollageBuilder: View {
                     showWriteNote = true
                     let theSnapShot = collageView.snapshot()
                     collageImage.collageImage = theSnapShot
-                    UIImageWriteToSavedPhotosAlbum(theSnapShot, nil, nil, nil)
+                    //UIImageWriteToSavedPhotosAlbum(theSnapShot, nil, nil, nil)
                 }.padding(.bottom, 30).fullScreenCover(isPresented: $showWriteNote ) {
                     WriteNoteView(frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenObject: chosenObject, collageImage: collageImage, eCardText: $eCardText, printCardText: $printCardText, chosenOccassion: chosenOccassion, chosenStyle: chosenCollageStyle)}
             }

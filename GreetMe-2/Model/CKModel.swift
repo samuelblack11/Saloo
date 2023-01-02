@@ -129,21 +129,23 @@ final class CKModel: ObservableObject {
         cardRecord["coverImage"] = chosenObject.coverImage as CKRecordValue
         cardRecord["collage"] = collageImage.collageImage.pngData()! as CKRecordValue
         // Save to Core Data
-        let cardForCore = CardForCore(context: CoreDataStack.shared.context)
-        cardForCore.cardName = noteField.cardName
-        cardForCore.occassion = chosenOccassion.occassion
-        cardForCore.recipient = noteField.recipient
-        cardForCore.sender = noteField.sender
-        cardForCore.an1 = an1
-        cardForCore.an2 = an2
-        cardForCore.an2URL = an2URL
-        cardForCore.an3 = an3
-        cardForCore.an4 = an4
-        cardForCore.collage = collageImage.collageImage.pngData()!
-        cardForCore.coverImage = chosenObject.coverImage
-        cardForCore.date = Date.now
-        cardForCore.font = noteField.font
-        cardForCore.message = noteField.noteText
+        let coreCard = CoreCard(context: CoreDataStack.shared.context)
+        //coreCard.id = noteField.cardName
+        coreCard.cardName = noteField.cardName
+        coreCard.occassion = chosenOccassion.occassion
+        coreCard.recipient = noteField.recipient
+        coreCard.sender = noteField.sender
+        coreCard.associatedRecord = cardRecord
+        coreCard.an1 = an1
+        coreCard.an2 = an2
+        coreCard.an2URL = an2URL
+        coreCard.an3 = an3
+        coreCard.an4 = an4
+        coreCard.collage = collageImage.collageImage.pngData()!
+        coreCard.coverImage = chosenObject.coverImage
+        coreCard.date = Date.now
+        coreCard.font = noteField.font
+        coreCard.message = noteField.noteText
         
 
         do {
