@@ -21,7 +21,7 @@ struct UnsplashCollectionView: View {
 
     // Object holding Bools for all views to be displayed.
     // Object for collection selected by user
-    @State var chosenCollection: ChosenCollection
+    @ObservedObject var chosenOccassion: Occassion
     // Array of all images displayed in the view
     @State var imageObjects: [CoverImageObject] = []
     // Counts the number of images in the response from Unsplash, as they are added to imageObjects
@@ -42,9 +42,6 @@ struct UnsplashCollectionView: View {
     let timer = Timer.publish(every: 0.05, on: .main, in: .common).autoconnect()
     let columns = [GridItem(.fixed(150)),GridItem(.fixed(150))]
     
-    //Variables that are currenly inactive
-    
-    
     var body: some View {
         NavigationView {
             ScrollView {
@@ -63,10 +60,10 @@ struct UnsplashCollectionView: View {
         }
         .font(.headline).padding(.horizontal).frame(maxHeight: 600)
         .onAppear {
-            if chosenCollection.occassion == "None" {getUnsplashPhotos()}
-            else {getPhotosFromCollection(collectionID: chosenCollection.collectionID, page_num: pageCount)}
+            if chosenOccassion.occassion == "None" {getUnsplashPhotos()}
+            else {getPhotosFromCollection(collectionID: chosenOccassion.collectionID, page_num: pageCount)}
         }
-        .fullScreenCover(isPresented: $showConfirmFrontCover) {ConfirmFrontCoverView(chosenObject: chosenObject, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenCollection: chosenCollection, pageCount: pageCount)}
+        .fullScreenCover(isPresented: $showConfirmFrontCover) {ConfirmFrontCoverView(chosenObject: chosenObject, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenOccassion: chosenOccassion, pageCount: pageCount)}
         .fullScreenCover(isPresented: $showOccassions) {OccassionsMenu(calViewModel: CalViewModel(), showDetailView: ShowDetailView())}
         //.fullScreenCover(isPresented: $presentUCV2) {UnsplashCollectionView(viewTransitions: viewTransitions, chosenSmallURL: chosenSmallURL, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenCollection: chosenCollection, pageCount: $pageCount)}
     }
@@ -122,7 +119,7 @@ extension UnsplashCollectionView {
     }
     
     func getUnsplashPhotos() {
-        PhotoAPI.getPhoto(pageNum: pageCount, userSearch: chosenCollection.collectionID, completionHandler: { (response, error) in
+        PhotoAPI.getPhoto(pageNum: pageCount, userSearch: chosenOccassion.collectionID, completionHandler: { (response, error) in
             if response != nil {
                 self.picCount = response!.count
                 DispatchQueue.main.async {

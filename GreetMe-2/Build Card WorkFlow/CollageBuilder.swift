@@ -16,11 +16,11 @@ struct CollageBuilder: View {
     // The image, and it's components, selected by the user
     @ObservedObject var chosenObject: ChosenCoverImageObject
     // Object for collection selected by user
-    @State var chosenCollection: ChosenCollection
+    @ObservedObject var chosenOccassion: Occassion
     // Counts the page of the response being viewed by the user. 30 images per page maximum
     @State var pageCount: Int = 1
     // Variable for collageImage object
-    @Binding var collageImage: CollageImage?
+    @StateObject var collageImage = CollageImage()
     // Is front cover a personal photo? (selected from camera or library)
     @Binding var frontCoverIsPersonalPhoto: Int
     // Tracks which collage type (#) was selected by the user
@@ -42,27 +42,31 @@ struct CollageBuilder: View {
     @State private var imageNumber: Int?
     @StateObject var chosenImagesObject = ChosenImages()
     
+    var collageView: some View {
+        VStack {chosenTemplate}.frame(minWidth: 100, maxWidth: 300, minHeight: 100,maxHeight: 325)
+    }
+    
     
     
     var body: some View {
         NavigationView {
             VStack {
                 Spacer()
-                chosenTemplate
-                    .frame(minWidth: 100, maxWidth: 300, minHeight: 100,maxHeight: 325)
+                collageView
                 Spacer()
                 Button("Confirm Collage for Inside Cover") {
                     showWriteNote = true
-                    let theSnapShot = chosenTemplate.snapshot()
-                    collageImage = CollageImage.init(collageImage: theSnapShot)
+                    let theSnapShot = collageView.snapshot()
+                    collageImage.collageImage = theSnapShot
+                    UIImageWriteToSavedPhotosAlbum(theSnapShot, nil, nil, nil)
                 }.padding(.bottom, 30).fullScreenCover(isPresented: $showWriteNote ) {
-                    WriteNoteView(frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenObject: chosenObject, collageImage: collageImage, eCardText: $eCardText, printCardText: $printCardText, chosenCollection: chosenCollection)}
+                    WriteNoteView(frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenObject: chosenObject, collageImage: collageImage, eCardText: $eCardText, printCardText: $printCardText, chosenOccassion: chosenOccassion, chosenStyle: chosenCollageStyle)}
             }
             .navigationBarItems(leading: Button {showCollageMenu = true} label: {
                 Image(systemName: "chevron.left").foregroundColor(.blue)
                 Text("Back")})
         }
-        .fullScreenCover(isPresented: $showCollageMenu) {CollageStyleMenu(chosenObject: chosenObject, chosenCollection: chosenCollection, pageCount: pageCount, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto)}
+        .fullScreenCover(isPresented: $showCollageMenu) {CollageStyleMenu(chosenObject: chosenObject, chosenOccassion: chosenOccassion, pageCount: pageCount, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto)}
         }
 }
 
@@ -150,3 +154,23 @@ extension CollageBuilder {
     }
     
 }
+
+// https://www.hackingwithswift.com/quick-start/swiftui/how-to-convert-a-swiftui-view-to-an-image
+extension View {
+    func snapshot() -> UIImage {
+        let controller = UIHostingController(rootView: self)
+        let view = controller.view
+        
+        let targetSize = controller.view.intrinsicContentSize
+        print("Target Size: \(targetSize)")
+        view?.bounds = CGRect(origin: .zero, size: targetSize)
+        view?.backgroundColor = .clear
+        
+        let renderer = UIGraphicsImageRenderer(size: targetSize)
+        
+        return renderer.image { _ in
+            view?.drawHierarchy(in: controller.view.bounds, afterScreenUpdates: true)
+        }
+    }
+}
+

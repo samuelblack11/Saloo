@@ -62,9 +62,6 @@ struct AddEventToCalendarForm: View {
 
 extension AddEventToCalendarForm {
     
-    
-    
-    
     func addEventFrequency(frequency: String) {
         
         if frequency != "One Time Only" {

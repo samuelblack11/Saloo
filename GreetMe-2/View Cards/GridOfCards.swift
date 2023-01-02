@@ -20,8 +20,6 @@ struct GridofCards: View {
     @State var activeShare: CKShare?
     @State var activeContainer: CKContainer?
     @State private var showOccassions = false
-    
-    @Environment(\.presentationMode) var presentationMode
     @State var cards = [Card]()
     @State var segueToEnlarge = false
     @State var chosenCard: Card!
@@ -71,6 +69,7 @@ struct GridofCards: View {
         // "Search by \(sortByValue)"
         .searchable(text: $searchText, prompt: "Search by Card Name")
         .fullScreenCover(isPresented: $showOccassions) {OccassionsMenu(calViewModel: CalViewModel(), showDetailView: ShowDetailView())}
+        .onAppear{loadCoreDataEvents()}
     }
     
     private func cardView(for card: Card, shareable: Bool = true) -> some View {
@@ -109,7 +108,7 @@ struct GridofCards: View {
                     Text(card.recipient!)
                         .font(.system(size: 8)).minimumScaleFactor(0.1)
                     Spacer()
-                    Text(card.occassion!)
+                    Text(card.cardName)
                         .font(.system(size: 8)).minimumScaleFactor(0.1)
                 }
             }.padding().overlay(RoundedRectangle(cornerRadius: 6).stroke(.blue, lineWidth: 2))
@@ -136,15 +135,27 @@ extension GridofCards {
     var sortResults: some View {
         HStack {
             Text("Sort By:").padding(.leading, 5).font(Font.custom(sortByValue, size: 12))
-            Picker("", selection: $sortByValue) {
-                ForEach(sortOptions, id:\.self) {sortOption in
-                    Text(sortOption)
-                }
-            }
+            Picker("", selection: $sortByValue) {ForEach(sortOptions, id:\.self) {sortOption in Text(sortOption)}}
             Spacer()
         }
     }
     
+    func loadCoreDataEvents() -> [CardForCore] {
+        let request = CardForCore.createFetchRequest()
+        let sort = NSSortDescriptor(key: "date", ascending: false)
+        request.sortDescriptors = [sort]
+        var cardsFromCore: [CardForCore] = []
+        do {
+            cardsFromCore = try CoreDataStack.shared.context.fetch(request)
+            print("Got \(cardsFromCore.count) Cards From Core")
+            print("loadCoreDataEvents Called....")
+            print(cardsFromCore)
+        }
+        catch {
+            print("Fetch failed")
+        }
+        return cardsFromCore
+    }
     
     
     
@@ -152,25 +163,19 @@ extension GridofCards {
     
     /// Builds a `CloudSharingView` with state after processing a share.
     private func shareView(_ card: Card) -> CloudSharingView? {
-        guard let share = activeShare, let container = activeContainer else {
-            return nil
-        }
-
+        guard let share = activeShare, let container = activeContainer else {return nil}
         return CloudSharingView(share: share, container: container, card: card)
     }
     
     private func shareCard(_ card: Card) async throws {
         isProcessingShare = true
-
         do {
             let (share, container) = try await cm.fetchOrCreateShare(card: card)
             isProcessingShare = false
             activeShare = share
             activeContainer = container
             isSharing = true
-        } catch {
-            debugPrint("Error sharing contact record: \(error)")
-        }
+        } catch {debugPrint("Error sharing contact record: \(error)")}
     }
     
   private func string(for permission: CKShare.ParticipantPermission) -> String {

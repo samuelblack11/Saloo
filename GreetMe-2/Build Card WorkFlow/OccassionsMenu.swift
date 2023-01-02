@@ -48,7 +48,7 @@ struct OccassionsMenu: View {
     @State private var pageCount = 1
     //
     @State var loadedImagefromLibraryOrCamera: Bool?
-    @StateObject var occassionInstance = Occassion()
+    @StateObject var chosenOccassion = Occassion()
     
     
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -57,7 +57,7 @@ struct OccassionsMenu: View {
         HStack {
             Spacer()
             Button("Calendar") {showCalendar = true}
-            .fullScreenCover(isPresented: $showCalendar ) {CalendarParent(calViewModel: calViewModel, showDetailView: showDetailView)}
+            .fullScreenCover(isPresented: $showCalendar) {CalendarParent(calViewModel: calViewModel, showDetailView: showDetailView)}
         }.frame(width: (UIScreen.screenWidth/1.1), height: (UIScreen.screenHeight/12))
     }
     
@@ -95,10 +95,12 @@ struct OccassionsMenu: View {
                         handlePhotoLibrarySelection()
                         showCollageMenu = true
                         frontCoverIsPersonalPhoto = 1
+                        chosenOccassion.occassion = "None"
+                        chosenOccassion.collectionID = "None"
                         }
                     .fullScreenCover(isPresented: $showCollageMenu){
-                        let blankCollection = ChosenCollection.init(occassion: "None", collectionID: "None")
-                        CollageStyleMenu(chosenObject: chosenObject, chosenCollection: blankCollection, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto)
+                        //let blankOccassion = Occassion.init(occassion: "None", collectionID: "None")
+                        CollageStyleMenu(chosenObject: chosenObject, chosenOccassion: chosenOccassion, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto)
 
                     }
                 Text("Take Photo with Camera 📸 ").onTapGesture {
@@ -111,22 +113,23 @@ struct OccassionsMenu: View {
                         handleCameraPic()
                         showCollageMenu = true
                         frontCoverIsPersonalPhoto = 1
+                        chosenOccassion.occassion = "None"
+                        chosenOccassion.collectionID = "None"
                     }
                 .fullScreenCover(isPresented: $showCollageMenu){
-                    let blankCollection = ChosenCollection.init(occassion: "None", collectionID: "None")
-                    CollageStyleMenu(chosenObject: chosenObject, chosenCollection: blankCollection, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto)}
+                    //let blankOccassion = Occassion.init(occassion: "None", collectionID: "None")
+                    CollageStyleMenu(chosenObject: chosenObject, chosenOccassion: chosenOccassion, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto)}
                 HStack {
                     TextField("Custom Search", text: $customSearch)
                         .padding(.leading, 5)
                         .frame(height:35)
                     Button {showUCV = true; frontCoverIsPersonalPhoto = 0
-                        self.occassionInstance.occassion = "None"
-                        self.occassionInstance.collectionID = customSearch
+                        chosenOccassion.occassion = "None"
+                        chosenOccassion.collectionID = customSearch
                     }
                     label: {Image(systemName: "magnifyingglass.circle.fill")}
                         .fullScreenCover(isPresented: $showUCV) {
-                        let chosenCollection = ChosenCollection.init(occassion: occassionInstance.occassion, collectionID: occassionInstance.collectionID)
-                            UnsplashCollectionView(chosenCollection: chosenCollection, pageCount: pageCount, chosenObject: chosenObject, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto)
+                            UnsplashCollectionView(chosenOccassion: chosenOccassion, pageCount: pageCount, chosenObject: chosenObject, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto)
                     }
                 }
             }
@@ -152,12 +155,12 @@ extension OccassionsMenu {
     private func menuSection(for collection: CollectionPair, shareable: Bool = true) -> some View {
             Text(collection.title).onTapGesture {
                 frontCoverIsPersonalPhoto = 0
-                self.occassionInstance.occassion = collection.title
-                self.occassionInstance.collectionID = collection.id
+                self.chosenOccassion.occassion = collection.title
+                self.chosenOccassion.collectionID = collection.id
                 showUCV.toggle()
             }.fullScreenCover(isPresented: $showUCV) {
-                let chosenCollection = ChosenCollection.init(occassion: occassionInstance.occassion, collectionID: occassionInstance.collectionID)
-                UnsplashCollectionView(chosenCollection: chosenCollection, pageCount: pageCount, chosenObject: chosenObject, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto)
+                //let chosenCollection = ChosenCollection.init(occassion: occassionInstance.occassion, collectionID: occassionInstance.collectionID)
+                UnsplashCollectionView(chosenOccassion: chosenOccassion, pageCount: pageCount, chosenObject: chosenObject, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto)
                 }
     }
     

@@ -18,11 +18,9 @@ struct CollageStyleMenu: View {
     // The image, and it's components, selected by the user
     @ObservedObject var chosenObject: ChosenCoverImageObject
     // Object for collection selected by user
-    @State var chosenCollection: ChosenCollection
+    @ObservedObject var chosenOccassion: Occassion
     // Counts the page of the response being viewed by the user. 30 images per page maximum
     @State var pageCount: Int = 1
-    // Variable for collageImage object
-    @State var collageImage: CollageImage?
     // Is front cover a personal photo? (selected from camera or library)
     @Binding var frontCoverIsPersonalPhoto: Int
     // Tracks which collage type (#) was selected by the user
@@ -51,7 +49,7 @@ struct CollageStyleMenu: View {
             .navigationTitle("Pick Collage Style").font(.headline).padding(.horizontal)
             .navigationBarItems(leading:Button {showConfirmFrontCover = true} label: {Image(systemName: "chevron.left").foregroundColor(.blue); Text("Back")})
         }
-        .fullScreenCover(isPresented: $showCollageBuilder) {CollageBuilder(showImagePicker: false, chosenObject: chosenObject, chosenCollection: chosenCollection, collageImage: $collageImage, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenCollageStyle: chosenStyle)}
-        .fullScreenCover(isPresented: $showConfirmFrontCover) {ConfirmFrontCoverView(chosenObject: chosenObject, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, pageCount: pageCount)}
+        .fullScreenCover(isPresented: $showCollageBuilder) {CollageBuilder(showImagePicker: false, chosenObject: chosenObject, chosenOccassion: chosenOccassion, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenCollageStyle: chosenStyle)}
+        .fullScreenCover(isPresented: $showConfirmFrontCover) {ConfirmFrontCoverView(chosenObject: chosenObject, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenOccassion: chosenOccassion, pageCount: pageCount)}
     }
 }

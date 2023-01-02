@@ -30,6 +30,7 @@ class ChosenCoverImageObject: ObservableObject {
 class NoteField: ObservableObject  {
     @Published var noteText = String()
     @Published var recipient =  String()
+    @Published var sender =  String()
     @Published var cardName = String()
     @Published var font = String()
     @Published var willHandWrite = Bool()
@@ -51,7 +52,7 @@ struct CoverImageObject: Identifiable, Hashable {
     }
 }
 
-struct CollageImage {let collageImage: UIImage}
+class CollageImage: ObservableObject {@Published var collageImage = UIImage()}
 class HandWrite: ObservableObject { @Published var willHandWrite: Bool = false}
 
 // https://programmingwithswift.com/swiftui-textfield-character-limit/
@@ -112,48 +113,3 @@ class CollageBlocksAndViews {
     
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// https://www.hackingwithswift.com/quick-start/swiftui/how-to-convert-a-swiftui-view-to-an-image
-extension View {
-    func snapshot() -> UIImage {
-        let controller = UIHostingController(rootView: self)
-        let view = controller.view
-        
-        let targetSize = controller.view.intrinsicContentSize
-        print("Target Size: \(targetSize)")
-        view?.bounds = CGRect(origin: .zero, size: targetSize)
-        view?.backgroundColor = .clear
-        
-        let renderer = UIGraphicsImageRenderer(size: targetSize)
-        
-        return renderer.image { _ in
-            view?.drawHierarchy(in: controller.view.bounds, afterScreenUpdates: true)
-        }
-    }
-}

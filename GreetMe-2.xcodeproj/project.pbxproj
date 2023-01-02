@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		260F68EB281DBD7A002E864B /* CollageOneView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 260F68EA281DBD7A002E864B /* CollageOneView.swift */; };
 		260F68EF281DBD93002E864B /* CollageStyleMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 260F68EE281DBD93002E864B /* CollageStyleMenu.swift */; };
 		260F68F5281DBDCD002E864B /* OccassionsMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 260F68F4281DBDCD002E864B /* OccassionsMenu.swift */; };
 		260F68F7281DBDD2002E864B /* UnsplashCollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 260F68F6281DBDD2002E864B /* UnsplashCollectionView.swift */; };
@@ -70,7 +69,6 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		260F68EA281DBD7A002E864B /* CollageOneView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CollageOneView.swift; sourceTree = "<group>"; };
 		260F68EE281DBD93002E864B /* CollageStyleMenu.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CollageStyleMenu.swift; sourceTree = "<group>"; };
 		260F68F4281DBDCD002E864B /* OccassionsMenu.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OccassionsMenu.swift; sourceTree = "<group>"; };
 		260F68F6281DBDD2002E864B /* UnsplashCollectionView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UnsplashCollectionView.swift; sourceTree = "<group>"; };
@@ -133,14 +131,6 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		260F68F8281DBDED002E864B /* CollageViews */ = {
-			isa = PBXGroup;
-			children = (
-				260F68EA281DBD7A002E864B /* CollageOneView.swift */,
-			);
-			path = CollageViews;
-			sourceTree = "<group>";
-		};
 		260F6901281DBF28002E864B /* Build Card WorkFlow */ = {
 			isa = PBXGroup;
 			children = (
@@ -151,7 +141,6 @@
 				260F68EE281DBD93002E864B /* CollageStyleMenu.swift */,
 				C2075AFC295FDBA70048ECEB /* CollageBuilder.swift */,
 				260F6904281DBFAB002E864B /* UnsplashInteractions */,
-				260F68F8281DBDED002E864B /* CollageViews */,
 				26AD8126281F05160069C3F0 /* WriteNoteView.swift */,
 				26AD8128281F05310069C3F0 /* FinalizeCardView.swift */,
 			);
@@ -496,7 +485,6 @@
 				C23A9D3A28989B630059B97C /* DateDetailView.swift in Sources */,
 				C23A9D3C28989C340059B97C /* CalendarView.swift in Sources */,
 				26AD8129281F05310069C3F0 /* FinalizeCardView.swift in Sources */,
-				260F68EB281DBD7A002E864B /* CollageOneView.swift in Sources */,
 				260F68F5281DBDCD002E864B /* OccassionsMenu.swift in Sources */,
 				260F68FA281DBE61002E864B /* PhotoAPI.swift in Sources */,
 				2688D706285FA25100954120 /* SnapShotCardForPrint.swift in Sources */,

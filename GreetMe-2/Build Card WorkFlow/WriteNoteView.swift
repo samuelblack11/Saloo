@@ -18,6 +18,7 @@ struct WriteNoteView: View {
     @State private var message: String = "Write Your Note Here"
     @ObservedObject var input = TextLimiter(limit: 225)
     @State private var recipient: String = ""
+    @State private var sender: String = ""
     @State private var cardName: String = ""
     @State private var tappedTextEditor = false
     @State private var namesNotEntered = false
@@ -26,7 +27,7 @@ struct WriteNoteView: View {
     @StateObject var willHandWrite = HandWrite()
     @Binding var frontCoverIsPersonalPhoto: Int
     @ObservedObject var chosenObject: ChosenCoverImageObject
-    @State var collageImage: CollageImage!
+    @ObservedObject var collageImage: CollageImage
     @StateObject var noteField = NoteField()
     @State private var selectedFont = "Papyrus"
     @State var text1: String = ""
@@ -37,11 +38,8 @@ struct WriteNoteView: View {
     @FocusState private var isNoteFieldFocused: Bool
     @Binding var eCardText: String
     @Binding var printCardText: String
-    @State var chosenCollection: ChosenCollection
-
-
-    let allFontNames = UIFont.familyNames
-      .flatMap { UIFont.fontNames(forFamilyName: $0) }
+    @ObservedObject var chosenOccassion: Occassion
+    @ObservedObject var chosenStyle: ChosenCollageStyle
     
     var fonts = ["Zapfino","Papyrus","American-Typewriter-Bold"]
     var fontMenu: some View {
@@ -67,27 +65,22 @@ struct WriteNoteView: View {
             .frame(minHeight: 150)
             .font(Font.custom(selectedFont, size: 14))
             .onTapGesture {
-                if input.value == "Write Your Note Here" {
-                    input.value = ""
-                }
+                if input.value == "Write Your Note Here" {input.value = ""}
                 //isNoteFieldFocused.toggle()
                 tappedTextEditor = true
             }
         HStack {
         Text("\(225 - input.value.count) Characters Remaining").font(Font.custom(selectedFont, size: 10))
         Image(uiImage: collageImage.collageImage)
-                    .resizable()
-                    .frame(width: (UIScreen.screenWidth/5)-10, height: (UIScreen.screenWidth/5),alignment: .center)
+                .resizable()
+                .frame(width: (UIScreen.screenWidth/5)-10, height: (UIScreen.screenWidth/5),alignment: .center)
             
         }
         //Spacer()
         fontMenu.frame(height: 65)
-        TextField("Recipient", text: $recipient)
-            .padding(.leading, 5)
-            .frame(height:35)
-        TextField("Name Your Card", text: $cardName)
-            .padding(.leading, 5)
-            .frame(height:35)
+        TextField("To:", text: $recipient).padding(.leading, 5).frame(height:35)
+        TextField("From:", text: $sender).padding(.leading, 5).frame(height:35)
+        TextField("Name Your Card", text: $cardName).padding(.leading, 5) .frame(height:35)
         Button("Confirm Note") {
             cardName = cardName.components(separatedBy: CharacterSet.punctuationCharacters).joined()
             message = input.value
@@ -98,19 +91,16 @@ struct WriteNoteView: View {
         .alert("Please Enter Values for All Fields!", isPresented: $namesNotEntered) {Button("Ok", role: .cancel) {}}
         .alert("Type Note Here or Hand Write After Printing?", isPresented: $handWrite) {
             Button("Type it Here", action: {})
-            Button("Hand Write it"){
-                handWrite2 = true
-                willHandWrite.willHandWrite = true
+            Button("Hand Write it"){handWrite2 = true; willHandWrite.willHandWrite = true
             }}
         .alert("Your typed message will only appear in your eCard", isPresented: $handWrite2) {Button("Ok", role: .cancel) {}}
         .padding(.bottom, 30)
-        .fullScreenCover(isPresented: $showFinalize) {FinalizeCardView(chosenObject: chosenObject, collageImage: $collageImage, noteField: noteField, frontCoverIsPersonalPhoto: frontCoverIsPersonalPhoto, text1: $text1, text2: $text2, text2URL: $text2URL, text3: $text3, text4: $text4, willHandWrite: willHandWrite, eCardText: $eCardText, printCardText: $printCardText, chosenCollection: chosenCollection)}
+        .fullScreenCover(isPresented: $showFinalize) {FinalizeCardView(chosenObject: chosenObject, collageImage: collageImage, noteField: noteField, frontCoverIsPersonalPhoto: frontCoverIsPersonalPhoto, text1: $text1, text2: $text2, text2URL: $text2URL, text3: $text3, text4: $text4, willHandWrite: willHandWrite, eCardText: $eCardText, printCardText: $printCardText, chosenOccassion: chosenOccassion)}
+        .fullScreenCover(isPresented: $showCollageBuilder) {CollageBuilder(showImagePicker: false, chosenObject: chosenObject, chosenOccassion: chosenOccassion, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenCollageStyle: chosenStyle)}
         }
-            .navigationBarItems(leading:
-                                        Button {} label: {
-                                            Image(systemName: "chevron.left").foregroundColor(.blue)
-                                                Text("Back")})
+            .navigationBarItems(leading:Button {showCollageBuilder = true} label: {Image(systemName: "chevron.left").foregroundColor(.blue); Text("Back")})
         }
+        .onAppear{print("called writeNoteView....//"); print(collageImage.collageImage)}
     }
 }
 
@@ -127,23 +117,15 @@ extension WriteNoteView {
             text3 = "On "
             text4 = "Unsplash"
         }
-        else {
-            text2URL = URL(string: "https://google.com")!
-        }
+        else {text2URL = URL(string: "https://google.com")!}
     }
     
     func willHandWritePrintCard() {
         if willHandWrite.willHandWrite == true {
-            if input.value == "Write Note Here" {
-                input.value = ""
-            }
-            eCardText = input.value
-            printCardText = ""
+            if input.value == "Write Note Here" {input.value = ""}
+            eCardText = input.value; printCardText = ""
         }
-        else {
-            eCardText = input.value
-            printCardText = input.value
-        }
+        else {eCardText = input.value; printCardText = input.value}
     }
     
     func checkRequiredFields() {
@@ -154,10 +136,9 @@ extension WriteNoteView {
             noteField.recipient = recipient
             noteField.cardName = cardName
             noteField.font = selectedFont
+            noteField.sender = sender
         }
-        else {
-            namesNotEntered = true
-        }
+        else {namesNotEntered = true}
     }
     
     

@@ -11,13 +11,43 @@ import CoreData
 import SwiftUI
 import CloudKit
 
+public class CardForCore: NSManagedObject {
+    
+}
+
+extension CardForCore {
+
+    @nonobjc public class func createFetchRequest() -> NSFetchRequest<CardForCore> {
+        return NSFetchRequest<CardForCore>(entityName: "CardForCore")
+    }
+
+    @NSManaged public var id: String
+    @NSManaged public var cardName: String
+    @NSManaged public var occassion: String
+    @NSManaged public var recipient: String
+    @NSManaged public var sender: String?
+    @NSManaged public var associatedRecord: CKRecord
+    @NSManaged public var an1: String
+    @NSManaged public var an2: String
+    @NSManaged public var an2URL: String
+    @NSManaged public var an3: String
+    @NSManaged public var an4: String
+    @NSManaged public var collage: Data?
+    @NSManaged public var coverImage: Data?
+    @NSManaged public var date: Date
+    @NSManaged public var font: String
+    @NSManaged public var message: String
+
+}
+
+
 struct Card: Identifiable, Hashable {
     let id: String
     let cardName: String
     let occassion: String?
     let recipient: String?
+    let sender: String?
     let associatedRecord: CKRecord
-    
     let an1: String?
     let an2: String?
     let an2URL: String?
@@ -28,8 +58,6 @@ struct Card: Identifiable, Hashable {
     let date: Date?
     let font: String?
     let message: String?
-
-    
 }
 
 extension Card {
@@ -38,6 +66,7 @@ extension Card {
         guard let cardName = record["cardName"] as? String,
             let occassion = record["occassion"] as? String,
             let recipient = record["recipient"] as? String,
+            let sender = record["sender"] as? String,
             let an1 = record["an1"] as? String,
             let an2 = record["an2"] as? String,
             let an2URL = record["an2URL"] as? String,
@@ -55,6 +84,7 @@ extension Card {
         self.cardName = cardName
         self.occassion = occassion
         self.recipient = recipient
+        self.sender = sender
         self.associatedRecord = record
         self.an1 = an1
         self.an2 = an2

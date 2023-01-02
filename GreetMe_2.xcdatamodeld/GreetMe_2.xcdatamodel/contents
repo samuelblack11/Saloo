@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="20086" systemVersion="21G72" minimumToolsVersion="Automatic" sourceLanguage="Swift" usedWithCloudKit="YES" userDefinedModelVersionIdentifier="">
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="21513" systemVersion="21G72" minimumToolsVersion="Automatic" sourceLanguage="Swift" usedWithCloudKit="YES" userDefinedModelVersionIdentifier="">
     <entity name="CalendarDate" representedClassName="CalendarDate" syncable="YES">
         <attribute name="eventDateCore" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="eventNameCore" optional="YES" attributeType="String"/>
     </entity>
-    <entity name="Card" representedClassName="Card" syncable="YES">
+    <entity name="CardForCore" representedClassName=".CardForCore" syncable="YES">
         <attribute name="an1" optional="YES" attributeType="String"/>
         <attribute name="an2" optional="YES" attributeType="String"/>
         <attribute name="an2URL" optional="YES" attributeType="String"/>
@@ -19,15 +19,11 @@
         <attribute name="message" optional="YES" attributeType="String"/>
         <attribute name="occassion" optional="YES" attributeType="String"/>
         <attribute name="recipient" optional="YES" attributeType="String"/>
+        <attribute name="sender" optional="YES" attributeType="String"/>
     </entity>
     <entity name="FutureDelivery" representedClassName=".FutureDelivery" syncable="YES">
         <attribute name="card" optional="YES" attributeType="Binary"/>
         <attribute name="deliveryDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="recipientList" optional="YES" attributeType="Transformable" valueTransformerName="NSSecureUnarchiveFromData" customClassName="[String]"/>
     </entity>
-    <elements>
-        <element name="CalendarDate" positionX="-63" positionY="90" width="128" height="59"/>
-        <element name="Card" positionX="-63" positionY="-18" width="128" height="239"/>
-        <element name="FutureDelivery" positionX="-63" positionY="90" width="128" height="74"/>
-    </elements>
 </model>

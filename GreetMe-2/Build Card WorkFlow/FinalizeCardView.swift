@@ -22,7 +22,7 @@ struct FinalizeCardView: View {
     @State var card: Card!
     @State var cardRecord: CKRecord!
     @ObservedObject var chosenObject: ChosenCoverImageObject
-    @Binding var collageImage: CollageImage!
+    @ObservedObject var collageImage: CollageImage
     @ObservedObject var noteField: NoteField
     @State var frontCoverIsPersonalPhoto: Int
     @Binding var text1: String
@@ -51,7 +51,7 @@ struct FinalizeCardView: View {
     @State private var activeShare: CKShare?
     @State private var activeContainer: CKContainer?
     @State private var pageCount = 1
-    @State var chosenCollection: ChosenCollection
+    @ObservedObject var chosenOccassion: Occassion
 
     var eCardVertical: some View {
         VStack(spacing:1) {
@@ -160,7 +160,7 @@ struct FinalizeCardView: View {
                     Task {
                         print("trying to save....")
                         try await cm.initialize()
-                        try? await addCard(noteField: noteField, chosenCollection: chosenCollection, an1: text1, an2: text2, an2URL: text2URL.absoluteString, an3: text3, an4: text4, chosenObject: chosenObject, collageImage: collageImage)
+                        try? await addCard(noteField: noteField, chosenOccassion: chosenOccassion, an1: text1, an2: text2, an2URL: text2URL.absoluteString, an3: text3, an4: text4, chosenObject: chosenObject, collageImage: collageImage)
                         //try? await shareCard(card)
                         print("saved")
                     }
@@ -168,9 +168,9 @@ struct FinalizeCardView: View {
                     showCompleteAlert = true
                 }
                 .fullScreenCover(isPresented: $showOccassions) {OccassionsMenu(calViewModel: CalViewModel(), showDetailView: ShowDetailView())}
-                .fullScreenCover(isPresented: $showCollageMenu) {CollageStyleMenu(chosenObject: chosenObject, chosenCollection: chosenCollection, pageCount: pageCount, collageImage: collageImage, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto)}
+                .fullScreenCover(isPresented: $showCollageMenu) {CollageStyleMenu(chosenObject: chosenObject, chosenOccassion: chosenOccassion, pageCount: pageCount, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto)}
                 .fullScreenCover(isPresented: $showUCV) {
-                    UnsplashCollectionView(chosenCollection: chosenCollection, pageCount: pageCount, chosenObject: chosenObject, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto)
+                    UnsplashCollectionView(chosenOccassion: chosenOccassion, pageCount: pageCount, chosenObject: chosenObject, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto)
                 }
                 .disabled(saveAndShareIsActive)
                 .alert("Save Complete", isPresented: $showCompleteAlert) {
@@ -213,9 +213,9 @@ struct FinalizeCardView: View {
 
 extension FinalizeCardView {
     
-    private func addCard(noteField: NoteField, chosenCollection: ChosenCollection
+    private func addCard(noteField: NoteField, chosenOccassion: Occassion
                          , an1: String, an2: String, an2URL: String, an3: String, an4: String, chosenObject: ChosenCoverImageObject, collageImage: CollageImage) async throws {
-        try await cm.addCard(noteField: noteField, chosenCollection: chosenCollection, an1: an1, an2: an2, an2URL: an2URL, an3: an3, an4: an4, chosenObject: chosenObject, collageImage: collageImage)
+        try await cm.addCard(noteField: noteField, chosenOccassion: chosenOccassion, an1: an1, an2: an2, an2URL: an2URL, an3: an3, an4: an4, chosenObject: chosenObject, collageImage: collageImage)
         try await cm.refresh()
         isAddingCard = false
     }
@@ -243,7 +243,7 @@ extension FinalizeCardView {
     }
     
     func prepCardForExport() -> Data {
-        let image = SnapShotCardForPrint(chosenObject: chosenObject, collageImage: $collageImage, noteField: noteField, text1: $text1, text2: $text2, text2URL: $text2URL, text3: $text3, text4: $text4, printCardText: $printCardText).snapshot()
+        let image = SnapShotCardForPrint(chosenObject: chosenObject, collageImage: collageImage, noteField: noteField, text1: $text1, text2: $text2, text2URL: $text2URL, text3: $text3, text4: $text4, printCardText: $printCardText).snapshot()
         let a4_width = 595.2 - 20
         let a4_height = 841.8
         let pageRect = CGRect(x: 0, y: 0, width: a4_width, height: a4_height)
