@@ -43,10 +43,10 @@ struct GridofCards: View {
     }
     var sortOptions = ["Date","Card Name","Occassion"]
     
-    func determineDisplayName(coreCard: CoreCard) {
+    func determineDisplayName(coreCard: CoreCard) -> String {
         switch cm.whichBox {
-        case .outbox: nameToDisplay = coreCard.recipient
-        case .inbox: nameToDisplay = coreCard.sender
+        case .outbox: return coreCard.recipient
+        case .inbox: return coreCard.sender!
         }
     }
     
@@ -104,8 +104,10 @@ struct GridofCards: View {
                 .sheet(isPresented: $isSharing, content: {shareView(card)})
                 Divider().padding(.bottom, 5)
                 HStack(spacing: 3) {
-                    Text(nameToDisplay!)
+                    Text(determineDisplayName(coreCard: card))
                         .font(.system(size: 8)).minimumScaleFactor(0.1)
+                    Spacer()
+                    Divider()
                     Spacer()
                     Text(card.cardName)
                         .font(.system(size: 8)).minimumScaleFactor(0.1)

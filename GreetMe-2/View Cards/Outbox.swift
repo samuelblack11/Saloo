@@ -26,10 +26,9 @@ struct Outbox: View {
                 //case .error(let error):VStack {Text("An error occurred: \(error.localizedDescription)").padding(); Spacer()}
                 //case let .loaded(sentCards: privateCards, receivedCards: privateCards):GridofCards(privateCards: $privateCards, receivedCards: privateCards)
                 //}
-                switch cm.whichBox {
-                case .outbox: GridofCards(cardsForDisplay: loadCoreCards())
-                case .inbox: GridofCards(cardsForDisplay: loadCoreCards())
-                }
+                GridofCards(cardsForDisplay: loadCoreCards())
+                //GridofCards(cardsForDisplay: filterCoreCards(coreCards: loadCoreCards(), whichBox: .outbox))
+                //}
             
             
             
@@ -43,6 +42,32 @@ struct Outbox: View {
 }
 
 extension Outbox {
+    
+    
+    func filterCoreCards(coreCards: [CoreCard], whichBox: CKModel.SendReceive) -> [CoreCard] {
+        var filteredCoreCards: [CoreCard] = []
+        for coreCard in coreCards {
+            print("----")
+            print(coreCard.associatedRecord.creatorUserRecordID?.zoneID.ownerName)
+            print("***")
+            print(CKCurrentUserDefaultName)
+            print("$$$")
+            if whichBox == .outbox {
+                if coreCard.associatedRecord.creatorUserRecordID?.zoneID.ownerName == CKCurrentUserDefaultName {
+                    filteredCoreCards.append(coreCard)
+                }
+            }
+            if whichBox == .inbox {
+                if coreCard.associatedRecord.creatorUserRecordID?.zoneID.ownerName != CKCurrentUserDefaultName {
+                    filteredCoreCards.append(coreCard)
+                }
+            }
+        }
+        return filteredCoreCards
+    }
+        
+    
+    
     
     func deleteAllCoreCards() {
         let request = CoreCard.createFetchRequest()
