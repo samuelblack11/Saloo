@@ -13,7 +13,7 @@ import CloudKit
 // https://www.hackingwithswift.com/articles/117/the-ultimate-guide-to-timer
 
 struct ScheduleDelivery: View {
-    @State var card: Card
+    @State var coreCard: CoreCard
     @State private var deliveryDate = Date()
     @State private var recipientList = [String]()
     @State private var newRecipient = ""
@@ -49,7 +49,7 @@ struct ScheduleDelivery: View {
                 }
                 .sheet(isPresented: $showShareSheet, content: {
                     if let share = share {
-                        CloudSharingView(share: share, container: stack.ckContainer, card: card)
+                        CloudSharingView(share: share, container: stack.ckContainer, coreCard: coreCard)
                     }
               })
             }
@@ -60,7 +60,7 @@ struct ScheduleDelivery: View {
     
     func scheduleDelivery(delivery: FutureDelivery) {
         //let date = Date.now.addingTimeInterval(5)
-        let schedDelC = ScheduleDeliveryC.init(card: card, share: share!, showShareSheet: showShareSheet)
+        let schedDelC = ScheduleDeliveryC.init(coreCard: coreCard, share: share!, showShareSheet: showShareSheet)
         //let timer = Timer(fireAt: delivery.deliveryDate!, interval: 0, target: self, selector: #selector(schedDelC.determineHowToShare), userInfo: nil, repeats: false)
         showShareSheet = true
         //RunLoop.main.add(timer, forMode: .common)
@@ -84,11 +84,11 @@ class ScheduleDeliveryC {
 
     private let stack = CoreDataStack.shared
     var share: CKShare
-    var card: Card
+    var coreCard: CoreCard
     var showShareSheet: Bool
     
-    init(card: Card, share: CKShare, showShareSheet: Bool) {
-        self.card = card
+    init(coreCard: CoreCard, share: CKShare, showShareSheet: Bool) {
+        self.coreCard = coreCard
         self.share = share
         self.showShareSheet = showShareSheet
     }

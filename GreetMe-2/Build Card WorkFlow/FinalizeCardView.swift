@@ -19,7 +19,7 @@ struct FinalizeCardView: View {
     @State private var showCollageBuilder = false
     @State private var showWriteNote = false
     
-    @State var card: Card!
+    @State var coreCard: CoreCard!
     @State var cardRecord: CKRecord!
     @ObservedObject var chosenObject: ChosenCoverImageObject
     @ObservedObject var collageImage: CollageImage
@@ -189,7 +189,7 @@ struct FinalizeCardView: View {
                            rootViewController?.dismiss(animated: true)
                     }
                 }
-                .fullScreenCover(isPresented: $isSharing, content: {shareView(card: card)})
+                .fullScreenCover(isPresented: $isSharing, content: {shareView(coreCard: coreCard)})
                 Spacer()
                 Button("Export for Print") {
                     showActivityController = true; let cardForExport = prepCardForExport()
@@ -205,7 +205,7 @@ struct FinalizeCardView: View {
             Text("Menu")}
             )
         .fullScreenCover(isPresented: $showOccassions) {OccassionsMenu(calViewModel: CalViewModel(), showDetailView: ShowDetailView())}
-        .fullScreenCover(isPresented: $showShareSheet, content: {if let share = share {CloudSharingView(share: share, container: CoreDataStack.shared.ckContainer, card: card)}})
+        .fullScreenCover(isPresented: $showShareSheet, content: {if let share = share {CloudSharingView(share: share, container: CoreDataStack.shared.ckContainer, coreCard: coreCard)}})
         .fullScreenCover(isPresented: $showActivityController) {ActivityView(activityItems: $activityItemsArray, applicationActivities: nil)}
         }
     }
@@ -220,10 +220,10 @@ extension FinalizeCardView {
         isAddingCard = false
     }
     
-    private func shareCard(_ card: Card) async throws {
+    private func shareCard(_ coreCard: CoreCard) async throws {
         isProcessingShare = true
         do {
-            let (share, container) = try await cm.fetchOrCreateShare(card: card)
+            let (share, container) = try await cm.fetchOrCreateShare(coreCard: coreCard)
             isProcessingShare = false
             activeShare = share
             activeContainer = container
@@ -234,12 +234,12 @@ extension FinalizeCardView {
     }
     
     /// Builds a `CloudSharingView` with state after processing a share.
-    private func shareView(card: Card) -> CloudSharingView? {
+    private func shareView(coreCard: CoreCard) -> CloudSharingView? {
         guard let share = activeShare, let container = activeContainer else {
             return nil
         }
 
-        return CloudSharingView(share: share, container: container, card: card)
+        return CloudSharingView(share: share, container: container, coreCard: coreCard)
     }
     
     func prepCardForExport() -> Data {

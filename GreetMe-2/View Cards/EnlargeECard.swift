@@ -12,7 +12,7 @@ import CloudKit
 
 //https://www.appcoda.com/swiftui-confetti-animation/
 struct EnlargeECardView: View {
-    @Binding var chosenCard: Card!
+    var chosenCard: CoreCard
     @Binding var share: CKShare?
     @State private var counter = 1
     private let stack = CoreDataStack.shared
@@ -39,8 +39,8 @@ struct EnlargeECardView: View {
             Image(uiImage: UIImage(data: chosenCard.coverImage!)!)
                 .resizable()
                 .frame(maxWidth: (UIScreen.screenWidth/1.5), maxHeight: (UIScreen.screenHeight/3.7))
-            Text(chosenCard.message!)
-                .font(Font.custom(chosenCard.font!, size: 500))
+            Text(chosenCard.message)
+                .font(Font.custom(chosenCard.font, size: 500))
                 .minimumScaleFactor(0.01)
                 .frame(maxWidth: (UIScreen.screenWidth/1.5), maxHeight: (UIScreen.screenHeight/5.5))
             
@@ -52,13 +52,13 @@ struct EnlargeECardView: View {
                 HStack(spacing: 0) {
                     
                     VStack(spacing: 0) {
-                        Text(chosenCard.an1!)
+                        Text(chosenCard.an1)
                             .font(.system(size: 8))
-                        Link(chosenCard.an2!, destination: URL(string: chosenCard.an2URL!)!)
+                        Link(chosenCard.an2, destination: URL(string: chosenCard.an2URL)!)
                             .font(.system(size: 8))
                         HStack(spacing: 0) {
-                            Text(chosenCard.an3!).font(.system(size: 8))
-                            Link(chosenCard.an4!, destination: URL(string: "https://unsplash.com")!).font(.system(size: 8))
+                            Text(chosenCard.an3).font(.system(size: 8))
+                            Link(chosenCard.an4, destination: URL(string: "https://unsplash.com")!).font(.system(size: 8))
                             }
                         }.padding(.bottom,10)
                     Spacer()
@@ -100,7 +100,7 @@ struct EnlargeECardView: View {
     
     var body: some View {
         //.text("🎈")
-        eCardView.confettiCannon(counter: $counter, num: 1, confettis: [ .text(assignEmoji(occassion: chosenCard.occassion!))], colors: [.red], confettiSize: 20.0, rainHeight: 600, fadesOut: true, opacity: 1, openingAngle: Angle.degrees(60), closingAngle: Angle.degrees(120), radius: 300, repetitions: 50, repetitionInterval: 0.05)
+        eCardView//.confettiCannon(counter: $counter, num: 1, confettis: [ .text(assignEmoji(occassion: chosenCard.chosenCard.occassion))], colors: [.red], confettiSize: 20.0, rainHeight: 600, fadesOut: true, opacity: 1, openingAngle: Angle.degrees(60), closingAngle: Angle.degrees(120), radius: 300, repetitions: 50, repetitionInterval: 0.05)
             .onAppear(perform:addToCounter)
         }
     }

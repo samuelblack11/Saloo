@@ -11,6 +11,7 @@ import SwiftUI
 import CloudKit
 
 struct ChosenCollection {@State var occassion: String!; @State var collectionID: String!}
+class ChosenCoreCard: ObservableObject {@Published var chosenCard = CoreCard()}
 class Occassion: ObservableObject {@Published var occassion = String(); @Published var collectionID = String()}
 public class ShowDetailView: ObservableObject {@Published public var showDetailView: Bool = false}
 

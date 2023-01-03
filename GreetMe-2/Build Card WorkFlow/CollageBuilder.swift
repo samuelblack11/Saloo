@@ -46,8 +46,6 @@ struct CollageBuilder: View {
         VStack {chosenTemplate}.frame(minWidth: 100, maxWidth: 300, minHeight: 100,maxHeight: 325)
     }
     
-    
-    
     var body: some View {
         NavigationView {
             VStack {

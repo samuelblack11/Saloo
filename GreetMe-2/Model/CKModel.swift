@@ -161,18 +161,22 @@ final class CKModel: ObservableObject {
        /// - Parameters:
        ///   - contact: Contact to share.
        ///   - completionHandler: Handler to process a `success` or `failure` result.
-       func fetchOrCreateShare(card: Card) async throws -> (CKShare, CKContainer) {
-           guard let existingShare = card.associatedRecord.share else {
-               let share = CKShare(rootRecord: card.associatedRecord)
-               share[CKShare.SystemFieldKey.title] = "Card: \(card.cardName)"
-               _ = try await pdb.modifyRecords(saving: [card.associatedRecord, share], deleting: [])
+       func fetchOrCreateShare(coreCard: CoreCard) async throws -> (CKShare, CKContainer) {
+           print("called fetchOrCreateShare....")
+           guard let existingShare = coreCard.associatedRecord.share else {
+               print("*A*")
+               let share = CKShare(rootRecord: coreCard.associatedRecord)
+               print("*B*")
+               share[CKShare.SystemFieldKey.title] = "Card: \(coreCard.cardName)"
+               print("*C*")
+               _ = try await pdb.modifyRecords(saving: [coreCard.associatedRecord, share], deleting: [])
+               print("*D*")
                return (share, container)
            }
 
            guard let share = try await pdb.record(for: existingShare.recordID) as? CKShare else {
                throw ViewModelError.invalidShare
            }
-
            return (share, container)
        }
     

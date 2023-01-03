@@ -22,31 +22,33 @@ struct GridofCards: View {
     @State private var showOccassions = false
     @State var cards = [Card]()
     @State var segueToEnlarge = false
-    @State var chosenCard: Card!
-    //@ObservedObject var card: Card
     @State var share: CKShare?
     @State var showShareSheet = false
     @State var showEditSheet = false
     @State var returnRecord: CKRecord?
     @State var showDeliveryScheduler = false
-    //@State var cardsToDisplay: [Card]
-    //@Binding var privateCards: [Card]
-    //@State var receivedCards: [Card]
-    @State var privateCoreCards: [CoreCard]
-    @State var receivedCoreCards: [CoreCard]
+    @State var cardsForDisplay: [CoreCard]
     
     let columns = [GridItem(.adaptive(minimum: 120))]
-    @State private var sortByValue = "Date"
+    @State private var sortByValue = "Card Name"
     @State private var searchText = ""
+    @State private var nameToDisplay: String?
     var filteredCards: [CoreCard] {
-        if searchText.isEmpty { return privateCoreCards}
+        if searchText.isEmpty { return cardsForDisplay}
         //else if sortByValue == "Card Name" {return privateCards.filter { $0.cardName.contains(searchText)}}
         //else if sortByValue == "Date" {return privateCards.filter { $0.cardName.contains(searchText)}}
         //else if sortByValue == "Occassion" {return privateCards.filter { $0.occassion!.contains(searchText)}}
-        else {return privateCoreCards.filter { $0.cardName.contains(searchText)}}
+        else {return cardsForDisplay.filter { $0.cardName.contains(searchText)}}
         
     }
     var sortOptions = ["Date","Card Name","Occassion"]
+    
+    func determineDisplayName(coreCard: CoreCard) {
+        switch cm.whichBox {
+        case .outbox: nameToDisplay = coreCard.recipient
+        case .inbox: nameToDisplay = coreCard.sender
+        }
+    }
     
     var body: some View {
         NavigationStack {
@@ -58,12 +60,6 @@ struct GridofCards: View {
                         //NavigationLink("SearchByField"){Text("\(card.cardName)")}
                         cardView(for: $0, shareable: false)
                     }
-                    //switch cm.whichBox {
-                    //case .outbox:
-                    //    ForEach(sentCards) {cardView(for: $0, shareable: false)}
-                    //case .inbox:
-                    //    ForEach(receivedCards) {cardView(for: $0, shareable: false)}
-                    //}
                 }
             }
             .navigationTitle("Your Cards")
@@ -102,12 +98,13 @@ struct GridofCards: View {
                             Text("GreetMe Inc.").font(.system(size: 4)).padding(.bottom,10).padding(.leading, 5)
                         }}.frame(width: (UIScreen.screenWidth/4), height: (UIScreen.screenHeight/15))
                 }
+                .onAppear{determineDisplayName(coreCard: card)}
                 //.sheet(isPresented: $showDeliveryScheduler) {ScheduleDelivery(card: card)}
-                .sheet(isPresented: $segueToEnlarge) {EnlargeECardView(chosenCard: $chosenCard, share: $share)}
-                //.sheet(isPresented: $isSharing, content: {shareView(card)})
+                .fullScreenCover(isPresented: $segueToEnlarge) {EnlargeECardView(chosenCard: card, share: $share)}
+                .sheet(isPresented: $isSharing, content: {shareView(card)})
                 Divider().padding(.bottom, 5)
                 HStack(spacing: 3) {
-                    Text(card.recipient)
+                    Text(nameToDisplay!)
                         .font(.system(size: 8)).minimumScaleFactor(0.1)
                     Spacer()
                     Text(card.cardName)
@@ -116,9 +113,14 @@ struct GridofCards: View {
             }.padding().overlay(RoundedRectangle(cornerRadius: 6).stroke(.blue, lineWidth: 2))
                 .font(.headline).padding(.horizontal).frame(maxHeight: 600)
                 .contextMenu {
-                    //Button {chosenCard = card; segueToEnlarge = true} label: {Text("Enlarge eCard"); Image(systemName: "plus.magnifyingglass")}
+                    Button {segueToEnlarge = true} label: {Text("Enlarge eCard"); Image(systemName: "plus.magnifyingglass")}
                     Button {deleteCoreCard(coreCard: card)} label: {Text("Delete eCard"); Image(systemName: "trash").foregroundColor(.red)}
-                    //Button {Task {try? await shareCard(card)}; isSharing = true} label: {Text("Share eCard Now")}
+                    Button {
+                        //chosenCard.chosenCard = card
+                        Task {
+                            try? await shareCard(card)}; isSharing = true
+                        }
+                        label: {Text("Share eCard Now")}
                     Button {showDeliveryScheduler = true} label: {Text("Schedule eCard Delivery")}
                 }}
 }
@@ -146,7 +148,7 @@ extension GridofCards {
         let request = CoreCard.createFetchRequest()
         let sort = NSSortDescriptor(key: "date", ascending: false)
         request.sortDescriptors = [sort]
-        do {privateCoreCards = try CoreDataStack.shared.context.fetch(request)}
+        do {cardsForDisplay = try CoreDataStack.shared.context.fetch(request)}
         catch {print("Fetch failed")}
     }
     
@@ -159,20 +161,24 @@ extension GridofCards {
     
     
     /// Builds a `CloudSharingView` with state after processing a share.
-    private func shareView(_ card: Card) -> CloudSharingView? {
+    private func shareView(_ coreCard: CoreCard) -> CloudSharingView? {
         guard let share = activeShare, let container = activeContainer else {return nil}
-        return CloudSharingView(share: share, container: container, card: card)
+        return CloudSharingView(share: share, container: container, coreCard: coreCard)
     }
     
-    private func shareCard(_ card: Card) async throws {
+    private func shareCard(_ coreCard: CoreCard) async throws {
         isProcessingShare = true
         do {
-            let (share, container) = try await cm.fetchOrCreateShare(card: card)
+            let (share, container) = try await cm.fetchOrCreateShare(coreCard: coreCard)
             isProcessingShare = false
             activeShare = share
             activeContainer = container
             isSharing = true
-        } catch {debugPrint("Error sharing contact record: \(error)")}
+            //print("---")
+            //print(coreCard)
+            //print("**")
+            //print(coreCard.associatedRecord)
+        } catch {debugPrint("Error sharing card record: \(error)")}
     }
     
   private func string(for permission: CKShare.ParticipantPermission) -> String {

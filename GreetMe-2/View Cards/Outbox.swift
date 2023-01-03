@@ -12,8 +12,8 @@ import CoreData
 
 struct Outbox: View {
     @EnvironmentObject private var cm: CKModel
-    @State private var privateCards: [Card] = []
-    @State private var sharedCards: [Card]?
+    //@State private var privateCards: [Card] = []
+    //@State private var sharedCards: [Card]?
     @State private var privateCoreCards: [CoreCard] = []
     @State private var sharedCoreCards: [CoreCard]?
     // mycards = private + shared
@@ -21,28 +21,23 @@ struct Outbox: View {
     
     var body: some View {
         NavigationView {
-                    //switch cm.state {
-                    //case .loading:
-                    //    VStack{EmptyView()}
-                    //case .error(let error):
-                    //    VStack {
-                    //        Text("An error occurred: \(error.localizedDescription)").padding()
-                    //        Spacer()
-                    //    }
-                    //case let .loaded(sentCards: privateCards, receivedCards: privateCards):
-                        //Text("Great Success")
-                    //    GridofCards(privateCards: $privateCards, receivedCards: privateCards)
-                    //}
-                GridofCards(privateCoreCards: loadCoreCards(), receivedCoreCards: loadCoreCards())
+                //switch cm.state {
+                //case .loading: VStack{EmptyView()}
+                //case .error(let error):VStack {Text("An error occurred: \(error.localizedDescription)").padding(); Spacer()}
+                //case let .loaded(sentCards: privateCards, receivedCards: privateCards):GridofCards(privateCards: $privateCards, receivedCards: privateCards)
+                //}
+                switch cm.whichBox {
+                case .outbox: GridofCards(cardsForDisplay: loadCoreCards())
+                case .inbox: GridofCards(cardsForDisplay: loadCoreCards())
+                }
+            
+            
+            
+                
             }
             .onAppear {
-                Task {
-                    //deleteAllCoreCards()
-                    //try await cm.initialize()
-                    //try await (privateCards, sharedCards) = cm.fetchPrivateAndSharedCards()
-                    //try await cm.refresh()
-
-                }
+                //deleteAllCoreCards()
+                //Task {try await cm.initialize(); try await (privateCards, sharedCards) = cm.fetchPrivateAndSharedCards(); try await cm.refresh()}
         }
     }
 }
