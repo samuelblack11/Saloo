@@ -28,12 +28,12 @@ struct GridofCards: View {
     @State var returnRecord: CKRecord?
     @State var showDeliveryScheduler = false
     @State var cardsForDisplay: [CoreCard]
-    
+    @State var whichBoxVal: CKModel.SendReceive
     let columns = [GridItem(.adaptive(minimum: 120))]
     @State private var sortByValue = "Card Name"
     @State private var searchText = ""
     @State private var nameToDisplay: String?
-    var filteredCards: [CoreCard] {
+    var cardsFilteredBySearch: [CoreCard] {
         if searchText.isEmpty { return cardsForDisplay}
         //else if sortByValue == "Card Name" {return privateCards.filter { $0.cardName.contains(searchText)}}
         //else if sortByValue == "Date" {return privateCards.filter { $0.cardName.contains(searchText)}}
@@ -56,7 +56,8 @@ struct GridofCards: View {
                 sortResults
                 LazyVGrid(columns: columns, spacing: 10) {
                     //Text("\(privateCards.count)")
-                    ForEach(sortedCards(cards: filteredCards, sortBy: sortByValue)) {
+                    ForEach(cardsFilteredByBox(sortedCards(cardsFilteredBySearch, sortBy: sortByValue), whichBox: whichBoxVal)) {
+                    //ForEach(sortedCards(cards: filteredCards, sortBy: sortByValue)) {
                         //NavigationLink("SearchByField"){Text("\(card.cardName)")}
                         cardView(for: $0, shareable: false)
                     }
@@ -107,8 +108,6 @@ struct GridofCards: View {
                     Text(determineDisplayName(coreCard: card))
                         .font(.system(size: 8)).minimumScaleFactor(0.1)
                     Spacer()
-                    Divider()
-                    Spacer()
                     Text(card.cardName)
                         .font(.system(size: 8)).minimumScaleFactor(0.1)
                 }
@@ -130,7 +129,47 @@ struct GridofCards: View {
 // MARK: Returns CKShare participant permission, methods and properties to share
 extension GridofCards {
     
-    func sortedCards(cards: [CoreCard], sortBy: String) -> [CoreCard] {
+    func cardsFilteredByBox(_ coreCards: [CoreCard], whichBox: CKModel.SendReceive) -> [CoreCard] {
+        var filteredCoreCards: [CoreCard] = []
+        for coreCard in coreCards {
+            print("----")
+            print(coreCard.associatedRecord.creatorUserRecordID?.zoneID.ownerName)
+            print("***")
+            print(CKCurrentUserDefaultName)
+            print("$$$")
+            if whichBox == .outbox {
+                if coreCard.associatedRecord.creatorUserRecordID?.zoneID.ownerName == CKCurrentUserDefaultName {
+                    filteredCoreCards.append(coreCard)
+                }
+            }
+            if whichBox == .inbox {
+                if coreCard.associatedRecord.creatorUserRecordID?.zoneID.ownerName != CKCurrentUserDefaultName {
+                    filteredCoreCards.append(coreCard)
+                }
+            }
+        }
+        //return filteredCoreCards
+        return coreCards
+    }
+    
+    func loadCoreCards() -> [CoreCard] {
+        let request = CoreCard.createFetchRequest()
+        let sort = NSSortDescriptor(key: "date", ascending: false)
+        request.sortDescriptors = [sort]
+        var cardsFromCore: [CoreCard] = []
+        do {
+            cardsFromCore = try CoreDataStack.shared.context.fetch(request)
+            print("Got \(cardsFromCore.count) Cards From Core")
+            print("loadCoreDataEvents Called....")
+            print(cardsFromCore)
+        }
+        catch {print("Fetch failed")}
+        
+        return cardsFromCore
+    }
+    
+    
+    func sortedCards(_ cards: [CoreCard], sortBy: String) -> [CoreCard] {
         var sortedCards = cards
         if sortBy == "Date" {sortedCards.sort {$0.date < $1.date}}
         if sortBy == "Card Name" {sortedCards.sort {$0.cardName < $1.cardName}}
@@ -161,6 +200,15 @@ extension GridofCards {
         self.reloadCoreCards()
     }
     
+    func deleteAllCoreCards() {
+        let request = CoreCard.createFetchRequest()
+        var cardsFromCore: [CoreCard] = []
+        do {
+            cardsFromCore = try CoreDataStack.shared.context.fetch(request)
+            for card in cardsFromCore {deleteCoreCard(coreCard: card)}
+        }
+        catch{}
+    }
     
     /// Builds a `CloudSharingView` with state after processing a share.
     private func shareView(_ coreCard: CoreCard) -> CloudSharingView? {

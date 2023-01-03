@@ -11,12 +11,14 @@ import Foundation
 import SwiftUI
 import UIKit
 import FSCalendar
+import CoreData
 
 struct OccassionsMenu: View {
 
     @State private var showCalendar = false
-    @State private var showSentCards = false
-    @State private var showReceivedCards = false
+    //@State private var showSentCards = false
+    //@State private var showReceivedCards = false
+    @State private var showGridOfCards = false
     @State private var showCameraCapture = false
     @State private var showImagePicker = false
     @State private var showCollageMenu = false
@@ -63,21 +65,20 @@ struct OccassionsMenu: View {
     
     var bottomBar: some View {
         HStack {
-            Button{showSentCards = true} label: {
+            Button{showGridOfCards = true} label: {
                 Image(systemName: "tray.and.arrow.up.fill")
                     .foregroundColor(.blue)
                     .font(.system(size: 24))
-                }
+            }
             Spacer()
-            Button{showReceivedCards = true} label: {
+            Button{showGridOfCards = true} label: {
                 Image(systemName: "tray.and.arrow.down.fill")
                     .foregroundColor(.blue)
                     .font(.system(size: 24))
-                }
             }
-            .padding(.bottom, 30)
-            .fullScreenCover(isPresented: $showSentCards) {Outbox()}
-            //.fullScreenCover(isPresented: $isShowingReceivedCards) {}
+        }
+        .padding(.bottom, 30)
+        .fullScreenCover(isPresented: $showGridOfCards) {GridofCards(cardsForDisplay: loadCoreCards(), whichBoxVal: .outbox)}
     }
     
     
@@ -151,6 +152,21 @@ struct OccassionsMenu: View {
 }
 
 extension OccassionsMenu {
+                
+    func loadCoreCards() -> [CoreCard] {
+        let request = CoreCard.createFetchRequest()
+        let sort = NSSortDescriptor(key: "date", ascending: false)
+        request.sortDescriptors = [sort]
+        var cardsFromCore: [CoreCard] = []
+        do {
+            cardsFromCore = try CoreDataStack.shared.context.fetch(request)
+            print("Got \(cardsFromCore.count) Cards From Core")
+            print("loadCoreDataEvents Called....")
+            print(cardsFromCore)
+        }
+        catch {print("Fetch failed")}
+        return cardsFromCore
+    }
     
     private func menuSection(for collection: CollectionPair, shareable: Bool = true) -> some View {
             Text(collection.title).onTapGesture {

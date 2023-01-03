@@ -15,7 +15,6 @@
 		260F68FE281DBEBD002E864B /* PingDownloadResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 260F68FD281DBEBD002E864B /* PingDownloadResponse.swift */; };
 		260F6907281DC0E3002E864B /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 260F6906281DC0E3002E864B /* LoginView.swift */; };
 		262C3ED3281E1E9C00F07C01 /* CalendarParent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 262C3ED2281E1E9C00F07C01 /* CalendarParent.swift */; };
-		262C3ED5281E226F00F07C01 /* Outbox.swift in Sources */ = {isa = PBXBuildFile; fileRef = 262C3ED4281E226F00F07C01 /* Outbox.swift */; };
 		2688D704285FA24300954120 /* SnapShotECard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2688D703285FA24200954120 /* SnapShotECard.swift */; };
 		2688D706285FA25100954120 /* SnapShotCardForPrint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2688D705285FA25100954120 /* SnapShotCardForPrint.swift */; };
 		26A72180281DB8D500ADAE44 /* GreetMe_2App.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26A7217F281DB8D500ADAE44 /* GreetMe_2App.swift */; };
@@ -35,7 +34,6 @@
 		C23340ED28C3D58D006222F5 /* FutureDelivery+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = C23340EC28C3D58D006222F5 /* FutureDelivery+CoreDataClass.swift */; };
 		C23524D22896D5F80052494F /* PreSetCalendarDates.swift in Sources */ = {isa = PBXBuildFile; fileRef = C23524D12896D5F80052494F /* PreSetCalendarDates.swift */; };
 		C237E6DD294B3FE300E472AD /* CKModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C237E6DC294B3FE300E472AD /* CKModel.swift */; };
-		C237E6DF294E44D500E472AD /* Inbox.swift in Sources */ = {isa = PBXBuildFile; fileRef = C237E6DE294E44D500E472AD /* Inbox.swift */; };
 		C237E6E1294E453600E472AD /* GridOfCards.swift in Sources */ = {isa = PBXBuildFile; fileRef = C237E6E0294E453600E472AD /* GridOfCards.swift */; };
 		C23A9D222897ECA90059B97C /* Card.swift in Sources */ = {isa = PBXBuildFile; fileRef = C23A9D212897ECA90059B97C /* Card.swift */; };
 		C23A9D372897F3F00059B97C /* CalendarDate+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = C23A9D352897F3F00059B97C /* CalendarDate+CoreDataClass.swift */; };
@@ -78,7 +76,6 @@
 		260F6906281DC0E3002E864B /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
 		260F6908281DEAE7002E864B /* GreetMe-2.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "GreetMe-2.entitlements"; sourceTree = "<group>"; };
 		262C3ED2281E1E9C00F07C01 /* CalendarParent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarParent.swift; sourceTree = "<group>"; };
-		262C3ED4281E226F00F07C01 /* Outbox.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Outbox.swift; sourceTree = "<group>"; };
 		2650FFCD285C9C340020980E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		2688D703285FA24200954120 /* SnapShotECard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SnapShotECard.swift; sourceTree = "<group>"; };
 		2688D705285FA25100954120 /* SnapShotCardForPrint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SnapShotCardForPrint.swift; sourceTree = "<group>"; };
@@ -102,7 +99,6 @@
 		C23340EC28C3D58D006222F5 /* FutureDelivery+CoreDataClass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "FutureDelivery+CoreDataClass.swift"; sourceTree = "<group>"; };
 		C23524D12896D5F80052494F /* PreSetCalendarDates.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreSetCalendarDates.swift; sourceTree = "<group>"; };
 		C237E6DC294B3FE300E472AD /* CKModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CKModel.swift; sourceTree = "<group>"; };
-		C237E6DE294E44D500E472AD /* Inbox.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Inbox.swift; sourceTree = "<group>"; };
 		C237E6E0294E453600E472AD /* GridOfCards.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GridOfCards.swift; sourceTree = "<group>"; };
 		C23A9D212897ECA90059B97C /* Card.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Card.swift; sourceTree = "<group>"; };
 		C23A9D352897F3F00059B97C /* CalendarDate+CoreDataClass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "CalendarDate+CoreDataClass.swift"; sourceTree = "<group>"; };
@@ -278,8 +274,6 @@
 			isa = PBXGroup;
 			children = (
 				C237E6E0294E453600E472AD /* GridOfCards.swift */,
-				262C3ED4281E226F00F07C01 /* Outbox.swift */,
-				C237E6DE294E44D500E472AD /* Inbox.swift */,
 				26EB55642827120C00178F0B /* EnlargeECard.swift */,
 			);
 			path = "View Cards";
@@ -481,7 +475,6 @@
 				C23524D22896D5F80052494F /* PreSetCalendarDates.swift in Sources */,
 				26AD8127281F05160069C3F0 /* WriteNoteView.swift in Sources */,
 				26AD812B281F119A0069C3F0 /* ConfirmFrontCoverView.swift in Sources */,
-				C237E6DF294E44D500E472AD /* Inbox.swift in Sources */,
 				C23A9D3A28989B630059B97C /* DateDetailView.swift in Sources */,
 				C23A9D3C28989C340059B97C /* CalendarView.swift in Sources */,
 				26AD8129281F05310069C3F0 /* FinalizeCardView.swift in Sources */,
@@ -493,7 +486,6 @@
 				C23B622128B5ABE300D88F85 /* Notify.swift in Sources */,
 				C23A9D372897F3F00059B97C /* CalendarDate+CoreDataClass.swift in Sources */,
 				C2DE5C98289EFECC00F8C556 /* AddEventToCalendarForm.swift in Sources */,
-				262C3ED5281E226F00F07C01 /* Outbox.swift in Sources */,
 				260F6907281DC0E3002E864B /* LoginView.swift in Sources */,
 				2688D704285FA24300954120 /* SnapShotECard.swift in Sources */,
 				260F68FC281DBEA0002E864B /* UnsplashResponse.swift in Sources */,
