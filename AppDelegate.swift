@@ -36,7 +36,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     @EnvironmentObject private var cm: CKModel
 
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
-        let contentView = Outbox().environmentObject(CKModel())
+        let contentView = OccassionsMenu(calViewModel: CalViewModel(), showDetailView: ShowDetailView()).environmentObject(CKModel())
         if let windowScene = scene as? UIWindowScene {
             let window = UIWindow(windowScene: windowScene)
             window.rootViewController = UIHostingController(rootView: contentView)

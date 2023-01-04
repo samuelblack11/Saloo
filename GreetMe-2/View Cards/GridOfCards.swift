@@ -44,7 +44,7 @@ struct GridofCards: View {
     var sortOptions = ["Date","Card Name","Occassion"]
     
     func determineDisplayName(coreCard: CoreCard) -> String {
-        switch cm.whichBox {
+        switch whichBoxVal {
         case .outbox: return coreCard.recipient
         case .inbox: return coreCard.sender!
         }
@@ -131,25 +131,25 @@ extension GridofCards {
     
     func cardsFilteredByBox(_ coreCards: [CoreCard], whichBox: CKModel.SendReceive) -> [CoreCard] {
         var filteredCoreCards: [CoreCard] = []
-        for coreCard in coreCards {
-            print("----")
-            print(coreCard.associatedRecord.creatorUserRecordID?.zoneID.ownerName)
-            print("***")
-            print(CKCurrentUserDefaultName)
-            print("$$$")
-            if whichBox == .outbox {
-                if coreCard.associatedRecord.creatorUserRecordID?.zoneID.ownerName == CKCurrentUserDefaultName {
-                    filteredCoreCards.append(coreCard)
+        print("---")
+            print(coreCards.count)
+            for coreCard in coreCards {
+                switch whichBoxVal {
+                case .outbox:
+                    print("outbox selected")
+                    if coreCard.associatedRecord.recordID.zoneID.ownerName == CKCurrentUserDefaultName {
+                        print("success")
+                        filteredCoreCards.append(coreCard)
+                    }
+                    return filteredCoreCards
+                case .inbox:
+                    if coreCard.associatedRecord.recordID.zoneID.ownerName != CKCurrentUserDefaultName {
+                        filteredCoreCards.append(coreCard)
+                    }
+                    return filteredCoreCards
                 }
-            }
-            if whichBox == .inbox {
-                if coreCard.associatedRecord.creatorUserRecordID?.zoneID.ownerName != CKCurrentUserDefaultName {
-                    filteredCoreCards.append(coreCard)
-                }
-            }
         }
-        //return filteredCoreCards
-        return coreCards
+        return filteredCoreCards
     }
     
     func loadCoreCards() -> [CoreCard] {
@@ -157,12 +157,7 @@ extension GridofCards {
         let sort = NSSortDescriptor(key: "date", ascending: false)
         request.sortDescriptors = [sort]
         var cardsFromCore: [CoreCard] = []
-        do {
-            cardsFromCore = try CoreDataStack.shared.context.fetch(request)
-            print("Got \(cardsFromCore.count) Cards From Core")
-            print("loadCoreDataEvents Called....")
-            print(cardsFromCore)
-        }
+        do {cardsFromCore = try CoreDataStack.shared.context.fetch(request)}
         catch {print("Fetch failed")}
         
         return cardsFromCore
@@ -203,10 +198,7 @@ extension GridofCards {
     func deleteAllCoreCards() {
         let request = CoreCard.createFetchRequest()
         var cardsFromCore: [CoreCard] = []
-        do {
-            cardsFromCore = try CoreDataStack.shared.context.fetch(request)
-            for card in cardsFromCore {deleteCoreCard(coreCard: card)}
-        }
+        do {cardsFromCore = try CoreDataStack.shared.context.fetch(request); for card in cardsFromCore {deleteCoreCard(coreCard: card)}}
         catch{}
     }
     
@@ -224,10 +216,6 @@ extension GridofCards {
             activeShare = share
             activeContainer = container
             isSharing = true
-            //print("---")
-            //print(coreCard)
-            //print("**")
-            //print(coreCard.associatedRecord)
         } catch {debugPrint("Error sharing card record: \(error)")}
     }
     

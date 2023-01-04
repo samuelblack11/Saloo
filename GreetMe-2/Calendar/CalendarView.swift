@@ -190,6 +190,8 @@ extension CalViewModel {
             //deleteAllForEntity()
             }
         else {
+            
+            
             print("First Launch")
             let eventList3 = [String : Date]()
             let events = PreSetCalendarDates(eventList: eventList3)
