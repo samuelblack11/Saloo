@@ -148,13 +148,8 @@ final class CKModel: ObservableObject {
         coreCard.message = noteField.noteText
         
 
-        do {
-            self.saveContext()
-            try await pdb.save(cardRecord)
-        } catch {
-            debugPrint("ERROR: Failed to save new Card: \(error)")
-            throw error
-        }
+        do {self.saveContext(); try await pdb.save(cardRecord)}
+        catch {debugPrint("ERROR: Failed to save new Card: \(error)"); throw error}
     }
     
     /// Fetches an existing `CKShare` on a Contact record, or creates a new one in preparation to share a Contact with another user.

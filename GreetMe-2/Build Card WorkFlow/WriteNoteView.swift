@@ -15,11 +15,17 @@ struct WriteNoteView: View {
     @State private var showFinalize = false
     @State private var showCollageBuilder = false
     
-    @State private var message: String = "Write Your Note Here"
-    @ObservedObject var input = TextLimiter(limit: 225)
-    @State private var recipient: String = ""
-    @State private var sender: String = ""
-    @State private var cardName: String = ""
+    //@State private var message: String = "Write Your Note Here"
+    @ObservedObject var message = TextLimiter(limit: 225, value: "Write Your Note Here")
+    @ObservedObject var recipient = TextLimiter(limit: 20, value: "To:")
+    @ObservedObject var sender = TextLimiter(limit: 20, value: "From:")
+    @ObservedObject var cardName = TextLimiter(limit: 20, value: "Name Your Card")
+    
+    
+    
+    //@State private var recipient: String = ""
+    //@State private var sender: String = ""
+    //@State private var cardName: String = ""
     @State private var tappedTextEditor = false
     @State private var namesNotEntered = false
     @State private var handWrite = true
@@ -60,17 +66,17 @@ struct WriteNoteView: View {
     var body: some View {
         NavigationView {
             ScrollView {
-        TextEditor(text: $input.value)
-            .border(Color.red, width: $input.hasReachedLimit.wrappedValue ? 1 : 0 )
+        TextEditor(text: $message.value)
+            .border(Color.red, width: $message.hasReachedLimit.wrappedValue ? 1 : 0 )
             .frame(minHeight: 150)
             .font(Font.custom(selectedFont, size: 14))
             .onTapGesture {
-                if input.value == "Write Your Note Here" {input.value = ""}
+                if message.value == "Write Your Note Here" {message.value = ""}
                 //isNoteFieldFocused.toggle()
                 tappedTextEditor = true
             }
         HStack {
-        Text("\(225 - input.value.count) Characters Remaining").font(Font.custom(selectedFont, size: 10))
+        Text("\(225 - message.value.count) Characters Remaining").font(Font.custom(selectedFont, size: 10))
         Image(uiImage: collageImage.collageImage)
                 .resizable()
                 .frame(width: (UIScreen.screenWidth/5)-10, height: (UIScreen.screenWidth/5),alignment: .center)
@@ -78,12 +84,21 @@ struct WriteNoteView: View {
         }
         //Spacer()
         fontMenu.frame(height: 65)
-        TextField("To:", text: $recipient).padding(.leading, 5).frame(height:35)
-        TextField("From:", text: $sender).padding(.leading, 5).frame(height:35)
-        TextField("Name Your Card", text: $cardName).padding(.leading, 5) .frame(height:35)
+        TextField("To:", text: $recipient.value)
+            .border(Color.red, width: $recipient.hasReachedLimit.wrappedValue ? 1 : 0 )
+            .onTapGesture {
+                if recipient.value == "To:" {recipient.value = ""}
+            }
+        TextField("From:", text: $sender.value)
+            .border(Color.red, width: $sender.hasReachedLimit.wrappedValue ? 1 : 0 )
+        TextField("Name Your Card", text: $cardName.value)
+            .border(Color.red, width: $cardName.hasReachedLimit.wrappedValue ? 1 : 0 )
+                
+        //TextField("To:", text: $recipient).padding(.leading, 5).frame(height:35)
+        //TextField("From:", text: $sender).padding(.leading, 5).frame(height:35)
+        //TextField("Name Your Card", text: $cardName).padding(.leading, 5) .frame(height:35)
         Button("Confirm Note") {
-            cardName = cardName.components(separatedBy: CharacterSet.punctuationCharacters).joined()
-            message = input.value
+            cardName.value = cardName.value.components(separatedBy: CharacterSet.punctuationCharacters).joined()
             willHandWritePrintCard()
             checkRequiredFields()
             annotateIfNeeded()
@@ -122,21 +137,21 @@ extension WriteNoteView {
     
     func willHandWritePrintCard() {
         if willHandWrite.willHandWrite == true {
-            if input.value == "Write Note Here" {input.value = ""}
-            eCardText = input.value; printCardText = ""
+            if message.value == "Write Note Here" {message.value = ""}
+            eCardText = message.value; printCardText = ""
         }
-        else {eCardText = input.value; printCardText = input.value}
+        else {eCardText = message.value; printCardText = message.value}
     }
     
     func checkRequiredFields() {
-        if recipient != "" && cardName != "" {
+        if recipient.value != "" && cardName.value != "" {
             namesNotEntered = false
             showFinalize = true
-            noteField.noteText = message
-            noteField.recipient = recipient
-            noteField.cardName = cardName
+            noteField.noteText = message.value
+            noteField.recipient = recipient.value
+            noteField.cardName = cardName.value
             noteField.font = selectedFont
-            noteField.sender = sender
+            noteField.sender = sender.value
         }
         else {namesNotEntered = true}
     }

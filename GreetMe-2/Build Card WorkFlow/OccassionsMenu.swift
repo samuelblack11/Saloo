@@ -93,16 +93,12 @@ struct OccassionsMenu: View {
                 Text("Select from Photo Library ").onTapGesture {self.showCameraCapture = false; self.showImagePicker = true}
                     .fullScreenCover(isPresented: $showImagePicker){ImagePicker(image: $coverImageFromLibrary)}
                     .onChange(of: coverImageFromLibrary) { _ in loadImage(pic: coverImageFromLibrary!)
-                        handlePhotoLibrarySelection()
-                        showCollageMenu = true
-                        frontCoverIsPersonalPhoto = 1
-                        chosenOccassion.occassion = "None"
-                        chosenOccassion.collectionID = "None"
+                        handlePersonalPhotoSelection()
+                        showCollageMenu = true; frontCoverIsPersonalPhoto = 1
+                        chosenOccassion.occassion = "None"; chosenOccassion.collectionID = "None"
                         }
                     .fullScreenCover(isPresented: $showCollageMenu){
-                        //let blankOccassion = Occassion.init(occassion: "None", collectionID: "None")
                         CollageStyleMenu(chosenObject: chosenObject, chosenOccassion: chosenOccassion, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto)
-
                     }
                 Text("Take Photo with Camera 📸 ").onTapGesture {
                     self.showImagePicker = false
@@ -111,14 +107,11 @@ struct OccassionsMenu: View {
                 .fullScreenCover(isPresented: $showCameraCapture)
                 {CameraCapture(image: self.$coverImageFromCamera, isPresented: self.$showCameraCapture, sourceType: .camera)}
                 .onChange(of: coverImageFromCamera) { _ in loadImage(pic: coverImageFromCamera!)
-                        handleCameraPic()
-                        showCollageMenu = true
-                        frontCoverIsPersonalPhoto = 1
-                        chosenOccassion.occassion = "None"
-                        chosenOccassion.collectionID = "None"
+                    handlePersonalPhotoSelection()
+                    showCollageMenu = true; frontCoverIsPersonalPhoto = 1
+                    chosenOccassion.occassion = "None"; chosenOccassion.collectionID = "None"
                     }
                 .fullScreenCover(isPresented: $showCollageMenu){
-                    //let blankOccassion = Occassion.init(occassion: "None", collectionID: "None")
                     CollageStyleMenu(chosenObject: chosenObject, chosenOccassion: chosenOccassion, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto)}
                 HStack {
                     TextField("Custom Search", text: $customSearch)
@@ -161,8 +154,6 @@ extension OccassionsMenu {
         do {
             cardsFromCore = try CoreDataStack.shared.context.fetch(request)
             print("Got \(cardsFromCore.count) Cards From Core")
-            print("loadCoreDataEvents Called....")
-            print(cardsFromCore)
         }
         catch {print("Fetch failed")}
         return cardsFromCore
@@ -175,7 +166,6 @@ extension OccassionsMenu {
                 self.chosenOccassion.collectionID = collection.id
                 showUCV.toggle()
             }.fullScreenCover(isPresented: $showUCV) {
-                //let chosenCollection = ChosenCollection.init(occassion: occassionInstance.occassion, collectionID: occassionInstance.collectionID)
                 UnsplashCollectionView(chosenOccassion: chosenOccassion, pageCount: pageCount, chosenObject: chosenObject, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto)
                 }
     }
@@ -217,16 +207,7 @@ extension OccassionsMenu {
         if showImagePicker  {loadedImagefromLibraryOrCamera = true}
     }
     
-    func handlePhotoLibrarySelection() {
-        chosenObject.smallImageURLString = "https://google.com"
-        chosenObject.coverImage = coverImage!.jpegData(compressionQuality: 1)!
-        chosenObject.coverImagePhotographer = ""
-        chosenObject.coverImageUserName = ""
-        chosenObject.downloadLocation = ""
-        chosenObject.index = 1
-    }
-    
-    func handleCameraPic() {
+    func handlePersonalPhotoSelection() {
         chosenObject.smallImageURLString = "https://google.com"
         chosenObject.coverImage = coverImage!.jpegData(compressionQuality: 1)!
         chosenObject.coverImagePhotographer = ""

@@ -131,21 +131,15 @@ extension GridofCards {
     
     func cardsFilteredByBox(_ coreCards: [CoreCard], whichBox: CKModel.SendReceive) -> [CoreCard] {
         var filteredCoreCards: [CoreCard] = []
-        print("---")
+            print("---")
             print(coreCards.count)
             for coreCard in coreCards {
                 switch whichBoxVal {
                 case .outbox:
-                    print("outbox selected")
-                    if coreCard.associatedRecord.recordID.zoneID.ownerName == CKCurrentUserDefaultName {
-                        print("success")
-                        filteredCoreCards.append(coreCard)
-                    }
+                    filteredCoreCards = coreCards.filter{_ in (coreCard.associatedRecord.recordID.zoneID.ownerName.contains(CKCurrentUserDefaultName))}
                     return filteredCoreCards
                 case .inbox:
-                    if coreCard.associatedRecord.recordID.zoneID.ownerName != CKCurrentUserDefaultName {
-                        filteredCoreCards.append(coreCard)
-                    }
+                    filteredCoreCards = coreCards.filter{_ in (coreCard.associatedRecord.recordID.zoneID.ownerName.contains(CKCurrentUserDefaultName) == false)}
                     return filteredCoreCards
                 }
         }

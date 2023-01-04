@@ -57,12 +57,13 @@ class CollageImage: ObservableObject {@Published var collageImage = UIImage()}
 class HandWrite: ObservableObject { @Published var willHandWrite: Bool = false}
 
 // https://programmingwithswift.com/swiftui-textfield-character-limit/
+
 class TextLimiter: ObservableObject {
     // variable for character limit
     private let limit: Int
-    init(limit: Int) {self.limit = limit}
+    init(limit: Int, value: String) {self.limit = limit; self.value = value}
     // value that text field displays
-    @Published var value = "Write Your Note Here" {
+    @Published var value: String {
         didSet {
             if value.count > self.limit {
                 value = String(value.prefix(self.limit))
@@ -73,20 +74,6 @@ class TextLimiter: ObservableObject {
     @Published var hasReachedLimit = false
 }
 
-
-
-
-//struct ChosenImages: Equatable {
-//    static func == (lhs: ChosenImages, rhs: ChosenImages) -> Bool {
-//        return lhs.chosenImageA == rhs.chosenImageA && lhs.chosenImageB == rhs.chosenImageB && lhs.chosenImageC == rhs.chosenImageC && lhs.chosenImageD == rhs.chosenImageD
- //   }
- //   @State var chosenImageA: UIImage?
- //   @State var chosenImageB: UIImage?
- //   @State var chosenImageC: UIImage?
- //   @State var chosenImageD: UIImage?
-//}
-
-
 public class ChosenImages: ObservableObject {
     @Published var imagePlaceHolder: Image?
     @Published var chosenImageA: UIImage?
@@ -94,10 +81,6 @@ public class ChosenImages: ObservableObject {
     @Published var chosenImageC: UIImage?
     @Published var chosenImageD: UIImage?
 }
-
-
-
-
 
 class ChosenCollageStyle: ObservableObject {@Published var chosenStyle: Int?}
 
