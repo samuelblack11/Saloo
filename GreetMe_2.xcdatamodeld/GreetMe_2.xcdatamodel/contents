@@ -20,6 +20,7 @@
         <attribute name="occassion" optional="YES" attributeType="String"/>
         <attribute name="recipient" optional="YES" attributeType="String"/>
         <attribute name="sender" optional="YES" attributeType="String"/>
+        <attribute name="uniqueName" optional="YES" attributeType="String"/>
     </entity>
     <entity name="FutureDelivery" representedClassName=".FutureDelivery" syncable="YES">
         <attribute name="card" optional="YES" attributeType="Binary"/>

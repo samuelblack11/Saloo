@@ -37,7 +37,7 @@ final class CKModel: ObservableObject {
     /// Use the specified iCloud container ID, which should also be present in the entitlements file.
     lazy var container = CKContainer(identifier: "iCloud.GreetMe_2")
     /// This project uses the user's private database.
-    /// 
+    ///
     private lazy var pdb = container.privateCloudDatabase
 
     /// Sharing requires using a custom record zone.

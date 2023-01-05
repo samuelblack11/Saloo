@@ -14,6 +14,8 @@ import CloudKit
 struct GreetMe_2App: App {
     
     let dataController = CoreDataStack.shared
+    let persistenceController = PersistenceController.shared
+
     @StateObject var cm = CKModel()
     //@UIApplicationDelegateAdaptor var appDelegate: AppDelegate
     
@@ -23,15 +25,9 @@ struct GreetMe_2App: App {
             OccassionsMenu(calViewModel: CalViewModel(), showDetailView: ShowDetailView())
                 //.environmentObject(appDelegate)
                 //.environment(\.managedObjectContext, dataController.context)
-                .environmentObject(cm)
-                .environment(\.managedObjectContext, CoreDataStack.shared.context)
-
+                //.environmentObject(cm)
+                //.environment(\.managedObjectContext, CoreDataStack.shared.context)
+                .environment(\.managedObjectContext, persistenceController.persistentContainer.viewContext)
         }
     }
 }
-
-//struct bindingVariables {
-//    var chosenObject: CoverImageObject!
-//    var collageImage: CollageImage!
-//    var noteField: NoteField!
-//}

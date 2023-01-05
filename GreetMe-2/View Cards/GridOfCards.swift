@@ -10,6 +10,7 @@
 import Foundation
 import SwiftUI
 import CloudKit
+import CoreData
 
 struct GridofCards: View {
     
@@ -118,9 +119,9 @@ struct GridofCards: View {
                     Button {deleteCoreCard(coreCard: card)} label: {Text("Delete eCard"); Image(systemName: "trash").foregroundColor(.red)}
                     Button {
                         //chosenCard.chosenCard = card
-                        Task {
-                            try? await shareCard(card)}; isSharing = true
-                        }
+                        //if CoreDataStack.shared.privatePersistentStore.contains(manageObject: card) {CoreDataStack.shared.presentCloudSharingController}
+                        
+                        Task {try? await shareCard(card)}; isSharing = true}
                         label: {Text("Share eCard Now")}
                     Button {showDeliveryScheduler = true} label: {Text("Schedule eCard Delivery")}
                 }}

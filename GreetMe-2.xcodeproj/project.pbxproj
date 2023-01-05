@@ -30,6 +30,12 @@
 		C2163D0E28C1609C00DEE861 /* ScheduleDelivery.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2163D0D28C1609C00DEE861 /* ScheduleDelivery.swift */; };
 		C22803E6289358E500802452 /* CloudSharingController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C22803E5289358E500802452 /* CloudSharingController.swift */; };
 		C22803E8289359AD00802452 /* CoreDataStack.swift in Sources */ = {isa = PBXBuildFile; fileRef = C22803E7289359AD00802452 /* CoreDataStack.swift */; };
+		C22A84DB29666123001244CC /* PersistenceController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C22A84DA29666123001244CC /* PersistenceController.swift */; };
+		C22A84DD29666C0F001244CC /* PersistenceController+Share.swift in Sources */ = {isa = PBXBuildFile; fileRef = C22A84DC29666C0F001244CC /* PersistenceController+Share.swift */; };
+		C22A84DF29666C23001244CC /* PersistenceController+Card.swift in Sources */ = {isa = PBXBuildFile; fileRef = C22A84DE29666C23001244CC /* PersistenceController+Card.swift */; };
+		C22A84E129666C84001244CC /* CoreDataHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = C22A84E029666C84001244CC /* CoreDataHelper.swift */; };
+		C22A84E32966719A001244CC /* PersistenceController+Deduplicate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C22A84E22966719A001244CC /* PersistenceController+Deduplicate.swift */; };
+		C22A84E529667587001244CC /* PersistenceController+History.swift in Sources */ = {isa = PBXBuildFile; fileRef = C22A84E429667587001244CC /* PersistenceController+History.swift */; };
 		C23340EB28C3D589006222F5 /* FutureDelivery+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = C23340EA28C3D589006222F5 /* FutureDelivery+CoreDataProperties.swift */; };
 		C23340ED28C3D58D006222F5 /* FutureDelivery+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = C23340EC28C3D58D006222F5 /* FutureDelivery+CoreDataClass.swift */; };
 		C23524D22896D5F80052494F /* PreSetCalendarDates.swift in Sources */ = {isa = PBXBuildFile; fileRef = C23524D12896D5F80052494F /* PreSetCalendarDates.swift */; };
@@ -95,6 +101,12 @@
 		C217B029294FE5F200544B17 /* Pods.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Pods.xcodeproj; path = Pods/Pods.xcodeproj; sourceTree = "<group>"; };
 		C22803E5289358E500802452 /* CloudSharingController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CloudSharingController.swift; path = "../../../../../Downloads/MyTravelJournal-3/final/MyTravelJournal/Controller/CloudSharingController.swift"; sourceTree = "<group>"; };
 		C22803E7289359AD00802452 /* CoreDataStack.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CoreDataStack.swift; path = "../../../../../Downloads/MyTravelJournal-3/final/MyTravelJournal/Helper/CoreDataStack.swift"; sourceTree = "<group>"; };
+		C22A84DA29666123001244CC /* PersistenceController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersistenceController.swift; sourceTree = "<group>"; };
+		C22A84DC29666C0F001244CC /* PersistenceController+Share.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PersistenceController+Share.swift"; sourceTree = "<group>"; };
+		C22A84DE29666C23001244CC /* PersistenceController+Card.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PersistenceController+Card.swift"; sourceTree = "<group>"; };
+		C22A84E029666C84001244CC /* CoreDataHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataHelper.swift; sourceTree = "<group>"; };
+		C22A84E22966719A001244CC /* PersistenceController+Deduplicate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PersistenceController+Deduplicate.swift"; sourceTree = "<group>"; };
+		C22A84E429667587001244CC /* PersistenceController+History.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PersistenceController+History.swift"; sourceTree = "<group>"; };
 		C23340EA28C3D589006222F5 /* FutureDelivery+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "FutureDelivery+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		C23340EC28C3D58D006222F5 /* FutureDelivery+CoreDataClass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "FutureDelivery+CoreDataClass.swift"; sourceTree = "<group>"; };
 		C23524D12896D5F80052494F /* PreSetCalendarDates.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreSetCalendarDates.swift; sourceTree = "<group>"; };
@@ -139,6 +151,7 @@
 				260F6904281DBFAB002E864B /* UnsplashInteractions */,
 				26AD8126281F05160069C3F0 /* WriteNoteView.swift */,
 				26AD8128281F05310069C3F0 /* FinalizeCardView.swift */,
+				C22A84E429667587001244CC /* PersistenceController+History.swift */,
 			);
 			path = "Build Card WorkFlow";
 			sourceTree = "<group>";
@@ -150,6 +163,11 @@
 				C22803E5289358E500802452 /* CloudSharingController.swift */,
 				C22803E7289359AD00802452 /* CoreDataStack.swift */,
 				C24B3ABA29574A3D00884E4D /* CustomDataTypes.swift */,
+				C22A84DA29666123001244CC /* PersistenceController.swift */,
+				C22A84DC29666C0F001244CC /* PersistenceController+Share.swift */,
+				C22A84E22966719A001244CC /* PersistenceController+Deduplicate.swift */,
+				C22A84DE29666C23001244CC /* PersistenceController+Card.swift */,
+				C22A84E029666C84001244CC /* CoreDataHelper.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -464,12 +482,15 @@
 				260F68FE281DBEBD002E864B /* PingDownloadResponse.swift in Sources */,
 				C237E6E1294E453600E472AD /* GridOfCards.swift in Sources */,
 				C23340EB28C3D589006222F5 /* FutureDelivery+CoreDataProperties.swift in Sources */,
+				C22A84E529667587001244CC /* PersistenceController+History.swift in Sources */,
 				260F68EF281DBD93002E864B /* CollageStyleMenu.swift in Sources */,
 				C28B13F828E3E106008E2C4C /* AppDelegate.swift in Sources */,
 				26A7218C281DB8D900ADAE44 /* GreetMe_2.xcdatamodeld in Sources */,
 				C24B3ABB29574A3D00884E4D /* CustomDataTypes.swift in Sources */,
 				C2075AFF295FDBC60048ECEB /* ImagePicker.swift in Sources */,
+				C22A84E32966719A001244CC /* PersistenceController+Deduplicate.swift in Sources */,
 				262C3ED3281E1E9C00F07C01 /* CalendarParent.swift in Sources */,
+				C22A84E129666C84001244CC /* CoreDataHelper.swift in Sources */,
 				C27430FC286335F000E17B19 /* CameraCapture.swift in Sources */,
 				C22803E8289359AD00802452 /* CoreDataStack.swift in Sources */,
 				C23524D22896D5F80052494F /* PreSetCalendarDates.swift in Sources */,
@@ -483,6 +504,7 @@
 				2688D706285FA25100954120 /* SnapShotCardForPrint.swift in Sources */,
 				C23A9D222897ECA90059B97C /* Card.swift in Sources */,
 				C2075AFD295FDBA70048ECEB /* CollageBuilder.swift in Sources */,
+				C22A84DD29666C0F001244CC /* PersistenceController+Share.swift in Sources */,
 				C23B622128B5ABE300D88F85 /* Notify.swift in Sources */,
 				C23A9D372897F3F00059B97C /* CalendarDate+CoreDataClass.swift in Sources */,
 				C2DE5C98289EFECC00F8C556 /* AddEventToCalendarForm.swift in Sources */,
@@ -493,9 +515,11 @@
 				C2163D0E28C1609C00DEE861 /* ScheduleDelivery.swift in Sources */,
 				26A72180281DB8D500ADAE44 /* GreetMe_2App.swift in Sources */,
 				C22803E6289358E500802452 /* CloudSharingController.swift in Sources */,
+				C22A84DF29666C23001244CC /* PersistenceController+Card.swift in Sources */,
 				26EB55652827120C00178F0B /* EnlargeECard.swift in Sources */,
 				C23340ED28C3D58D006222F5 /* FutureDelivery+CoreDataClass.swift in Sources */,
 				C237E6DD294B3FE300E472AD /* CKModel.swift in Sources */,
+				C22A84DB29666123001244CC /* PersistenceController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

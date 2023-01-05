@@ -37,7 +37,7 @@ extension CoreCard {
     @NSManaged public var date: Date
     @NSManaged public var font: String
     @NSManaged public var message: String
-
+    @NSManaged public var uniqueName: String
 }
 
 
