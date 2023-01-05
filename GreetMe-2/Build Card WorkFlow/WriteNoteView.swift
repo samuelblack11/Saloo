@@ -80,19 +80,18 @@ struct WriteNoteView: View {
         Image(uiImage: collageImage.collageImage)
                 .resizable()
                 .frame(width: (UIScreen.screenWidth/5)-10, height: (UIScreen.screenWidth/5),alignment: .center)
-            
         }
         //Spacer()
         fontMenu.frame(height: 65)
         TextField("To:", text: $recipient.value)
             .border(Color.red, width: $recipient.hasReachedLimit.wrappedValue ? 1 : 0 )
-            .onTapGesture {
-                if recipient.value == "To:" {recipient.value = ""}
-            }
+            .onTapGesture {if recipient.value == "To:" {recipient.value = ""}}
         TextField("From:", text: $sender.value)
             .border(Color.red, width: $sender.hasReachedLimit.wrappedValue ? 1 : 0 )
+            .onTapGesture {if sender.value == "To:" {sender.value = ""}}
         TextField("Name Your Card", text: $cardName.value)
             .border(Color.red, width: $cardName.hasReachedLimit.wrappedValue ? 1 : 0 )
+            .onTapGesture {if cardName.value == "To:" {cardName.value = ""}}
                 
         //TextField("To:", text: $recipient).padding(.leading, 5).frame(height:35)
         //TextField("From:", text: $sender).padding(.leading, 5).frame(height:35)

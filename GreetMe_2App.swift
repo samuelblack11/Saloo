@@ -24,6 +24,7 @@ struct GreetMe_2App: App {
                 //.environmentObject(appDelegate)
                 //.environment(\.managedObjectContext, dataController.context)
                 .environmentObject(cm)
+                .environment(\.managedObjectContext, CoreDataStack.shared.context)
 
         }
     }
