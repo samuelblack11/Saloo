@@ -15,7 +15,7 @@ struct EnlargeECardView: View {
     var chosenCard: CoreCard
     @Binding var share: CKShare?
     @State private var counter = 1
-    private let stack = CoreDataStack.shared
+    private let stack = PersistenceController.shared
 
     //key must be SearchItem SearchTerm's field
     @State private var emojiDict: [String: String] = ["Birthday": "🎈",

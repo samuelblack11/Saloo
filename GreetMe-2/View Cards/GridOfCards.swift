@@ -14,7 +14,6 @@ import CoreData
 
 struct GridofCards: View {
     
-    @EnvironmentObject private var cm: CKModel
     @State var isAddingCard = false
     @State var isSharing = false
     @State var isProcessingShare = false
@@ -29,7 +28,7 @@ struct GridofCards: View {
     @State var returnRecord: CKRecord?
     @State var showDeliveryScheduler = false
     @State var cardsForDisplay: [CoreCard]
-    @State var whichBoxVal: CKModel.SendReceive
+    @State var whichBoxVal: InOut.SendReceive
     let columns = [GridItem(.adaptive(minimum: 120))]
     @State private var sortByValue = "Card Name"
     @State private var searchText = ""
@@ -130,7 +129,7 @@ struct GridofCards: View {
 // MARK: Returns CKShare participant permission, methods and properties to share
 extension GridofCards {
     
-    func cardsFilteredByBox(_ coreCards: [CoreCard], whichBox: CKModel.SendReceive) -> [CoreCard] {
+    func cardsFilteredByBox(_ coreCards: [CoreCard], whichBox: InOut.SendReceive) -> [CoreCard] {
         var filteredCoreCards: [CoreCard] = []
             print("---")
             print(coreCards.count)
@@ -152,7 +151,7 @@ extension GridofCards {
         let sort = NSSortDescriptor(key: "date", ascending: false)
         request.sortDescriptors = [sort]
         var cardsFromCore: [CoreCard] = []
-        do {cardsFromCore = try CoreDataStack.shared.context.fetch(request)}
+        do {cardsFromCore = try PersistenceController.shared.persistentContainer.viewContext.fetch(request)}
         catch {print("Fetch failed")}
         
         return cardsFromCore
@@ -179,13 +178,13 @@ extension GridofCards {
         let request = CoreCard.createFetchRequest()
         let sort = NSSortDescriptor(key: "date", ascending: false)
         request.sortDescriptors = [sort]
-        do {cardsForDisplay = try CoreDataStack.shared.context.fetch(request)}
+        do {cardsForDisplay = try PersistenceController.shared.persistentContainer.viewContext.fetch(request)}
         catch {print("Fetch failed")}
     }
     
     
     func deleteCoreCard(coreCard: CoreCard) {
-        do {CoreDataStack.shared.context.delete(coreCard);try CoreDataStack.shared.context.save()}
+        do {PersistenceController.shared.persistentContainer.viewContext.delete(coreCard);try PersistenceController.shared.persistentContainer.viewContext.save()}
         catch {}
         self.reloadCoreCards()
     }
@@ -193,7 +192,7 @@ extension GridofCards {
     func deleteAllCoreCards() {
         let request = CoreCard.createFetchRequest()
         var cardsFromCore: [CoreCard] = []
-        do {cardsFromCore = try CoreDataStack.shared.context.fetch(request); for card in cardsFromCore {deleteCoreCard(coreCard: card)}}
+        do {cardsFromCore = try PersistenceController.shared.persistentContainer.viewContext.fetch(request); for card in cardsFromCore {deleteCoreCard(coreCard: card)}}
         catch{}
     }
     
@@ -206,10 +205,10 @@ extension GridofCards {
     private func shareCard(_ coreCard: CoreCard) async throws {
         isProcessingShare = true
         do {
-            let (share, container) = try await cm.fetchOrCreateShare(coreCard: coreCard)
+            //let (share, container) = try await cm.fetchOrCreateShare(coreCard: coreCard)
             isProcessingShare = false
             activeShare = share
-            activeContainer = container
+            //activeContainer = container
             isSharing = true
         } catch {debugPrint("Error sharing card record: \(error)")}
     }

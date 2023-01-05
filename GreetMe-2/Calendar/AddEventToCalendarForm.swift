@@ -22,9 +22,9 @@ struct AddEventToCalendarForm: View {
     let frequencies = ["One Time Only", "Monthly", "Annual"]
 
     func saveContext() {
-        if CoreDataStack.shared.context.hasChanges {
+        if PersistenceController.shared.persistentContainer.viewContext.hasChanges {
             do {
-                try CoreDataStack.shared.context.save()
+                try PersistenceController.shared.persistentContainer.viewContext.save()
                 }
             catch {
                 print("An error occurred while saving: \(error)")
@@ -126,7 +126,7 @@ extension AddEventToCalendarForm {
     
     func addEventToCore(eventName: String, eventDate: String) {
         let formattedEventDate = formatDate(eventDate: eventDate)
-        let event = CalendarDate(context: CoreDataStack.shared.context)
+        let event = CalendarDate(context: PersistenceController.shared.persistentContainer.viewContext)
         event.eventNameCore = eventName + " \(emoji)"
         event.eventDateCore = formattedEventDate
         print("Event Added For: ")
@@ -150,7 +150,7 @@ extension AddEventToCalendarForm {
         request.sortDescriptors = [sort]
         var events: [CalendarDate] = []
         do {
-            events = try CoreDataStack.shared.context.fetch(request)
+            events = try PersistenceController.shared.persistentContainer.viewContext.fetch(request)
             print("Got \(events.count) Events")
             print("loadCoreDataEvents Called....")
             print(events)

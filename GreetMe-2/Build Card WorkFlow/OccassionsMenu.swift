@@ -152,7 +152,7 @@ extension OccassionsMenu {
         request.sortDescriptors = [sort]
         var cardsFromCore: [CoreCard] = []
         do {
-            cardsFromCore = try CoreDataStack.shared.context.fetch(request)
+            cardsFromCore = try PersistenceController.shared.persistentContainer.viewContext.fetch(request)
             print("Got \(cardsFromCore.count) Cards From Core")
         }
         catch {print("Fetch failed")}

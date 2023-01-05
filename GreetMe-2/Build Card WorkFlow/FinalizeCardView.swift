@@ -44,7 +44,6 @@ struct FinalizeCardView: View {
     @State var string2: String!
     @State private var showShareSheet = false
     @State var share: CKShare?
-    @EnvironmentObject private var cm: CKModel
     @State private var isAddingCard = false
     @State private var isSharing = false
     @State private var isProcessingShare = false
@@ -159,10 +158,6 @@ struct FinalizeCardView: View {
                     //isAddingCard = true
                     Task {
                         print("trying to save....")
-                        try await cm.initialize()
-                        try? await addCard(noteField: noteField, chosenOccassion: chosenOccassion, an1: text1, an2: text2, an2URL: text2URL.absoluteString, an3: text3, an4: text4, chosenObject: chosenObject, collageImage: collageImage)
-                        //try? await shareCard(card)
-                        print("saved")
                     }
                     //saveAndShareIsActive = true
                     showCompleteAlert = true
@@ -205,7 +200,7 @@ struct FinalizeCardView: View {
             Text("Menu")}
             )
         .fullScreenCover(isPresented: $showOccassions) {OccassionsMenu(calViewModel: CalViewModel(), showDetailView: ShowDetailView())}
-        .fullScreenCover(isPresented: $showShareSheet, content: {if let share = share {CloudSharingView(share: share, container: CoreDataStack.shared.ckContainer, coreCard: coreCard)}})
+        .fullScreenCover(isPresented: $showShareSheet, content: {if let share = share {}})
         .fullScreenCover(isPresented: $showActivityController) {ActivityView(activityItems: $activityItemsArray, applicationActivities: nil)}
         }
     }
@@ -226,26 +221,6 @@ extension FinalizeCardView {
         controller.addCoreCard(noteField: noteField, chosenOccassion: chosenOccassion, an1: an1, an2: an2, an2URL: an2URL, an3: an3, an4: an4, chosenObject: chosenObject, collageImage: collageImage,context: taskContext)
         
         
-    }
-    
-    private func addCard(noteField: NoteField, chosenOccassion: Occassion
-                         , an1: String, an2: String, an2URL: String, an3: String, an4: String, chosenObject: ChosenCoverImageObject, collageImage: CollageImage) async throws {
-        try await cm.addCard(noteField: noteField, chosenOccassion: chosenOccassion, an1: an1, an2: an2, an2URL: an2URL, an3: an3, an4: an4, chosenObject: chosenObject, collageImage: collageImage)
-        try await cm.refresh()
-        isAddingCard = false
-    }
-    
-    private func shareCard(_ coreCard: CoreCard) async throws {
-        isProcessingShare = true
-        do {
-            let (share, container) = try await cm.fetchOrCreateShare(coreCard: coreCard)
-            isProcessingShare = false
-            activeShare = share
-            activeContainer = container
-            isSharing = true
-        } catch {
-            debugPrint("Error sharing contact record: \(error)")
-        }
     }
     
     /// Builds a `CloudSharingView` with state after processing a share.

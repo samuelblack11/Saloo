@@ -175,7 +175,7 @@ extension CalViewModel {
         let batchDeleteRequest = NSBatchDeleteRequest(fetchRequest: fetchRequest)
         
         do {
-            try CoreDataStack.shared.context.execute(batchDeleteRequest)
+            //try PersistenceController.shared.persistentContainer.viewContext.execute(batchDeleteRequest)
         }
         catch {
             print("error")
@@ -196,7 +196,7 @@ extension CalViewModel {
             let eventList3 = [String : Date]()
             let events = PreSetCalendarDates(eventList: eventList3)
             for (eventName, eventDate) in events.eventList {
-                let event = CalendarDate(context: CoreDataStack.shared.context)
+                let event = CalendarDate(context: PersistenceController.shared.persistentContainer.viewContext)
                 event.eventNameCore = eventName
                 event.eventDateCore = eventDate
                 self.saveContext()
@@ -215,9 +215,9 @@ extension CalViewModel {
     
     
     func saveContext() {
-        if CoreDataStack.shared.context.hasChanges {
+        if PersistenceController.shared.persistentContainer.viewContext.hasChanges {
             do {
-                try CoreDataStack.shared.context.save()
+                try PersistenceController.shared.persistentContainer.viewContext.save()
                 }
             catch {
                 print("An error occurred while saving: \(error)")
@@ -231,7 +231,7 @@ extension CalViewModel {
         request.sortDescriptors = [sort]
         var events: [CalendarDate] = []
         do {
-            events = try CoreDataStack.shared.context.fetch(request)
+            events = try PersistenceController.shared.persistentContainer.viewContext.fetch(request)
         }
         catch {
             print("Fetch failed")

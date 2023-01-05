@@ -19,7 +19,7 @@ struct ScheduleDelivery: View {
     @State private var newRecipient = ""
     @State private var scheduleButtonIsInactive = false
     @State var delivery: FutureDelivery!
-    private let stack = CoreDataStack.shared
+    private let stack = PersistenceController.shared
     @State var share: CKShare?
     @State var showShareSheet = false
     
@@ -49,7 +49,7 @@ struct ScheduleDelivery: View {
                 }
                 .sheet(isPresented: $showShareSheet, content: {
                     if let share = share {
-                        CloudSharingView(share: share, container: stack.ckContainer, coreCard: coreCard)
+                        //CloudSharingView(share: share, container: PersistenceController.shared.container, coreCard: coreCard)
                     }
               })
             }
@@ -82,7 +82,7 @@ struct ScheduleDelivery: View {
 
 class ScheduleDeliveryC {
 
-    private let stack = CoreDataStack.shared
+    private let stack = PersistenceController.shared
     var share: CKShare
     var coreCard: CoreCard
     var showShareSheet: Bool
@@ -111,7 +111,7 @@ extension ScheduleDelivery {
     
     func saveDelivery() {
         //save to core data
-        let del = FutureDelivery(context: CoreDataStack.shared.context)
+        let del = FutureDelivery(context: PersistenceController.shared.persistentContainer.viewContext)
         //del.card = card.card
         del.recipientList = recipientList
         del.deliveryDate = deliveryDate
@@ -120,9 +120,9 @@ extension ScheduleDelivery {
     }
     
     func saveContext() {
-        if CoreDataStack.shared.context.hasChanges {
+        if PersistenceController.shared.persistentContainer.viewContext.hasChanges {
             do {
-                try CoreDataStack.shared.context.save()
+                try PersistenceController.shared.persistentContainer.viewContext.save()
                 }
             catch {
                 print("An error occurred while saving: \(error)")

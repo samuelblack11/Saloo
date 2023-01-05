@@ -67,8 +67,8 @@ struct DateDetailView: View {
         func deleteCoreData(event: CalendarDate) {
             do {
                 print("Attempting Delete")
-                CoreDataStack.shared.context.delete(event)
-                try CoreDataStack.shared.context.save()
+                PersistenceController.shared.persistentContainer.viewContext.delete(event)
+                try PersistenceController.shared.persistentContainer.viewContext.save()
                 }
                 // Save Changes
              catch {
@@ -88,7 +88,7 @@ struct DateDetailView: View {
             let predicate = NSPredicate(format: "eventDateCore = %@", filter as CVarArg)
             request.predicate = predicate
             do {
-                eventsForShow = try CoreDataStack.shared.persistentContainer.viewContext.fetch(request)
+                eventsForShow = try PersistenceController.shared.persistentContainer.viewContext.fetch(request)
                 print("Got \(eventsForShow.count) Events")
                 //collectionView.reloadData()
             }

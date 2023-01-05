@@ -82,6 +82,13 @@ public class ChosenImages: ObservableObject {
     @Published var chosenImageD: UIImage?
 }
 
+class InOut: ObservableObject {
+    enum SendReceive {
+        case inbox
+        case outbox
+    }
+}
+
 class ChosenCollageStyle: ObservableObject {@Published var chosenStyle: Int?}
 
 class CollageBlocksAndViews {

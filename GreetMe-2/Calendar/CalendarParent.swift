@@ -69,7 +69,7 @@ extension CalendarParent {
         request.sortDescriptors = [sort]
         var events: [CalendarDate] = []
         do {
-            events = try CoreDataStack.shared.context.fetch(request)
+            events = try PersistenceController.shared.persistentContainer.viewContext.fetch(request)
         }
         catch {
             print("Fetch failed")

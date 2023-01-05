@@ -29,17 +29,16 @@
 		C2075AFF295FDBC60048ECEB /* ImagePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2075AFE295FDBC60048ECEB /* ImagePicker.swift */; };
 		C2163D0E28C1609C00DEE861 /* ScheduleDelivery.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2163D0D28C1609C00DEE861 /* ScheduleDelivery.swift */; };
 		C22803E6289358E500802452 /* CloudSharingController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C22803E5289358E500802452 /* CloudSharingController.swift */; };
-		C22803E8289359AD00802452 /* CoreDataStack.swift in Sources */ = {isa = PBXBuildFile; fileRef = C22803E7289359AD00802452 /* CoreDataStack.swift */; };
 		C22A84DB29666123001244CC /* PersistenceController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C22A84DA29666123001244CC /* PersistenceController.swift */; };
 		C22A84DD29666C0F001244CC /* PersistenceController+Share.swift in Sources */ = {isa = PBXBuildFile; fileRef = C22A84DC29666C0F001244CC /* PersistenceController+Share.swift */; };
 		C22A84DF29666C23001244CC /* PersistenceController+Card.swift in Sources */ = {isa = PBXBuildFile; fileRef = C22A84DE29666C23001244CC /* PersistenceController+Card.swift */; };
 		C22A84E129666C84001244CC /* CoreDataHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = C22A84E029666C84001244CC /* CoreDataHelper.swift */; };
 		C22A84E32966719A001244CC /* PersistenceController+Deduplicate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C22A84E22966719A001244CC /* PersistenceController+Deduplicate.swift */; };
 		C22A84E529667587001244CC /* PersistenceController+History.swift in Sources */ = {isa = PBXBuildFile; fileRef = C22A84E429667587001244CC /* PersistenceController+History.swift */; };
+		C22A84EA29667929001244CC /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C22A84E929667929001244CC /* SceneDelegate.swift */; };
 		C23340EB28C3D589006222F5 /* FutureDelivery+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = C23340EA28C3D589006222F5 /* FutureDelivery+CoreDataProperties.swift */; };
 		C23340ED28C3D58D006222F5 /* FutureDelivery+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = C23340EC28C3D58D006222F5 /* FutureDelivery+CoreDataClass.swift */; };
 		C23524D22896D5F80052494F /* PreSetCalendarDates.swift in Sources */ = {isa = PBXBuildFile; fileRef = C23524D12896D5F80052494F /* PreSetCalendarDates.swift */; };
-		C237E6DD294B3FE300E472AD /* CKModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C237E6DC294B3FE300E472AD /* CKModel.swift */; };
 		C237E6E1294E453600E472AD /* GridOfCards.swift in Sources */ = {isa = PBXBuildFile; fileRef = C237E6E0294E453600E472AD /* GridOfCards.swift */; };
 		C23A9D222897ECA90059B97C /* Card.swift in Sources */ = {isa = PBXBuildFile; fileRef = C23A9D212897ECA90059B97C /* Card.swift */; };
 		C23A9D372897F3F00059B97C /* CalendarDate+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = C23A9D352897F3F00059B97C /* CalendarDate+CoreDataClass.swift */; };
@@ -100,17 +99,16 @@
 		C2163D0D28C1609C00DEE861 /* ScheduleDelivery.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleDelivery.swift; sourceTree = "<group>"; };
 		C217B029294FE5F200544B17 /* Pods.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Pods.xcodeproj; path = Pods/Pods.xcodeproj; sourceTree = "<group>"; };
 		C22803E5289358E500802452 /* CloudSharingController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CloudSharingController.swift; path = "../../../../../Downloads/MyTravelJournal-3/final/MyTravelJournal/Controller/CloudSharingController.swift"; sourceTree = "<group>"; };
-		C22803E7289359AD00802452 /* CoreDataStack.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CoreDataStack.swift; path = "../../../../../Downloads/MyTravelJournal-3/final/MyTravelJournal/Helper/CoreDataStack.swift"; sourceTree = "<group>"; };
 		C22A84DA29666123001244CC /* PersistenceController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersistenceController.swift; sourceTree = "<group>"; };
 		C22A84DC29666C0F001244CC /* PersistenceController+Share.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PersistenceController+Share.swift"; sourceTree = "<group>"; };
 		C22A84DE29666C23001244CC /* PersistenceController+Card.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PersistenceController+Card.swift"; sourceTree = "<group>"; };
 		C22A84E029666C84001244CC /* CoreDataHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataHelper.swift; sourceTree = "<group>"; };
 		C22A84E22966719A001244CC /* PersistenceController+Deduplicate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PersistenceController+Deduplicate.swift"; sourceTree = "<group>"; };
 		C22A84E429667587001244CC /* PersistenceController+History.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PersistenceController+History.swift"; sourceTree = "<group>"; };
+		C22A84E929667929001244CC /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 		C23340EA28C3D589006222F5 /* FutureDelivery+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "FutureDelivery+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		C23340EC28C3D58D006222F5 /* FutureDelivery+CoreDataClass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "FutureDelivery+CoreDataClass.swift"; sourceTree = "<group>"; };
 		C23524D12896D5F80052494F /* PreSetCalendarDates.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreSetCalendarDates.swift; sourceTree = "<group>"; };
-		C237E6DC294B3FE300E472AD /* CKModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CKModel.swift; sourceTree = "<group>"; };
 		C237E6E0294E453600E472AD /* GridOfCards.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GridOfCards.swift; sourceTree = "<group>"; };
 		C23A9D212897ECA90059B97C /* Card.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Card.swift; sourceTree = "<group>"; };
 		C23A9D352897F3F00059B97C /* CalendarDate+CoreDataClass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "CalendarDate+CoreDataClass.swift"; sourceTree = "<group>"; };
@@ -159,9 +157,7 @@
 		260F6902281DBF41002E864B /* Model */ = {
 			isa = PBXGroup;
 			children = (
-				C237E6DC294B3FE300E472AD /* CKModel.swift */,
 				C22803E5289358E500802452 /* CloudSharingController.swift */,
-				C22803E7289359AD00802452 /* CoreDataStack.swift */,
 				C24B3ABA29574A3D00884E4D /* CustomDataTypes.swift */,
 				C22A84DA29666123001244CC /* PersistenceController.swift */,
 				C22A84DC29666C0F001244CC /* PersistenceController+Share.swift */,
@@ -203,6 +199,7 @@
 			children = (
 				26A7217F281DB8D500ADAE44 /* GreetMe_2App.swift */,
 				C28B13F728E3E106008E2C4C /* AppDelegate.swift */,
+				C22A84E929667929001244CC /* SceneDelegate.swift */,
 				26A7218A281DB8D900ADAE44 /* GreetMe_2.xcdatamodeld */,
 				26A7217E281DB8D500ADAE44 /* GreetMe-2 */,
 				26A7217D281DB8D500ADAE44 /* Products */,
@@ -492,7 +489,6 @@
 				262C3ED3281E1E9C00F07C01 /* CalendarParent.swift in Sources */,
 				C22A84E129666C84001244CC /* CoreDataHelper.swift in Sources */,
 				C27430FC286335F000E17B19 /* CameraCapture.swift in Sources */,
-				C22803E8289359AD00802452 /* CoreDataStack.swift in Sources */,
 				C23524D22896D5F80052494F /* PreSetCalendarDates.swift in Sources */,
 				26AD8127281F05160069C3F0 /* WriteNoteView.swift in Sources */,
 				26AD812B281F119A0069C3F0 /* ConfirmFrontCoverView.swift in Sources */,
@@ -515,10 +511,10 @@
 				C2163D0E28C1609C00DEE861 /* ScheduleDelivery.swift in Sources */,
 				26A72180281DB8D500ADAE44 /* GreetMe_2App.swift in Sources */,
 				C22803E6289358E500802452 /* CloudSharingController.swift in Sources */,
+				C22A84EA29667929001244CC /* SceneDelegate.swift in Sources */,
 				C22A84DF29666C23001244CC /* PersistenceController+Card.swift in Sources */,
 				26EB55652827120C00178F0B /* EnlargeECard.swift in Sources */,
 				C23340ED28C3D58D006222F5 /* FutureDelivery+CoreDataClass.swift in Sources */,
-				C237E6DD294B3FE300E472AD /* CKModel.swift in Sources */,
 				C22A84DB29666123001244CC /* PersistenceController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
