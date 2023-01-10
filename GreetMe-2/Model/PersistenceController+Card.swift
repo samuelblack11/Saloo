@@ -13,13 +13,16 @@ extension PersistenceController {
     
     func addCoreCard(noteField: NoteField, chosenOccassion: Occassion, an1: String, an2: String, an2URL: String, an3: String, an4: String, chosenObject: ChosenCoverImageObject, collageImage: CollageImage, context: NSManagedObjectContext) {
         context.perform {
+            let recordZone = CKRecordZone(zoneName: "Cards")
+            let id = CKRecord.ID(zoneID: recordZone.zoneID)
+            let cardRecord = CKRecord(recordType: "Card", recordID: id)
             let coreCard = CoreCard(context: context)
             coreCard.uniqueName = UUID().uuidString
             coreCard.cardName = noteField.cardName
             coreCard.occassion = chosenOccassion.occassion
             coreCard.recipient = noteField.recipient
             coreCard.sender = noteField.sender
-            //coreCard.associatedRecord = cardRecord
+            coreCard.associatedRecord = cardRecord
             coreCard.an1 = an1
             coreCard.an2 = an2
             coreCard.an2URL = an2URL
@@ -31,6 +34,7 @@ extension PersistenceController {
             coreCard.font = noteField.font
             coreCard.message = noteField.noteText
             context.save(with: .addCoreCard)
+            print("Save Successful")
         }
     }
     

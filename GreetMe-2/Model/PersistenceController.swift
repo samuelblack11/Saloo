@@ -40,7 +40,7 @@ class PersistenceController: NSObject, ObservableObject {
         let storeFolderURL = baseURL.appendingPathComponent("CoreDataStores")
         let privateStoreFolderURL = storeFolderURL.appendingPathComponent("Private")
         let sharedStoreFolderURL = storeFolderURL.appendingPathComponent("Shared")
-
+        
         let fileManager = FileManager.default
         for folderURL in [privateStoreFolderURL, sharedStoreFolderURL] where !fileManager.fileExists(atPath: folderURL.path) {
             do {
@@ -51,7 +51,6 @@ class PersistenceController: NSObject, ObservableObject {
         }
 
         let container = NSPersistentCloudKitContainer(name: "GreetMe_2")
-        
         /**
          Grab the default (first) store and associate it with the CloudKit private database.
          Set up the store description by:
@@ -68,7 +67,7 @@ class PersistenceController: NSObject, ObservableObject {
         privateStoreDescription.setOption(true as NSNumber, forKey: NSPersistentStoreRemoteChangeNotificationPostOptionKey)
 
         let cloudKitContainerOptions = NSPersistentCloudKitContainerOptions(containerIdentifier: gCloudKitContainerIdentifier)
-
+        
         cloudKitContainerOptions.databaseScope = .private
         privateStoreDescription.cloudKitContainerOptions = cloudKitContainerOptions
                 

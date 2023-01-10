@@ -16,7 +16,6 @@
 		260F6907281DC0E3002E864B /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 260F6906281DC0E3002E864B /* LoginView.swift */; };
 		262C3ED3281E1E9C00F07C01 /* CalendarParent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 262C3ED2281E1E9C00F07C01 /* CalendarParent.swift */; };
 		2688D704285FA24300954120 /* SnapShotECard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2688D703285FA24200954120 /* SnapShotECard.swift */; };
-		2688D706285FA25100954120 /* SnapShotCardForPrint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2688D705285FA25100954120 /* SnapShotCardForPrint.swift */; };
 		26A72180281DB8D500ADAE44 /* GreetMe_2App.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26A7217F281DB8D500ADAE44 /* GreetMe_2App.swift */; };
 		26A72184281DB8D900ADAE44 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 26A72183281DB8D900ADAE44 /* Assets.xcassets */; };
 		26A72187281DB8D900ADAE44 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 26A72186281DB8D900ADAE44 /* Preview Assets.xcassets */; };
@@ -31,6 +30,9 @@
 		C22803E6289358E500802452 /* CloudSharingController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C22803E5289358E500802452 /* CloudSharingController.swift */; };
 		C22A180B296CF60600A7E9B8 /* StartMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = C22A180A296CF60600A7E9B8 /* StartMenu.swift */; };
 		C22A180D296D010800A7E9B8 /* MusicView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C22A180C296D010800A7E9B8 /* MusicView.swift */; };
+		C22A1815296D981700A7E9B8 /* SharePickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C22A1814296D981700A7E9B8 /* SharePickerView.swift */; };
+		C22A1817296D983E00A7E9B8 /* ManagingSharesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C22A1816296D983E00A7E9B8 /* ManagingSharesView.swift */; };
+		C22A1819296D985700A7E9B8 /* AddToExistingShareView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C22A1818296D985700A7E9B8 /* AddToExistingShareView.swift */; };
 		C22A84DB29666123001244CC /* PersistenceController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C22A84DA29666123001244CC /* PersistenceController.swift */; };
 		C22A84DD29666C0F001244CC /* PersistenceController+Share.swift in Sources */ = {isa = PBXBuildFile; fileRef = C22A84DC29666C0F001244CC /* PersistenceController+Share.swift */; };
 		C22A84DF29666C23001244CC /* PersistenceController+Card.swift in Sources */ = {isa = PBXBuildFile; fileRef = C22A84DE29666C23001244CC /* PersistenceController+Card.swift */; };
@@ -85,7 +87,6 @@
 		262C3ED2281E1E9C00F07C01 /* CalendarParent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarParent.swift; sourceTree = "<group>"; };
 		2650FFCD285C9C340020980E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		2688D703285FA24200954120 /* SnapShotECard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SnapShotECard.swift; sourceTree = "<group>"; };
-		2688D705285FA25100954120 /* SnapShotCardForPrint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SnapShotCardForPrint.swift; sourceTree = "<group>"; };
 		26A7217C281DB8D500ADAE44 /* GreetMe-2.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "GreetMe-2.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		26A7217F281DB8D500ADAE44 /* GreetMe_2App.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GreetMe_2App.swift; sourceTree = "<group>"; };
 		26A72183281DB8D900ADAE44 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -103,6 +104,9 @@
 		C22803E5289358E500802452 /* CloudSharingController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CloudSharingController.swift; path = "../../../../../Downloads/MyTravelJournal-3/final/MyTravelJournal/Controller/CloudSharingController.swift"; sourceTree = "<group>"; };
 		C22A180A296CF60600A7E9B8 /* StartMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartMenu.swift; sourceTree = "<group>"; };
 		C22A180C296D010800A7E9B8 /* MusicView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MusicView.swift; sourceTree = "<group>"; };
+		C22A1814296D981700A7E9B8 /* SharePickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharePickerView.swift; sourceTree = "<group>"; };
+		C22A1816296D983E00A7E9B8 /* ManagingSharesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManagingSharesView.swift; sourceTree = "<group>"; };
+		C22A1818296D985700A7E9B8 /* AddToExistingShareView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddToExistingShareView.swift; sourceTree = "<group>"; };
 		C22A84DA29666123001244CC /* PersistenceController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersistenceController.swift; sourceTree = "<group>"; };
 		C22A84DC29666C0F001244CC /* PersistenceController+Share.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PersistenceController+Share.swift"; sourceTree = "<group>"; };
 		C22A84DE29666C23001244CC /* PersistenceController+Card.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PersistenceController+Card.swift"; sourceTree = "<group>"; };
@@ -163,6 +167,7 @@
 		260F6902281DBF41002E864B /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				C237E6E2294E5DB100E472AD /* Data & Types */,
 				C22803E5289358E500802452 /* CloudSharingController.swift */,
 				C24B3ABA29574A3D00884E4D /* CustomDataTypes.swift */,
 				C22A84DA29666123001244CC /* PersistenceController.swift */,
@@ -170,6 +175,9 @@
 				C22A84E22966719A001244CC /* PersistenceController+Deduplicate.swift */,
 				C22A84DE29666C23001244CC /* PersistenceController+Card.swift */,
 				C22A84E029666C84001244CC /* CoreDataHelper.swift */,
+				C22A1814296D981700A7E9B8 /* SharePickerView.swift */,
+				C22A1816296D983E00A7E9B8 /* ManagingSharesView.swift */,
+				C22A1818296D985700A7E9B8 /* AddToExistingShareView.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -225,9 +233,7 @@
 		26A7217E281DB8D500ADAE44 /* GreetMe-2 */ = {
 			isa = PBXGroup;
 			children = (
-				C237E6E6294E5FA100E472AD /* Schedule & Notify */,
 				C237E6E3294E5E3100E472AD /* Calendar */,
-				C237E6E2294E5DB100E472AD /* Data & Types */,
 				2650FFCD285C9C340020980E /* Info.plist */,
 				260F6908281DEAE7002E864B /* GreetMe-2.entitlements */,
 				260F6902281DBF41002E864B /* Model */,
@@ -287,6 +293,7 @@
 				C23A9D3B28989C340059B97C /* CalendarView.swift */,
 				C23A9D3928989B630059B97C /* DateDetailView.swift */,
 				C2DE5C97289EFECC00F8C556 /* AddEventToCalendarForm.swift */,
+				C237E6E6294E5FA100E472AD /* Schedule & Notify */,
 			);
 			path = Calendar;
 			sourceTree = "<group>";
@@ -304,7 +311,6 @@
 			isa = PBXGroup;
 			children = (
 				2688D703285FA24200954120 /* SnapShotECard.swift */,
-				2688D705285FA25100954120 /* SnapShotCardForPrint.swift */,
 			);
 			path = "Snapshot Cards";
 			sourceTree = "<group>";
@@ -483,6 +489,7 @@
 			files = (
 				260F68F7281DBDD2002E864B /* UnsplashCollectionView.swift in Sources */,
 				260F68FE281DBEBD002E864B /* PingDownloadResponse.swift in Sources */,
+				C22A1817296D983E00A7E9B8 /* ManagingSharesView.swift in Sources */,
 				C237E6E1294E453600E472AD /* GridOfCards.swift in Sources */,
 				C23340EB28C3D589006222F5 /* FutureDelivery+CoreDataProperties.swift in Sources */,
 				C22A84E529667587001244CC /* PersistenceController+History.swift in Sources */,
@@ -505,10 +512,10 @@
 				26AD8129281F05310069C3F0 /* FinalizeCardView.swift in Sources */,
 				260F68F5281DBDCD002E864B /* OccassionsMenu.swift in Sources */,
 				260F68FA281DBE61002E864B /* PhotoAPI.swift in Sources */,
-				2688D706285FA25100954120 /* SnapShotCardForPrint.swift in Sources */,
 				C23A9D222897ECA90059B97C /* Card.swift in Sources */,
 				C2075AFD295FDBA70048ECEB /* CollageBuilder.swift in Sources */,
 				C22A84DD29666C0F001244CC /* PersistenceController+Share.swift in Sources */,
+				C22A1815296D981700A7E9B8 /* SharePickerView.swift in Sources */,
 				C23B622128B5ABE300D88F85 /* Notify.swift in Sources */,
 				C23A9D372897F3F00059B97C /* CalendarDate+CoreDataClass.swift in Sources */,
 				C2DE5C98289EFECC00F8C556 /* AddEventToCalendarForm.swift in Sources */,
@@ -524,6 +531,7 @@
 				26EB55652827120C00178F0B /* EnlargeECard.swift in Sources */,
 				C23340ED28C3D58D006222F5 /* FutureDelivery+CoreDataClass.swift in Sources */,
 				C22A84DB29666123001244CC /* PersistenceController.swift in Sources */,
+				C22A1819296D985700A7E9B8 /* AddToExistingShareView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

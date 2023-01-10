@@ -116,7 +116,7 @@ struct FinalizeCardView: View {
                 Button("Save eCard") {
                     //isAddingCard = true
                     Task {
-                        print("trying to save....")
+                        saveCard(noteField: noteField, chosenOccassion: chosenOccassion, an1: text1, an2: text2, an2URL: text2URL.absoluteString, an3: text3, an4: text4, chosenObject: chosenObject, collageImage: collageImage)
                     }
                     //saveAndShareIsActive = true
                     showCompleteAlert = true
@@ -167,29 +167,6 @@ extension FinalizeCardView {
         let taskContext = controller.persistentContainer.newTaskContext()
         taskContext.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
         controller.addCoreCard(noteField: noteField, chosenOccassion: chosenOccassion, an1: an1, an2: an2, an2URL: an2URL, an3: an3, an4: an4, chosenObject: chosenObject, collageImage: collageImage,context: taskContext)
-        
-        
-    }
-    
-    /// Builds a `CloudSharingView` with state after processing a share.
-    private func shareView(coreCard: CoreCard) -> CloudSharingView? {
-        guard let share = activeShare, let container = activeContainer else {
-            return nil
-        }
-
-        return CloudSharingView(share: share, container: container, coreCard: coreCard)
-    }
-    
-    func prepCardForExport() -> Data {
-        let image = SnapShotCardForPrint(chosenObject: chosenObject, collageImage: collageImage, noteField: noteField, text1: $text1, text2: $text2, text2URL: $text2URL, text3: $text3, text4: $text4, printCardText: $printCardText).snapshot()
-        let a4_width = 595.2 - 20
-        let a4_height = 841.8
-        let pageRect = CGRect(x: 0, y: 0, width: a4_width, height: a4_height)
-        let renderer = UIGraphicsPDFRenderer(bounds: pageRect)
-        let data = renderer.pdfData(actions: {ctx in ctx.beginPage()
-        image.draw(in: pageRect)
-        })
-        return data
     }
 }
 

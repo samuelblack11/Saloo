@@ -13,7 +13,12 @@ import CloudKit
 import CoreData
 
 struct GridofCards: View {
+    @State private var toggleProgress: Bool = false
+    @Binding var activeSheet: ActiveSheet?
+    @Binding var nextSheet: ActiveSheet?
     
+    @State private var hasAnyShare: Bool
+    @State private var isCardShared: Bool
     @State var isAddingCard = false
     @State var isSharing = false
     @State var isProcessingShare = false
@@ -41,6 +46,14 @@ struct GridofCards: View {
         else {return cardsForDisplay.filter { $0.cardName.contains(searchText)}}
         
     }
+    
+    init(activeSheet: Binding<ActiveSheet?>, nextSheet: Binding<ActiveSheet?>, card: CoreCard) {
+        _activeSheet = activeSheet
+        _nextSheet = nextSheet
+        isCardShared = (PersistenceController.shared.existingShare(coreCard: card) != nil)
+        hasAnyShare = PersistenceController.shared.shareTitles().isEmpty ? false : true
+    }
+    
     var sortOptions = ["Date","Card Name","Occassion"]
     
     func determineDisplayName(coreCard: CoreCard) -> String {
@@ -56,6 +69,7 @@ struct GridofCards: View {
                 sortResults
                 LazyVGrid(columns: columns, spacing: 10) {
                     ForEach(cardsFilteredByBox(sortedCards(cardsFilteredBySearch, sortBy: sortByValue), whichBox: whichBoxVal)) {
+                    //ForEach(cardsFilteredBySearch) {
                         cardView(for: $0, shareable: false)
                     }
                 }
@@ -102,35 +116,103 @@ struct GridofCards: View {
                 .sheet(isPresented: $isSharing, content: {shareView(card)})
                 Divider().padding(.bottom, 5)
                 HStack(spacing: 3) {
-                    Text(determineDisplayName(coreCard: card))
-                        .font(.system(size: 8)).minimumScaleFactor(0.1)
+                    Text(determineDisplayName(coreCard: card)).font(.system(size: 8)).minimumScaleFactor(0.1)
                     Spacer()
-                    Text(card.cardName)
-                        .font(.system(size: 8)).minimumScaleFactor(0.1)
+                    Text(card.cardName).font(.system(size: 8)).minimumScaleFactor(0.1)
                 }
             }.padding().overlay(RoundedRectangle(cornerRadius: 6).stroke(.blue, lineWidth: 2))
                 .font(.headline).padding(.horizontal).frame(maxHeight: 600)
-                .contextMenu {
-                    Button {segueToEnlarge = true} label: {Text("Enlarge eCard"); Image(systemName: "plus.magnifyingglass")}
-                    Button {deleteCoreCard(coreCard: card)} label: {Text("Delete eCard"); Image(systemName: "trash").foregroundColor(.red)}
-                    Button {
-                        //chosenCard.chosenCard = card
-                        //if CoreDataStack.shared.privatePersistentStore.contains(manageObject: card) {CoreDataStack.shared.presentCloudSharingController}
-                        
-                        Task {try? await shareCard(card)}; isSharing = true}
-                        label: {Text("Share eCard Now")}
-                    Button {showDeliveryScheduler = true} label: {Text("Schedule eCard Delivery")}
-                }}
+                .contextMenu {contextMenuButtons(card: card)}}
 }
 
 // MARK: Returns CKShare participant permission, methods and properties to share
 extension GridofCards {
     
+    @ViewBuilder func contextMenuButtons(card: CoreCard) -> some View {
+        
+        
+        if PersistenceController.shared.privatePersistentStore.contains(manageObject: card) {
+            Button("Create New Share") { createNewShare(card: card) }
+                .disabled(isCardShared)
+            Button("Add to Existing Share") { activeSheet = .sharePicker(card) }
+            .disabled(isCardShared || !hasAnyShare)
+            } else {
+            Button("Manage Participation") { manageParticipation(coreCard: card) }
+            }
+            Button {segueToEnlarge = true} label: {Text("Enlarge eCard"); Image(systemName: "plus.magnifyingglass")}
+            Button {deleteCoreCard(coreCard: card)} label: {Text("Delete eCard"); Image(systemName: "trash").foregroundColor(.red)}
+            Button {showDeliveryScheduler = true} label: {Text("Schedule eCard Delivery")}
+        }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+        private func createNewShare(card: CoreCard) {
+            toggleProgress.toggle()
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                PersistenceController.shared.shareObject(card, to: nil) { share, error in
+                    toggleProgress.toggle()
+                    if let share = share {
+                        nextSheet = .participantView(share)
+                        activeSheet = nil
+                    }
+                }
+            }
+        }
+    
+    
+    
+    
+    private func createNewShare(coreCard: CoreCard) {PersistenceController.shared.presentCloudSharingController(coreCard: coreCard)}
+    
+    private func manageParticipation(coreCard: CoreCard) {PersistenceController.shared.presentCloudSharingController(coreCard: coreCard)}
+    
+    private func processStoreChangeNotification(_ notification: Notification) {
+        guard let storeUUID = notification.userInfo?[UserInfoKey.storeUUID] as? String,
+              storeUUID == PersistenceController.shared.privatePersistentStore.identifier else {
+            return
+        }
+        guard let transactions = notification.userInfo?[UserInfoKey.transactions] as? [NSPersistentHistoryTransaction],
+              transactions.isEmpty else {
+            return
+        }
+        //isCardShared = (PersistenceController.shared.existingShare(coreCard: card) != nil)
+        hasAnyShare = PersistenceController.shared.shareTitles().isEmpty ? false : true
+    }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     func cardsFilteredByBox(_ coreCards: [CoreCard], whichBox: InOut.SendReceive) -> [CoreCard] {
         var filteredCoreCards: [CoreCard] = []
-            print("---")
-            print(coreCards.count)
             for coreCard in coreCards {
+                print("---------")
+                print(coreCard.associatedRecord.recordID.zoneID.ownerName)
+                print(CKCurrentUserDefaultName)
+                print("&&&")
                 switch whichBoxVal {
                 case .outbox:
                     filteredCoreCards = coreCards.filter{_ in (coreCard.associatedRecord.recordID.zoneID.ownerName.contains(CKCurrentUserDefaultName))}
@@ -198,60 +280,4 @@ extension GridofCards {
         guard let share = activeShare, let container = activeContainer else {return nil}
         return CloudSharingView(share: share, container: container, coreCard: coreCard)
     }
-    
-    private func shareCard(_ coreCard: CoreCard) async throws {
-        isProcessingShare = true
-        do {
-            //let (share, container) = try await cm.fetchOrCreateShare(coreCard: coreCard)
-            isProcessingShare = false
-            activeShare = share
-            //activeContainer = container
-            isSharing = true
-        } catch {debugPrint("Error sharing card record: \(error)")}
-    }
-    
-  private func string(for permission: CKShare.ParticipantPermission) -> String {
-    switch permission {
-    case .unknown:
-      return "Unknown"
-    case .none:
-      return "None"
-    case .readOnly:
-      return "Read-Only"
-    case .readWrite:
-      return "Read-Write"
-    @unknown default:
-      fatalError("A new value added to CKShare.Participant.Permission")
-    }
-  }
-    
-  private func string(for role: CKShare.ParticipantRole) -> String {
-    switch role {
-    case .owner:
-      return "Owner"
-    case .privateUser:
-      return "Private User"
-    case .publicUser:
-      return "Public User"
-    case .unknown:
-      return "Unknown"
-    @unknown default:
-      fatalError("A new value added to CKShare.Participant.Role")
-    }
-  }
-
-  private func string(for acceptanceStatus: CKShare.ParticipantAcceptanceStatus) -> String {
-    switch acceptanceStatus {
-    case .accepted:
-      return "Accepted"
-    case .removed:
-      return "Removed"
-    case .pending:
-      return "Invited"
-    case .unknown:
-      return "Unknown"
-    @unknown default:
-      fatalError("A new value added to CKShare.Participant.AcceptanceStatus")
-    }
-  }
 }
