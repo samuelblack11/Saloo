@@ -16,7 +16,7 @@ import FSCalendar
 import CoreData
 
 struct CalendarParent: View {
-    
+    @State private var showStartMenu = false
     @State private var createNew = false
     @State private var showSent = false
     @State private var showReceived = false
@@ -29,17 +29,18 @@ struct CalendarParent: View {
     @State var eventsFromCore: [CalendarDate]!
     
     var body: some View {
+        NavigationView {
             VStack {
                 Image(systemName: "greetingcard.fill")
                     .foregroundColor(.blue)
                     .font(.system(size: 36))
                     .padding(.top, 30)
-            HStack {
-                Spacer()
-                Button{addEventToCalendarSheet = true} label: {
-                    Text("Add Event")
-                        .foregroundColor(.blue)
-                        .font(.system(size: 18))
+                HStack {
+                    Spacer()
+                    Button{addEventToCalendarSheet = true} label: {
+                        Text("Add Event")
+                            .foregroundColor(.blue)
+                            .font(.system(size: 18))
                     }
                 }
                 Spacer()
@@ -55,9 +56,12 @@ struct CalendarParent: View {
                     DateDetailView(eventsForShow: calViewModel.eventsForShow)
                 }
                 }
-                    //.presentationDetents([.medium])}
+                //.presentationDetents([.medium])}
                 .sheet(isPresented: $addEventToCalendarSheet) {AddEventToCalendarForm()}
             }
+        }
+            .navigationBarItems(leading:Button {showStartMenu.toggle()} label: {Image(systemName: "chevron.left").foregroundColor(.blue); Text("Back")})
+            .fullScreenCover(isPresented: $showStartMenu) {StartMenu(calViewModel: CalViewModel(), showDetailView: ShowDetailView())}
         }
     }
 

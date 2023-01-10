@@ -56,101 +56,60 @@ struct FinalizeCardView: View {
         VStack(spacing:1) {
             Image(uiImage: UIImage(data: chosenObject.coverImage)!)
                 .interpolation(.none).resizable().scaledToFit()
-                .frame(width: (UIScreen.screenWidth/4), height: (UIScreen.screenHeight/8))
+                //.frame(width: (UIScreen.screenWidth/4), height: (UIScreen.screenHeight/8))
             Text(eCardText)
                 .font(Font.custom(noteField.font, size: 500)).minimumScaleFactor(0.01)
-                .frame(maxWidth: (UIScreen.screenWidth/4), maxHeight: (UIScreen.screenHeight/9))
+                //.frame(maxWidth: (UIScreen.screenWidth/4), maxHeight: (UIScreen.screenHeight/9))
             Image(uiImage: collageImage.collageImage)
                 .interpolation(.none).resizable().scaledToFit()
-                .frame(width: (UIScreen.screenWidth/4), height: (UIScreen.screenHeight/8))
+                //.frame(width: (UIScreen.screenWidth/4), height: (UIScreen.screenHeight/8))
+            Spacer()
             HStack(spacing: 0) {
                 VStack(spacing:0){
                 Text(text1)
-                    .font(.system(size: 4)).frame(alignment: .center)
+                    .font(.system(size: 10)).frame(alignment: .center)
                 Link(text2, destination: text2URL)
-                    .font(.system(size: 4)).frame(alignment: .center)
+                    .font(.system(size: 10)).frame(alignment: .center)
                 HStack(spacing: 0) {
                     Text(text3).font(.system(size: 4))
                         .frame(alignment: .center)
                     Link(text4, destination: URL(string: "https://unsplash.com")!)
-                        .font(.system(size: 4)).frame(alignment: .center)
+                        .font(.system(size: 12)).frame(alignment: .center)
                     }
                 }
                 Spacer()
-                Image(systemName: "greetingcard.fill")
-                    .foregroundColor(.blue).font(.system(size: 12)).frame(alignment: .center)
+                Image(systemName: "greetingcard.fill").foregroundColor(.blue).font(.system(size: 24))
                 Spacer()
-                //VStack(spacing:0) {
-                    //Text("Greeting Card by")
-                        //.font(.system(size: 4))
-                        //.frame(alignment: .center)
-                    //Text("GreetMe Inc.")
-                       //.font(.system(size: 4))
-                        //.frame(alignment: .center)
-                    //}
-                }.frame(width: (UIScreen.screenWidth/4), height: (UIScreen.screenHeight/22))
-        }.frame(width: (UIScreen.screenWidth/3.5), height: (UIScreen.screenHeight/2.5))
-    }
-    
-    var cardForPrint: some View {
-        VStack(spacing: 1) {
-            HStack(spacing: 1) {
-            //upside down collage
-                Image(uiImage: collageImage.collageImage)
-                    .resizable()
-                    .frame(width: (UIScreen.screenWidth/4.5), height: (UIScreen.screenHeight/7), alignment: .center)
-            //upside down message
-                Text(printCardText)
-                    .frame(width: (UIScreen.screenWidth/4.5), height: (UIScreen.screenHeight/7), alignment: .center)
-                    .font(Font.custom(noteField.font, size: 500))
-                    .minimumScaleFactor(0.01)
-                    .padding(.init(top: 0, leading: 5, bottom: 0, trailing: 5))
+                VStack(spacing:0) {
+                    Text("Greeting Card").font(.system(size: 10))
+                    Text("by").font(.system(size: 10))
+                    Text("GreetMe Inc.").font(.system(size: 10)).padding(.bottom,10).padding(.leading, 5)
                 }
-                .rotationEffect(Angle(degrees: 180))
-                .frame(width: (UIScreen.screenWidth/2.25), height: (UIScreen.screenHeight/7), alignment: .center)
-
-        // Front Cover & Back Cover
-        HStack(spacing: 1)  {
-            //Back Cover
-            VStack(spacing: 1) {
-                Image(systemName: "greetingcard.fill")
-                    .foregroundColor(.blue)
-                    .font(.system(size: 32))
-                Spacer()
-                Text(text1)
-                    .font(.system(size: 4))
-                Link(text2, destination: text2URL)
-                    .font(.system(size: 4))
-                HStack(spacing: 0) {
-                    Text(text3)
-                        .font(.system(size: 4))
-                    Link(text4, destination: URL(string: "https://unsplash.com")!)
-                        .font(.system(size: 4))
-                }
-            }
-            .frame(width: (UIScreen.screenWidth/4.5), height: (UIScreen.screenHeight/7))
-            // Front Cover
-            HStack(spacing: 1)  {
-                Image(uiImage: UIImage(data: chosenObject.coverImage)!)
-                    .resizable()
-            }.frame(width: (UIScreen.screenWidth/4.5), height: (UIScreen.screenHeight/7))
-            }.frame(width: (UIScreen.screenWidth/2.25))
         }
     }
-
+}
+    
+    var musicElements: some View {
+        HStack {
+            Image(systemName: "restart.circle")
+            Image(systemName: "square.fill")
+            Image(systemName: "pause")
+            Image(systemName: "play")
+        }
+        
+    }
+    
+    
+    
+    
+    
     var body: some View {
         NavigationView {
         VStack(spacing: 0) {
+            Spacer()
             HStack(spacing: 0){
-                Text("Your eCard will be stored like this:").frame(width: (UIScreen.screenWidth/3), height: (UIScreen.screenHeight/3))
-                eCardVertical
-            }
-            Spacer()
-            Divider()
-            Spacer()
-            HStack(spacing:0){
-                Text("And will be printed like this:")
-                HStack(spacing:0){cardForPrint}.frame(alignment: .center)
+                eCardVertical.frame(width: (UIScreen.screenWidth/1.4), height: (UIScreen.screenHeight/1.4))
+                Spacer()
             }
             Spacer()
             HStack {
@@ -185,11 +144,6 @@ struct FinalizeCardView: View {
                     }
                 }
                 .fullScreenCover(isPresented: $isSharing, content: {shareView(coreCard: coreCard)})
-                Spacer()
-                Button("Export for Print") {
-                    showActivityController = true; let cardForExport = prepCardForExport()
-                    activityItemsArray = []; activityItemsArray.append(cardForExport)
-                }
             }
         }
         .navigationBarItems(
@@ -207,12 +161,6 @@ struct FinalizeCardView: View {
     }
 
 extension FinalizeCardView {
-    
-    
-    
-    
-    
-    
     
     private func saveCard(noteField: NoteField, chosenOccassion: Occassion, an1: String, an2: String, an2URL: String, an3: String, an4: String, chosenObject: ChosenCoverImageObject, collageImage: CollageImage) {
         let controller = PersistenceController.shared

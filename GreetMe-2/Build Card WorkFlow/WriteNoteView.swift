@@ -88,10 +88,10 @@ struct WriteNoteView: View {
             .onTapGesture {if recipient.value == "To:" {recipient.value = ""}}
         TextField("From:", text: $sender.value)
             .border(Color.red, width: $sender.hasReachedLimit.wrappedValue ? 1 : 0 )
-            .onTapGesture {if sender.value == "To:" {sender.value = ""}}
+            .onTapGesture {if sender.value == "From:" {sender.value = ""}}
         TextField("Name Your Card", text: $cardName.value)
             .border(Color.red, width: $cardName.hasReachedLimit.wrappedValue ? 1 : 0 )
-            .onTapGesture {if cardName.value == "To:" {cardName.value = ""}}
+            .onTapGesture {if cardName.value == "Name Your Card" {cardName.value = ""}}
                 
         //TextField("To:", text: $recipient).padding(.leading, 5).frame(height:35)
         //TextField("From:", text: $sender).padding(.leading, 5).frame(height:35)

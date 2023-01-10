@@ -19,7 +19,7 @@ struct GridofCards: View {
     @State var isProcessingShare = false
     @State var activeShare: CKShare?
     @State var activeContainer: CKContainer?
-    @State private var showOccassions = false
+    @State private var showStartMenu = false
     @State var cards = [Card]()
     @State var segueToEnlarge = false
     @State var share: CKShare?
@@ -55,20 +55,17 @@ struct GridofCards: View {
             ScrollView {
                 sortResults
                 LazyVGrid(columns: columns, spacing: 10) {
-                    //Text("\(privateCards.count)")
                     ForEach(cardsFilteredByBox(sortedCards(cardsFilteredBySearch, sortBy: sortByValue), whichBox: whichBoxVal)) {
-                    //ForEach(sortedCards(cards: filteredCards, sortBy: sortByValue)) {
-                        //NavigationLink("SearchByField"){Text("\(card.cardName)")}
                         cardView(for: $0, shareable: false)
                     }
                 }
             }
             .navigationTitle("Your Cards")
-            .navigationBarItems(leading:Button {showOccassions.toggle()} label: {Image(systemName: "chevron.left").foregroundColor(.blue); Text("Back")})
+            .navigationBarItems(leading:Button {showStartMenu.toggle()} label: {Image(systemName: "chevron.left").foregroundColor(.blue); Text("Back")})
         }
         // "Search by \(sortByValue)"
         .searchable(text: $searchText, prompt: "Search by Card Name")
-        .fullScreenCover(isPresented: $showOccassions) {OccassionsMenu(calViewModel: CalViewModel(), showDetailView: ShowDetailView())}
+        .fullScreenCover(isPresented: $showStartMenu) {StartMenu(calViewModel: CalViewModel(), showDetailView: ShowDetailView())}
     }
     
     private func cardView(for card: CoreCard, shareable: Bool = true) -> some View {

@@ -29,6 +29,8 @@
 		C2075AFF295FDBC60048ECEB /* ImagePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2075AFE295FDBC60048ECEB /* ImagePicker.swift */; };
 		C2163D0E28C1609C00DEE861 /* ScheduleDelivery.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2163D0D28C1609C00DEE861 /* ScheduleDelivery.swift */; };
 		C22803E6289358E500802452 /* CloudSharingController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C22803E5289358E500802452 /* CloudSharingController.swift */; };
+		C22A180B296CF60600A7E9B8 /* StartMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = C22A180A296CF60600A7E9B8 /* StartMenu.swift */; };
+		C22A180D296D010800A7E9B8 /* MusicView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C22A180C296D010800A7E9B8 /* MusicView.swift */; };
 		C22A84DB29666123001244CC /* PersistenceController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C22A84DA29666123001244CC /* PersistenceController.swift */; };
 		C22A84DD29666C0F001244CC /* PersistenceController+Share.swift in Sources */ = {isa = PBXBuildFile; fileRef = C22A84DC29666C0F001244CC /* PersistenceController+Share.swift */; };
 		C22A84DF29666C23001244CC /* PersistenceController+Card.swift in Sources */ = {isa = PBXBuildFile; fileRef = C22A84DE29666C23001244CC /* PersistenceController+Card.swift */; };
@@ -99,6 +101,8 @@
 		C2163D0D28C1609C00DEE861 /* ScheduleDelivery.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleDelivery.swift; sourceTree = "<group>"; };
 		C217B029294FE5F200544B17 /* Pods.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Pods.xcodeproj; path = Pods/Pods.xcodeproj; sourceTree = "<group>"; };
 		C22803E5289358E500802452 /* CloudSharingController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CloudSharingController.swift; path = "../../../../../Downloads/MyTravelJournal-3/final/MyTravelJournal/Controller/CloudSharingController.swift"; sourceTree = "<group>"; };
+		C22A180A296CF60600A7E9B8 /* StartMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartMenu.swift; sourceTree = "<group>"; };
+		C22A180C296D010800A7E9B8 /* MusicView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MusicView.swift; sourceTree = "<group>"; };
 		C22A84DA29666123001244CC /* PersistenceController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersistenceController.swift; sourceTree = "<group>"; };
 		C22A84DC29666C0F001244CC /* PersistenceController+Share.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PersistenceController+Share.swift"; sourceTree = "<group>"; };
 		C22A84DE29666C23001244CC /* PersistenceController+Card.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PersistenceController+Card.swift"; sourceTree = "<group>"; };
@@ -140,6 +144,7 @@
 		260F6901281DBF28002E864B /* Build Card WorkFlow */ = {
 			isa = PBXGroup;
 			children = (
+				C22A180A296CF60600A7E9B8 /* StartMenu.swift */,
 				260F6906281DC0E3002E864B /* LoginView.swift */,
 				260F68F4281DBDCD002E864B /* OccassionsMenu.swift */,
 				260F68F6281DBDD2002E864B /* UnsplashCollectionView.swift */,
@@ -149,6 +154,7 @@
 				260F6904281DBFAB002E864B /* UnsplashInteractions */,
 				26AD8126281F05160069C3F0 /* WriteNoteView.swift */,
 				26AD8128281F05310069C3F0 /* FinalizeCardView.swift */,
+				C22A180C296D010800A7E9B8 /* MusicView.swift */,
 				C22A84E429667587001244CC /* PersistenceController+History.swift */,
 			);
 			path = "Build Card WorkFlow";
@@ -486,9 +492,11 @@
 				C24B3ABB29574A3D00884E4D /* CustomDataTypes.swift in Sources */,
 				C2075AFF295FDBC60048ECEB /* ImagePicker.swift in Sources */,
 				C22A84E32966719A001244CC /* PersistenceController+Deduplicate.swift in Sources */,
+				C22A180B296CF60600A7E9B8 /* StartMenu.swift in Sources */,
 				262C3ED3281E1E9C00F07C01 /* CalendarParent.swift in Sources */,
 				C22A84E129666C84001244CC /* CoreDataHelper.swift in Sources */,
 				C27430FC286335F000E17B19 /* CameraCapture.swift in Sources */,
+				C22A180D296D010800A7E9B8 /* MusicView.swift in Sources */,
 				C23524D22896D5F80052494F /* PreSetCalendarDates.swift in Sources */,
 				26AD8127281F05160069C3F0 /* WriteNoteView.swift in Sources */,
 				26AD812B281F119A0069C3F0 /* ConfirmFrontCoverView.swift in Sources */,

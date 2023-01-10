@@ -1,0 +1,66 @@
+//
+//  StartMenu.swift
+//  GreetMe-2
+//
+//  Created by Sam Black on 1/9/23.
+//
+
+import Foundation
+import SwiftUI
+import UIKit
+import FSCalendar
+import CoreData
+
+struct StartMenu: View {
+    @ObservedObject var calViewModel: CalViewModel
+    @ObservedObject var showDetailView: ShowDetailView
+    @State private var showOccassions = false
+    @State private var showGridOfCards = false
+    @State private var showCalendar = false
+    
+    let buildCardWorkFlow = """
+    Build a Card
+        Choose an Occassion 🎉
+        Choose a Cover Photo 📸
+        Make your Collage 🤳
+        Write your Message 📝
+        Add Music 🎶 (optional)
+        Add a gift card 🎁 (optional)
+        Finalize ✅
+"""
+    
+    
+    
+    
+    var body: some View {
+        NavigationView {
+            List {
+                Text(buildCardWorkFlow).onTapGesture {self.showOccassions = true}
+                    .fullScreenCover(isPresented: $showOccassions){OccassionsMenu(calViewModel: CalViewModel(), showDetailView: ShowDetailView())}
+                Text("View Inbox 📥").onTapGesture {self.showGridOfCards = true}
+                    .fullScreenCover(isPresented: $showGridOfCards) {GridofCards(cardsForDisplay: loadCoreCards(), whichBoxVal: .inbox)}
+                Text("View Outbox 📤").onTapGesture {self.showGridOfCards = true}
+                    .fullScreenCover(isPresented: $showGridOfCards) {GridofCards(cardsForDisplay: loadCoreCards(), whichBoxVal: .outbox)}
+                Text("View Calendar 🗓").onTapGesture {self.showCalendar = true}
+                    .fullScreenCover(isPresented: $showCalendar) {CalendarParent(calViewModel: calViewModel, showDetailView: showDetailView)}
+                Text("More Info 📱")
+
+            }
+        }
+    }
+}
+
+extension StartMenu {
+    func loadCoreCards() -> [CoreCard] {
+        let request = CoreCard.createFetchRequest()
+        let sort = NSSortDescriptor(key: "date", ascending: false)
+        request.sortDescriptors = [sort]
+        var cardsFromCore: [CoreCard] = []
+        do {
+            cardsFromCore = try PersistenceController.shared.persistentContainer.viewContext.fetch(request)
+            print("Got \(cardsFromCore.count) Cards From Core")
+        }
+        catch {print("Fetch failed")}
+        return cardsFromCore
+    }
+}

@@ -15,7 +15,7 @@ import CoreData
 
 struct OccassionsMenu: View {
 
-    @State private var showCalendar = false
+    @State private var showStartMenu = false
     //@State private var showSentCards = false
     //@State private var showReceivedCards = false
     @State private var showGridOfCards = false
@@ -23,7 +23,7 @@ struct OccassionsMenu: View {
     @State private var showImagePicker = false
     @State private var showCollageMenu = false
     @State private var showUCV = false
-
+    
 
     // Collection Variables. Use @State private for variables owned by this view and not accessible by external views
     @State private var collections: [CollectionPair] = []
@@ -54,37 +54,8 @@ struct OccassionsMenu: View {
     
     
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        
-    var topBar: some View {
-        HStack {
-            Spacer()
-            Button("Calendar") {showCalendar = true}
-            .fullScreenCover(isPresented: $showCalendar) {CalendarParent(calViewModel: calViewModel, showDetailView: showDetailView)}
-        }.frame(width: (UIScreen.screenWidth/1.1), height: (UIScreen.screenHeight/12))
-    }
-    
-    var bottomBar: some View {
-        HStack {
-            Button{showGridOfCards = true} label: {
-                Image(systemName: "tray.and.arrow.up.fill")
-                    .foregroundColor(.blue)
-                    .font(.system(size: 24))
-            }
-            Spacer()
-            Button{showGridOfCards = true} label: {
-                Image(systemName: "tray.and.arrow.down.fill")
-                    .foregroundColor(.blue)
-                    .font(.system(size: 24))
-            }
-        }
-        .padding(.bottom, 30)
-        .fullScreenCover(isPresented: $showGridOfCards) {GridofCards(cardsForDisplay: loadCoreCards(), whichBoxVal: .outbox)}
-    }
-    
-    
 
     var body: some View {
-        topBar
         // NavigationView combines display styling of UINavigationBar and VC stack behavior of UINavigationController.
         // Hold cmd + ctrl, then click space bar to show emoji menu
         NavigationView {
@@ -134,13 +105,12 @@ struct OccassionsMenu: View {
             Section(header: Text("Fall Holidays")) {ForEach(fallCollection) {menuSection(for: $0, shareable: false)}}
             Section(header: Text("Other Collections")) {ForEach(otherCollection) {menuSection(for: $0, shareable: false)}}
         }
-        .fullScreenCover(isPresented: $showCalendar) {CalendarParent(calViewModel: calViewModel, showDetailView: showDetailView)}
+        .navigationBarItems(leading:Button {showStartMenu.toggle()} label: {Image(systemName: "chevron.left").foregroundColor(.blue); Text("Back")})
         .font(.headline)
         .listStyle(GroupedListStyle())
         .onAppear {createOccassionsFromUserCollections()}
         }
-        Spacer()
-        bottomBar
+        .fullScreenCover(isPresented: $showStartMenu) {StartMenu(calViewModel: CalViewModel(), showDetailView: ShowDetailView())}
     }
 }
 
