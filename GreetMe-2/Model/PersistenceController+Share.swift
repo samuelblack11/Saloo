@@ -9,7 +9,7 @@ import Foundation
 import CoreData
 import UIKit
 import CloudKit
-
+//https://www.reddit.com/r/SwiftUI/comments/qfs8x3/im_trying_to_present_a_share_sheet_but_it_doesnt/
 #if os(iOS) // UICloudSharingController is only available in iOS.
 // MARK: - Convenient methods for managing sharing.
 //
@@ -34,11 +34,13 @@ extension PersistenceController {
         /**
          Setting the presentation style to .formSheet so there's no need to specify sourceView, sourceItem, or sourceRect.
          */
-        if let viewController = rootViewController {
-            sharingController.modalPresentationStyle = .formSheet
-            viewController.present(sharingController, animated: true)
+        guard var topVC = UIApplication.shared.windows.first?.rootViewController else {
+            return
         }
-    }
+        while let presentedVC = topVC.presentedViewController {topVC = presentedVC }
+            sharingController.modalPresentationStyle = .formSheet
+            topVC.present(sharingController, animated: true)
+        }
     
     func presentCloudSharingController(share: CKShare) {
         let sharingController = UICloudSharingController(share: share, container: cloudKitContainer)
@@ -130,14 +132,6 @@ extension PersistenceController: UICloudSharingControllerDelegate {
 }
 #endif
 
-#if os(watchOS)
-extension PersistenceController {
-    func presentCloudSharingController(share: CKShare) {
-        print("\(#function): Cloud sharing controller is unavailable on watchOS.")
-    }
-}
-#endif
-
 extension PersistenceController {
     
     func shareObject(_ unsharedObject: NSManagedObject, to existingShare: CKShare?,
@@ -153,8 +147,9 @@ extension PersistenceController {
              Deduplicate tags, if necessary, because adding a photo to an existing share moves the whole object graph to the associated
              record zone, which can lead to duplicated tags.
              */
+
             if existingShare != nil {
-                if let tagObjectIDs = objectIDs?.filter({ $0.entity.name == "Tag" }), !tagObjectIDs.isEmpty {
+                if let tagObjectIDs = objectIDs?.filter({ $0.entity.name == "CoreCard" }), !tagObjectIDs.isEmpty {
                     //self.deduplicateAndWait(tagObjectIDs: Array(tagObjectIDs))
                 }
             } else {
@@ -163,6 +158,7 @@ extension PersistenceController {
             /**
              Synchronize the changes on the share to the private persistent store.
              */
+
             self.persistentContainer.persistUpdatedShare(share, in: self.privatePersistentStore) { (share, error) in
                 if let error = error {
                     print("\(#function): Failed to persist updated share: \(error)")

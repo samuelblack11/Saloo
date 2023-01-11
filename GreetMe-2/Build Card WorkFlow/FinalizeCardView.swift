@@ -143,7 +143,7 @@ struct FinalizeCardView: View {
                            rootViewController?.dismiss(animated: true)
                     }
                 }
-                .fullScreenCover(isPresented: $isSharing, content: {shareView(coreCard: coreCard)})
+                //.fullScreenCover(isPresented: $isSharing, content: {shareView(coreCard: coreCard)})
             }
         }
         .navigationBarItems(

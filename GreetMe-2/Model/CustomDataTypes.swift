@@ -104,3 +104,29 @@ class CollageBlocksAndViews {
     
 }
 
+enum ActiveSheet: Identifiable, Equatable {
+    #if os(iOS)
+    case photoPicker // Unavailable in watchOS.
+    #elseif os(watchOS)
+    case photoContextMenu(CoreCard) // .contextMenu is deprecated in watchOS, so use action list instead.
+    #endif
+    case cloudSharingSheet(CKShare)
+    case managingSharesView
+    case sharePicker(CoreCard)
+    case taggingView(CoreCard)
+    case ratingView(CoreCard)
+    case participantView(CKShare)
+    /**
+     Use the enumeration member name string as the identifier for Identifiable.
+     In the case where an enumeration has an associated value, use the label, which is equal to the member name string.
+     */
+    var id: String {
+        let mirror = Mirror(reflecting: self)
+        if let label = mirror.children.first?.label {
+            return label
+        } else {
+            return "\(self)"
+        }
+    }
+}
+

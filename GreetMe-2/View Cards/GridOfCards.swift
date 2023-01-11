@@ -14,14 +14,13 @@ import CoreData
 
 struct GridofCards: View {
     @State private var toggleProgress: Bool = false
-    @Binding var activeSheet: ActiveSheet?
-    @Binding var nextSheet: ActiveSheet?
-    
-    @State private var hasAnyShare: Bool
-    @State private var isCardShared: Bool
+    //@State private var activeSheet: ActiveSheet?
+    //@State private var nextSheet: ActiveSheet?
+    @State private var hasAnyShare: Bool?
+    @State private var isCardShared: Bool?
     @State var isAddingCard = false
-    @State var isSharing = false
     @State var isProcessingShare = false
+    @State var showCloudShareController = false
     @State var activeShare: CKShare?
     @State var activeContainer: CKContainer?
     @State private var showStartMenu = false
@@ -44,14 +43,6 @@ struct GridofCards: View {
         //else if sortByValue == "Date" {return privateCards.filter { $0.cardName.contains(searchText)}}
         //else if sortByValue == "Occassion" {return privateCards.filter { $0.occassion!.contains(searchText)}}
         else {return cardsForDisplay.filter { $0.cardName.contains(searchText)}}
-        
-    }
-    
-    init(activeSheet: Binding<ActiveSheet?>, nextSheet: Binding<ActiveSheet?>, card: CoreCard) {
-        _activeSheet = activeSheet
-        _nextSheet = nextSheet
-        isCardShared = (PersistenceController.shared.existingShare(coreCard: card) != nil)
-        hasAnyShare = PersistenceController.shared.shareTitles().isEmpty ? false : true
     }
     
     var sortOptions = ["Date","Card Name","Occassion"]
@@ -113,7 +104,6 @@ struct GridofCards: View {
                 .onAppear{determineDisplayName(coreCard: card)}
                 //.sheet(isPresented: $showDeliveryScheduler) {ScheduleDelivery(card: card)}
                 .fullScreenCover(isPresented: $segueToEnlarge) {EnlargeECardView(chosenCard: card, share: $share)}
-                .sheet(isPresented: $isSharing, content: {shareView(card)})
                 Divider().padding(.bottom, 5)
                 HStack(spacing: 3) {
                     Text(determineDisplayName(coreCard: card)).font(.system(size: 8)).minimumScaleFactor(0.1)
@@ -128,45 +118,27 @@ struct GridofCards: View {
 // MARK: Returns CKShare participant permission, methods and properties to share
 extension GridofCards {
     
+    
+    
+    func shareStatus(card: CoreCard) -> (Bool, Bool) {
+        isCardShared = (PersistenceController.shared.existingShare(coreCard: card) != nil)
+        hasAnyShare = PersistenceController.shared.shareTitles().isEmpty ? false : true
+        
+        return (isCardShared!, hasAnyShare!)
+    }
+    
     @ViewBuilder func contextMenuButtons(card: CoreCard) -> some View {
-        
-        
+
         if PersistenceController.shared.privatePersistentStore.contains(manageObject: card) {
-            Button("Create New Share") { createNewShare(card: card) }
-                .disabled(isCardShared)
-            Button("Add to Existing Share") { activeSheet = .sharePicker(card) }
-            .disabled(isCardShared || !hasAnyShare)
-            } else {
+            Button("Create New Share") {showCloudShareController = true; createNewShare(coreCard: card)}
+                //.disabled(shareStatus(card: card).0)
+        } else {
             Button("Manage Participation") { manageParticipation(coreCard: card) }
-            }
+        }
             Button {segueToEnlarge = true} label: {Text("Enlarge eCard"); Image(systemName: "plus.magnifyingglass")}
             Button {deleteCoreCard(coreCard: card)} label: {Text("Delete eCard"); Image(systemName: "trash").foregroundColor(.red)}
             Button {showDeliveryScheduler = true} label: {Text("Schedule eCard Delivery")}
         }
-    
-    
-    
-    
-    
-    
-    
-    
-    
-        private func createNewShare(card: CoreCard) {
-            toggleProgress.toggle()
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                PersistenceController.shared.shareObject(card, to: nil) { share, error in
-                    toggleProgress.toggle()
-                    if let share = share {
-                        nextSheet = .participantView(share)
-                        activeSheet = nil
-                    }
-                }
-            }
-        }
-    
-    
-    
     
     private func createNewShare(coreCard: CoreCard) {PersistenceController.shared.presentCloudSharingController(coreCard: coreCard)}
     
@@ -184,27 +156,6 @@ extension GridofCards {
         //isCardShared = (PersistenceController.shared.existingShare(coreCard: card) != nil)
         hasAnyShare = PersistenceController.shared.shareTitles().isEmpty ? false : true
     }
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
     
     func cardsFilteredByBox(_ coreCards: [CoreCard], whichBox: InOut.SendReceive) -> [CoreCard] {
         var filteredCoreCards: [CoreCard] = []
@@ -273,11 +224,5 @@ extension GridofCards {
         var cardsFromCore: [CoreCard] = []
         do {cardsFromCore = try PersistenceController.shared.persistentContainer.viewContext.fetch(request); for card in cardsFromCore {deleteCoreCard(coreCard: card)}}
         catch{}
-    }
-    
-    /// Builds a `CloudSharingView` with state after processing a share.
-    private func shareView(_ coreCard: CoreCard) -> CloudSharingView? {
-        guard let share = activeShare, let container = activeContainer else {return nil}
-        return CloudSharingView(share: share, container: container, coreCard: coreCard)
     }
 }

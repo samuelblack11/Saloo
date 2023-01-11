@@ -47,9 +47,9 @@ struct SharePickerView<ActionView: View>: View {
             .listStyle(.plain)
             .navigationTitle("Shares")
         }
-        .onReceive(NotificationCenter.default.storeDidChangePublisher) { notification in
-            processStoreChangeNotification(notification)
-        }
+        //.onReceive(NotificationCenter.default.storeDidChangePublisher) { notification in
+        //    processStoreChangeNotification(notification)
+        //}
     }
     
     /**
