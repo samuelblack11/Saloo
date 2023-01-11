@@ -14,8 +14,6 @@ import CoreData
 
 struct GridofCards: View {
     @State private var toggleProgress: Bool = false
-    //@State private var activeSheet: ActiveSheet?
-    //@State private var nextSheet: ActiveSheet?
     @State private var hasAnyShare: Bool?
     @State private var isCardShared: Bool?
     @State var isAddingCard = false
@@ -121,6 +119,8 @@ extension GridofCards {
     
     
     func shareStatus(card: CoreCard) -> (Bool, Bool) {
+        var isCardShared: Bool?
+        var hasAnyShare: Bool?
         isCardShared = (PersistenceController.shared.existingShare(coreCard: card) != nil)
         hasAnyShare = PersistenceController.shared.shareTitles().isEmpty ? false : true
         
@@ -131,17 +131,15 @@ extension GridofCards {
 
         if PersistenceController.shared.privatePersistentStore.contains(manageObject: card) {
             Button("Create New Share") {showCloudShareController = true; createNewShare(coreCard: card)}
-                //.disabled(shareStatus(card: card).0)
-        } else {
-            Button("Manage Participation") { manageParticipation(coreCard: card) }
+                .disabled(shareStatus(card: card).0)
         }
+            Button("Manage Participation") { manageParticipation(coreCard: card)}
             Button {segueToEnlarge = true} label: {Text("Enlarge eCard"); Image(systemName: "plus.magnifyingglass")}
             Button {deleteCoreCard(coreCard: card)} label: {Text("Delete eCard"); Image(systemName: "trash").foregroundColor(.red)}
             Button {showDeliveryScheduler = true} label: {Text("Schedule eCard Delivery")}
         }
     
     private func createNewShare(coreCard: CoreCard) {PersistenceController.shared.presentCloudSharingController(coreCard: coreCard)}
-    
     private func manageParticipation(coreCard: CoreCard) {PersistenceController.shared.presentCloudSharingController(coreCard: coreCard)}
     
     private func processStoreChangeNotification(_ notification: Notification) {

@@ -52,43 +52,6 @@ struct FinalizeCardView: View {
     @State private var pageCount = 1
     @ObservedObject var chosenOccassion: Occassion
 
-    var eCardVertical: some View {
-        VStack(spacing:1) {
-            Image(uiImage: UIImage(data: chosenObject.coverImage)!)
-                .interpolation(.none).resizable().scaledToFit()
-                //.frame(width: (UIScreen.screenWidth/4), height: (UIScreen.screenHeight/8))
-            Text(eCardText)
-                .font(Font.custom(noteField.font, size: 500)).minimumScaleFactor(0.01)
-                //.frame(maxWidth: (UIScreen.screenWidth/4), maxHeight: (UIScreen.screenHeight/9))
-            Image(uiImage: collageImage.collageImage)
-                .interpolation(.none).resizable().scaledToFit()
-                //.frame(width: (UIScreen.screenWidth/4), height: (UIScreen.screenHeight/8))
-            Spacer()
-            HStack(spacing: 0) {
-                VStack(spacing:0){
-                Text(text1)
-                    .font(.system(size: 10)).frame(alignment: .center)
-                Link(text2, destination: text2URL)
-                    .font(.system(size: 10)).frame(alignment: .center)
-                HStack(spacing: 0) {
-                    Text(text3).font(.system(size: 4))
-                        .frame(alignment: .center)
-                    Link(text4, destination: URL(string: "https://unsplash.com")!)
-                        .font(.system(size: 12)).frame(alignment: .center)
-                    }
-                }
-                Spacer()
-                Image(systemName: "greetingcard.fill").foregroundColor(.blue).font(.system(size: 24))
-                Spacer()
-                VStack(spacing:0) {
-                    Text("Greeting Card").font(.system(size: 10))
-                    Text("by").font(.system(size: 10))
-                    Text("GreetMe Inc.").font(.system(size: 10)).padding(.bottom,10).padding(.leading, 5)
-                }
-        }
-    }
-}
-    
     var musicElements: some View {
         HStack {
             Image(systemName: "restart.circle")
@@ -99,16 +62,13 @@ struct FinalizeCardView: View {
         
     }
     
-    
-    
-    
-    
     var body: some View {
         NavigationView {
         VStack(spacing: 0) {
             Spacer()
             HStack(spacing: 0){
-                eCardVertical.frame(width: (UIScreen.screenWidth/1.4), height: (UIScreen.screenHeight/1.4))
+                eCardView(eCardText: eCardText, font: noteField.font, coverImage: chosenObject.coverImage, collageImage: collageImage.collageImage.pngData()!, text1: text1, text2: text2, text2URL: text2URL, text3: text3, text4: text4).frame(width: (UIScreen.screenWidth/1.4), height: (UIScreen.screenHeight/1.4))
+                //eCard.frame(width: (UIScreen.screenWidth/1.4), height: (UIScreen.screenHeight/1.4))
                 Spacer()
             }
             Spacer()

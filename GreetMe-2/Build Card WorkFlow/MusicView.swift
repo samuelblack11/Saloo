@@ -13,14 +13,52 @@ import CloudKit
 
 
 struct MusicView: View {
-    
+    @State private var songSearch = ""
+
     
     
     
     
     var body: some View {
-        HStack{
-            Text("")
+        TextField("Search Songs", text: $songSearch, onCommit: {
+            print(self.songSearch)
+        })
+        .textFieldStyle(RoundedBorderTextFieldStyle())
+        .padding(.horizontal, 16)
+        .accentColor(.pink)
+        
+        playSongView
+    }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    var playSongView: some View {
+        HStack {
+            ZStack {
+                Circle()
+                    .frame(width: 80, height: 80)
+                    .accentColor(.pink)
+                    .shadow(radius: 10)
+                Image(systemName: "backward.fill")
+                    .foregroundColor(.white)
+                    .font(.system(.title))
+            }
+            ZStack {
+                Circle()
+                    .frame(width: 80, height: 80)
+                    .accentColor(.pink)
+                    .shadow(radius: 10)
+                Image(systemName: "pause.fill")
+                    .foregroundColor(.white)
+                    .font(.system(.title))
+            }
         }
     }
 }

@@ -205,7 +205,8 @@ extension PersistenceController {
     }
     
     private func configure(share: CKShare, with coreCard: CoreCard? = nil) {
-        share[CKShare.SystemFieldKey.title] = "A cool photo"
+        share[CKShare.SystemFieldKey.title] = "A Greeting, from GreetMe"
+        share[CKShare.SystemFieldKey.thumbnailImageData] = coreCard?.coverImage
     }
 }
 

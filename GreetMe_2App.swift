@@ -13,11 +13,10 @@ import CloudKit
 @main
 struct GreetMe_2App: App {
     let persistenceController = PersistenceController.shared
-    //@UIApplicationDelegateAdaptor var appDelegate: AppDelegate
+    @UIApplicationDelegateAdaptor var appDelegate: AppDelegate
     
     var body: some Scene {
         WindowGroup {
-            //OccassionsMenu(calViewModel: CalViewModel(), showDetailView: ShowDetailView())
             StartMenu(calViewModel: CalViewModel(), showDetailView: ShowDetailView())
                 .environment(\.managedObjectContext, persistenceController.persistentContainer.viewContext)
         }
