@@ -14,15 +14,19 @@ struct StoreFront: Decodable {
 }
 
 struct StoreFrontData: Decodable {
-    let attributes: [String]
+    let attributes: Attributes
     let hRef: String
+    // must convert to string
     let id: String
+    // must convert to string
     let type: String
 }
 
 struct Attributes: Decodable {
     let defaultLanguageTag: String
+    // must convert to string
     let explicitContentPolicy: String
     let name: String
+    // must convert to string
     let supportedLanguageTags: [String]
 }
