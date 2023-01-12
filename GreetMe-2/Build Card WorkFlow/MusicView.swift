@@ -24,16 +24,11 @@ struct MusicView: View {
         TextField("Search Songs", text: $songSearch, onCommit: {
             print(self.songSearch)
         })
-        .onAppear() {SKCloudServiceController.requestAuthorization {(status) in if status == .authorized {Task{await AppleMusicAPI().fetchStorefrontID(completionHandler: { (response, error) in
+        .onAppear() {SKCloudServiceController.requestAuthorization {(status) in if status == .authorized {Task{await AppleMusicAPI().fetchStorefrontID(completionHandler: {(response, error) in
             if response != nil {DispatchQueue.main.async {for item in response! {print(item)}}}
             if response != nil{print("No Reponse!")}
             else {debugPrint(error?.localizedDescription)}
-                }
-            )
-        }
-         }
-          }
-           }
+            })}}}}
         .textFieldStyle(RoundedBorderTextFieldStyle())
         .padding(.horizontal, 16)
         .accentColor(.pink)
