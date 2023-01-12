@@ -25,7 +25,7 @@ struct MusicView: View {
             print(self.songSearch)
         })
         .onAppear() {SKCloudServiceController.requestAuthorization {(status) in if status == .authorized {Task{await AppleMusicAPI().fetchStorefrontID(completionHandler: {(response, error) in
-            if response != nil {DispatchQueue.main.async {for item in response! {print(item)}}}
+            if response != nil {DispatchQueue.main.async {print(response)}}
             if response != nil{print("No Reponse!")}
             else {debugPrint(error?.localizedDescription)}
             })}}}}

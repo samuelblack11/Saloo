@@ -52,6 +52,7 @@
 		C24B3ABB29574A3D00884E4D /* CustomDataTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = C24B3ABA29574A3D00884E4D /* CustomDataTypes.swift */; };
 		C2582A3B296E5841009F8FEC /* ECardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2582A3A296E5841009F8FEC /* ECardView.swift */; };
 		C2582A3E296F7171009F8FEC /* AppleMusicAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2582A3D296F7171009F8FEC /* AppleMusicAPI.swift */; };
+		C271B2E729702D2200760B23 /* MusicResponses.swift in Sources */ = {isa = PBXBuildFile; fileRef = C271B2E629702D2200760B23 /* MusicResponses.swift */; };
 		C27430FC286335F000E17B19 /* CameraCapture.swift in Sources */ = {isa = PBXBuildFile; fileRef = C27430FB286335F000E17B19 /* CameraCapture.swift */; };
 		C28B13F828E3E106008E2C4C /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C28B13F728E3E106008E2C4C /* AppDelegate.swift */; };
 		C2B650CA287AFFF90002E252 /* CloudKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C2B650C9287AFFF90002E252 /* CloudKit.framework */; };
@@ -127,6 +128,7 @@
 		C24B3ABA29574A3D00884E4D /* CustomDataTypes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomDataTypes.swift; sourceTree = "<group>"; };
 		C2582A3A296E5841009F8FEC /* ECardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ECardView.swift; sourceTree = "<group>"; };
 		C2582A3D296F7171009F8FEC /* AppleMusicAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppleMusicAPI.swift; sourceTree = "<group>"; };
+		C271B2E629702D2200760B23 /* MusicResponses.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MusicResponses.swift; sourceTree = "<group>"; };
 		C27430FB286335F000E17B19 /* CameraCapture.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraCapture.swift; sourceTree = "<group>"; };
 		C28B13F728E3E106008E2C4C /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		C2B650C9287AFFF90002E252 /* CloudKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CloudKit.framework; path = System/Library/Frameworks/CloudKit.framework; sourceTree = SDKROOT; };
@@ -173,6 +175,7 @@
 				C2582A3C296F7151009F8FEC /* Persistence & CoreDate */,
 				C237E6E2294E5DB100E472AD /* Data & Types */,
 				C2582A3D296F7171009F8FEC /* AppleMusicAPI.swift */,
+				C271B2E629702D2200760B23 /* MusicResponses.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -537,6 +540,7 @@
 				C2163D0E28C1609C00DEE861 /* ScheduleDelivery.swift in Sources */,
 				C2582A3E296F7171009F8FEC /* AppleMusicAPI.swift in Sources */,
 				26A72180281DB8D500ADAE44 /* GreetMe_2App.swift in Sources */,
+				C271B2E729702D2200760B23 /* MusicResponses.swift in Sources */,
 				C22A84EA29667929001244CC /* SceneDelegate.swift in Sources */,
 				C22A84DF29666C23001244CC /* PersistenceController+Card.swift in Sources */,
 				26EB55652827120C00178F0B /* EnlargeECard.swift in Sources */,
