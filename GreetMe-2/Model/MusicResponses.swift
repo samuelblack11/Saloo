@@ -41,12 +41,9 @@ struct SongResults: Decodable {
 }
 
 struct Songs: Decodable {
-    let data: SongData
+    let data: [Song]
 }
 
-struct SongData: Decodable {
-    let song: Song
-}
 struct Song: Decodable {
     let attributes: SongAttributes
 }
@@ -60,7 +57,7 @@ struct SongAttributes: Decodable {
 }
 
 struct PlayParams: Decodable {
-    let id: Int
+    let id: String
 }
 
 struct Artwork: Decodable {

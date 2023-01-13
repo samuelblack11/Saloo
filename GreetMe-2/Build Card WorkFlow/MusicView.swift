@@ -31,7 +31,17 @@ struct MusicView: View {
             //self.storeFrontID = AppleMusicAPI().fetchStorefrontID(userToken: userToken)
             print("%%%%")
             print(self.storeFrontID)
-            print(AppleMusicAPI().searchAppleMusic("Taylor Swift", storeFrontID: storeFrontID, userToken: userToken))
+            print(AppleMusicAPI().searchAppleMusic("Taylor Swift", storeFrontID: storeFrontID, userToken: userToken, completionHandler: { (response, error) in
+                if response != nil {
+                    DispatchQueue.main.async {
+                        print("---")
+                        print(response)
+                        
+                    }
+                }
+                if response != nil {print("No Response!")}
+                else {debugPrint(error?.localizedDescription)}
+            }))
             }
         }
         }
