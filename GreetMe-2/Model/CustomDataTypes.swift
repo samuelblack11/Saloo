@@ -18,6 +18,23 @@ class TaskToken: ObservableObject {@Published var taskToken = String()}
 
 
 
+
+struct SongForList: Hashable {
+     var name: String
+     var artistName: String
+     var artwork: URL
+     var songPreview: URL
+}
+
+class SongObject: ObservableObject {
+    @Published var name = String()
+    @Published var artistName = String()
+    @Published var artwork = String()
+    @Published var songPreview = String()
+}
+
+
+
 class ChosenCoverImageObject: ObservableObject {
     @Published var id = UUID()
     @Published var coverImage = Data()

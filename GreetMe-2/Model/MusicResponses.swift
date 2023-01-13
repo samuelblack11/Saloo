@@ -53,7 +53,7 @@ struct SongAttributes: Decodable {
     let artistName: String
     let artwork: Artwork
     let playParams: PlayParams
-    //let previews: Previews
+    let previews: [PreviewURL]
 }
 
 struct PlayParams: Decodable {
@@ -64,10 +64,7 @@ struct Artwork: Decodable {
     let url: String
 }
 
-struct Previews: Decodable {
-    
-}
-
 struct PreviewURL: Decodable {
     let url: String
 }
+
