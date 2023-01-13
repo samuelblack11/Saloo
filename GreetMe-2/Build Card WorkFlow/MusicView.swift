@@ -15,6 +15,8 @@ import StoreKit
 
 struct MusicView: View {
     @State private var songSearch = ""
+    @State private var storeFrontID = "us"
+    @State private var userToken = ""
 
     
     
@@ -25,8 +27,11 @@ struct MusicView: View {
             print(self.songSearch)
         })
         .onAppear() {SKCloudServiceController.requestAuthorization {(status) in if status == .authorized {
+            self.userToken = AppleMusicAPI().getUserToken()
+            //self.storeFrontID = AppleMusicAPI().fetchStorefrontID(userToken: userToken)
             print("%%%%")
-            print(AppleMusicAPI().fetchStorefrontID())
+            print(self.storeFrontID)
+            print(AppleMusicAPI().searchAppleMusic("Taylor Swift", storeFrontID: storeFrontID, userToken: userToken))
             }
         }
         }
