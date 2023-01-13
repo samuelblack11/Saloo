@@ -22,8 +22,8 @@ class TaskToken: ObservableObject {@Published var taskToken = String()}
 struct SongForList: Hashable {
      var name: String
      var artistName: String
-     var artwork: URL
-     var songPreview: URL
+     var artImageData: Data
+     var songPreview: Data
 }
 
 class SongObject: ObservableObject {
