@@ -21,8 +21,19 @@ struct MusicView: View {
     @State private var searchResults: [SongForList] = []
     @State private var musicPlayer = MPMusicPlayerController.applicationMusicPlayer
     @State private var isPlaying = false
-    //@State private var artData: Data?
+    @State private var showFCV = false
+    @ObservedObject var chosenSong = ChosenSong()
     
+    @ObservedObject var chosenObject: ChosenCoverImageObject
+    @ObservedObject var collageImage: CollageImage
+    @ObservedObject var noteField = NoteField
+    @ObservedObject var willHandWrite = HandWrite
+    @ObservedObject var frontCoverIsPersonalPhoto: Int
+    @State var text1: String
+    @State var text2: String
+    @State var text2URL: URL
+    @State var text3: String
+    @State var text4: String
     
     func getURLData(url: URL, completionHandler: @escaping (Data?,Error?) -> Void) {
         var request = URLRequest(url: url)
@@ -88,6 +99,16 @@ struct MusicView: View {
                             }
                         }
                     }
+                    .onTapGesture {
+                        showFCV = true
+                        chosenSong.id = song.id
+                        chosenSong.name = song.name
+                        chosenSong.artistName = song.name
+                        chosenSong.artwork = song.artImageData
+                    }
+                }
+                .fullScreenCover(isPresented: $showFCV) {
+                    FinalizeCardView(chosenObject: chosenObject, collageImage: collageImage, noteField: noteField, frontCoverIsPersonalPhoto: frontCoverIsPersonalPhoto, text1: $text1, text2: $text2, text2URL: $text2URL, text3: $text3, text4: $text4, willHandWrite: willHandWrite, eCardText: $eCardText, chosenOccassion: chosenOccassion)
                 }
             }
             .onAppear() {}

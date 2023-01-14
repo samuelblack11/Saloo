@@ -32,7 +32,6 @@ struct FinalizeCardView: View {
     @Binding var text4: String
     @ObservedObject var willHandWrite: HandWrite
     @Binding var eCardText: String
-    @Binding var printCardText: String
     //@Binding var cardForExport: Data!
     @State private var showActivityController = false
     @State var activityItemsArray: [Any] = []

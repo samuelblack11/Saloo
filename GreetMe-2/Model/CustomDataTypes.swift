@@ -35,11 +35,12 @@ struct SongForList: Hashable {
      @State var isPlaying: Bool
 }
 
-class SongObject: ObservableObject {
+class ChosenSong: ObservableObject {
+    @Published var id = String()
     @Published var name = String()
     @Published var artistName = String()
-    @Published var artwork = String()
-    @Published var songPreview = String()
+    @Published var artwork = Data()
+    @Published var songPreview = Data()
 }
 
 
