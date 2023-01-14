@@ -10,7 +10,7 @@ import SwiftUI
 import CoreData
 import CloudKit
 import StoreKit
-
+import MediaPlayer
 
 
 struct MusicView: View {
@@ -18,7 +18,9 @@ struct MusicView: View {
     @State private var songSearch = ""
     @State private var storeFrontID = "us"
     @State private var userToken = ""
-    @State private var songs: [SongForList] = []
+    @State private var searchResults: [SongForList] = []
+    @State private var musicPlayer = MPMusicPlayerController.applicationMusicPlayer
+    @State private var isPlaying = false
     //@State private var artData: Data?
     
     
@@ -34,81 +36,66 @@ struct MusicView: View {
     }
     
     var body: some View {
-        TextField("Search Songs", text: $songSearch, onCommit: {
-            print(self.songSearch)
-        })
-        List {
-            ForEach(songs, id: \.self) { song in
-                HStack {
-                    VStack{
-                        Text(song.name)
-                            .font(.headline)
-                        Text(song.artistName)
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-                    }
-                    Image(uiImage: UIImage(data: song.artImageData)!)
-                }
-            }
-        }
-        
-        
-        .onAppear() {SKCloudServiceController.requestAuthorization {(status) in if status == .authorized {
-            self.userToken = AppleMusicAPI().getUserToken()
-            //self.storeFrontID = AppleMusicAPI().fetchStorefrontID(userToken: userToken)
-            print(AppleMusicAPI().searchAppleMusic("Taylor Swift", storeFrontID: storeFrontID, userToken: userToken, completionHandler: { (response, error) in
-                if response != nil {
-                    DispatchQueue.main.async {
-                        for song in response! {
-                            let artURL = URL(string:song.attributes.artwork.url.replacingOccurrences(of: "{w}", with: "80").replacingOccurrences(of: "{h}", with: "80"))
-                            let audioURL = URL(string:song.attributes.previews[0].url)
-                            let _ = getURLData(url: artURL!, completionHandler: { (artResponse, error2) in
-            
-                                let _ = getURLData(url: audioURL!, completionHandler: { (audioResponse, error3) in
-
-                                let songForList = SongForList(name: song.attributes.name, artistName: song.attributes.artistName, artImageData: artResponse!, songPreview: audioResponse!)
-                                songs.append(songForList)
-                                })
-                                
-                            })
+            TextField("Search Songs", text: $songSearch, onCommit: {
+                UIApplication.shared.resignFirstResponder()
+                if self.songSearch.isEmpty {
+                    self.searchResults = []
+                } else {
+                    SKCloudServiceController.requestAuthorization {(status) in if status == .authorized {
+                        self.userToken = AppleMusicAPI().getUserToken()
+                        //self.storeFrontID = AppleMusicAPI().fetchStorefrontID(userToken: userToken)
+                        self.searchResults = AppleMusicAPI().searchAppleMusic(self.songSearch, storeFrontID: storeFrontID, userToken: userToken, completionHandler: { (response, error) in
+                            if response != nil {
+                                DispatchQueue.main.async {
+                                    for song in response! {
+                                        let artURL = URL(string:song.attributes.artwork.url.replacingOccurrences(of: "{w}", with: "80").replacingOccurrences(of: "{h}", with: "80"))
+                                        let audioURL = URL(string:song.attributes.previews[0].url)
+                                        let _ = getURLData(url: artURL!, completionHandler: { (artResponse, error2) in
+                                            let _ = getURLData(url: audioURL!, completionHandler: { (audioResponse, error3) in
+                                                let songForList = SongForList(id: song.attributes.playParams.id, name: song.attributes.name, artistName: song.attributes.artistName, artImageData: artResponse!, songPreview: audioResponse!, isPlaying: false)
+                                                searchResults.append(songForList)
+                                            })})}}}; if response != nil {print("No Response!")}
+                            else {debugPrint(error?.localizedDescription)}})}}}})
+            List {
+                ForEach(searchResults, id: \.self) { song in
+                    HStack {
+                        Image(uiImage: UIImage(data: song.artImageData)!)
+                        VStack{
+                            Text(song.name)
+                                .font(.headline)
+                            Text(song.artistName)
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                        }
+                        Spacer()
+                        Button(action: {
+                            // 3
+                            print("Playing \(song.name)")
+                            self.musicPlayer.setQueue(with: [song.id])
+                            print(song.isPlaying)
+                            song.isPlaying.toggle()
+                            print(song.isPlaying)
+                            self.musicPlayer.play()
+                        }) {
+                            ZStack {
+                                Circle()
+                                    //.frame(width: 80, height: 80)
+                                    .accentColor(.pink)
+                                    .shadow(radius: 10)
+                                Image(systemName: song.isPlaying ? "pause.fill" : "play.fill")
+                                    .foregroundColor(.white)
+                                    .font(.system(.title))
+                            }
                         }
                     }
                 }
-                if response != nil {print("No Response!")}
-                else {debugPrint(error?.localizedDescription)}
-            }))
-            }}}
-        .textFieldStyle(RoundedBorderTextFieldStyle())
-        .padding(.horizontal, 16)
-        .accentColor(.pink)
-        Text("----")
-        //playSongView
-    }
-    }
-    
-    
-    
-    
-    
-    var playSongView: some View {
-        HStack {
-            ZStack {
-                Circle()
-                    .frame(width: 80, height: 80)
-                    .accentColor(.pink)
-                    .shadow(radius: 10)
-                Image(systemName: "backward.fill")
-                    .foregroundColor(.white)
-                    .font(.system(.title))
             }
-            ZStack {
-                Circle()
-                    .frame(width: 80, height: 80)
-                    .accentColor(.pink)
-                    .shadow(radius: 10)
-                Image(systemName: "pause.fill")
-                    .foregroundColor(.white)
-                    .font(.system(.title))
-            }
+            .onAppear() {}
+            .textFieldStyle(RoundedBorderTextFieldStyle())
+            .padding(.horizontal, 16)
+            .accentColor(.pink)
+            Text("----")
+            //playSongView
         }
     }
+

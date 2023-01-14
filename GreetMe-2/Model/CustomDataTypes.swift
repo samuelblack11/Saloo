@@ -9,7 +9,7 @@ import Foundation
 import UIKit
 import SwiftUI
 import CloudKit
-
+//https://www.hackingwithswift.com/example-code/language/how-to-conform-to-the-hashable-protocol
 struct ChosenCollection {@State var occassion: String!; @State var collectionID: String!}
 class ChosenCoreCard: ObservableObject {@Published var chosenCard = CoreCard()}
 class Occassion: ObservableObject {@Published var occassion = String(); @Published var collectionID = String()}
@@ -20,10 +20,19 @@ class TaskToken: ObservableObject {@Published var taskToken = String()}
 
 
 struct SongForList: Hashable {
+    
+    static func == (lhs: SongForList, rhs: SongForList) -> Bool {
+        return lhs.id == rhs.id && lhs.name == rhs.name && lhs.artistName == rhs.artistName && lhs.artImageData == rhs.artImageData && lhs.songPreview == rhs.songPreview && lhs.isPlaying == rhs.isPlaying
+    }
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
+    }
+     var id: String
      var name: String
      var artistName: String
      var artImageData: Data
      var songPreview: Data
+     @State var isPlaying: Bool
 }
 
 class SongObject: ObservableObject {
