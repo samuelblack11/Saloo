@@ -16,23 +16,21 @@ class Occassion: ObservableObject {@Published var occassion = String(); @Publish
 public class ShowDetailView: ObservableObject {@Published public var showDetailView: Bool = false}
 class TaskToken: ObservableObject {@Published var taskToken = String()}
 
-
-
-
 struct SongForList: Hashable {
-    
-    static func == (lhs: SongForList, rhs: SongForList) -> Bool {
-        return lhs.id == rhs.id && lhs.name == rhs.name && lhs.artistName == rhs.artistName && lhs.artImageData == rhs.artImageData && lhs.songPreview == rhs.songPreview && lhs.isPlaying == rhs.isPlaying
-    }
-    func hash(into hasher: inout Hasher) {
-        hasher.combine(id)
-    }
      var id: String
      var name: String
      var artistName: String
      var artImageData: Data
      var songPreview: Data
-     @State var isPlaying: Bool
+     var isPlaying: Bool
+}
+
+struct SelectedSong {
+    @State var id: String?
+    @State var name: String?
+    @State var artistName: String?
+    @State var artImageData: Data?
+    @State var isPlaying: Bool?
 }
 
 class ChosenSong: ObservableObject {
@@ -40,10 +38,8 @@ class ChosenSong: ObservableObject {
     @Published var name = String()
     @Published var artistName = String()
     @Published var artwork = Data()
-    @Published var songPreview = Data()
+    @Published var isPlaying = Bool()
 }
-
-
 
 class ChosenCoverImageObject: ObservableObject {
     @Published var id = UUID()
