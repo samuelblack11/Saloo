@@ -24,7 +24,6 @@ struct MusicView: View {
     @State private var showFCV = false
     @State private var showSPV = false
     @ObservedObject var chosenSong = ChosenSong()
-    @State var selectedSong = SelectedSong.init(id: "", name: "", artistName: "", artImageData: UIImage(named: "blankImage")?.pngData(), isPlaying: false)
     
     //@ObservedObject var chosenObject: ChosenCoverImageObject
     //@ObservedObject var collageImage: CollageImage
@@ -77,7 +76,7 @@ struct MusicView: View {
                             VStack{
                                 Text(song.name)
                                     .font(.headline)
-                                    .lineLimit(1)
+                                    .lineLimit(2)
                                 Text(song.artistName)
                                     .font(.caption)
                                     .foregroundColor(.secondary)
@@ -99,7 +98,10 @@ struct MusicView: View {
                         }
                     }
                 }
-        .popover(isPresented: $showSPV) {smallPlayerView().frame(height: (UIScreen.screenHeight/9))}
+        .popover(isPresented: $showSPV) {
+            smallPlayerView()
+                .presentationDetents([.fraction(0.35)])
+            }
                     //.textFieldStyle(RoundedBorderTextFieldStyle())
                     //.padding(.horizontal, 16)
                     //.accentColor(.pink)
@@ -137,7 +139,7 @@ extension MusicView {
                         }
                     }
                     Button {
-                        isPlaying.toggle()
+                        self.isPlaying.toggle()
                         if self.musicPlayer.playbackState.rawValue == 1 {self.musicPlayer.pause()}
                         else {self.musicPlayer.play()}
                     } label: {
