@@ -20,10 +20,12 @@ struct MusicView: View {
     @State private var userToken = ""
     @State private var searchResults: [SongForList] = []
     @State private var musicPlayer = MPMusicPlayerController.applicationMusicPlayer
-    @State private var isPlaying = false
     @State private var showFCV = false
     @State private var showSPV = false
     @ObservedObject var chosenSong = ChosenSong()
+    @State private var isPlaying = true
+    @State private var songProgress = 0.0
+
     
     //@ObservedObject var chosenObject: ChosenCoverImageObject
     //@ObservedObject var collageImage: CollageImage
@@ -60,13 +62,12 @@ struct MusicView: View {
                         if response != nil {
                             DispatchQueue.main.async {
                                 for song in response! {
+                                    
                                     let artURL = URL(string:song.attributes.artwork.url.replacingOccurrences(of: "{w}", with: "80").replacingOccurrences(of: "{h}", with: "80"))
-                                    let audioURL = URL(string:song.attributes.previews[0].url)
                                     let _ = getURLData(url: artURL!, completionHandler: { (artResponse, error2) in
-                                        let _ = getURLData(url: audioURL!, completionHandler: { (audioResponse, error3) in
-                                            let songForList = SongForList(id: song.attributes.playParams.id, name: song.attributes.name, artistName: song.attributes.artistName, artImageData: artResponse!, songPreview: audioResponse!, isPlaying: false)
+                                        let songForList = SongForList(id: song.attributes.playParams.id, name: song.attributes.name, artistName: song.attributes.artistName, artImageData: artResponse!, durationInMillis: song.attributes.durationInMillis, isPlaying: false)
                                             searchResults.append(songForList)
-                                        })})}}}; if response != nil {print("No Response!")}
+                                        })}}}; if response != nil {print("No Response!")}
                         else {debugPrint(error?.localizedDescription)}})}}}}).padding(.top, 15)
         NavigationView {
             List {
@@ -91,6 +92,10 @@ struct MusicView: View {
                             chosenSong.name = song.name
                             chosenSong.artistName = song.artistName
                             chosenSong.artwork = song.artImageData
+                            print("####")
+                            print(song.durationInMillis)
+                            print(song.durationInMillis/1000)
+                            chosenSong.durationInSeconds = Double(song.durationInMillis/1000)
                             showSPV = true
                             self.musicPlayer.setQueue(with: [song.id])
                             self.musicPlayer.play()
@@ -100,7 +105,7 @@ struct MusicView: View {
                 }
         .popover(isPresented: $showSPV) {
             smallPlayerView()
-                .presentationDetents([.fraction(0.35)])
+                .presentationDetents([.fraction(0.4)])
             }
                     //.textFieldStyle(RoundedBorderTextFieldStyle())
                     //.padding(.horizontal, 16)
@@ -117,47 +122,66 @@ struct MusicView: View {
 extension MusicView {
     
     func smallPlayerView() -> some View {
-        var isPlaying = true
+        let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
+        let durationInMinutes = convertToMinutes(seconds: Int(chosenSong.durationInSeconds))
         return  VStack {
-                Image(uiImage: UIImage(data: chosenSong.artwork)!)
-                Text(chosenSong.name)
-                    .font(.headline)
-                Text(chosenSong.artistName)
-                Spacer()
-                HStack {
-                    Button {
-                        self.musicPlayer.setQueue(with: [chosenSong.id])
-                        self.musicPlayer.play()
-                    } label: {
-                        ZStack {
-                            Circle()
-                                .accentColor(.pink)
-                                .shadow(radius: 10)
-                            Image(systemName: "arrow.uturn.backward" )
-                                .foregroundColor(.white)
-                                .font(.system(.title))
-                        }
-                    }
-                    Button {
-                        self.isPlaying.toggle()
-                        if self.musicPlayer.playbackState.rawValue == 1 {self.musicPlayer.pause()}
-                        else {self.musicPlayer.play()}
-                    } label: {
-                        ZStack {
-                            Circle()
-                                .accentColor(.pink)
-                                .shadow(radius: 10)
-                            Image(systemName: self.isPlaying ? "pause.fill" : "play.fill")
-                                .foregroundColor(.white)
-                                .font(.system(.title))
-                        }
+            Image(uiImage: UIImage(data: chosenSong.artwork)!)
+            Text(chosenSong.name)
+                .font(.headline)
+            Text(chosenSong.artistName)
+            Spacer()
+            HStack {
+                Button {
+                    self.musicPlayer.setQueue(with: [chosenSong.id])
+                    self.musicPlayer.play()
+                    songProgress = 0.0
+                } label: {
+                    ZStack {
+                        Circle()
+                            .accentColor(.pink)
+                            .shadow(radius: 10)
+                        Image(systemName: "arrow.uturn.backward" )
+                            .foregroundColor(.white)
+                            .font(.system(.title))
                     }
                 }
-            Button {
-                showFCV = true
-            } label: {
-                Text("Select Song For Card").foregroundColor(.blue)
+                Button {
+                    isPlaying.toggle()
+                    if self.musicPlayer.playbackState.rawValue == 1 {self.musicPlayer.pause()}
+                    else {self.musicPlayer.play()}
+                } label: {
+                    ZStack {
+                        Circle()
+                            .accentColor(.pink)
+                            .shadow(radius: 10)
+                        Image(systemName: isPlaying ? "pause.fill" : "play.fill")
+                            .foregroundColor(.white)
+                            .font(.system(.title))
+                    }
+                }
+            }
+            ProgressView(value: songProgress, total: chosenSong.durationInSeconds)
+                .onReceive(timer) {_ in
+                    if songProgress < chosenSong.durationInSeconds {
+                        songProgress += 1
+                    }
+                }
+            HStack{
+                Spacer()
+                Text(durationInMinutes).padding(.trailing, 10)
+            }
+                Button {
+                    showFCV = true
+                } label: {
+                    Text("Select Song For Card").foregroundColor(.blue)
+                }
             }
         }
-    }
+        
+        func convertToMinutes(seconds: Int) -> String {
+            let m = seconds / 60
+            let s = (seconds % 60) / 60
+            let completeTime = String("\(m):\(s)")
+            return completeTime
+        }
 }

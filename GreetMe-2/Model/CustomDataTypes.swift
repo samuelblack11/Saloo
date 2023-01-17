@@ -21,7 +21,7 @@ struct SongForList: Hashable {
      var name: String
      var artistName: String
      var artImageData: Data
-     var songPreview: Data
+     var durationInMillis: Int
      var isPlaying: Bool
 }
 
@@ -31,6 +31,7 @@ struct SelectedSong {
     @State var artistName: String?
     @State var artImageData: Data?
     @State var isPlaying: Bool?
+    @State var durationInMillis: Int
 }
 
 class ChosenSong: ObservableObject {
@@ -39,6 +40,7 @@ class ChosenSong: ObservableObject {
     @Published var artistName = String()
     @Published var artwork = Data()
     @Published var isPlaying = Bool()
+    @Published var durationInSeconds = Double()
 }
 
 class ChosenCoverImageObject: ObservableObject {
