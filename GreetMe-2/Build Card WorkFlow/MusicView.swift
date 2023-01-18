@@ -123,7 +123,6 @@ extension MusicView {
     
     func smallPlayerView() -> some View {
         let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
-        let durationInMinutes = convertToMinutes(seconds: Int(chosenSong.durationInSeconds))
         return  VStack {
             Image(uiImage: UIImage(data: chosenSong.artwork)!)
             Text(chosenSong.name)
@@ -167,20 +166,19 @@ extension MusicView {
                     }
                 }
             HStack{
+                //Text("\(songProgress)")
+                Text(convertToMinutes(seconds:Int(songProgress)))
                 Spacer()
-                Text(durationInMinutes).padding(.trailing, 10)
+                Text(convertToMinutes(seconds: Int(chosenSong.durationInSeconds)-Int(songProgress)))
+                    .padding(.trailing, 10)
             }
-                Button {
-                    showFCV = true
-                } label: {
-                    Text("Select Song For Card").foregroundColor(.blue)
-                }
+            Button {showFCV = true} label: {Text("Select Song For Card").foregroundColor(.blue)}
             }
         }
         
         func convertToMinutes(seconds: Int) -> String {
             let m = seconds / 60
-            let s = (seconds % 60) / 60
+            let s = String(format: "%02d", seconds % 60)
             let completeTime = String("\(m):\(s)")
             return completeTime
         }
