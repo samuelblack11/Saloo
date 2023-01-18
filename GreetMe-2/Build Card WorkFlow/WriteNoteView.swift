@@ -12,6 +12,7 @@ import SwiftUI
 // https://www.hackingwithswift.com/quick-start/swiftui/what-is-the-focusstate-property-wrapper
 
 struct WriteNoteView: View {
+    @State private var showMusic = false
     @State private var showFinalize = false
     @State private var showCollageBuilder = false
     
@@ -28,10 +29,11 @@ struct WriteNoteView: View {
     //@State private var cardName: String = ""
     @State private var tappedTextEditor = false
     @State private var namesNotEntered = false
-    @State private var handWrite = true
+    @State private var addMusicPrompt = false
     @State private var handWrite2 = false
-    @StateObject var willHandWrite = HandWrite()
+    @StateObject var addMusic = AddMusic()
     @Binding var frontCoverIsPersonalPhoto: Int
+    @StateObject var chosenSong = ChosenSong()
     @ObservedObject var chosenObject: ChosenCoverImageObject
     @ObservedObject var collageImage: CollageImage
     @StateObject var noteField = NoteField()
@@ -92,24 +94,19 @@ struct WriteNoteView: View {
         TextField("Name Your Card", text: $cardName.value)
             .border(Color.red, width: $cardName.hasReachedLimit.wrappedValue ? 1 : 0 )
             .onTapGesture {if cardName.value == "Name Your Card" {cardName.value = ""}}
-                
-        //TextField("To:", text: $recipient).padding(.leading, 5).frame(height:35)
-        //TextField("From:", text: $sender).padding(.leading, 5).frame(height:35)
-        //TextField("Name Your Card", text: $cardName).padding(.leading, 5) .frame(height:35)
         Button("Confirm Note") {
             cardName.value = cardName.value.components(separatedBy: CharacterSet.punctuationCharacters).joined()
-            willHandWritePrintCard()
-            checkRequiredFields()
-            annotateIfNeeded()
+            addMusicPrompt = true
             }
         .alert("Please Enter Values for All Fields!", isPresented: $namesNotEntered) {Button("Ok", role: .cancel) {}}
-        .alert("Type Note Here or Hand Write After Printing?", isPresented: $handWrite) {
-            Button("Type it Here", action: {})
-            Button("Hand Write it"){handWrite2 = true; willHandWrite.willHandWrite = true
-            }}
+        .alert("Add Song to Card?", isPresented: $addMusicPrompt) {            
+            Button("Hell Yea"){chosenSong.id = "00000000000"; addMusic.addMusic = true; checkRequiredFields(); annotateIfNeeded()}
+            Button("No Thanks") {chosenSong.id = "00000000000"; checkRequiredFields(); annotateIfNeeded()}
+            }
         .alert("Your typed message will only appear in your eCard", isPresented: $handWrite2) {Button("Ok", role: .cancel) {}}
         .padding(.bottom, 30)
-        .fullScreenCover(isPresented: $showFinalize) {FinalizeCardView(chosenObject: chosenObject, collageImage: collageImage, noteField: noteField, frontCoverIsPersonalPhoto: frontCoverIsPersonalPhoto, text1: $text1, text2: $text2, text2URL: $text2URL, text3: $text3, text4: $text4, willHandWrite: willHandWrite, eCardText: $eCardText, chosenOccassion: chosenOccassion)}
+        .fullScreenCover(isPresented: $showMusic) {MusicView(chosenSong: chosenSong, chosenOccassion: chosenOccassion, chosenObject: chosenObject, collageImage: collageImage, noteField: noteField, addMusic: addMusic, frontCoverIsPersonalPhoto: frontCoverIsPersonalPhoto, eCardText: eCardText, text1: text1, text2: text2, text2URL: text2URL, text3: text3, text4: text4)}
+        .fullScreenCover(isPresented: $showFinalize) {FinalizeCardView(chosenObject: chosenObject, collageImage: collageImage, noteField: noteField, frontCoverIsPersonalPhoto: frontCoverIsPersonalPhoto, text1: $text1, text2: $text2, text2URL: $text2URL, text3: $text3, text4: $text4, addMusic: addMusic, eCardText: $eCardText, chosenOccassion: chosenOccassion, chosenSong: chosenSong)}
         .fullScreenCover(isPresented: $showCollageBuilder) {CollageBuilder(showImagePicker: false, chosenObject: chosenObject, chosenOccassion: chosenOccassion, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenCollageStyle: chosenStyle)}
         }
             .navigationBarItems(leading:Button {showCollageBuilder = true} label: {Image(systemName: "chevron.left").foregroundColor(.blue); Text("Back")})
@@ -134,18 +131,11 @@ extension WriteNoteView {
         else {text2URL = URL(string: "https://google.com")!}
     }
     
-    func willHandWritePrintCard() {
-        if willHandWrite.willHandWrite == true {
-            if message.value == "Write Note Here" {message.value = ""}
-            eCardText = message.value; printCardText = ""
-        }
-        else {eCardText = message.value; printCardText = message.value}
-    }
-    
     func checkRequiredFields() {
         if recipient.value != "" && cardName.value != "" {
             namesNotEntered = false
-            showFinalize = true
+            if addMusic.addMusic {showMusic = true}
+            else {showFinalize = true}
             noteField.noteText = message.value
             noteField.recipient = recipient.value
             noteField.cardName = cardName.value

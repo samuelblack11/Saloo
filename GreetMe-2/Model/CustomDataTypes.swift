@@ -82,7 +82,7 @@ struct CoverImageObject: Identifiable, Hashable {
 }
 
 class CollageImage: ObservableObject {@Published var collageImage = UIImage()}
-class HandWrite: ObservableObject { @Published var willHandWrite: Bool = false}
+class AddMusic: ObservableObject {@Published var addMusic: Bool = false}
 
 // https://programmingwithswift.com/swiftui-textfield-character-limit/
 

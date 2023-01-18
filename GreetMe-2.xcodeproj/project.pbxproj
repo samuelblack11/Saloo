@@ -55,6 +55,7 @@
 		C2582A3E296F7171009F8FEC /* AppleMusicAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2582A3D296F7171009F8FEC /* AppleMusicAPI.swift */; };
 		C271B2E729702D2200760B23 /* MusicResponses.swift in Sources */ = {isa = PBXBuildFile; fileRef = C271B2E629702D2200760B23 /* MusicResponses.swift */; };
 		C27430FC286335F000E17B19 /* CameraCapture.swift in Sources */ = {isa = PBXBuildFile; fileRef = C27430FB286335F000E17B19 /* CameraCapture.swift */; };
+		C275B6D32977818D009C59BC /* SmallPlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C275B6D22977818D009C59BC /* SmallPlayerView.swift */; };
 		C28B13F828E3E106008E2C4C /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C28B13F728E3E106008E2C4C /* AppDelegate.swift */; };
 		C2B650CA287AFFF90002E252 /* CloudKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C2B650C9287AFFF90002E252 /* CloudKit.framework */; };
 		C2D0B0A5287E2DC300198F0B /* ConfettiSwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = C2D0B0A4287E2DC300198F0B /* ConfettiSwiftUI */; };
@@ -132,6 +133,7 @@
 		C2582A3D296F7171009F8FEC /* AppleMusicAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppleMusicAPI.swift; sourceTree = "<group>"; };
 		C271B2E629702D2200760B23 /* MusicResponses.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MusicResponses.swift; sourceTree = "<group>"; };
 		C27430FB286335F000E17B19 /* CameraCapture.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraCapture.swift; sourceTree = "<group>"; };
+		C275B6D22977818D009C59BC /* SmallPlayerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SmallPlayerView.swift; sourceTree = "<group>"; };
 		C28B13F728E3E106008E2C4C /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		C2B650C9287AFFF90002E252 /* CloudKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CloudKit.framework; path = System/Library/Frameworks/CloudKit.framework; sourceTree = SDKROOT; };
 		C2DE5C97289EFECC00F8C556 /* AddEventToCalendarForm.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddEventToCalendarForm.swift; sourceTree = "<group>"; };
@@ -305,6 +307,7 @@
 				C237E6E0294E453600E472AD /* GridOfCards.swift */,
 				26EB55642827120C00178F0B /* EnlargeECard.swift */,
 				C2582A3A296E5841009F8FEC /* ECardView.swift */,
+				C275B6D22977818D009C59BC /* SmallPlayerView.swift */,
 			);
 			path = "View Cards";
 			sourceTree = "<group>";
@@ -538,6 +541,7 @@
 				C23A9D372897F3F00059B97C /* CalendarDate+CoreDataClass.swift in Sources */,
 				C2DE5C98289EFECC00F8C556 /* AddEventToCalendarForm.swift in Sources */,
 				260F6907281DC0E3002E864B /* LoginView.swift in Sources */,
+				C275B6D32977818D009C59BC /* SmallPlayerView.swift in Sources */,
 				2688D704285FA24300954120 /* SnapShotECard.swift in Sources */,
 				260F68FC281DBEA0002E864B /* UnsplashResponse.swift in Sources */,
 				C23A9D382897F3F00059B97C /* CalendarDate+CoreDataProperties.swift in Sources */,

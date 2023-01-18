@@ -30,7 +30,7 @@ struct FinalizeCardView: View {
     @Binding var text2URL: URL
     @Binding var text3: String
     @Binding var text4: String
-    @ObservedObject var willHandWrite: HandWrite
+    @ObservedObject var addMusic: AddMusic
     @Binding var eCardText: String
     //@Binding var cardForExport: Data!
     @State private var showActivityController = false
@@ -50,6 +50,8 @@ struct FinalizeCardView: View {
     @State private var activeContainer: CKContainer?
     @State private var pageCount = 1
     @ObservedObject var chosenOccassion: Occassion
+    @ObservedObject var chosenSong: ChosenSong
+
 
     var musicElements: some View {
         HStack {
@@ -66,8 +68,7 @@ struct FinalizeCardView: View {
         VStack(spacing: 0) {
             Spacer()
             HStack(spacing: 0){
-                eCardView(eCardText: eCardText, font: noteField.font, coverImage: chosenObject.coverImage, collageImage: collageImage.collageImage.pngData()!, text1: text1, text2: text2, text2URL: text2URL, text3: text3, text4: text4).frame(width: (UIScreen.screenWidth/1.4), height: (UIScreen.screenHeight/1.4))
-                //eCard.frame(width: (UIScreen.screenWidth/1.4), height: (UIScreen.screenHeight/1.4))
+                eCardView(eCardText: eCardText, font: noteField.font, coverImage: chosenObject.coverImage, collageImage: collageImage.collageImage.pngData()!, text1: text1, text2: text2, text2URL: text2URL, text3: text3, text4: text4, chosenSong: chosenSong).frame(width: (UIScreen.screenWidth/1.8), height: (UIScreen.screenHeight/1.4))
                 Spacer()
             }
             Spacer()

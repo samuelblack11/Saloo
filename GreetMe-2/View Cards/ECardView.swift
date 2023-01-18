@@ -21,31 +21,29 @@ struct eCardView: View {
     @State var text2URL: URL
     @State var text3: String
     @State var text4: String
-
+    @ObservedObject var chosenSong: ChosenSong
     
     var body: some View {
+        HStack {
         VStack(spacing:1) {
             Image(uiImage: UIImage(data: coverImage)!)
                 .interpolation(.none).resizable().scaledToFit()
-                //.frame(width: (UIScreen.screenWidth/4), height: (UIScreen.screenHeight/8))
             Text(eCardText)
                 .font(Font.custom(font, size: 500)).minimumScaleFactor(0.01)
-                //.frame(maxWidth: (UIScreen.screenWidth/4), maxHeight: (UIScreen.screenHeight/9))
             Image(uiImage: UIImage(data: collageImage)!)
                 .interpolation(.none).resizable().scaledToFit()
-                //.frame(width: (UIScreen.screenWidth/4), height: (UIScreen.screenHeight/8))
             Spacer()
             HStack(spacing: 0) {
                 VStack(spacing:0){
-                Text(text1)
-                    .font(.system(size: 10)).frame(alignment: .center)
-                Link(text2, destination: text2URL)
-                    .font(.system(size: 10)).frame(alignment: .center)
-                HStack(spacing: 0) {
-                    Text(text3).font(.system(size: 4))
-                        .frame(alignment: .center)
-                    Link(text4, destination: URL(string: "https://unsplash.com")!)
-                        .font(.system(size: 12)).frame(alignment: .center)
+                    Text(text1)
+                        .font(.system(size: 10)).frame(alignment: .center)
+                    Link(text2, destination: text2URL)
+                        .font(.system(size: 10)).frame(alignment: .center)
+                    HStack(spacing: 0) {
+                        Text(text3).font(.system(size: 4))
+                            .frame(alignment: .center)
+                        Link(text4, destination: URL(string: "https://unsplash.com")!)
+                            .font(.system(size: 12)).frame(alignment: .center)
                     }
                 }
                 Spacer()
@@ -56,7 +54,12 @@ struct eCardView: View {
                     Text("by").font(.system(size: 10))
                     Text("GreetMe Inc.").font(.system(size: 10)).padding(.bottom,10).padding(.leading, 5)
                 }
+            }
         }
+        
     }
+        Spacer()
+        MusicView.smallPlayerView()
+        
     }
 }

@@ -17,8 +17,8 @@ struct GreetMe_2App: App {
     
     var body: some Scene {
         WindowGroup {
-            MusicView()
-            //StartMenu(calViewModel: CalViewModel(), showDetailView: ShowDetailView())
+            //MusicView()
+            StartMenu(calViewModel: CalViewModel(), showDetailView: ShowDetailView())
                 .environment(\.managedObjectContext, persistenceController.persistentContainer.viewContext)
         }
     }
