@@ -19,7 +19,7 @@ struct MusicView: View {
     @State private var userToken = ""
     @State private var searchResults: [SongForList] = []
     @State private var musicPlayer = MPMusicPlayerController.applicationMusicPlayer
-    @State private var showFCV = false
+    @State var showFCV: Bool = false
     @State private var showSPV = false
     @ObservedObject var chosenSong: ChosenSong
     @State private var isPlaying = false
@@ -90,7 +90,7 @@ struct MusicView: View {
                 }
             }
         }
-        .popover(isPresented: $showSPV) {SmallPlayerView(songID: chosenSong.id, songName: chosenSong.name, songArtistName: chosenSong.artistName, songArtImageData: chosenSong.artwork, songDuration: chosenSong.durationInSeconds)
+        .popover(isPresented: $showSPV) {SmallPlayerView(songID: chosenSong.id, songName: chosenSong.name, songArtistName: chosenSong.artistName, songArtImageData: chosenSong.artwork, songDuration: chosenSong.durationInSeconds, confirmButton: true, showFCV: $showFCV)
 .presentationDetents([.fraction(0.4)])
                 .fullScreenCover(isPresented: $showFCV) {FinalizeCardView(chosenObject: chosenObject, collageImage: collageImage, noteField: noteField, frontCoverIsPersonalPhoto: frontCoverIsPersonalPhoto, text1: $text1, text2: $text2, text2URL: $text2URL, text3: $text3, text4: $text4, addMusic: addMusic, eCardText: $eCardText, chosenOccassion: chosenOccassion, chosenSong: chosenSong)}
         }
@@ -109,65 +109,4 @@ extension MusicView {
         }
         dataTask.resume()
     }
-    
-    func smallPlayerView() -> some View {
-        let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
-        return  VStack {
-            Image(uiImage: UIImage(data: chosenSong.artwork)!)
-            Text(chosenSong.name)
-                .font(.headline)
-            Text(chosenSong.artistName)
-            Spacer()
-            HStack {
-                Button {
-                    self.musicPlayer.setQueue(with: [chosenSong.id])
-                    self.musicPlayer.play()
-                    songProgress = 0.0
-                } label: {
-                    ZStack {
-                        Circle()
-                            .accentColor(.pink)
-                            .shadow(radius: 10)
-                        Image(systemName: "arrow.uturn.backward" )
-                            .foregroundColor(.white)
-                            .font(.system(.title))
-                    }
-                }
-                Button {
-                    isPlaying.toggle()
-                    if self.musicPlayer.playbackState.rawValue == 1 {self.musicPlayer.pause()}
-                    else {self.musicPlayer.play()}
-                } label: {
-                    ZStack {
-                        Circle()
-                            .accentColor(.pink)
-                            .shadow(radius: 10)
-                        Image(systemName: isPlaying ? "pause.fill" : "play.fill")
-                            .foregroundColor(.white)
-                            .font(.system(.title))
-                    }
-                }
-            }
-            ProgressView(value: songProgress, total: chosenSong.durationInSeconds)
-                .onReceive(timer) {_ in
-                    if songProgress < chosenSong.durationInSeconds {
-                        songProgress += 1
-                    }
-                }
-            HStack{
-                Text(convertToMinutes(seconds:Int(songProgress)))
-                Spacer()
-                Text(convertToMinutes(seconds: Int(chosenSong.durationInSeconds)-Int(songProgress)))
-                    .padding(.trailing, 10)
-            }
-            Button {showFCV = true} label: {Text("Select Song For Card").foregroundColor(.blue)}
-            }
-        }
-        
-        func convertToMinutes(seconds: Int) -> String {
-            let m = seconds / 60
-            let s = String(format: "%02d", seconds % 60)
-            let completeTime = String("\(m):\(s)")
-            return completeTime
-        }
 }

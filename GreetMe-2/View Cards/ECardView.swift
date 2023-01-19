@@ -26,10 +26,9 @@ struct eCardView: View {
     @State var songArtistName: String?
     @State var songArtImageData: Data?
     @State var songDuration: Double?
-
+    @State var showFCV: Bool = false
     
     var body: some View {
-        HStack {
         VStack(spacing:1) {
             Image(uiImage: UIImage(data: coverImage)!)
                 .interpolation(.none).resizable().scaledToFit()
@@ -61,12 +60,11 @@ struct eCardView: View {
                 }
             }
         }
-        
-    }
-        HStack{
+        HStack {
             Spacer()
-            SmallPlayerView(songID: songID, songName: songName, songArtistName: songArtistName, songArtImageData: songArtImageData, songDuration: songDuration)
-        }
+            SmallPlayerView(songID: songID, songName: songName, songArtistName: songArtistName, songArtImageData: songArtImageData, songDuration: songDuration, confirmButton: false, showFCV: $showFCV)
+                .frame(height: UIScreen.screenHeight/1.5, alignment: .bottom)
+            }
         
     }
 }

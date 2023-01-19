@@ -21,9 +21,10 @@ struct SmallPlayerView: View {
     @State var songArtImageData: Data?
     @State var songDuration: Double?
     @State private var songProgress = 0.0
-    @State private var isPlaying = false
+    @State private var isPlaying = true
     @State private var musicPlayer = MPMusicPlayerController.applicationMusicPlayer
-    @State private var showFCV: Bool?
+    @State var confirmButton: Bool
+    @Binding var showFCV: Bool
     
     
     func smallPlayerView() -> some View {
@@ -33,12 +34,12 @@ struct SmallPlayerView: View {
             Text(songName!)
                 .font(.headline)
             Text(songArtistName!)
-            Spacer()
             HStack {
                 Button {
                     musicPlayer.setQueue(with: [songID!])
                     musicPlayer.play()
                     songProgress = 0.0
+                    isPlaying = true
                 } label: {
                     ZStack {
                         Circle()
@@ -49,6 +50,7 @@ struct SmallPlayerView: View {
                             .font(.system(.title))
                     }
                 }
+                .frame(maxWidth: UIScreen.screenHeight/12, maxHeight: UIScreen.screenHeight/12)
                 Button {
                     isPlaying.toggle()
                     if musicPlayer.playbackState.rawValue == 1 {musicPlayer.pause()}
@@ -63,10 +65,11 @@ struct SmallPlayerView: View {
                             .font(.system(.title))
                     }
                 }
+                .frame(maxWidth: UIScreen.screenHeight/12, maxHeight: UIScreen.screenHeight/12)
             }
             ProgressView(value: songProgress, total: songDuration!)
                 .onReceive(timer) {_ in
-                    if songProgress < songDuration! {
+                    if songProgress < songDuration! && musicPlayer.playbackState.rawValue == 1 {
                         songProgress += 1
                     }
                 }
@@ -92,10 +95,8 @@ struct SmallPlayerView: View {
         selectButton
     }
     
-    
-    
     @ViewBuilder var selectButton: some View {
-        if showFCV != nil {Button {showFCV = true} label: {Text("Select Song For Card").foregroundColor(.blue)}}
+        if confirmButton == true {Button {showFCV = true} label: {Text("Select Song For Card").foregroundColor(.blue)}}
         else {Text("")}
     }
 }
