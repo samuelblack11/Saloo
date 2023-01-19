@@ -52,7 +52,7 @@ struct EnlargeECardView: View {
     
     var body: some View {
         //.text("🎈")
-        eCardView(eCardText: chosenCard.message, font: chosenCard.font, coverImage: chosenCard.coverImage!, collageImage: chosenCard.collage!, text1: chosenCard.an1, text2: chosenCard.an2, text2URL: URL(string: chosenCard.an2URL)!, text3: chosenCard.an3, text4: chosenCard.an4)
+        eCardView(eCardText: chosenCard.message, font: chosenCard.font, coverImage: chosenCard.coverImage!, collageImage: chosenCard.collage!, text1: chosenCard.an1, text2: chosenCard.an2, text2URL: URL(string: chosenCard.an2URL)!, text3: chosenCard.an3, text4: chosenCard.an4, songID: chosenCard.songID , songName: chosenCard.songName, songArtistName: chosenCard.songArtistName, songArtImageData: chosenCard.songArtImageData, songDuration: Double(chosenCard.songDuration!)!)
         //eCardView//.confettiCannon(counter: $counter, num: 1, confettis: [ .text(assignEmoji(occassion: chosenCard.chosenCard.occassion))], colors: [.red], confettiSize: 20.0, rainHeight: 600, fadesOut: true, opacity: 1, openingAngle: Angle.degrees(60), closingAngle: Angle.degrees(120), radius: 300, repetitions: 50, repetitionInterval: 0.05)
             .onAppear(perform:addToCounter)
         }

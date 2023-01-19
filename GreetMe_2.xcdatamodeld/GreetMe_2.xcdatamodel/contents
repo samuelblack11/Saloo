@@ -12,6 +12,7 @@
         <attribute name="an4" optional="YES" attributeType="String"/>
         <attribute name="associatedRecord" optional="YES" attributeType="Transformable"/>
         <attribute name="cardName" optional="YES" attributeType="String"/>
+        <attribute name="chosenSong" optional="YES" attributeType="Binary"/>
         <attribute name="collage" optional="YES" attributeType="Binary"/>
         <attribute name="coverImage" optional="YES" attributeType="Binary"/>
         <attribute name="date" optional="YES" attributeType="Date" usesScalarValueType="NO"/>

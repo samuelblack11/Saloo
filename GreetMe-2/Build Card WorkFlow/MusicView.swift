@@ -90,7 +90,8 @@ struct MusicView: View {
                 }
             }
         }
-        .popover(isPresented: $showSPV) {smallPlayerView().presentationDetents([.fraction(0.4)])
+        .popover(isPresented: $showSPV) {SmallPlayerView(songID: chosenSong.id, songName: chosenSong.name, songArtistName: chosenSong.artistName, songArtImageData: chosenSong.artwork, songDuration: chosenSong.durationInSeconds)
+.presentationDetents([.fraction(0.4)])
                 .fullScreenCover(isPresented: $showFCV) {FinalizeCardView(chosenObject: chosenObject, collageImage: collageImage, noteField: noteField, frontCoverIsPersonalPhoto: frontCoverIsPersonalPhoto, text1: $text1, text2: $text2, text2URL: $text2URL, text3: $text3, text4: $text4, addMusic: addMusic, eCardText: $eCardText, chosenOccassion: chosenOccassion, chosenSong: chosenSong)}
         }
     }
@@ -107,14 +108,6 @@ extension MusicView {
             DispatchQueue.main.async {completionHandler(data, nil)}
         }
         dataTask.resume()
-    }
-    
-    
-    func smallPlayerView2() -> some View {
-        
-        return
-        
-        Button {showFCV = true} label: {Text("Select Song For Card").foregroundColor(.blue)}
     }
     
     func smallPlayerView() -> some View {

@@ -14,24 +14,30 @@ import StoreKit
 import MediaPlayer
 
 
-struct SmallPlayerView {
-    @ObservedObject var chosenSong: ChosenSong
+struct SmallPlayerView: View {
+    @State var songID: String?
+    @State var songName: String?
+    @State var songArtistName: String?
+    @State var songArtImageData: Data?
+    @State var songDuration: Double?
     @State private var songProgress = 0.0
     @State private var isPlaying = false
-
+    @State private var musicPlayer = MPMusicPlayerController.applicationMusicPlayer
+    @State private var showFCV: Bool?
+    
     
     func smallPlayerView() -> some View {
         let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
         return  VStack {
-            Image(uiImage: UIImage(data: chosenSong.artwork)!)
-            Text(chosenSong.name)
+            Image(uiImage: UIImage(data: songArtImageData!)!)
+            Text(songName!)
                 .font(.headline)
-            Text(chosenSong.artistName)
+            Text(songArtistName!)
             Spacer()
             HStack {
                 Button {
-                    self.musicPlayer.setQueue(with: [chosenSong.id])
-                    self.musicPlayer.play()
+                    musicPlayer.setQueue(with: [songID!])
+                    musicPlayer.play()
                     songProgress = 0.0
                 } label: {
                     ZStack {
@@ -45,8 +51,8 @@ struct SmallPlayerView {
                 }
                 Button {
                     isPlaying.toggle()
-                    if self.musicPlayer.playbackState.rawValue == 1 {self.musicPlayer.pause()}
-                    else {self.musicPlayer.play()}
+                    if musicPlayer.playbackState.rawValue == 1 {musicPlayer.pause()}
+                    else {musicPlayer.play()}
                 } label: {
                     ZStack {
                         Circle()
@@ -58,30 +64,38 @@ struct SmallPlayerView {
                     }
                 }
             }
-            ProgressView(value: songProgress, total: chosenSong.durationInSeconds)
+            ProgressView(value: songProgress, total: songDuration!)
                 .onReceive(timer) {_ in
-                    if songProgress < chosenSong.durationInSeconds {
+                    if songProgress < songDuration! {
                         songProgress += 1
                     }
                 }
             HStack{
                 Text(convertToMinutes(seconds:Int(songProgress)))
                 Spacer()
-                Text(convertToMinutes(seconds: Int(chosenSong.durationInSeconds)-Int(songProgress)))
+                Text(convertToMinutes(seconds: Int(songDuration!)-Int(songProgress)))
                     .padding(.trailing, 10)
             }
-            }
         }
-        
-        func convertToMinutes(seconds: Int) -> String {
-            let m = seconds / 60
-            let s = String(format: "%02d", seconds % 60)
-            let completeTime = String("\(m):\(s)")
-            return completeTime
-        }
-
+    }
+    
+    func convertToMinutes(seconds: Int) -> String {
+        let m = seconds / 60
+        let s = String(format: "%02d", seconds % 60)
+        let completeTime = String("\(m):\(s)")
+        return completeTime
+    }
+    
     
     var body: some View {
         smallPlayerView()
+        selectButton
+    }
+    
+    
+    
+    @ViewBuilder var selectButton: some View {
+        if showFCV != nil {Button {showFCV = true} label: {Text("Select Song For Card").foregroundColor(.blue)}}
+        else {Text("")}
     }
 }

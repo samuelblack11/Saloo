@@ -56,6 +56,7 @@
 		C271B2E729702D2200760B23 /* MusicResponses.swift in Sources */ = {isa = PBXBuildFile; fileRef = C271B2E629702D2200760B23 /* MusicResponses.swift */; };
 		C27430FC286335F000E17B19 /* CameraCapture.swift in Sources */ = {isa = PBXBuildFile; fileRef = C27430FB286335F000E17B19 /* CameraCapture.swift */; };
 		C275B6D32977818D009C59BC /* SmallPlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C275B6D22977818D009C59BC /* SmallPlayerView.swift */; };
+		C275B6D529780C93009C59BC /* TremendousView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C275B6D429780C93009C59BC /* TremendousView.swift */; };
 		C28B13F828E3E106008E2C4C /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C28B13F728E3E106008E2C4C /* AppDelegate.swift */; };
 		C2B650CA287AFFF90002E252 /* CloudKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C2B650C9287AFFF90002E252 /* CloudKit.framework */; };
 		C2D0B0A5287E2DC300198F0B /* ConfettiSwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = C2D0B0A4287E2DC300198F0B /* ConfettiSwiftUI */; };
@@ -134,6 +135,7 @@
 		C271B2E629702D2200760B23 /* MusicResponses.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MusicResponses.swift; sourceTree = "<group>"; };
 		C27430FB286335F000E17B19 /* CameraCapture.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraCapture.swift; sourceTree = "<group>"; };
 		C275B6D22977818D009C59BC /* SmallPlayerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SmallPlayerView.swift; sourceTree = "<group>"; };
+		C275B6D429780C93009C59BC /* TremendousView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TremendousView.swift; sourceTree = "<group>"; };
 		C28B13F728E3E106008E2C4C /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		C2B650C9287AFFF90002E252 /* CloudKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CloudKit.framework; path = System/Library/Frameworks/CloudKit.framework; sourceTree = SDKROOT; };
 		C2DE5C97289EFECC00F8C556 /* AddEventToCalendarForm.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddEventToCalendarForm.swift; sourceTree = "<group>"; };
@@ -168,6 +170,7 @@
 				C22A180C296D010800A7E9B8 /* MusicView.swift */,
 				26AD8128281F05310069C3F0 /* FinalizeCardView.swift */,
 				C22A84E429667587001244CC /* PersistenceController+History.swift */,
+				C275B6D429780C93009C59BC /* TremendousView.swift */,
 			);
 			path = "Build Card WorkFlow";
 			sourceTree = "<group>";
@@ -533,6 +536,7 @@
 				26AD8129281F05310069C3F0 /* FinalizeCardView.swift in Sources */,
 				260F68F5281DBDCD002E864B /* OccassionsMenu.swift in Sources */,
 				260F68FA281DBE61002E864B /* PhotoAPI.swift in Sources */,
+				C275B6D529780C93009C59BC /* TremendousView.swift in Sources */,
 				C23A9D222897ECA90059B97C /* Card.swift in Sources */,
 				C2075AFD295FDBA70048ECEB /* CollageBuilder.swift in Sources */,
 				C22A84DD29666C0F001244CC /* PersistenceController+Share.swift in Sources */,

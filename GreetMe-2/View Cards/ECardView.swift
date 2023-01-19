@@ -21,7 +21,12 @@ struct eCardView: View {
     @State var text2URL: URL
     @State var text3: String
     @State var text4: String
-    @ObservedObject var chosenSong: ChosenSong
+    @State var songID: String?
+    @State var songName: String?
+    @State var songArtistName: String?
+    @State var songArtImageData: Data?
+    @State var songDuration: Double?
+
     
     var body: some View {
         HStack {
@@ -58,8 +63,10 @@ struct eCardView: View {
         }
         
     }
-        Spacer()
-        MusicView.smallPlayerView()
+        HStack{
+            Spacer()
+            SmallPlayerView(songID: songID, songName: songName, songArtistName: songArtistName, songArtImageData: songArtImageData, songDuration: songDuration)
+        }
         
     }
 }

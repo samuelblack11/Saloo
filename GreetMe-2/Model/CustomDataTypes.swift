@@ -34,6 +34,16 @@ struct SelectedSong {
     @State var durationInMillis: Int
 }
 
+class GiftCard: ObservableObject {
+    @Published var id = String()
+    @Published var status = String()
+    @Published var cardValue = Int()
+    @Published var deliveryMethod = String()
+    @Published var recipientEmail = String()
+    @Published var recipientName = String()
+}
+
+
 class ChosenSong: ObservableObject {
     @Published var id = String()
     @Published var name = String()

@@ -38,8 +38,13 @@ extension CoreCard {
     @NSManaged public var font: String
     @NSManaged public var message: String
     @NSManaged public var uniqueName: String
+    @NSManaged public var songID: String?
+    @NSManaged public var songName: String?
+    @NSManaged public var songArtistName: String?
+    @NSManaged public var songArtImageData: Data?
+    @NSManaged public var songDuration: String?
+    
 }
-
 
 struct Card: Identifiable, Hashable {
     let id: String
@@ -58,25 +63,38 @@ struct Card: Identifiable, Hashable {
     let date: Date?
     let font: String?
     let message: String?
+    let chosenSong: Data?
+    let songID: String?
+    let songName: String?
+    let songArtistName: String?
+    let songArtImageData: Data?
+    let songDuration: String?
 }
 
 extension Card {
     
     init?(record: CKRecord) {
         guard let cardName = record["cardName"] as? String,
-            let occassion = record["occassion"] as? String,
-            let recipient = record["recipient"] as? String,
-            let sender = record["sender"] as? String,
-            let an1 = record["an1"] as? String,
-            let an2 = record["an2"] as? String,
-            let an2URL = record["an2URL"] as? String,
-            let an3 = record["an3"] as? String,
-            let an4 = record["an4"] as? String,
-            let collage = record["collage"] as? Data,
-            let coverImage = record["coverImage"] as? Data,
-            let date = record["date"] as? Date,
-            let font = record["font"] as? String,
-            let message = record["message"] as? String else {
+              let occassion = record["occassion"] as? String,
+              let recipient = record["recipient"] as? String,
+              let sender = record["sender"] as? String,
+              let an1 = record["an1"] as? String,
+              let an2 = record["an2"] as? String,
+              let an2URL = record["an2URL"] as? String,
+              let an3 = record["an3"] as? String,
+              let an4 = record["an4"] as? String,
+              let collage = record["collage"] as? Data,
+              let coverImage = record["coverImage"] as? Data,
+              let date = record["date"] as? Date,
+              let font = record["font"] as? String,
+              let message = record["message"] as? String,
+              let chosenSong = record["chosenSong"] as? Data,
+              let songID = record["songID"] as? String,
+              let songName = record["songName"] as? String,
+              let songArtistName = record["songArtistName"] as? String,
+              let songArtImageData = record["songArtImageData"] as? Data,
+              let songDuration = record["songDuration"] as? String else {
+            
             return nil
         }
         
@@ -96,6 +114,11 @@ extension Card {
         self.date = date
         self.font = font
         self.message = message
+        self.chosenSong = chosenSong
+        self.songID = songID
+        self.songName = songName
+        self.songArtistName = songArtistName
+        self.songArtImageData = songArtImageData
+        self.songDuration = songDuration
     }
-
 }

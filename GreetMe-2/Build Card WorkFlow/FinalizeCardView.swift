@@ -51,24 +51,13 @@ struct FinalizeCardView: View {
     @State private var pageCount = 1
     @ObservedObject var chosenOccassion: Occassion
     @ObservedObject var chosenSong: ChosenSong
-
-
-    var musicElements: some View {
-        HStack {
-            Image(systemName: "restart.circle")
-            Image(systemName: "square.fill")
-            Image(systemName: "pause")
-            Image(systemName: "play")
-        }
-        
-    }
     
     var body: some View {
         NavigationView {
         VStack(spacing: 0) {
             Spacer()
             HStack(spacing: 0){
-                eCardView(eCardText: eCardText, font: noteField.font, coverImage: chosenObject.coverImage, collageImage: collageImage.collageImage.pngData()!, text1: text1, text2: text2, text2URL: text2URL, text3: text3, text4: text4, chosenSong: chosenSong).frame(width: (UIScreen.screenWidth/1.8), height: (UIScreen.screenHeight/1.4))
+                eCardView(eCardText: eCardText, font: noteField.font, coverImage: chosenObject.coverImage, collageImage: collageImage.collageImage.pngData()!, text1: text1, text2: text2, text2URL: text2URL, text3: text3, text4: text4, songName: chosenSong.name, songArtistName: chosenSong.artistName, songArtImageData: chosenSong.artwork, songDuration: chosenSong.durationInSeconds).frame(width: (UIScreen.screenWidth/1.8), height: (UIScreen.screenHeight/1.4))
                 Spacer()
             }
             Spacer()
