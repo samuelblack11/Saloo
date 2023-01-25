@@ -45,9 +45,6 @@ class PhotoAPI {
     var url: URL{ return URL(string: URLString)!}
     }
     
-    
-    
-    
     class func getUserCollections(username: String, completionHandler: @escaping ([PhotoCollection]?,Error?) -> Void) {
         let url = Endpoints.user(user: username).url
         var request = URLRequest(url: url)
@@ -72,7 +69,6 @@ class PhotoAPI {
         )
         task.resume()
     }
-    
     
     class func getPhotosFromCollection(collectionID: String, page_num: Int, completionHandler: @escaping ([ResultDetails]?,Error?) -> Void) {
         let url = Endpoints.collectionPhotos(collectionID: collectionID, page_num: page_num).url

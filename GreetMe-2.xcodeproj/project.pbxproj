@@ -33,6 +33,8 @@
 		C22A1815296D981700A7E9B8 /* SharePickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C22A1814296D981700A7E9B8 /* SharePickerView.swift */; };
 		C22A1817296D983E00A7E9B8 /* ManagingSharesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C22A1816296D983E00A7E9B8 /* ManagingSharesView.swift */; };
 		C22A1819296D985700A7E9B8 /* AddToExistingShareView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C22A1818296D985700A7E9B8 /* AddToExistingShareView.swift */; };
+		C22A5CB92980A97B006A0A8B /* GiftCardResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = C22A5CB82980A97B006A0A8B /* GiftCardResponse.swift */; };
+		C22A5CBB2980AB28006A0A8B /* TremendousAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = C22A5CBA2980AB28006A0A8B /* TremendousAPI.swift */; };
 		C22A84DB29666123001244CC /* PersistenceController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C22A84DA29666123001244CC /* PersistenceController.swift */; };
 		C22A84DD29666C0F001244CC /* PersistenceController+Share.swift in Sources */ = {isa = PBXBuildFile; fileRef = C22A84DC29666C0F001244CC /* PersistenceController+Share.swift */; };
 		C22A84DF29666C23001244CC /* PersistenceController+Card.swift in Sources */ = {isa = PBXBuildFile; fileRef = C22A84DE29666C23001244CC /* PersistenceController+Card.swift */; };
@@ -112,6 +114,8 @@
 		C22A1814296D981700A7E9B8 /* SharePickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharePickerView.swift; sourceTree = "<group>"; };
 		C22A1816296D983E00A7E9B8 /* ManagingSharesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManagingSharesView.swift; sourceTree = "<group>"; };
 		C22A1818296D985700A7E9B8 /* AddToExistingShareView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddToExistingShareView.swift; sourceTree = "<group>"; };
+		C22A5CB82980A97B006A0A8B /* GiftCardResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GiftCardResponse.swift; sourceTree = "<group>"; };
+		C22A5CBA2980AB28006A0A8B /* TremendousAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TremendousAPI.swift; sourceTree = "<group>"; };
 		C22A84DA29666123001244CC /* PersistenceController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersistenceController.swift; sourceTree = "<group>"; };
 		C22A84DC29666C0F001244CC /* PersistenceController+Share.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PersistenceController+Share.swift"; sourceTree = "<group>"; };
 		C22A84DE29666C23001244CC /* PersistenceController+Card.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PersistenceController+Card.swift"; sourceTree = "<group>"; };
@@ -165,12 +169,11 @@
 				26AD812A281F119A0069C3F0 /* ConfirmFrontCoverView.swift */,
 				260F68EE281DBD93002E864B /* CollageStyleMenu.swift */,
 				C2075AFC295FDBA70048ECEB /* CollageBuilder.swift */,
-				260F6904281DBFAB002E864B /* UnsplashInteractions */,
 				26AD8126281F05160069C3F0 /* WriteNoteView.swift */,
 				C22A180C296D010800A7E9B8 /* MusicView.swift */,
+				C275B6D429780C93009C59BC /* TremendousView.swift */,
 				26AD8128281F05310069C3F0 /* FinalizeCardView.swift */,
 				C22A84E429667587001244CC /* PersistenceController+History.swift */,
-				C275B6D429780C93009C59BC /* TremendousView.swift */,
 			);
 			path = "Build Card WorkFlow";
 			sourceTree = "<group>";
@@ -178,31 +181,11 @@
 		260F6902281DBF41002E864B /* Model */ = {
 			isa = PBXGroup;
 			children = (
-				C24B3ABA29574A3D00884E4D /* CustomDataTypes.swift */,
 				C2582A3C296F7151009F8FEC /* Persistence & CoreDate */,
 				C237E6E2294E5DB100E472AD /* Data & Types */,
-				C2582A3D296F7171009F8FEC /* AppleMusicAPI.swift */,
-				C271B2E629702D2200760B23 /* MusicResponses.swift */,
+				C22A5CBC2980B193006A0A8B /* APIs & Responses */,
 			);
 			path = Model;
-			sourceTree = "<group>";
-		};
-		260F6903281DBF55002E864B /* Responses */ = {
-			isa = PBXGroup;
-			children = (
-				260F68FB281DBEA0002E864B /* UnsplashResponse.swift */,
-				260F68FD281DBEBD002E864B /* PingDownloadResponse.swift */,
-			);
-			path = Responses;
-			sourceTree = "<group>";
-		};
-		260F6904281DBFAB002E864B /* UnsplashInteractions */ = {
-			isa = PBXGroup;
-			children = (
-				260F68F9281DBE61002E864B /* PhotoAPI.swift */,
-				260F6903281DBF55002E864B /* Responses */,
-			);
-			path = UnsplashInteractions;
 			sourceTree = "<group>";
 		};
 		260F6905281DC024002E864B /* Other */ = {
@@ -279,9 +262,48 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		C22A5CBC2980B193006A0A8B /* APIs & Responses */ = {
+			isa = PBXGroup;
+			children = (
+				C22A5CBE2980B1C1006A0A8B /* Apple Music */,
+				C22A5CBD2980B1AF006A0A8B /* Tremendous */,
+				C22A5CBF2980B1DE006A0A8B /* Unsplash */,
+			);
+			path = "APIs & Responses";
+			sourceTree = "<group>";
+		};
+		C22A5CBD2980B1AF006A0A8B /* Tremendous */ = {
+			isa = PBXGroup;
+			children = (
+				C22A5CBA2980AB28006A0A8B /* TremendousAPI.swift */,
+				C22A5CB82980A97B006A0A8B /* GiftCardResponse.swift */,
+			);
+			path = Tremendous;
+			sourceTree = "<group>";
+		};
+		C22A5CBE2980B1C1006A0A8B /* Apple Music */ = {
+			isa = PBXGroup;
+			children = (
+				C2582A3D296F7171009F8FEC /* AppleMusicAPI.swift */,
+				C271B2E629702D2200760B23 /* MusicResponses.swift */,
+			);
+			path = "Apple Music";
+			sourceTree = "<group>";
+		};
+		C22A5CBF2980B1DE006A0A8B /* Unsplash */ = {
+			isa = PBXGroup;
+			children = (
+				260F68F9281DBE61002E864B /* PhotoAPI.swift */,
+				260F68FB281DBEA0002E864B /* UnsplashResponse.swift */,
+				260F68FD281DBEBD002E864B /* PingDownloadResponse.swift */,
+			);
+			path = Unsplash;
+			sourceTree = "<group>";
+		};
 		C237E6E2294E5DB100E472AD /* Data & Types */ = {
 			isa = PBXGroup;
 			children = (
+				C24B3ABA29574A3D00884E4D /* CustomDataTypes.swift */,
 				C23A9D212897ECA90059B97C /* Card.swift */,
 				C23340EC28C3D58D006222F5 /* FutureDelivery+CoreDataClass.swift */,
 				C23340EA28C3D589006222F5 /* FutureDelivery+CoreDataProperties.swift */,
@@ -535,9 +557,11 @@
 				C23A9D3C28989C340059B97C /* CalendarView.swift in Sources */,
 				26AD8129281F05310069C3F0 /* FinalizeCardView.swift in Sources */,
 				260F68F5281DBDCD002E864B /* OccassionsMenu.swift in Sources */,
+				C22A5CB92980A97B006A0A8B /* GiftCardResponse.swift in Sources */,
 				260F68FA281DBE61002E864B /* PhotoAPI.swift in Sources */,
 				C275B6D529780C93009C59BC /* TremendousView.swift in Sources */,
 				C23A9D222897ECA90059B97C /* Card.swift in Sources */,
+				C22A5CBB2980AB28006A0A8B /* TremendousAPI.swift in Sources */,
 				C2075AFD295FDBA70048ECEB /* CollageBuilder.swift in Sources */,
 				C22A84DD29666C0F001244CC /* PersistenceController+Share.swift in Sources */,
 				C22A1815296D981700A7E9B8 /* SharePickerView.swift in Sources */,
