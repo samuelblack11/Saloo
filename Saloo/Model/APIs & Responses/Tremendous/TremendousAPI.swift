@@ -28,7 +28,7 @@ class TremendousAPI {
         
     }
     
-    class func browseProducts(searchTerm: String, completionHandler: @escaping ([TremendousProducts]?,Error?) -> Void) {
+    class func browseProducts(searchTerm: String, completionHandler: @escaping (TremendousProducts?,Error?) -> Void) {
         let url = Endpoints.vendorList(searchTerm: searchTerm).url
         var request = URLRequest(url: url)
         request.httpMethod = "GET"
@@ -39,7 +39,7 @@ class TremendousAPI {
                 return
             }
             do {
-                let collections = try JSONDecoder().decode([TremendousProducts].self, from: data!)
+                let collections = try JSONDecoder().decode(TremendousProducts.self, from: data!)
                 DispatchQueue.main.async {completionHandler(collections, nil)}
                 }
             catch {

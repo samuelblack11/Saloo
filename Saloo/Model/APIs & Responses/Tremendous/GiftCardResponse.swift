@@ -34,7 +34,7 @@ struct Product: Decodable {
 
 
 struct SKUList: Decodable {
-    let SKU: [Denominations]
+    let skuVals: [Denominations]
 }
 
 struct Denominations: Decodable {

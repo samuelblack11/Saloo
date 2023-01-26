@@ -16,10 +16,10 @@
 		260F6907281DC0E3002E864B /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 260F6906281DC0E3002E864B /* LoginView.swift */; };
 		262C3ED3281E1E9C00F07C01 /* CalendarParent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 262C3ED2281E1E9C00F07C01 /* CalendarParent.swift */; };
 		2688D704285FA24300954120 /* SnapShotECard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2688D703285FA24200954120 /* SnapShotECard.swift */; };
-		26A72180281DB8D500ADAE44 /* GreetMe_2App.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26A7217F281DB8D500ADAE44 /* GreetMe_2App.swift */; };
+		26A72180281DB8D500ADAE44 /* Saloo_App.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26A7217F281DB8D500ADAE44 /* Saloo_App.swift */; };
 		26A72184281DB8D900ADAE44 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 26A72183281DB8D900ADAE44 /* Assets.xcassets */; };
 		26A72187281DB8D900ADAE44 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 26A72186281DB8D900ADAE44 /* Preview Assets.xcassets */; };
-		26A7218C281DB8D900ADAE44 /* GreetMe_2.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 26A7218A281DB8D900ADAE44 /* GreetMe_2.xcdatamodeld */; };
+		26A7218C281DB8D900ADAE44 /* Saloo.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 26A7218A281DB8D900ADAE44 /* Saloo.xcdatamodeld */; };
 		26AD8127281F05160069C3F0 /* WriteNoteView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26AD8126281F05160069C3F0 /* WriteNoteView.swift */; };
 		26AD8129281F05310069C3F0 /* FinalizeCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26AD8128281F05310069C3F0 /* FinalizeCardView.swift */; };
 		26AD812B281F119A0069C3F0 /* ConfirmFrontCoverView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26AD812A281F119A0069C3F0 /* ConfirmFrontCoverView.swift */; };
@@ -90,15 +90,15 @@
 		260F68FB281DBEA0002E864B /* UnsplashResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnsplashResponse.swift; sourceTree = "<group>"; };
 		260F68FD281DBEBD002E864B /* PingDownloadResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PingDownloadResponse.swift; sourceTree = "<group>"; };
 		260F6906281DC0E3002E864B /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
-		260F6908281DEAE7002E864B /* GreetMe-2.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "GreetMe-2.entitlements"; sourceTree = "<group>"; };
+		260F6908281DEAE7002E864B /* Saloo.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Saloo.entitlements; sourceTree = "<group>"; };
 		262C3ED2281E1E9C00F07C01 /* CalendarParent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarParent.swift; sourceTree = "<group>"; };
 		2650FFCD285C9C340020980E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		2688D703285FA24200954120 /* SnapShotECard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SnapShotECard.swift; sourceTree = "<group>"; };
-		26A7217C281DB8D500ADAE44 /* GreetMe-2.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "GreetMe-2.app"; sourceTree = BUILT_PRODUCTS_DIR; };
-		26A7217F281DB8D500ADAE44 /* GreetMe_2App.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GreetMe_2App.swift; sourceTree = "<group>"; };
+		26A7217C281DB8D500ADAE44 /* Saloo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Saloo.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		26A7217F281DB8D500ADAE44 /* Saloo_App.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Saloo_App.swift; sourceTree = "<group>"; };
 		26A72183281DB8D900ADAE44 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		26A72186281DB8D900ADAE44 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
-		26A7218B281DB8D900ADAE44 /* GreetMe_2.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = GreetMe_2.xcdatamodel; sourceTree = "<group>"; };
+		26A7218B281DB8D900ADAE44 /* Saloo.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Saloo.xcdatamodel; sourceTree = "<group>"; };
 		26AD8126281F05160069C3F0 /* WriteNoteView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WriteNoteView.swift; sourceTree = "<group>"; };
 		26AD8128281F05310069C3F0 /* FinalizeCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FinalizeCardView.swift; sourceTree = "<group>"; };
 		26AD812A281F119A0069C3F0 /* ConfirmFrontCoverView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfirmFrontCoverView.swift; sourceTree = "<group>"; };
@@ -200,11 +200,11 @@
 		26A72173281DB8D500ADAE44 = {
 			isa = PBXGroup;
 			children = (
-				26A7217F281DB8D500ADAE44 /* GreetMe_2App.swift */,
+				26A7217F281DB8D500ADAE44 /* Saloo_App.swift */,
 				C28B13F728E3E106008E2C4C /* AppDelegate.swift */,
 				C22A84E929667929001244CC /* SceneDelegate.swift */,
-				26A7218A281DB8D900ADAE44 /* GreetMe_2.xcdatamodeld */,
-				26A7217E281DB8D500ADAE44 /* GreetMe-2 */,
+				26A7218A281DB8D900ADAE44 /* Saloo.xcdatamodeld */,
+				26A7217E281DB8D500ADAE44 /* Saloo */,
 				26A7217D281DB8D500ADAE44 /* Products */,
 				C2B650C8287AFFF90002E252 /* Frameworks */,
 				59C973DCA9F45EDFFEFA334A /* Pods */,
@@ -214,17 +214,17 @@
 		26A7217D281DB8D500ADAE44 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				26A7217C281DB8D500ADAE44 /* GreetMe-2.app */,
+				26A7217C281DB8D500ADAE44 /* Saloo.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		26A7217E281DB8D500ADAE44 /* GreetMe-2 */ = {
+		26A7217E281DB8D500ADAE44 /* Saloo */ = {
 			isa = PBXGroup;
 			children = (
 				C237E6E3294E5E3100E472AD /* Calendar */,
 				2650FFCD285C9C340020980E /* Info.plist */,
-				260F6908281DEAE7002E864B /* GreetMe-2.entitlements */,
+				260F6908281DEAE7002E864B /* Saloo.entitlements */,
 				260F6902281DBF41002E864B /* Model */,
 				260F6901281DBF28002E864B /* Build Card WorkFlow */,
 				C237E6E5294E5F4100E472AD /* Snapshot Cards */,
@@ -233,7 +233,7 @@
 				260F6905281DC024002E864B /* Other */,
 				26A72185281DB8D900ADAE44 /* Preview Content */,
 			);
-			path = "GreetMe-2";
+			path = Saloo;
 			sourceTree = "<group>";
 		};
 		26A72185281DB8D900ADAE44 /* Preview Content */ = {
@@ -390,9 +390,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		26A7217B281DB8D500ADAE44 /* GreetMe-2 */ = {
+		26A7217B281DB8D500ADAE44 /* Saloo */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 26A7218F281DB8D900ADAE44 /* Build configuration list for PBXNativeTarget "GreetMe-2" */;
+			buildConfigurationList = 26A7218F281DB8D900ADAE44 /* Build configuration list for PBXNativeTarget "Saloo" */;
 			buildPhases = (
 				92B30C402BD17A20430D5838 /* [CP] Check Pods Manifest.lock */,
 				26A72178281DB8D500ADAE44 /* Sources */,
@@ -404,12 +404,12 @@
 			);
 			dependencies = (
 			);
-			name = "GreetMe-2";
+			name = Saloo;
 			packageProductDependencies = (
 				C2D0B0A4287E2DC300198F0B /* ConfettiSwiftUI */,
 			);
 			productName = "GreetMe-2";
-			productReference = 26A7217C281DB8D500ADAE44 /* GreetMe-2.app */;
+			productReference = 26A7217C281DB8D500ADAE44 /* Saloo.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -427,7 +427,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 26A72177281DB8D500ADAE44 /* Build configuration list for PBXProject "GreetMe-2" */;
+			buildConfigurationList = 26A72177281DB8D500ADAE44 /* Build configuration list for PBXProject "Saloo" */;
 			compatibilityVersion = "Xcode 13.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -449,7 +449,7 @@
 			);
 			projectRoot = "";
 			targets = (
-				26A7217B281DB8D500ADAE44 /* GreetMe-2 */,
+				26A7217B281DB8D500ADAE44 /* Saloo */,
 			);
 		};
 /* End PBXProject section */
@@ -541,7 +541,7 @@
 				C22A84E529667587001244CC /* PersistenceController+History.swift in Sources */,
 				260F68EF281DBD93002E864B /* CollageStyleMenu.swift in Sources */,
 				C28B13F828E3E106008E2C4C /* AppDelegate.swift in Sources */,
-				26A7218C281DB8D900ADAE44 /* GreetMe_2.xcdatamodeld in Sources */,
+				26A7218C281DB8D900ADAE44 /* Saloo.xcdatamodeld in Sources */,
 				C24B3ABB29574A3D00884E4D /* CustomDataTypes.swift in Sources */,
 				C2075AFF295FDBC60048ECEB /* ImagePicker.swift in Sources */,
 				C22A84E32966719A001244CC /* PersistenceController+Deduplicate.swift in Sources */,
@@ -575,7 +575,7 @@
 				C23A9D382897F3F00059B97C /* CalendarDate+CoreDataProperties.swift in Sources */,
 				C2163D0E28C1609C00DEE861 /* ScheduleDelivery.swift in Sources */,
 				C2582A3E296F7171009F8FEC /* AppleMusicAPI.swift in Sources */,
-				26A72180281DB8D500ADAE44 /* GreetMe_2App.swift in Sources */,
+				26A72180281DB8D500ADAE44 /* Saloo_App.swift in Sources */,
 				C271B2E729702D2200760B23 /* MusicResponses.swift in Sources */,
 				C22A84EA29667929001244CC /* SceneDelegate.swift in Sources */,
 				C22A84DF29666C23001244CC /* PersistenceController+Card.swift in Sources */,
@@ -710,14 +710,14 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = "GreetMe-2/GreetMe-2.entitlements";
+				CODE_SIGN_ENTITLEMENTS = Saloo/Saloo.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_ASSET_PATHS = "\"GreetMe-2/Preview Content\"";
+				DEVELOPMENT_ASSET_PATHS = Saloo/Preview_Content/;
 				DEVELOPMENT_TEAM = BSM3YZFUT2;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = "GreetMe-2/Info.plist";
+				INFOPLIST_FILE = Saloo/Info.plist;
 				INFOPLIST_KEY_NSCameraUsageDescription = "Use Camera for Front Cover Image";
 				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "Add Photos Taken from Camera to Photo Library";
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "User Photos for Front Cover";
@@ -732,7 +732,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "Sam.GreetMe-2.0";
+				PRODUCT_BUNDLE_IDENTIFIER = Sam.Saloo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -746,14 +746,14 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = "GreetMe-2/GreetMe-2.entitlements";
+				CODE_SIGN_ENTITLEMENTS = Saloo/Saloo.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_ASSET_PATHS = "\"GreetMe-2/Preview Content\"";
+				DEVELOPMENT_ASSET_PATHS = Saloo/Preview_Content/;
 				DEVELOPMENT_TEAM = BSM3YZFUT2;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = "GreetMe-2/Info.plist";
+				INFOPLIST_FILE = Saloo/Info.plist;
 				INFOPLIST_KEY_NSCameraUsageDescription = "Use Camera for Front Cover Image";
 				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "Add Photos Taken from Camera to Photo Library";
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "User Photos for Front Cover";
@@ -768,7 +768,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "Sam.GreetMe-2.0";
+				PRODUCT_BUNDLE_IDENTIFIER = Sam.Saloo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -779,7 +779,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		26A72177281DB8D500ADAE44 /* Build configuration list for PBXProject "GreetMe-2" */ = {
+		26A72177281DB8D500ADAE44 /* Build configuration list for PBXProject "Saloo" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				26A7218D281DB8D900ADAE44 /* Debug */,
@@ -788,7 +788,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		26A7218F281DB8D900ADAE44 /* Build configuration list for PBXNativeTarget "GreetMe-2" */ = {
+		26A7218F281DB8D900ADAE44 /* Build configuration list for PBXNativeTarget "Saloo" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				26A72190281DB8D900ADAE44 /* Debug */,
@@ -819,13 +819,13 @@
 /* End XCSwiftPackageProductDependency section */
 
 /* Begin XCVersionGroup section */
-		26A7218A281DB8D900ADAE44 /* GreetMe_2.xcdatamodeld */ = {
+		26A7218A281DB8D900ADAE44 /* Saloo.xcdatamodeld */ = {
 			isa = XCVersionGroup;
 			children = (
-				26A7218B281DB8D900ADAE44 /* GreetMe_2.xcdatamodel */,
+				26A7218B281DB8D900ADAE44 /* Saloo.xcdatamodel */,
 			);
-			currentVersion = 26A7218B281DB8D900ADAE44 /* GreetMe_2.xcdatamodel */;
-			path = GreetMe_2.xcdatamodeld;
+			currentVersion = 26A7218B281DB8D900ADAE44 /* Saloo.xcdatamodel */;
+			path = Saloo.xcdatamodeld;
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;
 		};

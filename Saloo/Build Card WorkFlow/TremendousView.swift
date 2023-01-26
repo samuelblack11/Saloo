@@ -35,8 +35,8 @@ extension TremendousView {
         TremendousAPI.browseProducts(searchTerm: "Amazon", completionHandler: { (response, error) in
         if response != nil {
             DispatchQueue.main.async {
-                for product in response! {
-                    products.append(RewardKeyAttributes(id: product.id, rewardName: product.name, rewardImageURL: product.images.src, minValue: product.skus.SKU.minVal, maxValue: product.skus.SKU.maxVal))
+                for product in response!.products {
+                    productsForDisplay.append(RewardKeyAttributes(id: product.id, rewardName: product.name, rewardImageURL: product.images[0].src, minValue: product.skus[0].skuVals[0].minVal, maxValue: product.skus[0].skuVals[0].maxVal))
                 }
             }
         }
