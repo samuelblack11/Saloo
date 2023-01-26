@@ -231,17 +231,17 @@
 				C237E6E4294E5EA200E472AD /* View Cards */,
 				C2729FFB286FB80100FD6D0C /* PhotoLibrary & Camera */,
 				260F6905281DC024002E864B /* Other */,
-				26A72185281DB8D900ADAE44 /* Preview Content */,
+				26A72185281DB8D900ADAE44 /* Preview_Content */,
 			);
 			path = Saloo;
 			sourceTree = "<group>";
 		};
-		26A72185281DB8D900ADAE44 /* Preview Content */ = {
+		26A72185281DB8D900ADAE44 /* Preview_Content */ = {
 			isa = PBXGroup;
 			children = (
 				26A72186281DB8D900ADAE44 /* Preview Assets.xcassets */,
 			);
-			path = "Preview Content";
+			path = Preview_Content;
 			sourceTree = "<group>";
 		};
 		59C973DCA9F45EDFFEFA334A /* Pods */ = {

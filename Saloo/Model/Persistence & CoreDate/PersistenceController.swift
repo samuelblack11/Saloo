@@ -10,7 +10,7 @@ import CoreData
 import CloudKit
 import SwiftUI
 
-let gCloudKitContainerIdentifier = "iCloud.GreetMe_2"
+let gCloudKitContainerIdentifier = "iCloud.Saloo"
 
 /**
  This app doesn't necessarily post notifications from the main queue.
@@ -50,7 +50,7 @@ class PersistenceController: NSObject, ObservableObject {
             }
         }
 
-        let container = NSPersistentCloudKitContainer(name: "GreetMe_2")
+        let container = NSPersistentCloudKitContainer(name: "Saloo")
         /**
          Grab the default (first) store and associate it with the CloudKit private database.
          Set up the store description by:

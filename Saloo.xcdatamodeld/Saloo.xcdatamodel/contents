@@ -12,7 +12,6 @@
         <attribute name="an4" optional="YES" attributeType="String"/>
         <attribute name="associatedRecord" optional="YES" attributeType="Transformable"/>
         <attribute name="cardName" optional="YES" attributeType="String"/>
-        <attribute name="chosenSong" optional="YES" attributeType="Binary"/>
         <attribute name="collage" optional="YES" attributeType="Binary"/>
         <attribute name="coverImage" optional="YES" attributeType="Binary"/>
         <attribute name="date" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
@@ -21,6 +20,11 @@
         <attribute name="occassion" optional="YES" attributeType="String"/>
         <attribute name="recipient" optional="YES" attributeType="String"/>
         <attribute name="sender" optional="YES" attributeType="String"/>
+        <attribute name="songArtImageData" optional="YES" attributeType="Binary"/>
+        <attribute name="songArtistName" optional="YES" attributeType="String"/>
+        <attribute name="songDuration" optional="YES" attributeType="String"/>
+        <attribute name="songID" optional="YES" attributeType="String"/>
+        <attribute name="songName" optional="YES" attributeType="String"/>
         <attribute name="uniqueName" optional="YES" attributeType="String"/>
     </entity>
     <entity name="FutureDelivery" representedClassName=".FutureDelivery" syncable="YES">
