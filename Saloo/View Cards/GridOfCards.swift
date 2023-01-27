@@ -96,7 +96,7 @@ struct GridofCards: View {
                         VStack(spacing:0) {
                             Text("Greeting Card").font(.system(size: 4))
                             Text("by").font(.system(size: 4))
-                            Text("GreetMe Inc.").font(.system(size: 4)).padding(.bottom,10).padding(.leading, 5)
+                            Text("Saloo").font(.system(size: 4)).padding(.bottom,10).padding(.leading, 5)
                         }}.frame(width: (UIScreen.screenWidth/4), height: (UIScreen.screenHeight/15))
                 }
                 .onAppear{determineDisplayName(coreCard: card)}
@@ -115,8 +115,6 @@ struct GridofCards: View {
 
 // MARK: Returns CKShare participant permission, methods and properties to share
 extension GridofCards {
-    
-    
     
     func shareStatus(card: CoreCard) -> (Bool, Bool) {
         var isCardShared: Bool?

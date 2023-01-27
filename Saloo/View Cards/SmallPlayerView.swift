@@ -92,11 +92,15 @@ struct SmallPlayerView: View {
     
     var body: some View {
         smallPlayerView()
+            .onAppear {
+                self.musicPlayer.setQueue(with: [songID!])
+                self.musicPlayer.play()
+            }
         selectButton
     }
     
     @ViewBuilder var selectButton: some View {
-        if confirmButton == true {Button {showFCV = true} label: {Text("Select Song For Card").foregroundColor(.blue)}}
+        if confirmButton == true {Button {showFCV = true; musicPlayer.pause(); songProgress = 0.0} label: {Text("Select Song For Card").foregroundColor(.blue)}}
         else {Text("")}
     }
 }
