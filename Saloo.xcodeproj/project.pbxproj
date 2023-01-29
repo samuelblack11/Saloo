@@ -29,6 +29,7 @@
 		C20DEF602986C9F30080AE03 /* SpotifyAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = C20DEF5F2986C9F30080AE03 /* SpotifyAPI.swift */; };
 		C2163D0E28C1609C00DEE861 /* ScheduleDelivery.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2163D0D28C1609C00DEE861 /* ScheduleDelivery.swift */; };
 		C224F6C1297619AB000ED33E /* blankImage.png in Resources */ = {isa = PBXBuildFile; fileRef = C224F6C0297619AB000ED33E /* blankImage.png */; };
+		C225A84B29873B4D008FC699 /* SpotifyiOS.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C225A84A29873B4D008FC699 /* SpotifyiOS.framework */; };
 		C22A180B296CF60600A7E9B8 /* StartMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = C22A180A296CF60600A7E9B8 /* StartMenu.swift */; };
 		C22A180D296D010800A7E9B8 /* MusicView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C22A180C296D010800A7E9B8 /* MusicView.swift */; };
 		C22A1815296D981700A7E9B8 /* SharePickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C22A1814296D981700A7E9B8 /* SharePickerView.swift */; };
@@ -111,6 +112,7 @@
 		C2163D0D28C1609C00DEE861 /* ScheduleDelivery.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleDelivery.swift; sourceTree = "<group>"; };
 		C217B029294FE5F200544B17 /* Pods.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Pods.xcodeproj; path = Pods/Pods.xcodeproj; sourceTree = "<group>"; };
 		C224F6C0297619AB000ED33E /* blankImage.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = blankImage.png; path = ../../../../blankImage.png; sourceTree = "<group>"; };
+		C225A84A29873B4D008FC699 /* SpotifyiOS.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = SpotifyiOS.framework; sourceTree = "<group>"; };
 		C22A180A296CF60600A7E9B8 /* StartMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartMenu.swift; sourceTree = "<group>"; };
 		C22A180C296D010800A7E9B8 /* MusicView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MusicView.swift; sourceTree = "<group>"; };
 		C22A1814296D981700A7E9B8 /* SharePickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharePickerView.swift; sourceTree = "<group>"; };
@@ -154,6 +156,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				C2B650CA287AFFF90002E252 /* CloudKit.framework in Frameworks */,
+				C225A84B29873B4D008FC699 /* SpotifyiOS.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -184,7 +187,7 @@
 			children = (
 				C2582A3C296F7151009F8FEC /* Persistence & CoreDate */,
 				C237E6E2294E5DB100E472AD /* Data & Types */,
-				C22A5CBC2980B193006A0A8B /* APIs & Responses */,
+				C22A5CBC2980B193006A0A8B /* APIs */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -224,6 +227,7 @@
 		26A7217E281DB8D500ADAE44 /* Saloo */ = {
 			isa = PBXGroup;
 			children = (
+				C225A84A29873B4D008FC699 /* SpotifyiOS.framework */,
 				C237E6E3294E5E3100E472AD /* Calendar */,
 				2650FFCD285C9C340020980E /* Info.plist */,
 				260F6908281DEAE7002E864B /* Saloo.entitlements */,
@@ -264,14 +268,14 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		C22A5CBC2980B193006A0A8B /* APIs & Responses */ = {
+		C22A5CBC2980B193006A0A8B /* APIs */ = {
 			isa = PBXGroup;
 			children = (
 				C22A5CBE2980B1C1006A0A8B /* Music */,
 				C22A5CBD2980B1AF006A0A8B /* Tremendous */,
 				C22A5CBF2980B1DE006A0A8B /* Unsplash */,
 			);
-			path = "APIs & Responses";
+			path = APIs;
 			sourceTree = "<group>";
 		};
 		C22A5CBD2980B1AF006A0A8B /* Tremendous */ = {
@@ -642,7 +646,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -700,7 +704,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				OTHER_LDFLAGS = (
@@ -728,7 +732,7 @@
 				ENABLE_PREVIEWS = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(PROJECT_DIR)/ios-sdk-1.2.2",
+					"$(PROJECT_DIR)/Saloo",
 				);
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Saloo/Info.plist;
@@ -753,6 +757,7 @@
 					"\"QuartzCore\"",
 					"-framework",
 					"\"UIKit\"",
+					"-ObjC",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = Sam.Saloo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -777,7 +782,7 @@
 				ENABLE_PREVIEWS = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(PROJECT_DIR)/ios-sdk-1.2.2",
+					"$(PROJECT_DIR)/Saloo",
 				);
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Saloo/Info.plist;
@@ -802,6 +807,7 @@
 					"\"QuartzCore\"",
 					"-framework",
 					"\"UIKit\"",
+					"-ObjC",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = Sam.Saloo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
