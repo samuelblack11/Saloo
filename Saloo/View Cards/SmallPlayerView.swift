@@ -3,7 +3,7 @@
 //  GreetMe-2
 //
 //  Created by Sam Black on 1/17/23.
-//
+// https://santoshkumarjm.medium.com/how-to-design-a-custom-avplayer-to-play-audio-using-url-in-ios-swift-439f0dbf2ff2
 
 import Foundation
 import Foundation
@@ -23,10 +23,14 @@ struct SmallPlayerView: View {
     @State var songPreviewURL: String?
     @State private var songProgress = 0.0
     @State private var isPlaying = true
-    @State private var musicPlayer = MPMusicPlayerController.applicationMusicPlayer
     @State var confirmButton: Bool
     @Binding var showFCV: Bool
+    @State private var player: AVPlayer?
     
+    func createPlayer(previewURL: String) {
+        let playerItem = AVPlayerItem(url: URL(string: songPreviewURL!)!)
+        self.player = AVPlayer(playerItem: playerItem)
+    }
     
     func smallPlayerView() -> some View {
         let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
@@ -37,9 +41,8 @@ struct SmallPlayerView: View {
             Text(songArtistName!)
             HStack {
                 Button {
-                    musicPlayer.setQueue(with: [songPreviewURL!])
-                    //musicPlayer.setQueue(with: [songID!])
-                    musicPlayer.play()
+                    player!.seek(to: .zero)
+                    player!.play()
                     songProgress = 0.0
                     isPlaying = true
                 } label: {
@@ -55,8 +58,8 @@ struct SmallPlayerView: View {
                 .frame(maxWidth: UIScreen.screenHeight/12, maxHeight: UIScreen.screenHeight/12)
                 Button {
                     isPlaying.toggle()
-                    if musicPlayer.playbackState.rawValue == 1 {musicPlayer.pause()}
-                    else {musicPlayer.play()}
+                    if player!.timeControlStatus.rawValue == 2 {player!.pause()}
+                    else {player!.play()}
                 } label: {
                     ZStack {
                         Circle()
@@ -69,16 +72,18 @@ struct SmallPlayerView: View {
                 }
                 .frame(maxWidth: UIScreen.screenHeight/12, maxHeight: UIScreen.screenHeight/12)
             }
-            ProgressView(value: songProgress, total: songDuration!)
+            ProgressView(value: songProgress, total: 30)
                 .onReceive(timer) {_ in
-                    if songProgress < songDuration! && musicPlayer.playbackState.rawValue == 1 {
+                    print("##")
+                    print(player!.timeControlStatus.rawValue)
+                    if songProgress < 30 && player!.timeControlStatus.rawValue == 2 {
                         songProgress += 1
                     }
                 }
             HStack{
                 Text(convertToMinutes(seconds:Int(songProgress)))
                 Spacer()
-                Text(convertToMinutes(seconds: Int(songDuration!)-Int(songProgress)))
+                Text(convertToMinutes(seconds: 30 - Int(songProgress)))
                     .padding(.trailing, 10)
             }
         }
@@ -95,14 +100,14 @@ struct SmallPlayerView: View {
     var body: some View {
         smallPlayerView()
             .onAppear {
-                self.musicPlayer.setQueue(with: [songID!])
-                self.musicPlayer.play()
+                createPlayer(previewURL: songPreviewURL!)
+                player!.play()
             }
         selectButton
     }
     
     @ViewBuilder var selectButton: some View {
-        if confirmButton == true {Button {showFCV = true; musicPlayer.pause(); songProgress = 0.0} label: {Text("Select Song For Card").foregroundColor(.blue)}}
+        if confirmButton == true {Button {showFCV = true; player!.pause(); songProgress = 0.0} label: {Text("Select Song For Card").foregroundColor(.blue)}}
         else {Text("")}
     }
 }

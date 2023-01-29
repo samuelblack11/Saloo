@@ -100,8 +100,8 @@ struct WriteNoteView: View {
             }
         .alert("Please Enter Values for All Fields!", isPresented: $namesNotEntered) {Button("Ok", role: .cancel) {}}
         .alert("Add Song to Card?", isPresented: $addMusicPrompt) {            
-            Button("Hell Yea"){chosenSong.id = "00000000000"; addMusic.addMusic = true; checkRequiredFields(); annotateIfNeeded()}
-            Button("No Thanks") {chosenSong.id = "00000000000"; checkRequiredFields(); annotateIfNeeded()}
+            Button("Hell Yea"){addMusic.addMusic = true; checkRequiredFields(); annotateIfNeeded()}
+            Button("No Thanks") {checkRequiredFields(); annotateIfNeeded()}
             }
         .alert("Your typed message will only appear in your eCard", isPresented: $handWrite2) {Button("Ok", role: .cancel) {}}
         .padding(.bottom, 30)
