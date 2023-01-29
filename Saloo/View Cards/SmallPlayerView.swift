@@ -26,7 +26,8 @@ struct SmallPlayerView: View {
     @State var confirmButton: Bool
     @Binding var showFCV: Bool
     @State private var player: AVPlayer?
-    
+    //@State var whichMusicSubscription: MusicSubscription.Options
+
     func createPlayer(previewURL: String) {
         let playerItem = AVPlayerItem(url: URL(string: songPreviewURL!)!)
         self.player = AVPlayer(playerItem: playerItem)
@@ -74,8 +75,6 @@ struct SmallPlayerView: View {
             }
             ProgressView(value: songProgress, total: 30)
                 .onReceive(timer) {_ in
-                    print("##")
-                    print(player!.timeControlStatus.rawValue)
                     if songProgress < 30 && player!.timeControlStatus.rawValue == 2 {
                         songProgress += 1
                     }
@@ -104,6 +103,17 @@ struct SmallPlayerView: View {
                 player!.play()
             }
         selectButton
+    }
+    
+    
+    //func playParameters() -> (AVPlayer, MPMusicPlayerController) {
+        //if whichMusicSubscription == .Apple {}
+        //if whichMusicSubscription == .Spotify {}
+        //if whichMusicSubscription == .Neither {}
+    //}
+    
+    func whichPlayer() {
+        
     }
     
     @ViewBuilder var selectButton: some View {

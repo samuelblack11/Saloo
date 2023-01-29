@@ -37,28 +37,18 @@ struct MusicView: View {
     @State var text2URL: URL
     @State var text3: String
     @State var text4: String
-    
+    @State var whichMusicSubscription: MusicSubscription.Options
+
     var body: some View {
         TextField("Search Songs", text: $songSearch, onCommit: {
             UIApplication.shared.resignFirstResponder()
             if self.songSearch.isEmpty {
                 self.searchResults = []
             } else {
-                SKCloudServiceController.requestAuthorization {(status) in if status == .authorized {
-                    self.userToken = AppleMusicAPI().getUserToken()
-                    //self.storeFrontID = AppleMusicAPI().fetchStorefrontID(userToken: userToken)
-                    self.searchResults = AppleMusicAPI().searchAppleMusic(self.songSearch, storeFrontID: storeFrontID, userToken: userToken, completionHandler: { (response, error) in
-                        if response != nil {
-                            DispatchQueue.main.async {
-                                print("^^^^")
-                                print(response)
-                                for song in response! {
-                                    let artURL = URL(string:song.attributes.artwork.url.replacingOccurrences(of: "{w}", with: "80").replacingOccurrences(of: "{h}", with: "80"))
-                                    let _ = getURLData(url: artURL!, completionHandler: { (artResponse, error2) in
-                                        let songForList = SongForList(id: song.attributes.playParams.id, name: song.attributes.name, artistName: song.attributes.artistName, artImageData: artResponse!, durationInMillis: song.attributes.durationInMillis, isPlaying: false, previewURL: song.attributes.previews[0].url)
-                                        searchResults.append(songForList)
-                                    })}}}; if response != nil {print("No Response!")}
-                        else {debugPrint(error?.localizedDescription)}})}}}}).padding(.top, 15)
+                
+                
+                
+            }}).padding(.top, 15)
         NavigationView {
             List {
                 ForEach(searchResults, id: \.self) { song in
@@ -78,9 +68,11 @@ struct MusicView: View {
                     .frame(width: UIScreen.screenWidth, height: (UIScreen.screenHeight/7))
                     .onTapGesture {
                         print("Playing \(song.name)")
+                        chosenSong.id = song.id
                         chosenSong.name = song.name
                         chosenSong.artistName = song.artistName
                         chosenSong.artwork = song.artImageData
+                        chosenSong.durationInSeconds = Double(song.durationInMillis/1000)
                         chosenSong.songPreviewURL = song.previewURL
                         songProgress = 0.0
                         isPlaying = true
@@ -89,8 +81,8 @@ struct MusicView: View {
                 }
             }
         }
-        .popover(isPresented: $showSPV) {SmallPlayerView(songName: chosenSong.name, songArtistName: chosenSong.artistName, songArtImageData: chosenSong.artwork, songPreviewURL: chosenSong.songPreviewURL, confirmButton: true, showFCV: $showFCV)
-.presentationDetents([.fraction(0.4)])
+        .popover(isPresented: $showSPV) {SmallPlayerView(songName: chosenSong.name, songArtistName: chosenSong.artistName, songArtImageData: chosenSong.artwork, songDuration: chosenSong.durationInSeconds, songPreviewURL: chosenSong.songPreviewURL, confirmButton: true, showFCV: $showFCV)
+.presentationDetents([.fraction(0.4)]) 
                 .fullScreenCover(isPresented: $showFCV) {FinalizeCardView(chosenObject: chosenObject, collageImage: collageImage, noteField: noteField, frontCoverIsPersonalPhoto: frontCoverIsPersonalPhoto, text1: $text1, text2: $text2, text2URL: $text2URL, text3: $text3, text4: $text4, addMusic: addMusic, eCardText: $eCardText, chosenOccassion: chosenOccassion, chosenSong: chosenSong)}
         }
     }
@@ -108,4 +100,33 @@ extension MusicView {
         }
         dataTask.resume()
     }
+    
+    
+    func getSongDetailsFromOtherService() {
+        
+    }
+    
+    func searchWithAM() {
+        SKCloudServiceController.requestAuthorization {(status) in if status == .authorized {
+            self.userToken = AppleMusicAPI().getUserToken()
+            //self.storeFrontID = AppleMusicAPI().fetchStorefrontID(userToken: userToken)
+            self.searchResults = AppleMusicAPI().searchAppleMusic(self.songSearch, storeFrontID: storeFrontID, userToken: userToken, completionHandler: { (response, error) in
+                if response != nil {
+                    DispatchQueue.main.async {
+                        for song in response! {
+                            let artURL = URL(string:song.attributes.artwork.url.replacingOccurrences(of: "{w}", with: "80").replacingOccurrences(of: "{h}", with: "80"))
+                            let _ = getURLData(url: artURL!, completionHandler: { (artResponse, error2) in
+                                let songForList = SongForList(id: song.attributes.playParams.id, name: song.attributes.name, artistName: song.attributes.artistName, artImageData: artResponse!, durationInMillis: song.attributes.durationInMillis, isPlaying: false, previewURL: song.attributes.previews[0].url)
+                                searchResults.append(songForList)
+                            })}}}; if response != nil {print("No Response!")}
+                else {debugPrint(error?.localizedDescription)}}
+            )}}
+    }
+    
+    func searchWithSpotify() {
+        
+    }
+    
+    
+    
 }

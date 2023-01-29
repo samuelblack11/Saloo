@@ -46,10 +46,12 @@ class GiftCard: ObservableObject {
 
 
 class ChosenSong: ObservableObject {
+    @Published var id = String()
     @Published var name = String()
     @Published var artistName = String()
     @Published var artwork = Data()
     @Published var isPlaying = Bool()
+    @Published var durationInSeconds = Double()
     @Published var songPreviewURL = String()
 }
 
@@ -124,6 +126,14 @@ class InOut: ObservableObject {
     enum SendReceive {
         case inbox
         case outbox
+    }
+}
+
+class MusicSubscription: ObservableObject {
+    enum Options {
+        case Apple
+        case Spotify
+        case Neither
     }
 }
 

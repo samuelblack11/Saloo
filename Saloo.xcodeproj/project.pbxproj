@@ -26,6 +26,8 @@
 		26EB55652827120C00178F0B /* EnlargeECard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26EB55642827120C00178F0B /* EnlargeECard.swift */; };
 		C2075AFD295FDBA70048ECEB /* CollageBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2075AFC295FDBA70048ECEB /* CollageBuilder.swift */; };
 		C2075AFF295FDBC60048ECEB /* ImagePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2075AFE295FDBC60048ECEB /* ImagePicker.swift */; };
+		C20DEF602986C9F30080AE03 /* SpotifyAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = C20DEF5F2986C9F30080AE03 /* SpotifyAPI.swift */; };
+		C20DEF662986CFF50080AE03 /* SpotifyiOS.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C20DEF652986CFF50080AE03 /* SpotifyiOS.framework */; };
 		C2163D0E28C1609C00DEE861 /* ScheduleDelivery.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2163D0D28C1609C00DEE861 /* ScheduleDelivery.swift */; };
 		C224F6C1297619AB000ED33E /* blankImage.png in Resources */ = {isa = PBXBuildFile; fileRef = C224F6C0297619AB000ED33E /* blankImage.png */; };
 		C22A180B296CF60600A7E9B8 /* StartMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = C22A180A296CF60600A7E9B8 /* StartMenu.swift */; };
@@ -106,6 +108,9 @@
 		93AAAE1CF8AE1CB82C760293 /* Pods-GreetMe-2.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-GreetMe-2.debug.xcconfig"; path = "Target Support Files/Pods-GreetMe-2/Pods-GreetMe-2.debug.xcconfig"; sourceTree = "<group>"; };
 		C2075AFC295FDBA70048ECEB /* CollageBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollageBuilder.swift; sourceTree = "<group>"; };
 		C2075AFE295FDBC60048ECEB /* ImagePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagePicker.swift; sourceTree = "<group>"; };
+		C20DEF5F2986C9F30080AE03 /* SpotifyAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpotifyAPI.swift; sourceTree = "<group>"; };
+		C20DEF652986CFF50080AE03 /* SpotifyiOS.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SpotifyiOS.framework; path = "../../../Downloads/ios-sdk-1.2.2/SpotifyiOS.framework"; sourceTree = "<group>"; };
+		C20DEF672986D4FD0080AE03 /* Saloo-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Saloo-Bridging-Header.h"; sourceTree = "<group>"; };
 		C2163D0D28C1609C00DEE861 /* ScheduleDelivery.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleDelivery.swift; sourceTree = "<group>"; };
 		C217B029294FE5F200544B17 /* Pods.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Pods.xcodeproj; path = Pods/Pods.xcodeproj; sourceTree = "<group>"; };
 		C224F6C0297619AB000ED33E /* blankImage.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = blankImage.png; path = ../../../../blankImage.png; sourceTree = "<group>"; };
@@ -152,6 +157,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				C2D0B0A5287E2DC300198F0B /* ConfettiSwiftUI in Frameworks */,
+				C20DEF662986CFF50080AE03 /* SpotifyiOS.framework in Frameworks */,
 				C2B650CA287AFFF90002E252 /* CloudKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -200,6 +206,7 @@
 		26A72173281DB8D500ADAE44 = {
 			isa = PBXGroup;
 			children = (
+				C20DEF672986D4FD0080AE03 /* Saloo-Bridging-Header.h */,
 				26A7217F281DB8D500ADAE44 /* Saloo_App.swift */,
 				C28B13F728E3E106008E2C4C /* AppDelegate.swift */,
 				C22A84E929667929001244CC /* SceneDelegate.swift */,
@@ -285,6 +292,7 @@
 			isa = PBXGroup;
 			children = (
 				C2582A3D296F7171009F8FEC /* AppleMusicAPI.swift */,
+				C20DEF5F2986C9F30080AE03 /* SpotifyAPI.swift */,
 				C271B2E629702D2200760B23 /* MusicResponses.swift */,
 			);
 			path = "Apple Music";
@@ -381,6 +389,7 @@
 		C2B650C8287AFFF90002E252 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				C20DEF652986CFF50080AE03 /* SpotifyiOS.framework */,
 				C217B029294FE5F200544B17 /* Pods.xcodeproj */,
 				C2B650C9287AFFF90002E252 /* CloudKit.framework */,
 			);
@@ -540,6 +549,7 @@
 				C23340EB28C3D589006222F5 /* FutureDelivery+CoreDataProperties.swift in Sources */,
 				C22A84E529667587001244CC /* PersistenceController+History.swift in Sources */,
 				260F68EF281DBD93002E864B /* CollageStyleMenu.swift in Sources */,
+				C20DEF602986C9F30080AE03 /* SpotifyAPI.swift in Sources */,
 				C28B13F828E3E106008E2C4C /* AppDelegate.swift in Sources */,
 				26A7218C281DB8D900ADAE44 /* Saloo.xcdatamodeld in Sources */,
 				C24B3ABB29574A3D00884E4D /* CustomDataTypes.swift in Sources */,
@@ -644,6 +654,10 @@
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
+				OTHER_LDFLAGS = (
+					ObjC,
+					"-ObjC",
+				);
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
@@ -697,6 +711,10 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 15.4;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
+				OTHER_LDFLAGS = (
+					ObjC,
+					"-ObjC",
+				);
 				SDKROOT = iphoneos;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
@@ -716,6 +734,10 @@
 				DEVELOPMENT_ASSET_PATHS = Saloo/Preview_Content/;
 				DEVELOPMENT_TEAM = BSM3YZFUT2;
 				ENABLE_PREVIEWS = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/ios-sdk-1.2.2",
+				);
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Saloo/Info.plist;
 				INFOPLIST_KEY_NSCameraUsageDescription = "Use Camera for Front Cover Image";
@@ -735,6 +757,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = Sam.Saloo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = "Saloo-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -752,6 +775,10 @@
 				DEVELOPMENT_ASSET_PATHS = Saloo/Preview_Content/;
 				DEVELOPMENT_TEAM = BSM3YZFUT2;
 				ENABLE_PREVIEWS = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/ios-sdk-1.2.2",
+				);
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Saloo/Info.plist;
 				INFOPLIST_KEY_NSCameraUsageDescription = "Use Camera for Front Cover Image";
@@ -771,6 +798,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = Sam.Saloo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = "Saloo-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
