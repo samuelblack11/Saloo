@@ -37,7 +37,7 @@ struct MusicView: View {
     @State var text2URL: URL
     @State var text3: String
     @State var text4: String
-    @State var whichMusicSubscription: MusicSubscription.Options
+   // @State var whichMusicSubscription: MusicSubscription.Options
 
     var body: some View {
         TextField("Search Songs", text: $songSearch, onCommit: {

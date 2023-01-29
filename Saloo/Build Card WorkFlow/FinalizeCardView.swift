@@ -54,7 +54,7 @@ struct FinalizeCardView: View {
     
     var saveButton: some View {
         Button("Save eCard") {
-            Task {saveCard(noteField: noteField, chosenOccassion: chosenOccassion, an1: text1, an2: text2, an2URL: text2URL.absoluteString, an3: text3, an4: text4, chosenObject: chosenObject, collageImage: collageImage, songName: chosenSong.name, songArtistName: chosenSong.artistName, songArtImageData: chosenSong.artwork, songPreviewURL: chosenSong.songPreviewURL)}
+            Task {saveCard(noteField: noteField, chosenOccassion: chosenOccassion, an1: text1, an2: text2, an2URL: text2URL.absoluteString, an3: text3, an4: text4, chosenObject: chosenObject, collageImage: collageImage, songID: chosenSong.id, songName: chosenSong.name, songArtistName: chosenSong.artistName, songArtImageData: chosenSong.artwork, songPreviewURL: chosenSong.songPreviewURL)}
             showCompleteAlert = true
             }
             .fullScreenCover(isPresented: $showOccassions) {OccassionsMenu(calViewModel: CalViewModel(), showDetailView: ShowDetailView())}
@@ -99,11 +99,11 @@ struct FinalizeCardView: View {
 
 extension FinalizeCardView {
     
-    private func saveCard(noteField: NoteField, chosenOccassion: Occassion, an1: String, an2: String, an2URL: String, an3: String, an4: String, chosenObject: ChosenCoverImageObject, collageImage: CollageImage, songName: String?, songArtistName: String?, songArtImageData: Data?, songPreviewURL: String?) {
+    private func saveCard(noteField: NoteField, chosenOccassion: Occassion, an1: String, an2: String, an2URL: String, an3: String, an4: String, chosenObject: ChosenCoverImageObject, collageImage: CollageImage, songID: String?, songName: String?, songArtistName: String?, songArtImageData: Data?, songPreviewURL: String?) {
         let controller = PersistenceController.shared
         let taskContext = controller.persistentContainer.newTaskContext()
         taskContext.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
-        controller.addCoreCard(noteField: noteField, chosenOccassion: chosenOccassion, an1: an1, an2: an2, an2URL: an2URL, an3: an3, an4: an4, chosenObject: chosenObject, collageImage: collageImage,context: taskContext, songName: songName, songArtistName: songArtistName, songArtImageData: songArtImageData, songPreviewURL: songPreviewURL)
+        controller.addCoreCard(noteField: noteField, chosenOccassion: chosenOccassion, an1: an1, an2: an2, an2URL: an2URL, an3: an3, an4: an4, chosenObject: chosenObject, collageImage: collageImage,context: taskContext, songID: songID, songName: songName, songArtistName: songArtistName, songArtImageData: songArtImageData, songPreviewURL: songPreviewURL)
     }
 }
 

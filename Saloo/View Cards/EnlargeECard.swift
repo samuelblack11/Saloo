@@ -7,7 +7,6 @@
 
 import Foundation
 import SwiftUI
-import ConfettiSwiftUI
 import CloudKit
 
 //https://www.appcoda.com/swiftui-confetti-animation/
