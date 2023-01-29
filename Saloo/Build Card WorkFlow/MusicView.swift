@@ -50,10 +50,11 @@ struct MusicView: View {
                         if response != nil {
                             DispatchQueue.main.async {
                                 for song in response! {
-    
+                                    print("-------")
+                                    print(song.attributes.previews[0].url)
                                     let artURL = URL(string:song.attributes.artwork.url.replacingOccurrences(of: "{w}", with: "80").replacingOccurrences(of: "{h}", with: "80"))
                                     let _ = getURLData(url: artURL!, completionHandler: { (artResponse, error2) in
-                                        let songForList = SongForList(id: song.attributes.playParams.id, name: song.attributes.name, artistName: song.attributes.artistName, artImageData: artResponse!, durationInMillis: song.attributes.durationInMillis, isPlaying: false)
+                                        let songForList = SongForList(id: song.attributes.playParams.id, name: song.attributes.name, artistName: song.attributes.artistName, artImageData: artResponse!, durationInMillis: song.attributes.durationInMillis, isPlaying: false, previewURL: song.attributes.previews[0].url)
                                         searchResults.append(songForList)
                                     })}}}; if response != nil {print("No Response!")}
                         else {debugPrint(error?.localizedDescription)}})}}}}).padding(.top, 15)

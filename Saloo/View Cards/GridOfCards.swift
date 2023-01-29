@@ -101,7 +101,7 @@ struct GridofCards: View {
                 }
                 .onAppear{determineDisplayName(coreCard: card)}
                 //.sheet(isPresented: $showDeliveryScheduler) {ScheduleDelivery(card: card)}
-                .fullScreenCover(isPresented: $segueToEnlarge) {EnlargeECardView(chosenCard: card, share: $share)}
+                .fullScreenCover(isPresented: $segueToEnlarge) {EnlargeECardView(chosenCard: card, share: $share, cardsForDisplay: cardsForDisplay, whichBoxVal: whichBoxVal)}
                 Divider().padding(.bottom, 5)
                 HStack(spacing: 3) {
                     Text(determineDisplayName(coreCard: card)).font(.system(size: 8)).minimumScaleFactor(0.1)

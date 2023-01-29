@@ -23,6 +23,7 @@ struct SongForList: Hashable {
      var artImageData: Data
      var durationInMillis: Int
      var isPlaying: Bool
+     var previewURL: String
 }
 
 struct SelectedSong {

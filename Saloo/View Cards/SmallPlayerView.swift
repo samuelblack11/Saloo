@@ -20,6 +20,7 @@ struct SmallPlayerView: View {
     @State var songArtistName: String?
     @State var songArtImageData: Data?
     @State var songDuration: Double?
+    @State var songPreviewURL: String?
     @State private var songProgress = 0.0
     @State private var isPlaying = true
     @State private var musicPlayer = MPMusicPlayerController.applicationMusicPlayer
@@ -36,7 +37,8 @@ struct SmallPlayerView: View {
             Text(songArtistName!)
             HStack {
                 Button {
-                    musicPlayer.setQueue(with: [songID!])
+                    musicPlayer.setQueue(with: [songPreviewURL!])
+                    //musicPlayer.setQueue(with: [songID!])
                     musicPlayer.play()
                     songProgress = 0.0
                     isPlaying = true
