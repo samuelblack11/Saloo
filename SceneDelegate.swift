@@ -24,4 +24,19 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             }
         }
     }
+    
+    func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
+        guard let url = URLContexts.first?.url else {
+            return
+        }
+
+        let parameters = appRemote.authorizationParameters(from: url);
+
+        if let access_token = parameters?[SPTAppRemoteAccessTokenKey] {
+            appRemote.connectionParameters.accessToken = access_token
+            self.accessToken = access_token
+        } else if let error_description = parameters?[SPTAppRemoteErrorDescriptionKey] {
+            // Show the error
+        }
+    }
 }
