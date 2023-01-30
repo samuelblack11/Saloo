@@ -37,7 +37,7 @@ struct MusicView: View {
     @State var text2URL: URL
     @State var text3: String
     @State var text4: String
-   // @State var whichMusicSubscription: MusicSubscription.Options
+    @State var whichMusicSubscription: MusicSubscription.Options
 
     var body: some View {
         TextField("Search Songs", text: $songSearch, onCommit: {
@@ -45,7 +45,8 @@ struct MusicView: View {
             if self.songSearch.isEmpty {
                 self.searchResults = []
             } else {
-                
+                if whichMusicSubscription == .Apple {searchWithAM()}
+                if whichMusicSubscription == .Spotify {searchWithSpotify()}
                 
                 
             }}).padding(.top, 15)
@@ -68,15 +69,11 @@ struct MusicView: View {
                     .frame(width: UIScreen.screenWidth, height: (UIScreen.screenHeight/7))
                     .onTapGesture {
                         print("Playing \(song.name)")
-                        chosenSong.id = song.id
-                        chosenSong.name = song.name
-                        chosenSong.artistName = song.artistName
-                        chosenSong.artwork = song.artImageData
+                        chosenSong.id = song.id; chosenSong.name = song.name
+                        chosenSong.artistName = song.artistName; chosenSong.artwork = song.artImageData
                         chosenSong.durationInSeconds = Double(song.durationInMillis/1000)
                         chosenSong.songPreviewURL = song.previewURL
-                        songProgress = 0.0
-                        isPlaying = true
-                        showSPV = true
+                        songProgress = 0.0; isPlaying = true; showSPV = true
                     }
                 }
             }
@@ -124,9 +121,20 @@ extension MusicView {
     }
     
     func searchWithSpotify() {
-        
-    }
-    
+        SpotifyAPI().searchSpotify("Taylor Swift", completionHandler: {(response, error) in
+            if response != nil {
+                DispatchQueue.main.async {
+                    for song in response! {
+                        
+                        
+                        
+                        
+                        //let songForList = SongForList(id: "1", name: "1", artistName: "Tiesto", artImageData: "1", durationInMillis: 1, isPlaying: false, previewURL: "1")
+                        //searchResults.append(songForList)
+                    }}}; if response != nil {print("No Response!")}
+                        else{debugPrint(error?.localizedDescription)}
+        })}
     
     
 }
+            
