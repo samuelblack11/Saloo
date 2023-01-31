@@ -80,7 +80,7 @@ struct FinalizeCardView: View {
     var body: some View {
         NavigationView {
         VStack(spacing: 0) {
-            eCardView(eCardText: eCardText, font: noteField.font, coverImage: chosenObject.coverImage, collageImage: collageImage.collageImage.pngData()!, text1: text1, text2: text2, text2URL: text2URL, text3: text3, text4: text4, songName: chosenSong.name, songArtistName: chosenSong.artistName, songArtImageData: chosenSong.artwork)
+            eCardView(eCardText: eCardText, font: noteField.font, coverImage: chosenObject.coverImage, collageImage: collageImage.collageImage.pngData()!, text1: text1, text2: text2, text2URL: text2URL, text3: text3, text4: text4, songID: chosenSong.id, songName: chosenSong.name, songArtistName: chosenSong.artistName, songArtImageData: chosenSong.artwork, songPreviewURL: chosenSong.songPreviewURL)
             saveButton
                 //.frame(height: UIScreen.screenHeight/1)
         }

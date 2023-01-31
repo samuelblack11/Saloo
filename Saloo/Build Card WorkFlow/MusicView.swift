@@ -37,7 +37,7 @@ struct MusicView: View {
     @State var text2URL: URL
     @State var text3: String
     @State var text4: String
-    @State var whichMusicSubscription: MusicSubscription.Options
+    @State var whichMusicSubscription: MusicSubscription.Options = .Apple
 
     var body: some View {
         TextField("Search Songs", text: $songSearch, onCommit: {
@@ -125,10 +125,8 @@ extension MusicView {
             if response != nil {
                 DispatchQueue.main.async {
                     for song in response! {
-                        
-                        
-                        
-                        
+                        print("***")
+                        print(response)
                         //let songForList = SongForList(id: "1", name: "1", artistName: "Tiesto", artImageData: "1", durationInMillis: 1, isPlaying: false, previewURL: "1")
                         //searchResults.append(songForList)
                     }}}; if response != nil {print("No Response!")}
