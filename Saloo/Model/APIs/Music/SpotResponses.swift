@@ -18,10 +18,6 @@ struct Tracks: Decodable {
     let items: [SpotItem]
 }
 
-struct SpotItems: Decodable {
-    let dataPoints: [SpotItem]
-}
-
 struct SpotItem: Decodable {
     let id: String
     let name: String

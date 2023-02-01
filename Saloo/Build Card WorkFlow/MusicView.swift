@@ -100,8 +100,10 @@ extension MusicView {
                     for song in response! {
                         print("BBBBB")
                         print(response)
-                        //let songForList = SongForList(id: "1", name: "1", artistName: "Tiesto", artImageData: "1", durationInMillis: 1, isPlaying: false, previewURL: "1")
-                        //searchResults.append(songForList)
+                        let artURL = URL(string:song.album.images[2].url)
+                        let _ = getURLData(url: artURL!, completionHandler: {(artResponse, error2) in
+                            let songForList = SongForList(id: song.id, name: song.name, artistName: song.artists[0].name, artImageData: artResponse!, durationInMillis: song.duration_ms, isPlaying: false, previewURL: "")
+                            searchResults.append(songForList)})
                     }}}; if response != nil {print("No Response!")}
                         else{debugPrint(error?.localizedDescription)}
         })}
