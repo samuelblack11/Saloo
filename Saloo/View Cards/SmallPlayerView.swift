@@ -26,20 +26,17 @@ struct SmallPlayerView: View {
     @Binding var showFCV: Bool
     @State private var player: AVPlayer?
     @State private var musicPlayer = MPMusicPlayerController.applicationMusicPlayer
-    @State var whichMusicSubscription: MusicSubscription.Options = .Apple
-
-   
+    @State var whichMusicSubscription: MusicSubscription.Options = .Spotify
     
     var body: some View {
         switch whichMusicSubscription {
         case .Apple:
-            return AnyView(AMPlayerView().onAppear {self.musicPlayer.setQueue(with: [songID!]); self.musicPlayer.play()})
+            return AnyView(AMPlayerView())
         case .Neither:
-            return AnyView(AMPreviewPlayerView().onAppear {createPlayer(); player!.play()})
+            return AnyView(AMPreviewPlayerView())
         case .Spotify:
             return AnyView(AMPreviewPlayerView())
         }
-        //selectButton
     }
     
     @ViewBuilder var selectButton: some View {
@@ -52,7 +49,7 @@ struct SmallPlayerView: View {
         let playerItem = AVPlayerItem(url: URL(string: songPreviewURL!)!)
         self.player = AVPlayer(playerItem: playerItem)
     }
-    
+
     func AMPreviewPlayerView() -> some View {
         let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
         return  VStack {
@@ -105,7 +102,9 @@ struct SmallPlayerView: View {
                 Text(convertToMinutes(seconds: 30 - Int(songProgress)))
                     .padding(.trailing, 10)
             }
+            selectButton
         }
+        .onAppear{createPlayer(); player!.play()}
     }
     
     func AMPlayerView() -> some View {
@@ -160,7 +159,9 @@ struct SmallPlayerView: View {
                 Text(convertToMinutes(seconds: Int(songDuration!)-Int(songProgress)))
                     .padding(.trailing, 10)
             }
+            selectButton
         }
+        .onAppear{self.musicPlayer.setQueue(with: [songID!]); self.musicPlayer.play()}
     }
     
     

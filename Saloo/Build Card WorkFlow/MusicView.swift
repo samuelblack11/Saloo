@@ -37,7 +37,7 @@ struct MusicView: View {
     @State var text2URL: URL
     @State var text3: String
     @State var text4: String
-    @State var whichMusicSubscription: MusicSubscription.Options = .Apple
+    @State var whichMusicSubscription: MusicSubscription.Options
 
     var body: some View {
         TextField("Search Songs", text: $songSearch, onCommit: {
@@ -45,10 +45,14 @@ struct MusicView: View {
             if self.songSearch.isEmpty {
                 self.searchResults = []
             } else {
-                if whichMusicSubscription == .Apple {searchWithAM()}
-                if whichMusicSubscription == .Spotify {searchWithSpotify()}
-                
-                
+                switch whichMusicSubscription {
+                case .Apple:
+                    return searchWithAM()
+                case .Neither:
+                    return searchWithAM()
+                case .Spotify:
+                    return searchWithSpotify()
+                }
             }}).padding(.top, 15)
         NavigationView {
             List {
@@ -78,7 +82,8 @@ struct MusicView: View {
                 }
             }
         }
-        .popover(isPresented: $showSPV) {SmallPlayerView(songName: chosenSong.name, songArtistName: chosenSong.artistName, songArtImageData: chosenSong.artwork, songDuration: chosenSong.durationInSeconds, songPreviewURL: chosenSong.songPreviewURL, confirmButton: true, showFCV: $showFCV)
+        .onAppear{ print("-----"); print(whichMusicSubscription)}
+        .popover(isPresented: $showSPV) {SmallPlayerView(songID: chosenSong.id, songName: chosenSong.name, songArtistName: chosenSong.artistName, songArtImageData: chosenSong.artwork, songDuration: chosenSong.durationInSeconds, songPreviewURL: chosenSong.songPreviewURL, confirmButton: true, showFCV: $showFCV)
 .presentationDetents([.fraction(0.4)]) 
                 .fullScreenCover(isPresented: $showFCV) {FinalizeCardView(chosenObject: chosenObject, collageImage: collageImage, noteField: noteField, frontCoverIsPersonalPhoto: frontCoverIsPersonalPhoto, text1: $text1, text2: $text2, text2URL: $text2URL, text3: $text3, text4: $text4, addMusic: addMusic, eCardText: $eCardText, chosenOccassion: chosenOccassion, chosenSong: chosenSong)}
         }
@@ -87,21 +92,19 @@ struct MusicView: View {
 }
 extension MusicView {
     
-    func getURLData(url: URL, completionHandler: @escaping (Data?,Error?) -> Void) {
-        var request = URLRequest(url: url)
-        request.httpMethod = "GET"
-        request.setValue("v1", forHTTPHeaderField: "Accept-Version")
-        let dataTask = URLSession.shared.dataTask(with: request) { (data, response, error) in
-            guard error == nil else {return}
-            DispatchQueue.main.async {completionHandler(data, nil)}
-        }
-        dataTask.resume()
-    }
-    
-    
-    func getSongDetailsFromOtherService() {
-        
-    }
+    func searchWithSpotify() {
+        print("Testing....")
+        SpotifyAPI().searchSpotify(self.songSearch, completionHandler: {(response, error) in
+            if response != nil {
+                DispatchQueue.main.async {
+                    for song in response! {
+                        print("BBBBB")
+                        print(response)
+                        //let songForList = SongForList(id: "1", name: "1", artistName: "Tiesto", artImageData: "1", durationInMillis: 1, isPlaying: false, previewURL: "1")
+                        //searchResults.append(songForList)
+                    }}}; if response != nil {print("No Response!")}
+                        else{debugPrint(error?.localizedDescription)}
+        })}
     
     func searchWithAM() {
         SKCloudServiceController.requestAuthorization {(status) in if status == .authorized {
@@ -120,19 +123,18 @@ extension MusicView {
             )}}
     }
     
-    func searchWithSpotify() {
-        SpotifyAPI().searchSpotify("Taylor Swift", completionHandler: {(response, error) in
-            if response != nil {
-                DispatchQueue.main.async {
-                    for song in response! {
-                        print("***")
-                        print(response)
-                        //let songForList = SongForList(id: "1", name: "1", artistName: "Tiesto", artImageData: "1", durationInMillis: 1, isPlaying: false, previewURL: "1")
-                        //searchResults.append(songForList)
-                    }}}; if response != nil {print("No Response!")}
-                        else{debugPrint(error?.localizedDescription)}
-        })}
-    
+    func getSongDetailsFromOtherService() {}
+        
+    func getURLData(url: URL, completionHandler: @escaping (Data?,Error?) -> Void) {
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
+        request.setValue("v1", forHTTPHeaderField: "Accept-Version")
+        let dataTask = URLSession.shared.dataTask(with: request) { (data, response, error) in
+            guard error == nil else {return}
+            DispatchQueue.main.async {completionHandler(data, nil)}
+        }
+        dataTask.resume()
+    }
     
 }
             

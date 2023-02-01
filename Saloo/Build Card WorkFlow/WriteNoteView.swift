@@ -105,7 +105,7 @@ struct WriteNoteView: View {
             }
         .alert("Your typed message will only appear in your eCard", isPresented: $handWrite2) {Button("Ok", role: .cancel) {}}
         .padding(.bottom, 30)
-        .fullScreenCover(isPresented: $showMusic) {MusicView(chosenSong: chosenSong, chosenOccassion: chosenOccassion, chosenObject: chosenObject, collageImage: collageImage, noteField: noteField, addMusic: addMusic, frontCoverIsPersonalPhoto: frontCoverIsPersonalPhoto, eCardText: eCardText, text1: text1, text2: text2, text2URL: text2URL, text3: text3, text4: text4, whichMusicSubscription: .Apple)}
+        .fullScreenCover(isPresented: $showMusic) {MusicView(chosenSong: chosenSong, chosenOccassion: chosenOccassion, chosenObject: chosenObject, collageImage: collageImage, noteField: noteField, addMusic: addMusic, frontCoverIsPersonalPhoto: frontCoverIsPersonalPhoto, eCardText: eCardText, text1: text1, text2: text2, text2URL: text2URL, text3: text3, text4: text4, whichMusicSubscription: .Spotify)}
         .fullScreenCover(isPresented: $showFinalize) {FinalizeCardView(chosenObject: chosenObject, collageImage: collageImage, noteField: noteField, frontCoverIsPersonalPhoto: frontCoverIsPersonalPhoto, text1: $text1, text2: $text2, text2URL: $text2URL, text3: $text3, text4: $text4, addMusic: addMusic, eCardText: $eCardText, chosenOccassion: chosenOccassion, chosenSong: chosenSong)}
         .fullScreenCover(isPresented: $showCollageBuilder) {CollageBuilder(showImagePicker: false, chosenObject: chosenObject, chosenOccassion: chosenOccassion, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenCollageStyle: chosenStyle)}
         }

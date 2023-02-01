@@ -30,6 +30,7 @@
 		C2163D0E28C1609C00DEE861 /* ScheduleDelivery.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2163D0D28C1609C00DEE861 /* ScheduleDelivery.swift */; };
 		C224F6C1297619AB000ED33E /* blankImage.png in Resources */ = {isa = PBXBuildFile; fileRef = C224F6C0297619AB000ED33E /* blankImage.png */; };
 		C225A84B29873B4D008FC699 /* SpotifyiOS.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C225A84A29873B4D008FC699 /* SpotifyiOS.framework */; };
+		C225A8512989E074008FC699 /* SpotResponses.swift in Sources */ = {isa = PBXBuildFile; fileRef = C225A8502989E074008FC699 /* SpotResponses.swift */; };
 		C22A180B296CF60600A7E9B8 /* StartMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = C22A180A296CF60600A7E9B8 /* StartMenu.swift */; };
 		C22A180D296D010800A7E9B8 /* MusicView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C22A180C296D010800A7E9B8 /* MusicView.swift */; };
 		C22A1815296D981700A7E9B8 /* SharePickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C22A1814296D981700A7E9B8 /* SharePickerView.swift */; };
@@ -57,7 +58,7 @@
 		C24B3ABB29574A3D00884E4D /* CustomDataTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = C24B3ABA29574A3D00884E4D /* CustomDataTypes.swift */; };
 		C2582A3B296E5841009F8FEC /* eCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2582A3A296E5841009F8FEC /* eCardView.swift */; };
 		C2582A3E296F7171009F8FEC /* AppleMusicAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2582A3D296F7171009F8FEC /* AppleMusicAPI.swift */; };
-		C271B2E729702D2200760B23 /* MusicResponses.swift in Sources */ = {isa = PBXBuildFile; fileRef = C271B2E629702D2200760B23 /* MusicResponses.swift */; };
+		C271B2E729702D2200760B23 /* AMResponses.swift in Sources */ = {isa = PBXBuildFile; fileRef = C271B2E629702D2200760B23 /* AMResponses.swift */; };
 		C27430FC286335F000E17B19 /* CameraCapture.swift in Sources */ = {isa = PBXBuildFile; fileRef = C27430FB286335F000E17B19 /* CameraCapture.swift */; };
 		C275B6D32977818D009C59BC /* SmallPlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C275B6D22977818D009C59BC /* SmallPlayerView.swift */; };
 		C275B6D529780C93009C59BC /* TremendousView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C275B6D429780C93009C59BC /* TremendousView.swift */; };
@@ -113,6 +114,7 @@
 		C217B029294FE5F200544B17 /* Pods.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Pods.xcodeproj; path = Pods/Pods.xcodeproj; sourceTree = "<group>"; };
 		C224F6C0297619AB000ED33E /* blankImage.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = blankImage.png; path = ../../../../blankImage.png; sourceTree = "<group>"; };
 		C225A84A29873B4D008FC699 /* SpotifyiOS.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = SpotifyiOS.framework; sourceTree = "<group>"; };
+		C225A8502989E074008FC699 /* SpotResponses.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpotResponses.swift; sourceTree = "<group>"; };
 		C22A180A296CF60600A7E9B8 /* StartMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartMenu.swift; sourceTree = "<group>"; };
 		C22A180C296D010800A7E9B8 /* MusicView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MusicView.swift; sourceTree = "<group>"; };
 		C22A1814296D981700A7E9B8 /* SharePickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharePickerView.swift; sourceTree = "<group>"; };
@@ -140,7 +142,7 @@
 		C24B3ABA29574A3D00884E4D /* CustomDataTypes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomDataTypes.swift; sourceTree = "<group>"; };
 		C2582A3A296E5841009F8FEC /* eCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = eCardView.swift; sourceTree = "<group>"; };
 		C2582A3D296F7171009F8FEC /* AppleMusicAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppleMusicAPI.swift; sourceTree = "<group>"; };
-		C271B2E629702D2200760B23 /* MusicResponses.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MusicResponses.swift; sourceTree = "<group>"; };
+		C271B2E629702D2200760B23 /* AMResponses.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AMResponses.swift; sourceTree = "<group>"; };
 		C27430FB286335F000E17B19 /* CameraCapture.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraCapture.swift; sourceTree = "<group>"; };
 		C275B6D22977818D009C59BC /* SmallPlayerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SmallPlayerView.swift; sourceTree = "<group>"; };
 		C275B6D429780C93009C59BC /* TremendousView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TremendousView.swift; sourceTree = "<group>"; };
@@ -292,7 +294,8 @@
 			children = (
 				C2582A3D296F7171009F8FEC /* AppleMusicAPI.swift */,
 				C20DEF5F2986C9F30080AE03 /* SpotifyAPI.swift */,
-				C271B2E629702D2200760B23 /* MusicResponses.swift */,
+				C271B2E629702D2200760B23 /* AMResponses.swift */,
+				C225A8502989E074008FC699 /* SpotResponses.swift */,
 			);
 			path = Music;
 			sourceTree = "<group>";
@@ -538,6 +541,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C225A8512989E074008FC699 /* SpotResponses.swift in Sources */,
 				260F68F7281DBDD2002E864B /* UnsplashCollectionView.swift in Sources */,
 				260F68FE281DBEBD002E864B /* PingDownloadResponse.swift in Sources */,
 				C22A1817296D983E00A7E9B8 /* ManagingSharesView.swift in Sources */,
@@ -582,7 +586,7 @@
 				C2163D0E28C1609C00DEE861 /* ScheduleDelivery.swift in Sources */,
 				C2582A3E296F7171009F8FEC /* AppleMusicAPI.swift in Sources */,
 				26A72180281DB8D500ADAE44 /* Saloo_App.swift in Sources */,
-				C271B2E729702D2200760B23 /* MusicResponses.swift in Sources */,
+				C271B2E729702D2200760B23 /* AMResponses.swift in Sources */,
 				C22A84EA29667929001244CC /* SceneDelegate.swift in Sources */,
 				C22A84DF29666C23001244CC /* PersistenceController+Card.swift in Sources */,
 				26EB55652827120C00178F0B /* EnlargeECard.swift in Sources */,
