@@ -56,6 +56,7 @@
 		C23A9D3C28989C340059B97C /* CalendarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C23A9D3B28989C340059B97C /* CalendarView.swift */; };
 		C23B622128B5ABE300D88F85 /* Notify.swift in Sources */ = {isa = PBXBuildFile; fileRef = C23B622028B5ABE300D88F85 /* Notify.swift */; };
 		C24B3ABB29574A3D00884E4D /* CustomDataTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = C24B3ABA29574A3D00884E4D /* CustomDataTypes.swift */; };
+		C24B77F9298B563900ECA882 /* SpotPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = C24B77F8298B563900ECA882 /* SpotPlayer.swift */; };
 		C2582A3B296E5841009F8FEC /* eCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2582A3A296E5841009F8FEC /* eCardView.swift */; };
 		C2582A3E296F7171009F8FEC /* AppleMusicAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2582A3D296F7171009F8FEC /* AppleMusicAPI.swift */; };
 		C271B2E729702D2200760B23 /* AMResponses.swift in Sources */ = {isa = PBXBuildFile; fileRef = C271B2E629702D2200760B23 /* AMResponses.swift */; };
@@ -140,6 +141,7 @@
 		C23A9D3B28989C340059B97C /* CalendarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarView.swift; sourceTree = "<group>"; };
 		C23B622028B5ABE300D88F85 /* Notify.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Notify.swift; sourceTree = "<group>"; };
 		C24B3ABA29574A3D00884E4D /* CustomDataTypes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomDataTypes.swift; sourceTree = "<group>"; };
+		C24B77F8298B563900ECA882 /* SpotPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpotPlayer.swift; sourceTree = "<group>"; };
 		C2582A3A296E5841009F8FEC /* eCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = eCardView.swift; sourceTree = "<group>"; };
 		C2582A3D296F7171009F8FEC /* AppleMusicAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppleMusicAPI.swift; sourceTree = "<group>"; };
 		C271B2E629702D2200760B23 /* AMResponses.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AMResponses.swift; sourceTree = "<group>"; };
@@ -296,6 +298,7 @@
 				C20DEF5F2986C9F30080AE03 /* SpotifyAPI.swift */,
 				C271B2E629702D2200760B23 /* AMResponses.swift */,
 				C225A8502989E074008FC699 /* SpotResponses.swift */,
+				C24B77F8298B563900ECA882 /* SpotPlayer.swift */,
 			);
 			path = Music;
 			sourceTree = "<group>";
@@ -545,6 +548,7 @@
 				260F68F7281DBDD2002E864B /* UnsplashCollectionView.swift in Sources */,
 				260F68FE281DBEBD002E864B /* PingDownloadResponse.swift in Sources */,
 				C22A1817296D983E00A7E9B8 /* ManagingSharesView.swift in Sources */,
+				C24B77F9298B563900ECA882 /* SpotPlayer.swift in Sources */,
 				C237E6E1294E453600E472AD /* GridOfCards.swift in Sources */,
 				C23340EB28C3D589006222F5 /* FutureDelivery+CoreDataProperties.swift in Sources */,
 				C22A84E529667587001244CC /* PersistenceController+History.swift in Sources */,

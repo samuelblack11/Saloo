@@ -27,6 +27,7 @@ struct SmallPlayerView: View {
     @State private var player: AVPlayer?
     @State private var musicPlayer = MPMusicPlayerController.applicationMusicPlayer
     @State var whichMusicSubscription: MusicSubscription.Options = .Spotify
+    var spotPlayer: SpotPlayer?
     
     var body: some View {
         switch whichMusicSubscription {
