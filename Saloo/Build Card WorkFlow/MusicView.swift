@@ -18,6 +18,7 @@ struct MusicView: View {
     @State private var storeFrontID = "us"
     @State private var userToken = ""
     @State private var searchResults: [SongForList] = []
+    @State var spotDeviceID: String = ""
     //@State private var musicPlayer = MPMusicPlayerController.applicationMusicPlayer
     @State private var player: AVPlayer?
     @State var showFCV: Bool = false
@@ -106,7 +107,24 @@ extension MusicView {
                             searchResults.append(songForList)})
                     }}}; if response != nil {print("No Response!")}
                         else{debugPrint(error?.localizedDescription)}
-        })}
+        })
+        
+        print("%$%$")
+        SpotifyAPI().getSpotDevices(completionHandler: {(response, error) in
+            if response != nil {
+                DispatchQueue.main.async {
+                    for device in response!.devices {
+                        print("*&*&")
+                        print(response)
+                        if device.type == "Smartphone" {
+                            spotDeviceID = device.id
+                        }
+                    }}}; if response != nil {print("No Response!")}
+            else{debugPrint(error?.localizedDescription)}
+        }
+        )
+        
+    }
     
     func searchWithAM() {
         SKCloudServiceController.requestAuthorization {(status) in if status == .authorized {

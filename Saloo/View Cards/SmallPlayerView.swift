@@ -27,6 +27,7 @@ struct SmallPlayerView: View {
     @State private var player: AVPlayer?
     @State private var musicPlayer = MPMusicPlayerController.applicationMusicPlayer
     @State var whichMusicSubscription: MusicSubscription.Options = .Spotify
+    @State var spotDeviceID: String
     //var spotPlayer: SpotPlayer?
     
     var body: some View {
@@ -50,6 +51,7 @@ struct SmallPlayerView: View {
         let playerItem = AVPlayerItem(url: URL(string: songPreviewURL!)!)
         self.player = AVPlayer(playerItem: playerItem)
     }
+    
     
    // func SpotPlayerView() -> some View {
    //     return VStack {
@@ -222,7 +224,9 @@ struct SmallPlayerView: View {
             }
             selectButton
         }
-        .onAppear{SpotifyAPI().playSpotify(songID!)}
+        .onAppear{
+            SpotifyAPI().playSpotify(songID!, deviceID: spotDeviceID)
+        }
     }
     
     func convertToMinutes(seconds: Int) -> String {

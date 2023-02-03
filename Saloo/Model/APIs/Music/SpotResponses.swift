@@ -41,5 +41,14 @@ struct AlbumImages: Decodable {
     let width: Int
 }
 
+struct SpotDevices: Decodable {
+    let devices: [SpotDevice]
+}
+
+struct SpotDevice: Decodable {
+    let id: String
+    let type: String
+}
+
 
 
