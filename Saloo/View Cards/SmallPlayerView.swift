@@ -27,7 +27,7 @@ struct SmallPlayerView: View {
     @State private var player: AVPlayer?
     @State private var musicPlayer = MPMusicPlayerController.applicationMusicPlayer
     @State var whichMusicSubscription: MusicSubscription.Options = .Spotify
-    var spotPlayer: SpotPlayer?
+    //var spotPlayer: SpotPlayer?
     
     var body: some View {
         switch whichMusicSubscription {
@@ -36,7 +36,7 @@ struct SmallPlayerView: View {
         case .Neither:
             return AnyView(AMPreviewPlayerView())
         case .Spotify:
-            return AnyView(AMPreviewPlayerView())
+            return AnyView(SpotPlayerView())
         }
     }
     
@@ -50,6 +50,12 @@ struct SmallPlayerView: View {
         let playerItem = AVPlayerItem(url: URL(string: songPreviewURL!)!)
         self.player = AVPlayer(playerItem: playerItem)
     }
+    
+   // func SpotPlayerView() -> some View {
+   //     return VStack {
+   //         spotPlayer?.appRemote!
+   //     }
+   // }
 
     func AMPreviewPlayerView() -> some View {
         let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
@@ -67,7 +73,7 @@ struct SmallPlayerView: View {
                 } label: {
                     ZStack {
                         Circle()
-                            .accentColor(.pink)
+                            .accentColor(.green)
                             .shadow(radius: 10)
                         Image(systemName: "arrow.uturn.backward" )
                             .foregroundColor(.white)
@@ -164,7 +170,60 @@ struct SmallPlayerView: View {
         }
         .onAppear{self.musicPlayer.setQueue(with: [songID!]); self.musicPlayer.play()}
     }
-    
+    func SpotPlayerView() -> some View {
+        let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
+        return  VStack {
+            Image(uiImage: UIImage(data: songArtImageData!)!)
+            Text(songName!)
+                .font(.headline)
+            Text(songArtistName!)
+            HStack {
+                Button {
+                    songProgress = 0.0
+                    isPlaying = true
+                } label: {
+                    ZStack {
+                        Circle()
+                            .accentColor(.green)
+                            .shadow(radius: 10)
+                        Image(systemName: "arrow.uturn.backward" )
+                            .foregroundColor(.white)
+                            .font(.system(.title))
+                    }
+                }
+                .frame(maxWidth: UIScreen.screenHeight/12, maxHeight: UIScreen.screenHeight/12)
+                Button {
+                    isPlaying.toggle()
+                    //if musicPlayer.playbackState.rawValue == 1 {musicPlayer.pause()}
+                    //else {musicPlayer.play()}
+                } label: {
+                    ZStack {
+                        Circle()
+                            .accentColor(.green)
+                            .shadow(radius: 10)
+                        Image(systemName: isPlaying ? "pause.fill" : "play.fill")
+                            .foregroundColor(.white)
+                            .font(.system(.title))
+                    }
+                }
+                .frame(maxWidth: UIScreen.screenHeight/12, maxHeight: UIScreen.screenHeight/12)
+            }
+            ProgressView(value: songProgress, total: songDuration!)
+                .onReceive(timer) {_ in
+                    //if songProgress < songDuration! && musicPlayer.playbackState.rawValue == 1 {
+                    //    songProgress += 1
+                   // }
+                }
+            HStack{
+                Text(convertToMinutes(seconds:Int(songProgress)))
+                Spacer()
+                Text(convertToMinutes(seconds: Int(songDuration!)-Int(songProgress)))
+                    .padding(.trailing, 10)
+            }
+            selectButton
+        }
+        .onAppear{SpotifyAPI().playSpotify(songID!)}
+    }
     
     func convertToMinutes(seconds: Int) -> String {
         let m = seconds / 60
