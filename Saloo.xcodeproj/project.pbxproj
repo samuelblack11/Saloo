@@ -32,7 +32,7 @@
 		C225A84B29873B4D008FC699 /* SpotifyiOS.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C225A84A29873B4D008FC699 /* SpotifyiOS.framework */; };
 		C225A8512989E074008FC699 /* SpotResponses.swift in Sources */ = {isa = PBXBuildFile; fileRef = C225A8502989E074008FC699 /* SpotResponses.swift */; };
 		C22A180B296CF60600A7E9B8 /* StartMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = C22A180A296CF60600A7E9B8 /* StartMenu.swift */; };
-		C22A180D296D010800A7E9B8 /* MusicView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C22A180C296D010800A7E9B8 /* MusicView.swift */; };
+		C22A180D296D010800A7E9B8 /* ApplePlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = C22A180C296D010800A7E9B8 /* ApplePlayer.swift */; };
 		C22A1815296D981700A7E9B8 /* SharePickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C22A1814296D981700A7E9B8 /* SharePickerView.swift */; };
 		C22A1817296D983E00A7E9B8 /* ManagingSharesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C22A1816296D983E00A7E9B8 /* ManagingSharesView.swift */; };
 		C22A1819296D985700A7E9B8 /* AddToExistingShareView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C22A1818296D985700A7E9B8 /* AddToExistingShareView.swift */; };
@@ -118,7 +118,7 @@
 		C225A84A29873B4D008FC699 /* SpotifyiOS.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = SpotifyiOS.framework; sourceTree = "<group>"; };
 		C225A8502989E074008FC699 /* SpotResponses.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpotResponses.swift; sourceTree = "<group>"; };
 		C22A180A296CF60600A7E9B8 /* StartMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartMenu.swift; sourceTree = "<group>"; };
-		C22A180C296D010800A7E9B8 /* MusicView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MusicView.swift; sourceTree = "<group>"; };
+		C22A180C296D010800A7E9B8 /* ApplePlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApplePlayer.swift; sourceTree = "<group>"; };
 		C22A1814296D981700A7E9B8 /* SharePickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharePickerView.swift; sourceTree = "<group>"; };
 		C22A1816296D983E00A7E9B8 /* ManagingSharesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManagingSharesView.swift; sourceTree = "<group>"; };
 		C22A1818296D985700A7E9B8 /* AddToExistingShareView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddToExistingShareView.swift; sourceTree = "<group>"; };
@@ -181,7 +181,7 @@
 				260F68EE281DBD93002E864B /* CollageStyleMenu.swift */,
 				C2075AFC295FDBA70048ECEB /* CollageBuilder.swift */,
 				26AD8126281F05160069C3F0 /* WriteNoteView.swift */,
-				C22A180C296D010800A7E9B8 /* MusicView.swift */,
+				C22A180C296D010800A7E9B8 /* ApplePlayer.swift */,
 				C275B6D429780C93009C59BC /* TremendousView.swift */,
 				26AD8128281F05310069C3F0 /* FinalizeCardView.swift */,
 				C22A84E429667587001244CC /* PersistenceController+History.swift */,
@@ -566,7 +566,7 @@
 				262C3ED3281E1E9C00F07C01 /* CalendarParent.swift in Sources */,
 				C22A84E129666C84001244CC /* CoreDataHelper.swift in Sources */,
 				C27430FC286335F000E17B19 /* CameraCapture.swift in Sources */,
-				C22A180D296D010800A7E9B8 /* MusicView.swift in Sources */,
+				C22A180D296D010800A7E9B8 /* ApplePlayer.swift in Sources */,
 				C23524D22896D5F80052494F /* PreSetCalendarDates.swift in Sources */,
 				26AD8127281F05160069C3F0 /* WriteNoteView.swift in Sources */,
 				26AD812B281F119A0069C3F0 /* ConfirmFrontCoverView.swift in Sources */,

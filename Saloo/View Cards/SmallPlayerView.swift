@@ -29,6 +29,7 @@ struct SmallPlayerView: View {
     @State var spotDeviceID: String?
     @EnvironmentObject var musicSub: MusicSubscription
     
+    
     var body: some View {
         NavigationStack {
             if musicSub.type == .Apple {AMPlayerView()}
