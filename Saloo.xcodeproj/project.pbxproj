@@ -45,6 +45,7 @@
 		C22A84E32966719A001244CC /* PersistenceController+Deduplicate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C22A84E22966719A001244CC /* PersistenceController+Deduplicate.swift */; };
 		C22A84E529667587001244CC /* PersistenceController+History.swift in Sources */ = {isa = PBXBuildFile; fileRef = C22A84E429667587001244CC /* PersistenceController+History.swift */; };
 		C22A84EA29667929001244CC /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C22A84E929667929001244CC /* SceneDelegate.swift */; };
+		C22CAE4A298EAA3F003302C4 /* MusicMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = C22CAE49298EAA3F003302C4 /* MusicMenu.swift */; };
 		C23340EB28C3D589006222F5 /* FutureDelivery+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = C23340EA28C3D589006222F5 /* FutureDelivery+CoreDataProperties.swift */; };
 		C23340ED28C3D58D006222F5 /* FutureDelivery+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = C23340EC28C3D58D006222F5 /* FutureDelivery+CoreDataClass.swift */; };
 		C23524D22896D5F80052494F /* PreSetCalendarDates.swift in Sources */ = {isa = PBXBuildFile; fileRef = C23524D12896D5F80052494F /* PreSetCalendarDates.swift */; };
@@ -130,6 +131,7 @@
 		C22A84E22966719A001244CC /* PersistenceController+Deduplicate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PersistenceController+Deduplicate.swift"; sourceTree = "<group>"; };
 		C22A84E429667587001244CC /* PersistenceController+History.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PersistenceController+History.swift"; sourceTree = "<group>"; };
 		C22A84E929667929001244CC /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
+		C22CAE49298EAA3F003302C4 /* MusicMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MusicMenu.swift; sourceTree = "<group>"; };
 		C23340EA28C3D589006222F5 /* FutureDelivery+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "FutureDelivery+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		C23340EC28C3D58D006222F5 /* FutureDelivery+CoreDataClass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "FutureDelivery+CoreDataClass.swift"; sourceTree = "<group>"; };
 		C23524D12896D5F80052494F /* PreSetCalendarDates.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreSetCalendarDates.swift; sourceTree = "<group>"; };
@@ -170,6 +172,7 @@
 		260F6901281DBF28002E864B /* Build Card WorkFlow */ = {
 			isa = PBXGroup;
 			children = (
+				C22CAE49298EAA3F003302C4 /* MusicMenu.swift */,
 				C22A180A296CF60600A7E9B8 /* StartMenu.swift */,
 				260F6906281DC0E3002E864B /* LoginView.swift */,
 				260F68F4281DBDCD002E864B /* OccassionsMenu.swift */,
@@ -596,6 +599,7 @@
 				26EB55652827120C00178F0B /* EnlargeECard.swift in Sources */,
 				C2582A3B296E5841009F8FEC /* eCardView.swift in Sources */,
 				C23340ED28C3D58D006222F5 /* FutureDelivery+CoreDataClass.swift in Sources */,
+				C22CAE4A298EAA3F003302C4 /* MusicMenu.swift in Sources */,
 				C22A84DB29666123001244CC /* PersistenceController.swift in Sources */,
 				C22A1819296D985700A7E9B8 /* AddToExistingShareView.swift in Sources */,
 			);

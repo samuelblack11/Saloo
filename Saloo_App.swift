@@ -12,6 +12,7 @@ import CloudKit
 
 @main
 struct GreetMe_2App: App {
+    @StateObject var musicSub = MusicSubscription()
     let persistenceController = PersistenceController.shared
     @UIApplicationDelegateAdaptor var appDelegate: AppDelegate
     
@@ -19,6 +20,7 @@ struct GreetMe_2App: App {
         WindowGroup {
             StartMenu(calViewModel: CalViewModel(), showDetailView: ShowDetailView())
                 .environment(\.managedObjectContext, persistenceController.persistentContainer.viewContext)
+                .environmentObject(musicSub)
         }
     }
 }

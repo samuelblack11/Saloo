@@ -17,7 +17,9 @@ struct StartMenu: View {
     @State private var showOccassions = false
     @State private var showGridOfCards = false
     @State private var showCalendar = false
-    
+    @State var showMusicMenu = false
+    @State var counter = 0
+    let defaults = UserDefaults.standard
     let buildCardWorkFlow = """
     Build a Card
         Choose an Occassion 🎉
@@ -28,8 +30,6 @@ struct StartMenu: View {
         Add a gift card 🎁 (optional)
         Finalize ✅
 """
-    
-    
     
     
     var body: some View {
@@ -44,11 +44,13 @@ struct StartMenu: View {
                 Text("View Calendar 🗓").onTapGesture {self.showCalendar = true}
                     .fullScreenCover(isPresented: $showCalendar) {CalendarParent(calViewModel: calViewModel, showDetailView: showDetailView)}
                 Text("More Info 📱")
-
+                
             }
         }
-    }
-}
+        //.onAppear{showMusicMenu = true}
+        .onAppear {if defaults.bool(forKey: "First Launch") == true && counter == 0 {showMusicMenu = true}}
+        .fullScreenCover(isPresented: $showMusicMenu) {MusicMenu()}
+    }}
 
 extension StartMenu {
     func loadCoreCards() -> [CoreCard] {

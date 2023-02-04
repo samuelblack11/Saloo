@@ -130,11 +130,15 @@ class InOut: ObservableObject {
 }
 
 class MusicSubscription: ObservableObject {
-    enum Options {
-        case Apple
-        case Spotify
-        case Neither
-    }
+    @Published var timeToAddMusic = false
+    @Published var type: MusicSubscriptionOptions = .Neither
+
+}
+
+enum MusicSubscriptionOptions {
+    case Apple
+    case Spotify
+    case Neither
 }
 
 class ChosenCollageStyle: ObservableObject {@Published var chosenStyle: Int?}

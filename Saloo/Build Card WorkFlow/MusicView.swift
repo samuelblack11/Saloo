@@ -38,7 +38,25 @@ struct MusicView: View {
     @State var text2URL: URL
     @State var text3: String
     @State var text4: String
-    @State var whichMusicSubscription: MusicSubscription.Options
+    @State private var connectToSpot = false
+    @EnvironmentObject var musicSub: MusicSubscription
+
+    var appRemote: SPTAppRemote? {
+        get {return (UIApplication.shared.connectedScenes.first?.delegate as? SceneDelegate)?.appRemote}
+    }
+    
+    var defaultCallback: SPTAppRemoteCallback {
+        get {
+            return {[self] _, error in
+                if let error = error {
+                    print("***")
+                    print(error)
+                }
+            }
+        }
+    }
+    
+    
 
     var body: some View {
         TextField("Search Songs", text: $songSearch, onCommit: {
@@ -46,16 +64,13 @@ struct MusicView: View {
             if self.songSearch.isEmpty {
                 self.searchResults = []
             } else {
-                switch whichMusicSubscription {
+                switch musicSub.type {
                 case .Apple:
                     return searchWithAM()
                 case .Neither:
                     return searchWithAM()
                 case .Spotify:
-                    return SpotifyAPI().requestAuth()
-                    
-                    //SpotifyAPI().getToken()
-                    //searchWithSpotify()
+                    return searchWithSpotify()
                 }
             }}).padding(.top, 15)
         NavigationView {
@@ -86,11 +101,21 @@ struct MusicView: View {
                 }
             }
         }
-        .onAppear{ print("-----"); print(whichMusicSubscription)}
-        .popover(isPresented: $showSPV) {SmallPlayerView(songID: chosenSong.id, songName: chosenSong.name, songArtistName: chosenSong.artistName, songArtImageData: chosenSong.artwork, songDuration: chosenSong.durationInSeconds, songPreviewURL: chosenSong.songPreviewURL, confirmButton: true, showFCV: $showFCV)
-.presentationDetents([.fraction(0.4)]) 
-                .fullScreenCover(isPresented: $showFCV) {FinalizeCardView(chosenObject: chosenObject, collageImage: collageImage, noteField: noteField, frontCoverIsPersonalPhoto: frontCoverIsPersonalPhoto, text1: $text1, text2: $text2, text2URL: $text2URL, text3: $text3, text4: $text4, addMusic: addMusic, eCardText: $eCardText, chosenOccassion: chosenOccassion, chosenSong: chosenSong)}
+        .onAppear{
+            
+            print("-----")
+            print(musicSub)
+            if musicSub.type == .Spotify {
+                connectToSpot = true
+            }
+            
+            
         }
+        .popover(isPresented: $showSPV) {SmallPlayerView(songID: chosenSong.id, songName: chosenSong.name, songArtistName: chosenSong.artistName, songArtImageData: chosenSong.artwork, songDuration: chosenSong.durationInSeconds, songPreviewURL: chosenSong.songPreviewURL, confirmButton: true, showFCV: $showFCV)
+        .presentationDetents([.fraction(0.4)])
+        .fullScreenCover(isPresented: $showFCV) {FinalizeCardView(chosenObject: chosenObject, collageImage: collageImage, noteField: noteField, frontCoverIsPersonalPhoto: frontCoverIsPersonalPhoto, text1: $text1, text2: $text2, text2URL: $text2URL, text3: $text3, text4: $text4, addMusic: addMusic, eCardText: $eCardText, chosenOccassion: chosenOccassion, chosenSong: chosenSong)}
+        }
+        .fullScreenCover(isPresented: $connectToSpot) {SpotPlayer()}
     }
 
 }

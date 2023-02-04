@@ -8,6 +8,7 @@
 import Foundation
 import UIKit
 import CloudKit
+import SwiftUI
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate, SPTAppRemoteDelegate, SPTAppRemotePlayerStateDelegate {
     
@@ -25,6 +26,21 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, SPTAppRemoteDelegate, S
             }
         }
     }
+    
+    
+    //func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
+        //let contentView = SpotPlayer()
+       // if whichMusicSubscription.timeToAddMusic {
+        //    if let windowScene = scene as? UIWindowScene {
+        //        let window = UIWindow(windowScene: windowScene)
+         //       window.rootViewController = UIHostingController(rootView: contentView)
+        //        self.window = window
+        //        window.makeKeyAndVisible()
+        //    }
+        //    appRemote.connect()
+        //    appRemote.authorizeAndPlayURI("")
+        //}
+  // }
     
     
     static private let kAccessTokenKey = "access-token-key"
@@ -62,7 +78,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, SPTAppRemoteDelegate, S
             print("****")
             print(errorDescription)
         }
-
     }
 
     func sceneDidBecomeActive(_ scene: UIScene) {
@@ -108,15 +123,4 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, SPTAppRemoteDelegate, S
         //playerViewController.appRemoteDisconnect()
     }
 
-    var playerViewController: SpotPlayer {
-        get {
-            let navController = self.window?.rootViewController?.children[0] as! UINavigationController
-            return navController.topViewController as! SpotPlayer
-        }
-    }
-    
-    
-    
-    
-    
 }

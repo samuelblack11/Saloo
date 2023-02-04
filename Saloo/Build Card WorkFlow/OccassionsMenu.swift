@@ -14,7 +14,7 @@ import FSCalendar
 import CoreData
 
 struct OccassionsMenu: View {
-
+    @EnvironmentObject var musicSub: MusicSubscription
     @State private var showStartMenu = false
     //@State private var showSentCards = false
     //@State private var showReceivedCards = false

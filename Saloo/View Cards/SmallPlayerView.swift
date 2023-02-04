@@ -26,20 +26,20 @@ struct SmallPlayerView: View {
     @Binding var showFCV: Bool
     @State private var player: AVPlayer?
     @State private var musicPlayer = MPMusicPlayerController.applicationMusicPlayer
-    @State var whichMusicSubscription: MusicSubscription.Options = .Spotify
     @State var spotDeviceID: String?
-    //var spotPlayer: SpotPlayer?
+    @EnvironmentObject var musicSub: MusicSubscription
     
     var body: some View {
-        switch whichMusicSubscription {
-        case .Apple:
-            return AnyView(AMPlayerView())
-        case .Neither:
-            return AnyView(AMPreviewPlayerView())
-        case .Spotify:
-            return AnyView(SpotPlayerView())
-        }
+        NavigationStack {
+            if musicSub.type == .Apple {AMPlayerView()}
+            if musicSub.type == .Neither {AMPreviewPlayerView()}
+            if musicSub.type == .Spotify {SpotPlayerView()}
+            selectButton
+            }
+            .environmentObject(musicSub)
     }
+    
+
     
     @ViewBuilder var selectButton: some View {
         if confirmButton == true {Button {showFCV = true; player!.pause(); songProgress = 0.0} label: {Text("Select Song For Card").foregroundColor(.blue)}}
@@ -51,13 +51,6 @@ struct SmallPlayerView: View {
         let playerItem = AVPlayerItem(url: URL(string: songPreviewURL!)!)
         self.player = AVPlayer(playerItem: playerItem)
     }
-    
-    
-   // func SpotPlayerView() -> some View {
-   //     return VStack {
-   //         spotPlayer?.appRemote!
-   //     }
-   // }
 
     func AMPreviewPlayerView() -> some View {
         let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
@@ -111,7 +104,6 @@ struct SmallPlayerView: View {
                 Text(convertToMinutes(seconds: 30 - Int(songProgress)))
                     .padding(.trailing, 10)
             }
-            selectButton
         }
         .onAppear{createPlayer(); player!.play()}
     }
@@ -168,66 +160,8 @@ struct SmallPlayerView: View {
                 Text(convertToMinutes(seconds: Int(songDuration!)-Int(songProgress)))
                     .padding(.trailing, 10)
             }
-            selectButton
         }
         .onAppear{self.musicPlayer.setQueue(with: [songID!]); self.musicPlayer.play()}
-    }
-    func SpotPlayerView() -> some View {
-        let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
-        return  VStack {
-            Image(uiImage: UIImage(data: songArtImageData!)!)
-            Text(songName!)
-                .font(.headline)
-            Text(songArtistName!)
-            HStack {
-                Button {
-                    songProgress = 0.0
-                    isPlaying = true
-                } label: {
-                    ZStack {
-                        Circle()
-                            .accentColor(.green)
-                            .shadow(radius: 10)
-                        Image(systemName: "arrow.uturn.backward" )
-                            .foregroundColor(.white)
-                            .font(.system(.title))
-                    }
-                }
-                .frame(maxWidth: UIScreen.screenHeight/12, maxHeight: UIScreen.screenHeight/12)
-                Button {
-                    isPlaying.toggle()
-                    //if musicPlayer.playbackState.rawValue == 1 {musicPlayer.pause()}
-                    //else {musicPlayer.play()}
-                } label: {
-                    ZStack {
-                        Circle()
-                            .accentColor(.green)
-                            .shadow(radius: 10)
-                        Image(systemName: isPlaying ? "pause.fill" : "play.fill")
-                            .foregroundColor(.white)
-                            .font(.system(.title))
-                    }
-                }
-                .frame(maxWidth: UIScreen.screenHeight/12, maxHeight: UIScreen.screenHeight/12)
-            }
-            ProgressView(value: songProgress, total: songDuration!)
-                .onReceive(timer) {_ in
-                    //if songProgress < songDuration! && musicPlayer.playbackState.rawValue == 1 {
-                    //    songProgress += 1
-                   // }`
-                }
-            HStack{
-                Text(convertToMinutes(seconds:Int(songProgress)))
-                Spacer()
-                Text(convertToMinutes(seconds: Int(songDuration!)-Int(songProgress)))
-                    .padding(.trailing, 10)
-            }
-            selectButton
-        }
-        .onAppear{
-            //SpotifyAPI().playSpotify(songID!, deviceID: spotDeviceID!)
-            SpotifyAPI().getToken()
-        }
     }
     
     func convertToMinutes(seconds: Int) -> String {
@@ -235,6 +169,65 @@ struct SmallPlayerView: View {
         let s = String(format: "%02d", seconds % 60)
         let completeTime = String("\(m):\(s)")
         return completeTime
+    }
+    
+    func SpotPlayerView() -> some View {
+        let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
+        return VStack {
+                    Image(uiImage: UIImage(data: songArtImageData!)!)
+                    Text(songName!)
+                        .font(.headline)
+                    Text(songArtistName!)
+                    HStack {
+                        Button {
+                            songProgress = 0.0
+                            isPlaying = true
+                        } label: {
+                            ZStack {
+                                Circle()
+                                    .accentColor(.green)
+                                    .shadow(radius: 10)
+                                Image(systemName: "arrow.uturn.backward" )
+                                    .foregroundColor(.white)
+                                    .font(.system(.title))
+                            }
+                        }
+                        .frame(maxWidth: UIScreen.screenHeight/12, maxHeight: UIScreen.screenHeight/12)
+                        Button {
+                            isPlaying.toggle()
+                            //if musicPlayer.playbackState.rawValue == 1 {musicPlayer.pause()}
+                            //else {musicPlayer.play()}
+                        } label: {
+                            ZStack {
+                                Circle()
+                                    .accentColor(.green)
+                                    .shadow(radius: 10)
+                                Image(systemName: isPlaying ? "pause.fill" : "play.fill")
+                                    .foregroundColor(.white)
+                                    .font(.system(.title))
+                            }
+                        }
+                        .frame(maxWidth: UIScreen.screenHeight/12, maxHeight: UIScreen.screenHeight/12)
+                    }
+                    ProgressView(value: songProgress, total: songDuration!)
+                        .onReceive(timer) {_ in
+                            //if songProgress < songDuration! && musicPlayer.playbackState.rawValue == 1 {
+                            //    songProgress += 1
+                            // }`
+                        }
+                    HStack{
+                        Text(convertToMinutes(seconds:Int(songProgress)))
+                        Spacer()
+                        Text(convertToMinutes(seconds: Int(songDuration!)-Int(songProgress)))
+                            .padding(.trailing, 10)
+                    }
+                }
+                .onAppear{
+                    //SpotifyAPI().playSpotify(songID!, deviceID: spotDeviceID!)
+                    //appRemote!.connect()
+                    //appRemote!.authorizeAndPlayURI("")
+                    //SpotifyAPI().getToken()
+                }
     }
     
 }
