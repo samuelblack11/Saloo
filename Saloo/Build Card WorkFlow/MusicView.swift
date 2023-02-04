@@ -52,7 +52,10 @@ struct MusicView: View {
                 case .Neither:
                     return searchWithAM()
                 case .Spotify:
-                    return searchWithSpotify()
+                    return SpotifyAPI().requestAuth()
+                    
+                    //SpotifyAPI().getToken()
+                    //searchWithSpotify()
                 }
             }}).padding(.top, 15)
         NavigationView {

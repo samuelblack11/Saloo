@@ -66,7 +66,7 @@ struct eCardView: View {
             }
             VStack {
                 Spacer()
-                SmallPlayerView(songID: songID, songName: songName, songArtistName: songArtistName, songArtImageData: songArtImageData, songDuration: songDuration, songPreviewURL: songPreviewURL, confirmButton: false, showFCV: $showFCV)
+                SmallPlayerView(songID: songID, songName: songName, songArtistName: songArtistName, songArtImageData: songArtImageData, songDuration: songDuration, songPreviewURL: songPreviewURL, confirmButton: false, showFCV: $showFCV, spotDeviceID: "12345")
                     .frame(height: UIScreen.screenHeight/1.5, alignment: .bottom)
             }
         }

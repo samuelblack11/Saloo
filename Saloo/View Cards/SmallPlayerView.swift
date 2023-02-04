@@ -27,7 +27,7 @@ struct SmallPlayerView: View {
     @State private var player: AVPlayer?
     @State private var musicPlayer = MPMusicPlayerController.applicationMusicPlayer
     @State var whichMusicSubscription: MusicSubscription.Options = .Spotify
-    @State var spotDeviceID: String
+    @State var spotDeviceID: String?
     //var spotPlayer: SpotPlayer?
     
     var body: some View {
@@ -214,7 +214,7 @@ struct SmallPlayerView: View {
                 .onReceive(timer) {_ in
                     //if songProgress < songDuration! && musicPlayer.playbackState.rawValue == 1 {
                     //    songProgress += 1
-                   // }
+                   // }`
                 }
             HStack{
                 Text(convertToMinutes(seconds:Int(songProgress)))
@@ -225,7 +225,8 @@ struct SmallPlayerView: View {
             selectButton
         }
         .onAppear{
-            SpotifyAPI().playSpotify(songID!, deviceID: spotDeviceID)
+            //SpotifyAPI().playSpotify(songID!, deviceID: spotDeviceID!)
+            SpotifyAPI().getToken()
         }
     }
     
