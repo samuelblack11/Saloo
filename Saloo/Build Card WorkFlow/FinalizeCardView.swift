@@ -13,6 +13,13 @@ import CloudKit
 
 struct FinalizeCardView: View {
     
+    @EnvironmentObject var chosenOccassion: Occassion
+    @EnvironmentObject var chosenObject: ChosenCoverImageObject
+    @EnvironmentObject var collageImage: CollageImage
+    @EnvironmentObject var noteField: NoteField
+    @EnvironmentObject var addMusic: AddMusic
+    @EnvironmentObject var annotation: Annotation
+    
     @State private var showOccassions = false
     @State private var showUCV = false
     @State private var showCollageMenu = false
@@ -21,17 +28,6 @@ struct FinalizeCardView: View {
     
     @State var coreCard: CoreCard!
     @State var cardRecord: CKRecord!
-    @ObservedObject var chosenObject: ChosenCoverImageObject
-    @ObservedObject var collageImage: CollageImage
-    @ObservedObject var noteField: NoteField
-    @State var frontCoverIsPersonalPhoto: Int
-    @Binding var text1: String
-    @Binding var text2: String
-    @Binding var text2URL: URL
-    @Binding var text3: String
-    @Binding var text4: String
-    @ObservedObject var addMusic: AddMusic
-    @Binding var eCardText: String
     //@Binding var cardForExport: Data!
     @State private var showActivityController = false
     @State var activityItemsArray: [Any] = []
@@ -48,18 +44,17 @@ struct FinalizeCardView: View {
     @State private var isProcessingShare = false
     @State private var activeShare: CKShare?
     @State private var activeContainer: CKContainer?
-    @State private var pageCount = 1
-    @ObservedObject var chosenOccassion: Occassion
-    @ObservedObject var chosenSong: ChosenSong
+
+    @EnvironmentObject var chosenSong: ChosenSong
     
     var saveButton: some View {
         Button("Save eCard") {
-            Task {saveCard(noteField: noteField, chosenOccassion: chosenOccassion, an1: text1, an2: text2, an2URL: text2URL.absoluteString, an3: text3, an4: text4, chosenObject: chosenObject, collageImage: collageImage, songID: chosenSong.id, songName: chosenSong.name, songArtistName: chosenSong.artistName, songArtImageData: chosenSong.artwork, songPreviewURL: chosenSong.songPreviewURL)}
+            Task {saveCard(noteField: noteField, chosenOccassion: chosenOccassion, an1: annotation.text1, an2: annotation.text2, an2URL: annotation.text2URL.absoluteString, an3: annotation.text3, an4: annotation.text4, chosenObject: chosenObject, collageImage: collageImage, songID: chosenSong.id, songName: chosenSong.name, songArtistName: chosenSong.artistName, songArtImageData: chosenSong.artwork, songPreviewURL: chosenSong.songPreviewURL)}
             showCompleteAlert = true
             }
-            .fullScreenCover(isPresented: $showOccassions) {OccassionsMenu(calViewModel: CalViewModel(), showDetailView: ShowDetailView())}
-            .fullScreenCover(isPresented: $showCollageMenu) {CollageStyleMenu(chosenObject: chosenObject, chosenOccassion: chosenOccassion, pageCount: pageCount, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto)}
-            .fullScreenCover(isPresented: $showUCV) {UnsplashCollectionView(chosenOccassion: chosenOccassion, pageCount: pageCount, chosenObject: chosenObject, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto)}
+            .fullScreenCover(isPresented: $showOccassions) {OccassionsMenu()}
+            .fullScreenCover(isPresented: $showCollageMenu) {CollageStyleMenu()}
+            .fullScreenCover(isPresented: $showUCV) {UnsplashCollectionView()}
             .disabled(saveAndShareIsActive)
             .alert("Save Complete", isPresented: $showCompleteAlert) {
                 Button("Ok", role: .cancel) {showCollageBuilder = false; showWriteNote = false; showCollageMenu = false; showUCV = false;showOccassions = true; let rootViewController = UIApplication.shared.connectedScenes
@@ -80,7 +75,7 @@ struct FinalizeCardView: View {
     var body: some View {
         NavigationView {
         VStack(spacing: 0) {
-            eCardView(eCardText: eCardText, font: noteField.font, coverImage: chosenObject.coverImage, collageImage: collageImage.collageImage.pngData()!, text1: text1, text2: text2, text2URL: text2URL, text3: text3, text4: text4, songID: chosenSong.id, songName: chosenSong.name, songArtistName: chosenSong.artistName, songArtImageData: chosenSong.artwork, songPreviewURL: chosenSong.songPreviewURL)
+            eCardView(eCardText: noteField.eCardText, font: noteField.font, coverImage: chosenObject.coverImage, collageImage: collageImage.collageImage.pngData()!, text1: annotation.text1, text2: annotation.text2, text2URL: annotation.text2URL, text3: annotation.text3, text4: annotation.text4, songID: chosenSong.id, songName: chosenSong.name, songArtistName: chosenSong.artistName, songArtImageData: chosenSong.artwork, songPreviewURL: chosenSong.songPreviewURL)
             saveButton
                 //.frame(height: UIScreen.screenHeight/1)
         }
@@ -90,7 +85,7 @@ struct FinalizeCardView: View {
             Text("Back")},
             trailing: Button {showOccassions = true} label: {Image(systemName: "menucard.fill").foregroundColor(.blue)
             Text("Menu")})
-        .fullScreenCover(isPresented: $showOccassions) {OccassionsMenu(calViewModel: CalViewModel(), showDetailView: ShowDetailView())}
+        .fullScreenCover(isPresented: $showOccassions) {OccassionsMenu()}
         .fullScreenCover(isPresented: $showShareSheet, content: {if let share = share {}})
         .fullScreenCover(isPresented: $showActivityController) {ActivityView(activityItems: $activityItemsArray, applicationActivities: nil)}
         }

@@ -15,21 +15,17 @@ import SwiftUI
 // https://www.hackingwithswift.com/quick-start/swiftui/how-to-fix-initializer-init-rowcontent-requires-that-sometype-conform-to-identifiable
 
 struct UnsplashCollectionView: View {
-    
+    // Object for collection selected by user
+    @EnvironmentObject var chosenOccassion: Occassion
+    @EnvironmentObject var chosenObject: ChosenCoverImageObject
     @State private var showOccassions = false
     @State private var showConfirmFrontCover = false
-
     // Object holding Bools for all views to be displayed.
-    // Object for collection selected by user
-    @ObservedObject var chosenOccassion: Occassion
     // Array of all images displayed in the view
     @State var imageObjects: [CoverImageObject] = []
     // Counts the number of images in the response from Unsplash, as they are added to imageObjects
     @State private var picCount: Int!
-    // Counts the page of the response being viewed by the user. 30 images per page maximum
-    @State var pageCount: Int
     // The image, and it's components, selected by the user
-    @ObservedObject var chosenObject: ChosenCoverImageObject
     // Componentes which comprise the chosenObject
     @State public var chosenImage: Data!
     @State public var chosenSmallURL: URL!
@@ -37,7 +33,6 @@ struct UnsplashCollectionView: View {
     @State public var chosenUserName: String!
     @State public var chosenDownloadLocation: String!
     //
-    @Binding var frontCoverIsPersonalPhoto: Int
     @State private var presentUCV2 = false
     let timer = Timer.publish(every: 0.05, on: .main, in: .common).autoconnect()
     let columns = [GridItem(.fixed(150)),GridItem(.fixed(150))]
@@ -55,16 +50,16 @@ struct UnsplashCollectionView: View {
                 }
                 .navigationTitle("Choose Front Cover")
                 .navigationBarItems(leading:Button {showOccassions.toggle()} label: {Image(systemName: "chevron.left").foregroundColor(.blue); Text("Back")})
-                Button("More...") {getMorePhotos(); print("page count: \(pageCount)")}.disabled(setButtonStatus(imageObjects: imageObjects))
+                Button("More...") {getMorePhotos(); print("page count: \(chosenObject.pageCount)")}.disabled(setButtonStatus(imageObjects: imageObjects))
             }
         }
         .font(.headline).padding(.horizontal).frame(maxHeight: 600)
         .onAppear {
             if chosenOccassion.occassion == "None" {getUnsplashPhotos()}
-            else {getPhotosFromCollection(collectionID: chosenOccassion.collectionID, page_num: pageCount)}
+            else {getPhotosFromCollection(collectionID: chosenOccassion.collectionID, page_num: chosenObject.pageCount)}
         }
-        .fullScreenCover(isPresented: $showConfirmFrontCover) {ConfirmFrontCoverView(chosenObject: chosenObject, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenOccassion: chosenOccassion, pageCount: pageCount)}
-        .fullScreenCover(isPresented: $showOccassions) {OccassionsMenu(calViewModel: CalViewModel(), showDetailView: ShowDetailView())}
+        .fullScreenCover(isPresented: $showConfirmFrontCover) {ConfirmFrontCoverView()}
+        .fullScreenCover(isPresented: $showOccassions) {OccassionsMenu()}
         //.fullScreenCover(isPresented: $presentUCV2) {UnsplashCollectionView(viewTransitions: viewTransitions, chosenSmallURL: chosenSmallURL, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenCollection: chosenCollection, pageCount: $pageCount)}
     }
     
@@ -119,7 +114,7 @@ extension UnsplashCollectionView {
     }
     
     func getUnsplashPhotos() {
-        PhotoAPI.getPhoto(pageNum: pageCount, userSearch: chosenOccassion.collectionID, completionHandler: { (response, error) in
+        PhotoAPI.getPhoto(pageNum: chosenObject.pageCount, userSearch: chosenOccassion.collectionID, completionHandler: { (response, error) in
             if response != nil {
                 self.picCount = response!.count
                 DispatchQueue.main.async {
@@ -138,7 +133,7 @@ extension UnsplashCollectionView {
         }
     
     func getMorePhotos() {
-        pageCount = pageCount + 1
+        chosenObject.pageCount = chosenObject.pageCount + 1
         presentUCV2 = true
     }
 

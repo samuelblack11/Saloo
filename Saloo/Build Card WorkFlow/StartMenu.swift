@@ -12,8 +12,8 @@ import FSCalendar
 import CoreData
 
 struct StartMenu: View {
-    @ObservedObject var calViewModel: CalViewModel
-    @ObservedObject var showDetailView: ShowDetailView
+    @EnvironmentObject var calViewModel: CalViewModel
+    @EnvironmentObject var showDetailView: ShowDetailView
     @State private var showOccassions = false
     @State private var showGridOfCards = false
     @State private var showCalendar = false

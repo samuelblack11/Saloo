@@ -13,6 +13,11 @@ import StoreKit
 import MediaPlayer
 
 struct ApplePlayer: View {
+    @EnvironmentObject var addMusic: AddMusic
+    @EnvironmentObject var musicSub: MusicSubscription
+    @EnvironmentObject var chosenSong: ChosenSong
+
+    
     let devToken = "eyJhbGciOiJFUzI1NiIsImtpZCI6Ik5KN0MzVzgzTFoiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJCU00zWVpGVVQyIiwiZXhwIjoxNjg5MjQzOTI3LCJpYXQiOjE2NzM0Nzk1Mjd9.28_a1GIJEEKWzvJgmdM9lAmvB4ilY5pFx6TF0Q4uhIIKu8FR0fOaXd2-3xVHPWANA8tqbLurVE5yE8wEZEqR8g"
     @State private var songSearch = ""
     @State private var storeFrontID = "us"
@@ -22,23 +27,13 @@ struct ApplePlayer: View {
     @State private var player: AVPlayer?
     @State var showFCV: Bool = false
     @State private var showSPV = false
-    @ObservedObject var chosenSong: ChosenSong
     @State private var isPlaying = false
     @State private var songProgress = 0.0
-    @ObservedObject var chosenOccassion: Occassion
-    @ObservedObject var chosenObject: ChosenCoverImageObject
-    @ObservedObject var collageImage: CollageImage
-    @ObservedObject var noteField: NoteField
-    @ObservedObject var addMusic: AddMusic
-    @State var frontCoverIsPersonalPhoto: Int
-    @State var eCardText: String
-    @State var text1: String
-    @State var text2: String
-    @State var text2URL: URL
-    @State var text3: String
-    @State var text4: String
     @State private var connectToSpot = false
-    @EnvironmentObject var musicSub: MusicSubscription
+    
+    func goToSpot() {
+        connectToSpot = true
+    }
 
     var body: some View {
         TextField("Search Songs", text: $songSearch, onCommit: {
@@ -52,7 +47,7 @@ struct ApplePlayer: View {
                 case .Neither:
                     return searchWithAM()
                 case .Spotify:
-                    return
+                    return goToSpot()
                 }
             }}).padding(.top, 15)
         NavigationView {
@@ -90,9 +85,9 @@ struct ApplePlayer: View {
         }
         .popover(isPresented: $showSPV) {SmallPlayerView(songID: chosenSong.id, songName: chosenSong.name, songArtistName: chosenSong.artistName, songArtImageData: chosenSong.artwork, songDuration: chosenSong.durationInSeconds, songPreviewURL: chosenSong.songPreviewURL, confirmButton: true, showFCV: $showFCV)
         .presentationDetents([.fraction(0.4)])
-        .fullScreenCover(isPresented: $showFCV) {FinalizeCardView(chosenObject: chosenObject, collageImage: collageImage, noteField: noteField, frontCoverIsPersonalPhoto: frontCoverIsPersonalPhoto, text1: $text1, text2: $text2, text2URL: $text2URL, text3: $text3, text4: $text4, addMusic: addMusic, eCardText: $eCardText, chosenOccassion: chosenOccassion, chosenSong: chosenSong)}
+        .fullScreenCover(isPresented: $showFCV) {FinalizeCardView()}
         }
-        .fullScreenCover(isPresented: $connectToSpot) {SpotPlayer(chosenSong: chosenSong)}
+        .fullScreenCover(isPresented: $connectToSpot) {SpotPlayer()}
     }
 
 }

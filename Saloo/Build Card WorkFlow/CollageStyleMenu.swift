@@ -10,22 +10,20 @@ import Foundation
 import SwiftUI
 
 struct CollageStyleMenu: View {
+    
+    // The image, and it's components, selected by the user
+    // Object for collection selected by user
+    @EnvironmentObject var chosenObject: ChosenCoverImageObject
+    @EnvironmentObject var chosenOccassion: Occassion
+    @StateObject var chosenStyle = ChosenCollageStyle()
+
     @State private var showConfirmFrontCover = false
     @State private var showCollageBuilder = false
     @State private var showImagePicker = false
     @State private var transitionVariable = false
-
-    // The image, and it's components, selected by the user
-    @ObservedObject var chosenObject: ChosenCoverImageObject
-    // Object for collection selected by user
-    @ObservedObject var chosenOccassion: Occassion
-    // Counts the page of the response being viewed by the user. 30 images per page maximum
-    @State var pageCount: Int = 1
     // Is front cover a personal photo? (selected from camera or library)
-    @Binding var frontCoverIsPersonalPhoto: Int
     // Tracks which collage type (#) was selected by the user
     @State private var collageStyles = []
-    @StateObject var chosenStyle = ChosenCollageStyle()
     @State private var collageBlocks = CollageBlocksAndViews()
     
     let columns = [GridItem(.flexible()),GridItem(.flexible())]
@@ -49,7 +47,8 @@ struct CollageStyleMenu: View {
             .navigationTitle("Pick Collage Style").font(.headline).padding(.horizontal)
             .navigationBarItems(leading:Button {showConfirmFrontCover = true} label: {Image(systemName: "chevron.left").foregroundColor(.blue); Text("Back")})
         }
-        .fullScreenCover(isPresented: $showCollageBuilder) {CollageBuilder(showImagePicker: false, chosenObject: chosenObject, chosenOccassion: chosenOccassion, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenCollageStyle: chosenStyle)}
-        .fullScreenCover(isPresented: $showConfirmFrontCover) {ConfirmFrontCoverView(chosenObject: chosenObject, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenOccassion: chosenOccassion, pageCount: pageCount)}
+        .environmentObject(chosenStyle)
+        .fullScreenCover(isPresented: $showCollageBuilder) {CollageBuilder(showImagePicker: false)}
+        .fullScreenCover(isPresented: $showConfirmFrontCover) {ConfirmFrontCoverView()}
     }
 }

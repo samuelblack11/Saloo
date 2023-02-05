@@ -11,6 +11,10 @@ import Foundation
 import SwiftUI
 
 struct ConfirmFrontCoverView: View {
+    @EnvironmentObject var chosenObject: ChosenCoverImageObject
+    @EnvironmentObject var chosenOccassion: Occassion
+
+    
     @State private var showUCV = false
     @State private var showCollageMenu = false
 
@@ -18,11 +22,7 @@ struct ConfirmFrontCoverView: View {
     @State var frontCoverPhotographer: String!
     @State var frontCoverUserName: String!
     @State private var segueToCollageMenu = false
-    @ObservedObject var chosenObject: ChosenCoverImageObject
     @State private var presentPrior = false
-    @Binding var frontCoverIsPersonalPhoto: Int
-    @ObservedObject var chosenOccassion: Occassion
-    @State var pageCount: Int
 
     var body: some View {
         NavigationView {
@@ -48,7 +48,7 @@ struct ConfirmFrontCoverView: View {
                         }
                     if response == nil {
                         debugPrint("Ping Failed!.......")}})
-            }.padding(.bottom, 10).fullScreenCover(isPresented: $showCollageMenu) {CollageStyleMenu(chosenObject: chosenObject, chosenOccassion: chosenOccassion, pageCount: pageCount, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto)}
+            }.padding(.bottom, 10).fullScreenCover(isPresented: $showCollageMenu) {CollageStyleMenu()}
             Text("(Attribution Will Be Included on Back Cover)").font(.system(size: 12)).padding(.bottom, 20)
             }
         .navigationBarItems(leading:
@@ -60,7 +60,7 @@ struct ConfirmFrontCoverView: View {
                 Text("Back")
             })
         .fullScreenCover(isPresented: $showUCV) {
-           UnsplashCollectionView(chosenOccassion: chosenOccassion, pageCount: pageCount, chosenObject: chosenObject, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto)
+           UnsplashCollectionView()
         }
         }
     }

@@ -14,7 +14,10 @@ import FSCalendar
 import CoreData
 
 struct OccassionsMenu: View {
-    @EnvironmentObject var musicSub: MusicSubscription
+    // Object to pass to Collage Menu if photo not selcted from UCV
+    @StateObject var chosenOccassion = Occassion()
+    @StateObject var chosenObject = ChosenCoverImageObject()
+    
     @State private var showStartMenu = false
     //@State private var showSentCards = false
     //@State private var showReceivedCards = false
@@ -23,8 +26,6 @@ struct OccassionsMenu: View {
     @State private var showImagePicker = false
     @State private var showCollageMenu = false
     @State private var showUCV = false
-    
-
     // Collection Variables. Use @State private for variables owned by this view and not accessible by external views
     @State private var collections: [CollectionPair] = []
     @State private var yearRoundCollection: [CollectionPair] = []
@@ -33,11 +34,10 @@ struct OccassionsMenu: View {
     @State private var summerCollection: [CollectionPair] = []
     @State private var fallCollection: [CollectionPair] = []
     @State private var otherCollection: [CollectionPair] = []
-    // Use @ObservedObject for complex properties shared across multiple views
-    @ObservedObject var calViewModel: CalViewModel
-    @ObservedObject var showDetailView: ShowDetailView
-    // Object to pass to Collage Menu if photo not selcted from UCV
-    @StateObject var chosenObject = ChosenCoverImageObject()
+    
+    
+    
+    
     // Cover Image Variables used dependent on the image's source
     @State private var coverImage: UIImage?
     @State private var coverImageFromLibrary: UIImage?
@@ -47,10 +47,7 @@ struct OccassionsMenu: View {
     // Variables for text field where user does custom photo search. Initialized as blank String
     @State private var customSearch: String = ""
     // Defines page number to be used when displaying photo results on UCV
-    @State private var pageCount = 1
-    //
     @State var loadedImagefromLibraryOrCamera: Bool?
-    @StateObject var chosenOccassion = Occassion()
     
     
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -65,12 +62,10 @@ struct OccassionsMenu: View {
                     .fullScreenCover(isPresented: $showImagePicker){ImagePicker(image: $coverImageFromLibrary)}
                     .onChange(of: coverImageFromLibrary) { _ in loadImage(pic: coverImageFromLibrary!)
                         handlePersonalPhotoSelection()
-                        showCollageMenu = true; frontCoverIsPersonalPhoto = 1
+                        showCollageMenu = true; chosenObject.frontCoverIsPersonalPhoto = 1
                         chosenOccassion.occassion = "None"; chosenOccassion.collectionID = "None"
                         }
-                    .fullScreenCover(isPresented: $showCollageMenu){
-                        CollageStyleMenu(chosenObject: chosenObject, chosenOccassion: chosenOccassion, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto)
-                    }
+                    .fullScreenCover(isPresented: $showCollageMenu){CollageStyleMenu()}
                 Text("Take Photo with Camera 📸 ").onTapGesture {
                     self.showImagePicker = false
                     self.showCameraCapture = true
@@ -79,22 +74,21 @@ struct OccassionsMenu: View {
                 {CameraCapture(image: self.$coverImageFromCamera, isPresented: self.$showCameraCapture, sourceType: .camera)}
                 .onChange(of: coverImageFromCamera) { _ in loadImage(pic: coverImageFromCamera!)
                     handlePersonalPhotoSelection()
-                    showCollageMenu = true; frontCoverIsPersonalPhoto = 1
+                    showCollageMenu = true; chosenObject.frontCoverIsPersonalPhoto = 1
                     chosenOccassion.occassion = "None"; chosenOccassion.collectionID = "None"
                     }
-                .fullScreenCover(isPresented: $showCollageMenu){
-                    CollageStyleMenu(chosenObject: chosenObject, chosenOccassion: chosenOccassion, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto)}
+                .fullScreenCover(isPresented: $showCollageMenu){CollageStyleMenu()}
                 HStack {
                     TextField("Custom Search", text: $customSearch)
                         .padding(.leading, 5)
                         .frame(height:35)
-                    Button {showUCV = true; frontCoverIsPersonalPhoto = 0
+                    Button {showUCV = true; chosenObject.frontCoverIsPersonalPhoto = 0
                         chosenOccassion.occassion = "None"
                         chosenOccassion.collectionID = customSearch
                     }
                     label: {Image(systemName: "magnifyingglass.circle.fill")}
                         .fullScreenCover(isPresented: $showUCV) {
-                            UnsplashCollectionView(chosenOccassion: chosenOccassion, pageCount: pageCount, chosenObject: chosenObject, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto)
+                            UnsplashCollectionView()
                     }
                 }
             }
@@ -110,7 +104,9 @@ struct OccassionsMenu: View {
         .listStyle(GroupedListStyle())
         .onAppear {createOccassionsFromUserCollections()}
         }
-        .fullScreenCover(isPresented: $showStartMenu) {StartMenu(calViewModel: CalViewModel(), showDetailView: ShowDetailView())}
+        .environmentObject(chosenObject)
+        .environmentObject(chosenOccassion)
+        .fullScreenCover(isPresented: $showStartMenu) {StartMenu()}
     }
 }
 
@@ -135,9 +131,7 @@ extension OccassionsMenu {
                 self.chosenOccassion.occassion = collection.title
                 self.chosenOccassion.collectionID = collection.id
                 showUCV.toggle()
-            }.fullScreenCover(isPresented: $showUCV) {
-                UnsplashCollectionView(chosenOccassion: chosenOccassion, pageCount: pageCount, chosenObject: chosenObject, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto)
-                }
+            }.fullScreenCover(isPresented: $showUCV) {UnsplashCollectionView()}
     }
     
     func groupCollections(collections: [CollectionPair]) {

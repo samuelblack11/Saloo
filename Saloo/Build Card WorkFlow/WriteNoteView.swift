@@ -12,6 +12,17 @@ import SwiftUI
 // https://www.hackingwithswift.com/quick-start/swiftui/what-is-the-focusstate-property-wrapper
 
 struct WriteNoteView: View {
+    @EnvironmentObject var chosenObject: ChosenCoverImageObject
+    @EnvironmentObject var collageImage: CollageImage
+    @EnvironmentObject var chosenOccassion: Occassion
+    @EnvironmentObject var chosenStyle: ChosenCollageStyle
+    
+    @StateObject var addMusic = AddMusic()
+    @StateObject var chosenSong = ChosenSong()
+
+    @StateObject var noteField = NoteField()
+    @StateObject var annotation = Annotation()
+    
     @State private var showMusic = false
     @State private var showFinalize = false
     @State private var showCollageBuilder = false
@@ -21,33 +32,16 @@ struct WriteNoteView: View {
     @ObservedObject var recipient = TextLimiter(limit: 20, value: "To:")
     @ObservedObject var sender = TextLimiter(limit: 20, value: "From:")
     @ObservedObject var cardName = TextLimiter(limit: 20, value: "Name Your Card")
-    
-    
-    
     //@State private var recipient: String = ""
     //@State private var sender: String = ""
     //@State private var cardName: String = ""
+    
     @State private var tappedTextEditor = false
     @State private var namesNotEntered = false
     @State private var addMusicPrompt = false
     @State private var handWrite2 = false
-    @StateObject var addMusic = AddMusic()
-    @Binding var frontCoverIsPersonalPhoto: Int
-    @StateObject var chosenSong = ChosenSong()
-    @ObservedObject var chosenObject: ChosenCoverImageObject
-    @ObservedObject var collageImage: CollageImage
-    @StateObject var noteField = NoteField()
     @State private var selectedFont = "Papyrus"
-    @State var text1: String = ""
-    @State var text2: String = ""
-    @State var text2URL: URL = URL(string: "https://google.com")!
-    @State var text3: String = ""
-    @State var text4: String = ""
     @FocusState private var isNoteFieldFocused: Bool
-    @Binding var eCardText: String
-    @Binding var printCardText: String
-    @ObservedObject var chosenOccassion: Occassion
-    @ObservedObject var chosenStyle: ChosenCollageStyle
     
     var fonts = ["Zapfino","Papyrus","American-Typewriter-Bold"]
     var fontMenu: some View {
@@ -105,12 +99,18 @@ struct WriteNoteView: View {
             }
         .alert("Your typed message will only appear in your eCard", isPresented: $handWrite2) {Button("Ok", role: .cancel) {}}
         .padding(.bottom, 30)
-        .fullScreenCover(isPresented: $showMusic) {ApplePlayer(chosenSong: chosenSong, chosenOccassion: chosenOccassion, chosenObject: chosenObject, collageImage: collageImage, noteField: noteField, addMusic: addMusic, frontCoverIsPersonalPhoto: frontCoverIsPersonalPhoto, eCardText: eCardText, text1: text1, text2: text2, text2URL: text2URL, text3: text3, text4: text4)}
-        .fullScreenCover(isPresented: $showFinalize) {FinalizeCardView(chosenObject: chosenObject, collageImage: collageImage, noteField: noteField, frontCoverIsPersonalPhoto: frontCoverIsPersonalPhoto, text1: $text1, text2: $text2, text2URL: $text2URL, text3: $text3, text4: $text4, addMusic: addMusic, eCardText: $eCardText, chosenOccassion: chosenOccassion, chosenSong: chosenSong)}
-        .fullScreenCover(isPresented: $showCollageBuilder) {CollageBuilder(showImagePicker: false, chosenObject: chosenObject, chosenOccassion: chosenOccassion, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenCollageStyle: chosenStyle)}
+        .fullScreenCover(isPresented: $showMusic) {ApplePlayer()}
+        .fullScreenCover(isPresented: $showFinalize) {FinalizeCardView()}
+        .fullScreenCover(isPresented: $showCollageBuilder) {CollageBuilder(showImagePicker: false)}
         }
             .navigationBarItems(leading:Button {showCollageBuilder = true} label: {Image(systemName: "chevron.left").foregroundColor(.blue); Text("Back")})
         }
+        .environmentObject(noteField)
+        .environmentObject(annotation)
+        .environmentObject(addMusic)
+        .environmentObject(chosenSong)
+
+
         .onAppear{print("called writeNoteView....//"); print(collageImage.collageImage)}
     }
 }
@@ -120,15 +120,15 @@ extension WriteNoteView {
     
     func annotateIfNeeded() {
         print("annotateIfNeeded was Called")
-        print(frontCoverIsPersonalPhoto)
-        if frontCoverIsPersonalPhoto == 0 {
-            text1 = "Front Cover By "
-            text2 = String(chosenObject.coverImagePhotographer)
-            text2URL = URL(string: "https://unsplash.com/@\(chosenObject.coverImageUserName)")!
-            text3 = "On "
-            text4 = "Unsplash"
+        print(chosenObject.frontCoverIsPersonalPhoto)
+        if chosenObject.frontCoverIsPersonalPhoto == 0 {
+            annotation.text1 = "Front Cover By "
+            annotation.text2 = String(chosenObject.coverImagePhotographer)
+            annotation.text2URL = URL(string: "https://unsplash.com/@\(chosenObject.coverImageUserName)")!
+            annotation.text3 = "On "
+            annotation.text4 = "Unsplash"
         }
-        else {text2URL = URL(string: "https://google.com")!}
+        else {annotation.text2URL = URL(string: "https://google.com")!}
     }
     
     func checkRequiredFields() {

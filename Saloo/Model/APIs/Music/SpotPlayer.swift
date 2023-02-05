@@ -12,10 +12,12 @@ import SwiftUI
 import MediaPlayer
 
 struct SpotPlayer: View {
+    
+    @EnvironmentObject var chosenSong: ChosenSong
+
     @State private var showApplePlayerView = false
     @State private var songSearch = ""
     @State private var searchResults: [SongForList] = []
-    @ObservedObject var chosenSong: ChosenSong
     @State private var isPlaying = false
     @State private var songProgress = 0.0
     @State private var showSPV = false
@@ -72,8 +74,8 @@ struct SpotPlayer: View {
                 }
             }
         }
-        .onAppear { showApplePlayerView = true}
-        .fullScreenCover(isPresented: $showApplePlayerView){ApplePlayer}
+        .onAppear {showApplePlayerView = true}
+        .fullScreenCover(isPresented: $showApplePlayerView){ApplePlayer()}
     }
 }
 

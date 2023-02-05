@@ -31,6 +31,6 @@ struct MusicMenu: View {
                 }
             }
         }
-        .fullScreenCover(isPresented: $showStart) {StartMenu(calViewModel: CalViewModel(), showDetailView: ShowDetailView(), counter: 1)}
+        .fullScreenCover(isPresented: $showStart) {StartMenu(counter: 1)}
     }
 }

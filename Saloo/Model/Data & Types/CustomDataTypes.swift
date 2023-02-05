@@ -63,6 +63,8 @@ class ChosenCoverImageObject: ObservableObject {
     @Published var coverImageUserName = String()
     @Published var downloadLocation = String()
     @Published var index = Int()
+    @Published var frontCoverIsPersonalPhoto = Int()
+    @Published var pageCount = 1
     //func hash(into hasher: inout Hasher) {
     //    hasher.combine(downloadLocation)
     //}
@@ -91,6 +93,14 @@ struct CoverImageObject: Identifiable, Hashable {
     func hash(into hasher: inout Hasher) {
         hasher.combine(downloadLocation)
     }
+}
+
+class Annotation: ObservableObject {
+    @Published var text1 = String()
+    @Published var text2 = String()
+    @Published var text2URL = URL(string: "https://google.com")!
+    @Published var text3 = String()
+    @Published var text4 = String()
 }
 
 class CollageImage: ObservableObject {@Published var collageImage = UIImage()}
