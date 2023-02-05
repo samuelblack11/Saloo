@@ -12,7 +12,7 @@ import SwiftUI
 import MediaPlayer
 
 struct SpotPlayer: View {
-    @State private var showMusicView = false
+    @State private var showApplePlayerView = false
     @State private var songSearch = ""
     @State private var searchResults: [SongForList] = []
     @ObservedObject var chosenSong: ChosenSong
@@ -20,7 +20,7 @@ struct SpotPlayer: View {
     @State private var songProgress = 0.0
     @State private var showSPV = false
     @State var spotDeviceID: String = ""
-
+    
     var appRemote: SPTAppRemote? {
         get {return (UIApplication.shared.connectedScenes.first?.delegate as? SceneDelegate)?.appRemote}
     }
@@ -72,9 +72,8 @@ struct SpotPlayer: View {
                 }
             }
         }
-        //.onAppear { showMusicView = true}
-        //.fullScreenCover(isPresented: $showMusicView){}
-        
+        .onAppear { showApplePlayerView = true}
+        .fullScreenCover(isPresented: $showApplePlayerView){ApplePlayer}
     }
 }
 

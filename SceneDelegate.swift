@@ -13,6 +13,7 @@ import SwiftUI
 class SceneDelegate: UIResponder, UIWindowSceneDelegate, SPTAppRemoteDelegate, SPTAppRemotePlayerStateDelegate {
     @EnvironmentObject var musicSub: MusicSubscription
     var window: UIWindow?
+
     /**
      To be able to accept a share, add a CKSharingSupported entry in the Info.plist file and set it to true.
      */
