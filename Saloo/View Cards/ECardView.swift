@@ -28,7 +28,7 @@ struct eCardView: View {
     @State var songDuration: Double?
     @State var songPreviewURL: String?
     @State var showFCV: Bool = false
-    
+    @State var inclMusic: Bool
     var body: some View {
         HStack {
             VStack(spacing:1) {
@@ -66,8 +66,10 @@ struct eCardView: View {
             }
             VStack {
                 Spacer()
-                SmallPlayerView(songID: songID, songName: songName, songArtistName: songArtistName, songArtImageData: songArtImageData, songDuration: songDuration, songPreviewURL: songPreviewURL, confirmButton: false, showFCV: $showFCV, spotDeviceID: "12345")
-                    .frame(height: UIScreen.screenHeight/1.5, alignment: .bottom)
+                if inclMusic {
+                    SmallPlayerView(songID: songID, songName: songName, songArtistName: songArtistName, songArtImageData: songArtImageData, songDuration: songDuration, songPreviewURL: songPreviewURL, confirmButton: false, showFCV: $showFCV, spotDeviceID: "12345")
+                        .frame(height: UIScreen.screenHeight/1.5, alignment: .bottom)
+                }
             }
         }
     }

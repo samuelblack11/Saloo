@@ -36,7 +36,7 @@ struct StartMenu: View {
         NavigationView {
             List {
                 Text(buildCardWorkFlow).onTapGesture {self.showOccassions = true}
-                    .fullScreenCover(isPresented: $showOccassions){OccassionsMenu(calViewModel: CalViewModel(), showDetailView: ShowDetailView())}
+                    .fullScreenCover(isPresented: $showOccassions){OccassionsMenu()}
                 Text("View Inbox 📥").onTapGesture {self.showGridOfCards = true}
                     .fullScreenCover(isPresented: $showGridOfCards) {GridofCards(cardsForDisplay: loadCoreCards(), whichBoxVal: .inbox)}
                 Text("View Outbox 📤").onTapGesture {self.showGridOfCards = true}

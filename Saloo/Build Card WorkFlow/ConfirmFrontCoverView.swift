@@ -59,9 +59,7 @@ struct ConfirmFrontCoverView: View {
                 Image(systemName: "chevron.left").foregroundColor(.blue)
                 Text("Back")
             })
-        .fullScreenCover(isPresented: $showUCV) {
-           UnsplashCollectionView()
-        }
+        .fullScreenCover(isPresented: $showUCV) {UnsplashCollectionView()}
         }
     }
 }

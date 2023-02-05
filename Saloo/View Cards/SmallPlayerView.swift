@@ -35,18 +35,21 @@ struct SmallPlayerView: View {
             if musicSub.type == .Apple {AMPlayerView()}
             if musicSub.type == .Neither {AMPreviewPlayerView()}
             if musicSub.type == .Spotify {SpotPlayerView()}
-            selectButton
             }
             .environmentObject(musicSub)
     }
     
 
     
-    @ViewBuilder var selectButton: some View {
+    @ViewBuilder var selectButtonPreview: some View {
         if confirmButton == true {Button {showFCV = true; player!.pause(); songProgress = 0.0} label: {Text("Select Song For Card").foregroundColor(.blue)}}
         else {Text("")}
     }
     
+    @ViewBuilder var selectButton: some View {
+        if confirmButton == true {Button {showFCV = true; musicPlayer.pause(); songProgress = 0.0} label: {Text("Select Song For Card").foregroundColor(.blue)}}
+        else {Text("")}
+    }
     
     func createPlayer() {
         let playerItem = AVPlayerItem(url: URL(string: songPreviewURL!)!)
@@ -105,6 +108,7 @@ struct SmallPlayerView: View {
                 Text(convertToMinutes(seconds: 30 - Int(songProgress)))
                     .padding(.trailing, 10)
             }
+            selectButtonPreview
         }
         .onAppear{createPlayer(); player!.play()}
     }
@@ -161,6 +165,7 @@ struct SmallPlayerView: View {
                 Text(convertToMinutes(seconds: Int(songDuration!)-Int(songProgress)))
                     .padding(.trailing, 10)
             }
+            selectButton
         }
         .onAppear{self.musicPlayer.setQueue(with: [songID!]); self.musicPlayer.play()}
     }

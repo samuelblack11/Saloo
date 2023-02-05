@@ -18,16 +18,14 @@ struct CollageBuilder: View {
     // Variable for collageImage object
     @StateObject var collageImage = CollageImage()
     @StateObject var chosenImagesObject = ChosenImages()
+    
     @State private var showCollageMenu = false
     @State private var showCollageBuilder = false
     @State private var showWriteNote = false
     @State var showImagePicker: Bool
     // Counts the page of the response being viewed by the user. 30 images per page maximum
-    @State var pageCount: Int = 1
-
     // Is front cover a personal photo? (selected from camera or library)
     // Tracks which collage type (#) was selected by the user
-
     @State private var cBB = CollageBlocksAndViews()
     
     // Create instance of CollageBuildingBlocks, with blocks sized to fit the CollageBuilder view (menuSize = false)
@@ -49,7 +47,7 @@ struct CollageBuilder: View {
     }
     
     var body: some View {
-        NavigationView {
+        NavigationStack {
             VStack {
                 Spacer()
                 collageView
@@ -70,6 +68,15 @@ struct CollageBuilder: View {
         .environmentObject(chosenImagesObject)
         .fullScreenCover(isPresented: $showCollageMenu) {CollageStyleMenu()}
         }
+    
+    @ViewBuilder var chosenTemplate: some View {
+        if chosenStyle.chosenStyle == 1 {onePhotoView(block: block1()) }
+        if chosenStyle.chosenStyle == 2 {twoPhotoWide(block1: block1(),block2: block2())}
+        if chosenStyle.chosenStyle == 3 {twoPhotoLong(block1: block1(),block2: block2())}
+        if chosenStyle.chosenStyle == 4 { twoShortOneLong(block1: block1(), block2: block2(), block3: block3())}
+        if chosenStyle.chosenStyle == 5 {twoNarrowOneWide(block1: block1(),block2: block2(),block3: block3())}
+        if chosenStyle.chosenStyle == 6 {fourPhoto(block1: block1(),block2: block2(), block3: block3(), block4: block4())}
+    }
 }
 
 extension CollageBuilder {
@@ -134,14 +141,7 @@ extension CollageBuilder {
     func twoNarrowOneWide(block1: some View, block2: some View, block3: some View) -> some View {return VStack(spacing:0){HStack(spacing:0){block1; block2}; block3}}
     func fourPhoto(block1: some View, block2: some View, block3: some View, block4: some View) -> some View {return VStack(spacing:0){HStack(spacing:0){block1; block2}; HStack(spacing:0){block3; block4}}}
     
-    @ViewBuilder var chosenTemplate: some View {
-        if chosenStyle.chosenStyle == 1 {onePhotoView(block: block1()) }
-        if chosenStyle.chosenStyle == 2 {twoPhotoWide(block1: block1(),block2: block2())}
-        if chosenStyle.chosenStyle == 3 {twoPhotoLong(block1: block1(),block2: block2())}
-        if chosenStyle.chosenStyle == 4 { twoShortOneLong(block1: block1(), block2: block2(), block3: block3())}
-        if chosenStyle.chosenStyle == 5 {twoNarrowOneWide(block1: block1(),block2: block2(),block3: block3())}
-        if chosenStyle.chosenStyle == 6 {fourPhoto(block1: block1(),block2: block2(), block3: block3(), block4: block4())}
-    }
+
 
     func loadImage(chosenImage: UIImage?) {
         

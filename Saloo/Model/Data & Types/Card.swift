@@ -42,8 +42,10 @@ extension CoreCard {
     @NSManaged public var songName: String?
     @NSManaged public var songArtistName: String?
     @NSManaged public var songArtImageData: Data?
-    @NSManaged public var songDuration: String?
     @NSManaged public var songPreviewURL: String?
+    @NSManaged public var songDuration: String?
+    @NSManaged public var inclMusic: Bool
+
 
 }
 
@@ -69,8 +71,9 @@ struct Card: Identifiable, Hashable {
     let songName: String?
     let songArtistName: String?
     let songArtImageData: Data?
-    let songDuration: String?
     let songPreviewURL: String?
+    let songDuration: String?
+    let inclMusic: Bool?
 }
 
 extension Card {
@@ -95,8 +98,9 @@ extension Card {
               let songName = record["songName"] as? String,
               let songArtistName = record["songArtistName"] as? String,
               let songArtImageData = record["songArtImageData"] as? Data,
+              let songPreviewURL = record["songPreviewURL"] as? String,
               let songDuration = record["songDuration"] as? String,
-            let songPreviewURL = record["songPreviewURL"] as? String else {
+              let inclMusic = record["inclMusic"] as? Bool  else {
             return nil
         }
         
@@ -121,7 +125,9 @@ extension Card {
         self.songName = songName
         self.songArtistName = songArtistName
         self.songArtImageData = songArtImageData
-        self.songDuration = songDuration
         self.songPreviewURL = songPreviewURL
+        self.songDuration = songDuration
+        self.inclMusic = inclMusic
+
     }
 }

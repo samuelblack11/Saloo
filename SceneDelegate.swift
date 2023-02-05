@@ -11,7 +11,7 @@ import CloudKit
 import SwiftUI
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate, SPTAppRemoteDelegate, SPTAppRemotePlayerStateDelegate {
-    @EnvironmentObject var musicSub: MusicSubscription
+    //@EnvironmentObject var musicSub: MusicSubscription
     var window: UIWindow?
 
     /**
@@ -29,19 +29,19 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, SPTAppRemoteDelegate, S
     }
     
     
-    func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
-        let contentView = SpotPlayer()
-        if musicSub.type == .Spotify && musicSub.timeToAddMusic == true {
-            if let windowScene = scene as? UIWindowScene {
-                let window = UIWindow(windowScene: windowScene)
-                window.rootViewController = UIHostingController(rootView: contentView)
-                self.window = window
-                window.makeKeyAndVisible()
-            }
-            appRemote.connect()
-            appRemote.authorizeAndPlayURI("")
-        }
-   }
+    //func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
+   //     let contentView = SpotPlayer()
+    //    if musicSub.type == .Spotify && musicSub.timeToAddMusic == true {
+    //        if let windowScene = scene as? UIWindowScene {
+     //           let window = UIWindow(windowScene: windowScene)
+    //            window.rootViewController = UIHostingController(rootView: contentView)
+     //           self.window = window
+     //           window.makeKeyAndVisible()
+     //       }
+     //       appRemote.connect()
+      //      appRemote.authorizeAndPlayURI("")
+       // }
+   //}
     
     
     static private let kAccessTokenKey = "access-token-key"

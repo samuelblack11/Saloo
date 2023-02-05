@@ -61,7 +61,7 @@ struct CalendarParent: View {
             }
         }
             .navigationBarItems(leading:Button {showStartMenu.toggle()} label: {Image(systemName: "chevron.left").foregroundColor(.blue); Text("Back")})
-            .fullScreenCover(isPresented: $showStartMenu) {StartMenu(calViewModel: CalViewModel(), showDetailView: ShowDetailView())}
+            .fullScreenCover(isPresented: $showStartMenu) {StartMenu()}
         }
     }
 

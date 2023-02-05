@@ -21,7 +21,7 @@ struct EnlargeECardView: View {
     var body: some View {
         NavigationView {
             VStack {
-                eCardView(eCardText: chosenCard.message, font: chosenCard.font, coverImage: chosenCard.coverImage!, collageImage: chosenCard.collage!, text1: chosenCard.an1, text2: chosenCard.an2, text2URL: URL(string: chosenCard.an2URL)!, text3: chosenCard.an3, text4: chosenCard.an4, songID: chosenCard.songID , songName: chosenCard.songName, songArtistName: chosenCard.songArtistName, songArtImageData: chosenCard.songArtImageData, songDuration: Double(chosenCard.songDuration!)!)
+                eCardView(eCardText: chosenCard.message, font: chosenCard.font, coverImage: chosenCard.coverImage!, collageImage: chosenCard.collage!, text1: chosenCard.an1, text2: chosenCard.an2, text2URL: URL(string: chosenCard.an2URL)!, text3: chosenCard.an3, text4: chosenCard.an4, songID: chosenCard.songID , songName: chosenCard.songName, songArtistName: chosenCard.songArtistName, songArtImageData: chosenCard.songArtImageData, songDuration: Double(chosenCard.songDuration!)!, inclMusic: chosenCard.inclMusic)
             }
             .navigationBarItems(
                 leading:Button {showGrid = true}

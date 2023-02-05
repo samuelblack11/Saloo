@@ -68,7 +68,7 @@ struct GridofCards: View {
         }
         // "Search by \(sortByValue)"
         .searchable(text: $searchText, prompt: "Search by Card Name")
-        .fullScreenCover(isPresented: $showStartMenu) {StartMenu(calViewModel: CalViewModel(), showDetailView: ShowDetailView())}
+        .fullScreenCover(isPresented: $showStartMenu) {StartMenu()}
     }
     
     private func cardView(for card: CoreCard, shareable: Bool = true) -> some View {

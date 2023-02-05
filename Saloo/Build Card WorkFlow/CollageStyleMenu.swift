@@ -29,7 +29,7 @@ struct CollageStyleMenu: View {
     let columns = [GridItem(.flexible()),GridItem(.flexible())]
     
     var body: some View {
-        NavigationView {
+        NavigationStack {
             VStack {
                 HStack {
                     collageBlocks.onePhotoView(block: collageBlocks.blockForStyle()).onTapGesture{chosenStyle.chosenStyle = 1; showCollageBuilder = true}
@@ -48,7 +48,7 @@ struct CollageStyleMenu: View {
             .navigationBarItems(leading:Button {showConfirmFrontCover = true} label: {Image(systemName: "chevron.left").foregroundColor(.blue); Text("Back")})
         }
         .environmentObject(chosenStyle)
-        .fullScreenCover(isPresented: $showCollageBuilder) {CollageBuilder(showImagePicker: false)}
+        .fullScreenCover(isPresented: $showCollageBuilder) {CollageBuilder(showImagePicker: false).environmentObject(chosenStyle)}
         .fullScreenCover(isPresented: $showConfirmFrontCover) {ConfirmFrontCoverView()}
     }
 }
