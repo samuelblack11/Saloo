@@ -11,10 +11,75 @@ import StoreKit
 import SwiftUI
 import MediaPlayer
 
+
+
+class SpotAppRemote: SPTAppRemoteUserAPIDelegate, SPTAppRemotePlayerStateDelegate {
+    func userAPI(_ userAPI: SPTAppRemoteUserAPI, didReceive capabilities: SPTAppRemoteUserCapabilities) {
+        <#code#>
+    }
+    
+    func playerStateDidChange(_ playerState: SPTAppRemotePlayerState) {
+        <#code#>
+    }
+    
+    func isEqual(_ object: Any?) -> Bool {
+        <#code#>
+    }
+    
+    var hash: Int
+    
+    var superclass: AnyClass?
+    
+    func `self`() -> Self {
+        <#code#>
+    }
+    
+    func perform(_ aSelector: Selector!) -> Unmanaged<AnyObject>! {
+        <#code#>
+    }
+    
+    func perform(_ aSelector: Selector!, with object: Any!) -> Unmanaged<AnyObject>! {
+        <#code#>
+    }
+    
+    func perform(_ aSelector: Selector!, with object1: Any!, with object2: Any!) -> Unmanaged<AnyObject>! {
+        <#code#>
+    }
+    
+    func isProxy() -> Bool {
+        <#code#>
+    }
+    
+    func isKind(of aClass: AnyClass) -> Bool {
+        <#code#>
+    }
+    
+    func isMember(of aClass: AnyClass) -> Bool {
+        <#code#>
+    }
+    
+    func conforms(to aProtocol: Protocol) -> Bool {
+        <#code#>
+    }
+    
+    func responds(to aSelector: Selector!) -> Bool {
+        <#code#>
+    }
+    
+    var description: String
+    
+    
+}
+
+
+
 struct SpotPlayer: View {
     
     @EnvironmentObject var chosenSong: ChosenSong
 
+    //https://developer.apple.com/documentation/swiftui/scenephase
+    //@Environment(\.scenePhase) var scenePhase
+    
     @State private var showApplePlayerView = false
     @State private var songSearch = ""
     @State private var searchResults: [SongForList] = []
@@ -22,11 +87,8 @@ struct SpotPlayer: View {
     @State private var songProgress = 0.0
     @State private var showSPV = false
     @State var spotDeviceID: String = ""
-    
-    var appRemote: SPTAppRemote? {
-        get {return (UIApplication.shared.connectedScenes.first?.delegate as? SceneDelegate)?.appRemote}
-    }
-    
+    @State private var subscribedToPlayerState: Bool = false
+    @State private var subscribedToCapabilities: Bool = false
     var defaultCallback: SPTAppRemoteCallback {
         get {
             return {[self] _, error in
@@ -38,13 +100,18 @@ struct SpotPlayer: View {
         }
     }
     
+    var appRemote: SPTAppRemote? {
+        get {return (UIApplication.shared.connectedScenes.first?.delegate as? SceneDelegate)?.appRemote}
+    }
+    
     var body: some View {
         TextField("Search Songs", text: $songSearch, onCommit: {
             UIApplication.shared.resignFirstResponder()
             if self.songSearch.isEmpty {
                 self.searchResults = []
             } else {
-                searchWithSpotify()
+                appRemote?.authorizeAndPlayURI("")
+                //searchWithSpotify()
             }}).padding(.top, 15)
         NavigationView {
             List {
@@ -75,11 +142,76 @@ struct SpotPlayer: View {
             }
         }
         .onAppear {
-            appRemote!.connect()
-            appRemote!.authorizeAndPlayURI("")
+            //appRemote!.connect()
+            //.appRemote!.authorizeAndPlayURI("")
+            print("%%%")
+            print(appRemote?.isConnected)
+            if appRemote?.isConnected == false {
+                if appRemote?.authorizeAndPlayURI("") == false {
+                    print("Ughhhh")
+                }
+            }
         }
         .fullScreenCover(isPresented: $showApplePlayerView){ApplePlayer()}
     }
+    
+    
+    // MARK: - AppRemote
+    func appRemoteConnecting() {
+        //connectionIndicatorView.state = .connecting
+    }
+
+    func appRemoteConnected() {
+        //connectionIndicatorView.state = .connected
+        subscribeToPlayerState()
+        subscribeToCapabilityChanges()
+        getPlayerState()
+
+        //enableInterface(true)
+    }
+
+    func appRemoteDisconnect() {
+        //connectionIndicatorView.state = .disconnected
+        subscribedToPlayerState = false
+        subscribedToCapabilities = false
+        //enableInterface(false)
+    }
+    
+    private func subscribeToPlayerState() {
+        guard (!subscribedToPlayerState) else { return }
+        appRemote?.playerAPI!.delegate = self
+        appRemote?.playerAPI?.subscribe { (_, error) -> Void in
+            guard error == nil else { return }
+            subscribedToPlayerState = true
+            //self.updatePlayerStateSubscriptionButtonState()
+        }
+    }
+    
+    private func getPlayerState() {
+        appRemote?.playerAPI?.getPlayerState { (result, error) -> Void in
+            guard error == nil else { return }
+
+            let playerState = result as! SPTAppRemotePlayerState
+            //self.updateViewWithPlayerState(playerState)
+        }
+    }
+    
+    private func subscribeToCapabilityChanges() {
+        guard (!subscribedToCapabilities) else { return }
+        appRemote?.userAPI?.delegate = self
+        appRemote?.userAPI?.subscribe(toCapabilityChanges: { (success, error) in
+            guard error == nil else { return }
+
+            subscribedToCapabilities = true
+            //self.updateCapabilitiesSubscriptionButtonState()
+        })
+    }
+    
+    
+    
+    
+    
+    
 }
 
 extension SpotPlayer {

@@ -32,36 +32,26 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, SPTAppRemoteDelegate, S
             }
         }
     }
-    
-    
+    // tells the delegate about the addition of a scene to the app
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
-        //let appDelegate = UIApplication.shared.delegate as! AppDelegate
-        let musicSubAD = appDelegate.musicSub
-            print("^^^^^")
-            print(musicSubAD.type)
-            print(musicSubAD.timeToAddMusic)
-            //if appDelegate.musicSub.timeToAddMusic {
-                print("It's time!!")
-                //if appDelegate.musicSub.type == .Spotify  {
-                    print("SPOT CONFIRMED")
-                    if let windowScene = scene as? UIWindowScene {
-                        let window = UIWindow(windowScene: windowScene)
-                        window.rootViewController = UIHostingController(rootView: SpotPlayer())
-                        self.window = window
-                        window.makeKeyAndVisible()
-                    }
-                    appRemote.connect()
-                    appRemote.authorizeAndPlayURI("")
-                //}
-            //}
+        let spotView = SpotPlayer()
+        //appDelegate.musicSub
+        if let windowScene = scene as? UIWindowScene {
+            let window = UIWindow(windowScene: windowScene)
+            window.rootViewController = UIHostingController(rootView: spotView)
+            self.window = window
+            window.makeKeyAndVisible()
+        }
+        appRemote.connect()
+        appRemote.authorizeAndPlayURI("")
    }
-    
+
     
     static private let kAccessTokenKey = "access-token-key"
     private let redirectUri = URL(string:"comspotifytestsdk://")!
     let clientIdentifier = "d15f76f932ce4a7c94c2ecb0dfb69f4b"
     let secretKey = "2dba2becb9d34ed9858e5ea116754f5b"
-    let SpotifyRedirectURL = URL(string: "spotify-ios-quick-start://spotify-login-callback")!
+    let SpotifyRedirectURL = URL(string: "https://www.google.com")!
     
     lazy var appRemote: SPTAppRemote = {
         let configuration = SPTConfiguration(clientID: self.clientIdentifier, redirectURL: self.redirectUri)
@@ -95,10 +85,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, SPTAppRemoteDelegate, S
     }
 
     func sceneDidBecomeActive(_ scene: UIScene) {
-        if let _ = self.appRemote.connectionParameters.accessToken {
-          self.appRemote.connect()
-        }
-          }
+        connect()
+    }
 
     func sceneWillResignActive(_ scene: UIScene) {
         if self.appRemote.isConnected {
@@ -107,7 +95,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, SPTAppRemoteDelegate, S
       }
 
     func connect() {
-        //playerViewController.appRemoteConnecting()
+        playerViewController.appRemoteConnecting()
         appRemote.connect()
     }
 
@@ -118,23 +106,25 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, SPTAppRemoteDelegate, S
     }
     
     func appRemoteDidEstablishConnection(_ appRemote: SPTAppRemote) {
-        // Connection was successful, you can begin issuing commands
-        self.appRemote.playerAPI?.delegate = self
-        self.appRemote.playerAPI?.subscribe(toPlayerState: { (result, error) in
-          if let error = error {
-            debugPrint(error.localizedDescription)
-          }
-        })
+        self.appRemote = appRemote
+        playerViewController.appRemoteConnected()
       }
 
     func appRemote(_ appRemote: SPTAppRemote, didFailConnectionAttemptWithError error: Error?) {
         print("didFailConnectionAttemptWithError")
-        //playerViewController.appRemoteDisconnect()
+        playerViewController.appRemoteDisconnect()
     }
 
     func appRemote(_ appRemote: SPTAppRemote, didDisconnectWithError error: Error?) {
         print("didDisconnectWithError")
-        //playerViewController.appRemoteDisconnect()
+        playerViewController.appRemoteDisconnect()
+    }
+    
+    var playerViewController: SpotPlayer {
+        get {
+            let navController = self.window?.rootViewController?.children[0] as! UINavigationController
+            return navController.topViewController as! SpotPlayer
+        }
     }
 
 }

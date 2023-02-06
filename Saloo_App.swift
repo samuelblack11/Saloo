@@ -14,8 +14,8 @@ struct Saloo_App: App {
     @StateObject var showDetailView = ShowDetailView()
     let persistenceController = PersistenceController.shared
     @StateObject var appDelegate = AppDelegate()
-    //@UIApplicationDelegateAdaptor var appDelegate: AppDelegate
-    //@UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
+    @Environment (\.scenePhase) private var scenePhase
+    
 
     var body: some Scene {
         WindowGroup {
@@ -25,6 +25,18 @@ struct Saloo_App: App {
                 .environmentObject(musicSub)
                 .environmentObject(calViewModel)
                 .environmentObject(showDetailView)
+        }
+        .onChange(of: scenePhase) { (newScenePhase) in
+            switch newScenePhase {
+            case .active:
+                print("scene is now active!")
+            case .inactive:
+                print("scene is now inactive!")
+            case .background:
+                print("scene is now in the background!")
+            @unknown default:
+                print("Apple must have added something new!")
+            }
         }
     }
 }
