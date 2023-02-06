@@ -12,8 +12,10 @@ import FSCalendar
 import CoreData
 
 struct StartMenu: View {
+    @EnvironmentObject var musicSub: MusicSubscription
     @EnvironmentObject var calViewModel: CalViewModel
     @EnvironmentObject var showDetailView: ShowDetailView
+    @EnvironmentObject var appDelegate: AppDelegate
     @State private var showOccassions = false
     @State private var showGridOfCards = false
     @State private var showCalendar = false
@@ -44,12 +46,15 @@ struct StartMenu: View {
                 Text("View Calendar 🗓").onTapGesture {self.showCalendar = true}
                     .fullScreenCover(isPresented: $showCalendar) {CalendarParent(calViewModel: calViewModel, showDetailView: showDetailView)}
                 Text("More Info 📱")
-                
             }
         }
-        //.onAppear{showMusicMenu = true}
-        .onAppear {if defaults.bool(forKey: "First Launch") == true && counter == 0 {showMusicMenu = true}}
-        .fullScreenCover(isPresented: $showMusicMenu) {MusicMenu()}
+        .environmentObject(musicSub)
+        .onAppear {
+            appDelegate.startMenuAppeared = true
+            if defaults.bool(forKey: "First Launch") == true && counter == 0 {showMusicMenu = true}
+        }
+        
+        .fullScreenCover(isPresented: $showMusicMenu) {MusicMenu().environmentObject(musicSub)}
     }}
 
 extension StartMenu {

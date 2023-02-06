@@ -16,6 +16,7 @@
         <attribute name="coverImage" optional="YES" attributeType="Binary"/>
         <attribute name="date" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="font" optional="YES" attributeType="String"/>
+        <attribute name="inclMusic" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
         <attribute name="message" optional="YES" attributeType="String"/>
         <attribute name="occassion" optional="YES" attributeType="String"/>
         <attribute name="recipient" optional="YES" attributeType="String"/>
@@ -25,6 +26,7 @@
         <attribute name="songDuration" optional="YES" attributeType="String"/>
         <attribute name="songID" optional="YES" attributeType="String"/>
         <attribute name="songName" optional="YES" attributeType="String"/>
+        <attribute name="songPreviewURL" optional="YES" attributeType="String"/>
         <attribute name="uniqueName" optional="YES" attributeType="String"/>
     </entity>
     <entity name="FutureDelivery" representedClassName=".FutureDelivery" syncable="YES">

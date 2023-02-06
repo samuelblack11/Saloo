@@ -18,7 +18,8 @@ struct CollageBuilder: View {
     // Variable for collageImage object
     @StateObject var collageImage = CollageImage()
     @StateObject var chosenImagesObject = ChosenImages()
-    
+    @EnvironmentObject var musicSub: MusicSubscription
+
     @State private var showCollageMenu = false
     @State private var showCollageBuilder = false
     @State private var showWriteNote = false
@@ -58,7 +59,7 @@ struct CollageBuilder: View {
                     collageImage.collageImage = theSnapShot
                     //UIImageWriteToSavedPhotosAlbum(theSnapShot, nil, nil, nil)
                 }.padding(.bottom, 30).fullScreenCover(isPresented: $showWriteNote ) {
-                    WriteNoteView()}
+                    WriteNoteView().environmentObject(musicSub)}
             }
             .navigationBarItems(leading: Button {showCollageMenu = true} label: {
                 Image(systemName: "chevron.left").foregroundColor(.blue)

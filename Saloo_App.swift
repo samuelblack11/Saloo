@@ -17,12 +17,12 @@ struct Saloo_App: App {
     @StateObject var showDetailView = ShowDetailView()
     let persistenceController = PersistenceController.shared
     @UIApplicationDelegateAdaptor var appDelegate: AppDelegate
-    
     var body: some Scene {
         WindowGroup {
             StartMenu()
                 .environment(\.managedObjectContext, persistenceController.persistentContainer.viewContext)
                 .environmentObject(musicSub)
+                .environmentObject(appDelegate)
                 .environmentObject(calViewModel)
                 .environmentObject(showDetailView)
         }

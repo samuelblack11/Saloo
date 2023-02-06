@@ -101,12 +101,12 @@ struct WriteNoteView: View {
             Button("Ok"){showFinalize = true}
         }
         .alert("Add Song to Card?", isPresented: $addMusicPrompt) {            
-            Button("Hell Yea"){addMusic.addMusic = true; checkRequiredFields(); annotateIfNeeded()}
+            Button("Hell Yea"){addMusic.addMusic = true; musicSub.timeToAddMusic = true; checkRequiredFields(); annotateIfNeeded()}
             Button("No Thanks") {checkRequiredFields(); annotateIfNeeded(); addMusic.addMusic = false; showFinalize = true}
             }
         .alert("Your typed message will only appear in your eCard", isPresented: $handWrite2) {Button("Ok", role: .cancel) {}}
         .padding(.bottom, 30)
-        .fullScreenCover(isPresented: $showMusic) {ApplePlayer()}
+        .fullScreenCover(isPresented: $showMusic) {ApplePlayer().environmentObject(musicSub)}
         .fullScreenCover(isPresented: $showFinalize) {FinalizeCardView()}
         .fullScreenCover(isPresented: $showCollageBuilder) {CollageBuilder(showImagePicker: false)}
         }
