@@ -74,7 +74,10 @@ struct SpotPlayer: View {
                 }
             }
         }
-        //.onAppear {showApplePlayerView = true}
+        .onAppear {
+            appRemote!.connect()
+            appRemote!.authorizeAndPlayURI("")
+        }
         .fullScreenCover(isPresented: $showApplePlayerView){ApplePlayer()}
     }
 }

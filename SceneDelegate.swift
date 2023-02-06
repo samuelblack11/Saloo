@@ -42,7 +42,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, SPTAppRemoteDelegate, S
             print(musicSubAD.timeToAddMusic)
             //if appDelegate.musicSub.timeToAddMusic {
                 print("It's time!!")
-                if appDelegate.musicSub.type == .Spotify  {
+                //if appDelegate.musicSub.type == .Spotify  {
                     print("SPOT CONFIRMED")
                     if let windowScene = scene as? UIWindowScene {
                         let window = UIWindow(windowScene: windowScene)
@@ -52,7 +52,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, SPTAppRemoteDelegate, S
                     }
                     appRemote.connect()
                     appRemote.authorizeAndPlayURI("")
-                }
+                //}
             //}
    }
     
