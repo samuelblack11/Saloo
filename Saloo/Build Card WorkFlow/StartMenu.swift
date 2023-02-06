@@ -48,6 +48,7 @@ struct StartMenu: View {
                 Text("More Info 📱")
             }
         }
+        //.environmentObject(appDelegate)
         .environmentObject(musicSub)
         .onAppear {
             appDelegate.startMenuAppeared = true

@@ -15,7 +15,9 @@ import CoreData
 struct MusicMenu: View {
     @EnvironmentObject var musicSub: MusicSubscription
     @State private var showStart = false
-    
+    @EnvironmentObject var appDelegate: AppDelegate
+    //@UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
+
     var body: some View {
         NavigationStack {
             VStack {
@@ -23,14 +25,15 @@ struct MusicMenu: View {
                 Text("This will help optimize your experience")
                 List {
                     Text("Apple Music")
-                        .onTapGesture {musicSub.type = .Apple; showStart = true}
+                        .onTapGesture {appDelegate.musicSub.type = .Apple; showStart = true}
                     Text("Spotify")
-                        .onTapGesture {musicSub.type = .Spotify; showStart = true}
+                        .onTapGesture {appDelegate.musicSub.type = .Spotify; showStart = true}
                     Text("I don't subscribe to either")
-                        .onTapGesture {musicSub.type = .Neither; showStart = true}
+                        .onTapGesture {appDelegate.musicSub.type = .Neither; showStart = true}
                 }
             }
         }
+        //.environmentObject(appDelegate)
         .fullScreenCover(isPresented: $showStart) {StartMenu(counter: 1)}
     }
 }

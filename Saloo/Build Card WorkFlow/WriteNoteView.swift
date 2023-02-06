@@ -17,7 +17,9 @@ struct WriteNoteView: View {
     @EnvironmentObject var chosenOccassion: Occassion
     @EnvironmentObject var chosenStyle: ChosenCollageStyle
     @EnvironmentObject var musicSub: MusicSubscription
-    
+    @EnvironmentObject var appDelegate: AppDelegate
+    //@UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
+
     @StateObject var addMusic = AddMusic()
     @StateObject var chosenSong = ChosenSong()
 
@@ -92,26 +94,27 @@ struct WriteNoteView: View {
             .onTapGesture {if cardName.value == "Name Your Card" {cardName.value = ""}}
         Button("Confirm Note") {
             cardName.value = cardName.value.components(separatedBy: CharacterSet.punctuationCharacters).joined()
-            if musicSub.type == .Apple {addMusicPrompt = true}
-            if musicSub.type == .Spotify {addMusicPrompt = true}
-            if musicSub.type == .Neither {skipMusicPrompt = true}
+            if appDelegate.musicSub.type == .Apple {addMusicPrompt = true}
+            if appDelegate.musicSub.type == .Spotify {addMusicPrompt = true}
+            if appDelegate.musicSub.type == .Neither {skipMusicPrompt = true}
             }
         .alert("Please Enter Values for All Fields!", isPresented: $namesNotEntered) {Button("Ok", role: .cancel) {}}
         .alert("A Subscription to Spotify or Apple Music is Required to Add a Song. We'll skip that Step", isPresented: $skipMusicPrompt) {
             Button("Ok"){showFinalize = true}
         }
         .alert("Add Song to Card?", isPresented: $addMusicPrompt) {            
-            Button("Hell Yea"){addMusic.addMusic = true; musicSub.timeToAddMusic = true; checkRequiredFields(); annotateIfNeeded()}
+            Button("Hell Yea"){addMusic.addMusic = true; appDelegate.musicSub.timeToAddMusic = true; checkRequiredFields(); annotateIfNeeded()}
             Button("No Thanks") {checkRequiredFields(); annotateIfNeeded(); addMusic.addMusic = false; showFinalize = true}
             }
         .alert("Your typed message will only appear in your eCard", isPresented: $handWrite2) {Button("Ok", role: .cancel) {}}
         .padding(.bottom, 30)
-        .fullScreenCover(isPresented: $showMusic) {ApplePlayer().environmentObject(musicSub)}
+        .fullScreenCover(isPresented: $showMusic) {ApplePlayer().environmentObject(appDelegate)}
         .fullScreenCover(isPresented: $showFinalize) {FinalizeCardView()}
         .fullScreenCover(isPresented: $showCollageBuilder) {CollageBuilder(showImagePicker: false)}
         }
             .navigationBarItems(leading:Button {showCollageBuilder = true} label: {Image(systemName: "chevron.left").foregroundColor(.blue); Text("Back")})
         }
+        //.environmentObject(appDelegate)
         .environmentObject(noteField)
         .environmentObject(annotation)
         .environmentObject(addMusic)

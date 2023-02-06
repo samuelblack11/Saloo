@@ -16,6 +16,8 @@ struct ApplePlayer: View {
     @EnvironmentObject var addMusic: AddMusic
     @EnvironmentObject var musicSub: MusicSubscription
     @EnvironmentObject var chosenSong: ChosenSong
+    @EnvironmentObject var appDelegate: AppDelegate
+    //@UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
 
     
     let devToken = "eyJhbGciOiJFUzI1NiIsImtpZCI6Ik5KN0MzVzgzTFoiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJCU00zWVpGVVQyIiwiZXhwIjoxNjg5MjQzOTI3LCJpYXQiOjE2NzM0Nzk1Mjd9.28_a1GIJEEKWzvJgmdM9lAmvB4ilY5pFx6TF0Q4uhIIKu8FR0fOaXd2-3xVHPWANA8tqbLurVE5yE8wEZEqR8g"
@@ -41,7 +43,7 @@ struct ApplePlayer: View {
             if self.songSearch.isEmpty {
                 self.searchResults = []
             } else {
-                switch musicSub.type {
+                switch appDelegate.musicSub.type {
                 case .Apple:
                     return searchWithAM()
                 case .Neither:
@@ -81,7 +83,7 @@ struct ApplePlayer: View {
         .onAppear{
             print("-----")
             print(musicSub)
-            if musicSub.type == .Spotify {connectToSpot = true}
+            if appDelegate.musicSub.type == .Spotify {connectToSpot = true}
         }
         .popover(isPresented: $showSPV) {SmallPlayerView(songID: chosenSong.id, songName: chosenSong.name, songArtistName: chosenSong.artistName, songArtImageData: chosenSong.artwork, songDuration: chosenSong.durationInSeconds, songPreviewURL: chosenSong.songPreviewURL, confirmButton: true, showFCV: $showFCV)
         .presentationDetents([.fraction(0.4)])

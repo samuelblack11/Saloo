@@ -14,7 +14,8 @@ import SwiftUI
 class SceneDelegate: UIResponder, UIWindowSceneDelegate, SPTAppRemoteDelegate, SPTAppRemotePlayerStateDelegate {
     var musicSubTimeToAddMusic: Bool = false
     var musicSubType: MusicSubscriptionOptions = .Neither
-    @UIApplicationDelegateAdaptor var appDelegate: AppDelegate
+    @EnvironmentObject var appDelegate: AppDelegate
+    //@UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
 
     var window: UIWindow?
 
@@ -34,24 +35,25 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, SPTAppRemoteDelegate, S
     
     
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
-        let contentView = SpotPlayer()
-        if appDelegate.startMenuAppeared {
-            if appDelegate.musicSub.timeToAddMusic {
+        //let appDelegate = UIApplication.shared.delegate as! AppDelegate
+        let musicSubAD = appDelegate.musicSub
+            print("^^^^^")
+            print(musicSubAD.type)
+            print(musicSubAD.timeToAddMusic)
+            //if appDelegate.musicSub.timeToAddMusic {
                 print("It's time!!")
-                self.musicSubType = appDelegate.musicSub.type
-                self.musicSubTimeToAddMusic = appDelegate.musicSub.timeToAddMusic
-                if musicSubType == .Spotify  {
+                if appDelegate.musicSub.type == .Spotify  {
+                    print("SPOT CONFIRMED")
                     if let windowScene = scene as? UIWindowScene {
                         let window = UIWindow(windowScene: windowScene)
-                        window.rootViewController = UIHostingController(rootView: contentView)
+                        window.rootViewController = UIHostingController(rootView: SpotPlayer())
                         self.window = window
                         window.makeKeyAndVisible()
                     }
                     appRemote.connect()
                     appRemote.authorizeAndPlayURI("")
                 }
-            }
-        }
+            //}
    }
     
     

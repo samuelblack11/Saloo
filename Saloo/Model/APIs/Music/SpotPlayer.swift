@@ -74,7 +74,7 @@ struct SpotPlayer: View {
                 }
             }
         }
-        .onAppear {showApplePlayerView = true}
+        //.onAppear {showApplePlayerView = true}
         .fullScreenCover(isPresented: $showApplePlayerView){ApplePlayer()}
     }
 }
