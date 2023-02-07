@@ -60,6 +60,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject, SPTAp
         appRemote.connectionParameters.accessToken = self.accessToken
         appRemote.delegate = self
         print("did it work")
+        print(accessToken)
         return appRemote
     }()
 
@@ -122,10 +123,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject, SPTAp
         playerViewController.appRemoteDisconnect()
     }
     
-    var playerViewController: SpotAppRemoteVC {
+    var playerViewController: SpotPlayerVC {
         get {
             let navController = self.window?.rootViewController?.children[0] as! UINavigationController
-            return navController.topViewController as! SpotAppRemoteVC
+            return navController.topViewController as! SpotPlayerVC
         }
     }
 

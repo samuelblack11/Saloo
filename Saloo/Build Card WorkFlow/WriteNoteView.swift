@@ -109,7 +109,7 @@ struct WriteNoteView: View {
             }
         .alert("Your typed message will only appear in your eCard", isPresented: $handWrite2) {Button("Ok", role: .cancel) {}}
         .padding(.bottom, 30)
-        .fullScreenCover(isPresented: $showMusic) {ApplePlayer().environmentObject(appDelegate)}
+        .fullScreenCover(isPresented: $showMusic) {MusicSearchView().environmentObject(appDelegate)}
         .fullScreenCover(isPresented: $showFinalize) {FinalizeCardView()}
         .fullScreenCover(isPresented: $showCollageBuilder) {CollageBuilder(showImagePicker: false)}
         }

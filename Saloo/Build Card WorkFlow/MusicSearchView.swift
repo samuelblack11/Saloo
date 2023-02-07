@@ -12,7 +12,7 @@ import CloudKit
 import StoreKit
 import MediaPlayer
 
-struct ApplePlayer: View {
+struct MusicSearchView: View {
     @EnvironmentObject var addMusic: AddMusic
     @EnvironmentObject var musicSub: MusicSubscription
     @EnvironmentObject var chosenSong: ChosenSong
@@ -20,7 +20,7 @@ struct ApplePlayer: View {
     @EnvironmentObject var sceneDelegate: SceneDelegate
 
     //@UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
-
+    @State var spotDeviceID: String = ""
     
     let devToken = "eyJhbGciOiJFUzI1NiIsImtpZCI6Ik5KN0MzVzgzTFoiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJCU00zWVpGVVQyIiwiZXhwIjoxNjg5MjQzOTI3LCJpYXQiOjE2NzM0Nzk1Mjd9.28_a1GIJEEKWzvJgmdM9lAmvB4ilY5pFx6TF0Q4uhIIKu8FR0fOaXd2-3xVHPWANA8tqbLurVE5yE8wEZEqR8g"
     @State private var songSearch = ""
@@ -91,11 +91,45 @@ struct ApplePlayer: View {
         .presentationDetents([.fraction(0.4)])
         .fullScreenCover(isPresented: $showFCV) {FinalizeCardView()}
         }
-        .fullScreenCover(isPresented: $connectToSpot) {SpotPlayer3()}
+        .sheet(isPresented: $connectToSpot){SpotPlayer().frame(height: 100)}
     }
 
 }
-extension ApplePlayer {
+extension MusicSearchView {
+    
+    func searchWithSpotify() {
+        print("Testing....")
+        SpotifyAPI().searchSpotify(self.songSearch, completionHandler: {(response, error) in
+            if response != nil {
+                DispatchQueue.main.async {
+                    for song in response! {
+                        print("BBBBB")
+                        print(response)
+                        let artURL = URL(string:song.album.images[2].url)
+                        let _ = getURLData(url: artURL!, completionHandler: {(artResponse, error2) in
+                            let songForList = SongForList(id: song.id, name: song.name, artistName: song.artists[0].name, artImageData: artResponse!, durationInMillis: song.duration_ms, isPlaying: false, previewURL: "")
+                            searchResults.append(songForList)})
+                    }}}; if response != nil {print("No Response!")}
+                        else{debugPrint(error?.localizedDescription)}
+        })
+        
+        print("%$%$")
+        SpotifyAPI().getSpotDevices(completionHandler: {(response, error) in
+            if response != nil {
+                DispatchQueue.main.async {
+                    for device in response!.devices {
+                        print("*&*&")
+                        print(response)
+                        if device.type == "Smartphone" {
+                            spotDeviceID = device.id
+                        }
+                    }}}; if response != nil {print("No Response!")}
+            else{debugPrint(error?.localizedDescription)}
+        }
+        )
+        
+    }
+    
 
     func searchWithAM() {
         SKCloudServiceController.requestAuthorization {(status) in if status == .authorized {
