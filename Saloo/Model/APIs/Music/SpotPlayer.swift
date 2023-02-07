@@ -16,13 +16,19 @@ class SpotPlayerVC: UIViewController, SPTAppRemoteUserAPIDelegate, SPTAppRemoteP
     @State private var subscribedToCapabilities: Bool = false
     @ObservedObject var sceneDelegate = SceneDelegate()
     var appRemote: SPTAppRemote? {get {return (sceneDelegate.appRemote)}}
+    let defaults = UserDefaults.standard
+    //var str: String?
 
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .systemMint
         print("Begin Authorize....")
-        appRemote?.authorizeAndPlayURI("")
-        
+        appRemote?.authorizeAndPlayURI("spotify:track:32ftxJzxMPgUFCM6Km9WTS")
+        appRemote?.playerAPI?.play("32ftxJzxMPgUFCM6Km9WTS", callback: defaultCallback)
+        //str = defaults.object(forKey: SceneDelegate.kAccessTokenKey) as? String
+        print("444")
+        print(sceneDelegate.accessToken)
     }
     
     func userAPI(_ userAPI: SPTAppRemoteUserAPI, didReceive capabilities: SPTAppRemoteUserCapabilities) {
@@ -33,10 +39,34 @@ class SpotPlayerVC: UIViewController, SPTAppRemoteUserAPIDelegate, SPTAppRemoteP
         
     }
     
-
     
     var defaultCallback: SPTAppRemoteCallback {
-        get {return {[weak self] _, error in if let error = error {print("***");print(error)}}}
+        get {
+            return {[weak self] _, error in
+                if let error = error {
+                    self?.displayError(error as NSError)
+                }
+            }
+        }
+    }
+    
+    // MARK: - Error & Alert
+    func showError(_ errorDescription: String) {
+        let alert = UIAlertController(title: "Error!", message: errorDescription, preferredStyle: UIAlertController.Style.alert)
+        alert.addAction(UIAlertAction(title: "OK", style: UIAlertAction.Style.default, handler: nil))
+        self.present(alert, animated: true, completion: nil)
+    }
+
+    private func displayError(_ error: NSError?) {
+        if let error = error {
+            presentAlert(title: "Error", message: error.description)
+        }
+    }
+
+    private func presentAlert(title: String, message: String) {
+        let alert = UIAlertController(title: title, message: message, preferredStyle: UIAlertController.Style.alert)
+        alert.addAction(UIAlertAction(title: "OK", style: UIAlertAction.Style.default, handler: nil))
+        self.present(alert, animated: true, completion: nil)
     }
     
     // MARK: - AppRemote
@@ -94,7 +124,8 @@ class SpotPlayerVC: UIViewController, SPTAppRemoteUserAPIDelegate, SPTAppRemoteP
 struct SpotPlayer: UIViewControllerRepresentable {
     @EnvironmentObject var sceneDelegate: SceneDelegate
     typealias UIViewControllerType = SpotPlayerVC
-
+    let defaults = UserDefaults.standard
+    
     func makeUIViewController(context: Context) -> SpotPlayerVC {
         //Return SpotAppRemoteVC Instance
         let vc = SpotPlayerVC()
@@ -103,5 +134,7 @@ struct SpotPlayer: UIViewControllerRepresentable {
     
     func updateUIViewController(_ uiViewController: SpotPlayerVC, context: Context) {
         //Updates the state of the specified view controller with new information from SwiftUI.
+        print("999999")
+        print(defaults.object(forKey: "access-token-key"))
     }
 }

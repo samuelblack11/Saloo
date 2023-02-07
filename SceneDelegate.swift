@@ -47,7 +47,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject, SPTAp
         appRemote.authorizeAndPlayURI("")
    }
 
-    static private let kAccessTokenKey = "access-token-key"
+    static let kAccessTokenKey = "access-token-key"
     private let redirectUri = URL(string:"comspotifytestsdk://")!
     let clientIdentifier = "d15f76f932ce4a7c94c2ecb0dfb69f4b"
     let secretKey = "2dba2becb9d34ed9858e5ea116754f5b"
@@ -59,8 +59,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject, SPTAp
         let appRemote = SPTAppRemote(configuration: configuration, logLevel: .debug)
         appRemote.connectionParameters.accessToken = self.accessToken
         appRemote.delegate = self
-        print("did it work")
-        print(accessToken)
         return appRemote
     }()
 
@@ -68,6 +66,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject, SPTAp
         didSet {
             let defaults = UserDefaults.standard
             defaults.set(accessToken, forKey: SceneDelegate.kAccessTokenKey)
+            print("updated access token value")
+            print(accessToken)
         }
     }
 
@@ -81,8 +81,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject, SPTAp
         if let access_token = parameters?[SPTAppRemoteAccessTokenKey] {
             appRemote.connectionParameters.accessToken = access_token
             self.accessToken = access_token
+            print("check3")
+            print(self.accessToken)
         } else if let errorDescription = parameters?[SPTAppRemoteErrorDescriptionKey] {
-            print("****")
+            print("There is an error.....")
             print(errorDescription)
         }
     }
@@ -110,6 +112,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject, SPTAp
     
     func appRemoteDidEstablishConnection(_ appRemote: SPTAppRemote) {
         self.appRemote = appRemote
+        print("++++")
+        print(accessToken)
         playerViewController.appRemoteConnected()
       }
 

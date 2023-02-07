@@ -35,9 +35,7 @@ struct MusicSearchView: View {
     @State private var songProgress = 0.0
     @State private var connectToSpot = false
     
-    func goToSpot() {
-        connectToSpot = true
-    }
+    func goToSpot() {connectToSpot = true}
 
     var body: some View {
         TextField("Search Songs", text: $songSearch, onCommit: {
@@ -84,7 +82,7 @@ struct MusicSearchView: View {
         }
         .onAppear{
             print("-----")
-            print(musicSub)
+            print(appDelegate.musicSub.type)
             if appDelegate.musicSub.type == .Spotify {connectToSpot = true}
         }
         .popover(isPresented: $showSPV) {SmallPlayerView(songID: chosenSong.id, songName: chosenSong.name, songArtistName: chosenSong.artistName, songArtImageData: chosenSong.artwork, songDuration: chosenSong.durationInSeconds, songPreviewURL: chosenSong.songPreviewURL, confirmButton: true, showFCV: $showFCV)

@@ -27,16 +27,16 @@ struct SmallPlayerView: View {
     @State private var player: AVPlayer?
     @State private var musicPlayer = MPMusicPlayerController.applicationMusicPlayer
     @State var spotDeviceID: String?
-    @EnvironmentObject var musicSub: MusicSubscription
-    
+    @EnvironmentObject var appDelegate: AppDelegate
+
     
     var body: some View {
         NavigationStack {
-            if musicSub.type == .Apple {AMPlayerView()}
-            if musicSub.type == .Neither {AMPreviewPlayerView()}
-            if musicSub.type == .Spotify {SpotPlayerView()}
+            if appDelegate.musicSub.type == .Apple {AMPlayerView()}
+            if appDelegate.musicSub.type == .Neither {AMPreviewPlayerView()}
+            if appDelegate.musicSub.type == .Spotify {SpotPlayerView()}
             }
-            .environmentObject(musicSub)
+            .environmentObject(appDelegate)
     }
     
 
