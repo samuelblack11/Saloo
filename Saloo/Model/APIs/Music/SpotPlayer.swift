@@ -11,10 +11,18 @@ import StoreKit
 import SwiftUI
 import MediaPlayer
 
-
-
-
 class SpotAppRemoteVC: UIViewController, SPTAppRemoteUserAPIDelegate, SPTAppRemotePlayerStateDelegate {
+    @State private var subscribedToPlayerState: Bool = false
+    @State private var subscribedToCapabilities: Bool = false
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        view.backgroundColor = .systemMint
+    }
+    
+    
+    
+    
     
     func userAPI(_ userAPI: SPTAppRemoteUserAPI, didReceive capabilities: SPTAppRemoteUserCapabilities) {
         
@@ -32,8 +40,6 @@ class SpotAppRemoteVC: UIViewController, SPTAppRemoteUserAPIDelegate, SPTAppRemo
         get {return {[weak self] _, error in if let error = error {print("***");print(error)}}}
     }
     
-    @State private var subscribedToPlayerState: Bool = false
-    @State private var subscribedToCapabilities: Bool = false
     // MARK: - AppRemote
     func appRemoteConnecting() {
         //connectionIndicatorView.state = .connecting
@@ -86,6 +92,45 @@ class SpotAppRemoteVC: UIViewController, SPTAppRemoteUserAPIDelegate, SPTAppRemo
     }
 }
 
+
+struct SpotPlayer2: UIViewControllerRepresentable {
+    typealias UIViewControllerType = SpotAppRemoteVC
+
+    func makeUIViewController(context: Context) -> SpotAppRemoteVC {
+        //Return SpotAppRemoteVC Instance
+        let vc = SpotAppRemoteVC()
+        return vc
+    }
+    
+    func updateUIViewController(_ uiViewController: SpotAppRemoteVC, context: Context) {
+        //Updates the state of the specified view controller with new information from SwiftUI.
+    }
+    
+}
+
+
+
+struct SpotPlayer3: View {
+    @State var isPresented = false
+    var body: some View {
+        Button("The View") {
+            isPresented = true
+        }
+        .sheet(isPresented: $isPresented){SpotPlayer2().frame(height: 100)}
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
 struct SpotPlayer: View {
     
     @EnvironmentObject var chosenSong: ChosenSong
@@ -110,8 +155,10 @@ struct SpotPlayer: View {
                 self.searchResults = []
             } else {
                 print("calling!!!!")
-                spotAppRemote.appRemote?.authorizeAndPlayURI("")
+                //spotAppRemote.appRemote?.authorizeAndPlayURI("")
                 //searchWithSpotify()
+                
+                
             }}).padding(.top, 15)
         NavigationView {
             List {
@@ -144,13 +191,11 @@ struct SpotPlayer: View {
         .onAppear {
             //appRemote!.connect()
             //.appRemote!.authorizeAndPlayURI("")
-            print("%%%")
-            print(spotAppRemote.appRemote?.isConnected)
-            if spotAppRemote.appRemote?.isConnected == false {
-                if spotAppRemote.appRemote?.authorizeAndPlayURI("") == false {
-                    print("Ughhhh")
-                }
-            }
+            //if spotAppRemote.appRemote?.isConnected == false {
+            //    if spotAppRemote.appRemote?.authorizeAndPlayURI("") == false {
+            //        print("Ughhhh")
+            //    }
+            //}
         }
         .fullScreenCover(isPresented: $showApplePlayerView){ApplePlayer()}
     }

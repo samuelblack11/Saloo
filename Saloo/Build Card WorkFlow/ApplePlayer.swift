@@ -89,7 +89,7 @@ struct ApplePlayer: View {
         .presentationDetents([.fraction(0.4)])
         .fullScreenCover(isPresented: $showFCV) {FinalizeCardView()}
         }
-        .fullScreenCover(isPresented: $connectToSpot) {SpotPlayer()}
+        .fullScreenCover(isPresented: $connectToSpot) {SpotPlayer3()}
     }
 
 }
