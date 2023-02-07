@@ -150,6 +150,7 @@ enum MusicSubscriptionOptions {
     case Spotify
     case Neither
 }
+class UnmanagedPlaceHolder: NSObject {}
 
 class ChosenCollageStyle: ObservableObject {@Published var chosenStyle: Int?}
 

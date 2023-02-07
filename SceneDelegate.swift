@@ -46,7 +46,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, SPTAppRemoteDelegate, S
         appRemote.authorizeAndPlayURI("")
    }
 
-    
     static private let kAccessTokenKey = "access-token-key"
     private let redirectUri = URL(string:"comspotifytestsdk://")!
     let clientIdentifier = "d15f76f932ce4a7c94c2ecb0dfb69f4b"
@@ -120,10 +119,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, SPTAppRemoteDelegate, S
         playerViewController.appRemoteDisconnect()
     }
     
-    var playerViewController: SpotPlayer {
+    var playerViewController: SpotAppRemoteVC {
         get {
             let navController = self.window?.rootViewController?.children[0] as! UINavigationController
-            return navController.topViewController as! SpotPlayer
+            return navController.topViewController as! SpotAppRemoteVC
         }
     }
 

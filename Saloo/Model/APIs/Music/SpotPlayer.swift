@@ -1,9 +1,9 @@
 //
 //  SpotPlayer.swift
 //  Saloo
-//
+//https://sarunw.com/posts/uiviewcontroller-in-swiftui/
 //  Created by Sam Black on 2/1/23.
-//
+//https://swiftdoc.org/v5.1/type/unmanaged/
 
 import Foundation
 import UIKit
@@ -13,65 +13,78 @@ import MediaPlayer
 
 
 
-class SpotAppRemote: SPTAppRemoteUserAPIDelegate, SPTAppRemotePlayerStateDelegate {
+
+class SpotAppRemoteVC: UIViewController, SPTAppRemoteUserAPIDelegate, SPTAppRemotePlayerStateDelegate {
+    
     func userAPI(_ userAPI: SPTAppRemoteUserAPI, didReceive capabilities: SPTAppRemoteUserCapabilities) {
-        <#code#>
+        
     }
     
     func playerStateDidChange(_ playerState: SPTAppRemotePlayerState) {
-        <#code#>
+        
     }
     
-    func isEqual(_ object: Any?) -> Bool {
-        <#code#>
+    
+    var appRemote: SPTAppRemote? {
+        get {return (UIApplication.shared.connectedScenes.first?.delegate as? SceneDelegate)?.appRemote}
+    }
+    var defaultCallback: SPTAppRemoteCallback {
+        get {return {[weak self] _, error in if let error = error {print("***");print(error)}}}
     }
     
-    var hash: Int
-    
-    var superclass: AnyClass?
-    
-    func `self`() -> Self {
-        <#code#>
+    @State private var subscribedToPlayerState: Bool = false
+    @State private var subscribedToCapabilities: Bool = false
+    // MARK: - AppRemote
+    func appRemoteConnecting() {
+        //connectionIndicatorView.state = .connecting
+    }
+
+    func appRemoteConnected() {
+        //connectionIndicatorView.state = .connected
+        subscribeToPlayerState()
+        subscribeToCapabilityChanges()
+        getPlayerState()
+
+        //enableInterface(true)
+    }
+
+    func appRemoteDisconnect() {
+        //connectionIndicatorView.state = .disconnected
+        subscribedToPlayerState = false
+        subscribedToCapabilities = false
+        //enableInterface(false)
     }
     
-    func perform(_ aSelector: Selector!) -> Unmanaged<AnyObject>! {
-        <#code#>
+    private func subscribeToPlayerState() {
+        guard (!subscribedToPlayerState) else { return }
+        appRemote?.playerAPI!.delegate = self
+        appRemote?.playerAPI?.subscribe { (_, error) -> Void in
+            guard error == nil else { return }
+            self.subscribedToPlayerState = true
+            //self.updatePlayerStateSubscriptionButtonState()
+        }
     }
     
-    func perform(_ aSelector: Selector!, with object: Any!) -> Unmanaged<AnyObject>! {
-        <#code#>
+    private func getPlayerState() {
+        appRemote?.playerAPI?.getPlayerState { (result, error) -> Void in
+            guard error == nil else { return }
+
+            let playerState = result as! SPTAppRemotePlayerState
+            //self.updateViewWithPlayerState(playerState)
+        }
     }
     
-    func perform(_ aSelector: Selector!, with object1: Any!, with object2: Any!) -> Unmanaged<AnyObject>! {
-        <#code#>
+    private func subscribeToCapabilityChanges() {
+        guard (!subscribedToCapabilities) else { return }
+        appRemote?.userAPI?.delegate = self
+        appRemote?.userAPI?.subscribe(toCapabilityChanges: { (success, error) in
+            guard error == nil else { return }
+
+            self.subscribedToCapabilities = true
+            //self.updateCapabilitiesSubscriptionButtonState()
+        })
     }
-    
-    func isProxy() -> Bool {
-        <#code#>
-    }
-    
-    func isKind(of aClass: AnyClass) -> Bool {
-        <#code#>
-    }
-    
-    func isMember(of aClass: AnyClass) -> Bool {
-        <#code#>
-    }
-    
-    func conforms(to aProtocol: Protocol) -> Bool {
-        <#code#>
-    }
-    
-    func responds(to aSelector: Selector!) -> Bool {
-        <#code#>
-    }
-    
-    var description: String
-    
-    
 }
-
-
 
 struct SpotPlayer: View {
     
@@ -87,22 +100,8 @@ struct SpotPlayer: View {
     @State private var songProgress = 0.0
     @State private var showSPV = false
     @State var spotDeviceID: String = ""
-    @State private var subscribedToPlayerState: Bool = false
-    @State private var subscribedToCapabilities: Bool = false
-    var defaultCallback: SPTAppRemoteCallback {
-        get {
-            return {[self] _, error in
-                if let error = error {
-                    print("***")
-                    print(error)
-                }
-            }
-        }
-    }
+    //@StateObject var spotAppRemote = SpotAppRemote()
     
-    var appRemote: SPTAppRemote? {
-        get {return (UIApplication.shared.connectedScenes.first?.delegate as? SceneDelegate)?.appRemote}
-    }
     
     var body: some View {
         TextField("Search Songs", text: $songSearch, onCommit: {
@@ -110,7 +109,8 @@ struct SpotPlayer: View {
             if self.songSearch.isEmpty {
                 self.searchResults = []
             } else {
-                appRemote?.authorizeAndPlayURI("")
+                print("calling!!!!")
+                spotAppRemote.appRemote?.authorizeAndPlayURI("")
                 //searchWithSpotify()
             }}).padding(.top, 15)
         NavigationView {
@@ -145,72 +145,15 @@ struct SpotPlayer: View {
             //appRemote!.connect()
             //.appRemote!.authorizeAndPlayURI("")
             print("%%%")
-            print(appRemote?.isConnected)
-            if appRemote?.isConnected == false {
-                if appRemote?.authorizeAndPlayURI("") == false {
+            print(spotAppRemote.appRemote?.isConnected)
+            if spotAppRemote.appRemote?.isConnected == false {
+                if spotAppRemote.appRemote?.authorizeAndPlayURI("") == false {
                     print("Ughhhh")
                 }
             }
         }
         .fullScreenCover(isPresented: $showApplePlayerView){ApplePlayer()}
     }
-    
-    
-    // MARK: - AppRemote
-    func appRemoteConnecting() {
-        //connectionIndicatorView.state = .connecting
-    }
-
-    func appRemoteConnected() {
-        //connectionIndicatorView.state = .connected
-        subscribeToPlayerState()
-        subscribeToCapabilityChanges()
-        getPlayerState()
-
-        //enableInterface(true)
-    }
-
-    func appRemoteDisconnect() {
-        //connectionIndicatorView.state = .disconnected
-        subscribedToPlayerState = false
-        subscribedToCapabilities = false
-        //enableInterface(false)
-    }
-    
-    private func subscribeToPlayerState() {
-        guard (!subscribedToPlayerState) else { return }
-        appRemote?.playerAPI!.delegate = self
-        appRemote?.playerAPI?.subscribe { (_, error) -> Void in
-            guard error == nil else { return }
-            subscribedToPlayerState = true
-            //self.updatePlayerStateSubscriptionButtonState()
-        }
-    }
-    
-    private func getPlayerState() {
-        appRemote?.playerAPI?.getPlayerState { (result, error) -> Void in
-            guard error == nil else { return }
-
-            let playerState = result as! SPTAppRemotePlayerState
-            //self.updateViewWithPlayerState(playerState)
-        }
-    }
-    
-    private func subscribeToCapabilityChanges() {
-        guard (!subscribedToCapabilities) else { return }
-        appRemote?.userAPI?.delegate = self
-        appRemote?.userAPI?.subscribe(toCapabilityChanges: { (success, error) in
-            guard error == nil else { return }
-
-            subscribedToCapabilities = true
-            //self.updateCapabilitiesSubscriptionButtonState()
-        })
-    }
-    
-    
-    
-    
-    
     
 }
 
@@ -258,5 +201,67 @@ extension SpotPlayer {
         }
         dataTask.resume()
     }
+    
+}
+
+class SpotAppRemote: SPTAppRemoteUserAPIDelegate, SPTAppRemotePlayerStateDelegate {
+    
+    let unManagedString = "" as CFString
+    var unmanagedObject: Unmanaged<AnyObject> = .passUnretained(UnmanagedPlaceHolder())
+    //A type for propogating an unmanaged object reference
+    
+    func userAPI(_ userAPI: SPTAppRemoteUserAPI, didReceive capabilities: SPTAppRemoteUserCapabilities) {
+        
+    }
+    
+    func playerStateDidChange(_ playerState: SPTAppRemotePlayerState) {
+        
+    }
+    
+    func isEqual(_ object: Any?) -> Bool {
+        return true
+    }
+    
+    var hash: Int = 0
+    
+    var superclass: AnyClass?
+    
+    func `self`() -> Self {
+        return self
+    }
+    
+    func perform(_ aSelector: Selector!) -> Unmanaged<AnyObject>! {
+        return unmanagedObject
+    }
+    
+    func perform(_ aSelector: Selector!, with object: Any!) -> Unmanaged<AnyObject>! {
+        return unmanagedObject
+    }
+    
+    func perform(_ aSelector: Selector!, with object1: Any!, with object2: Any!) -> Unmanaged<AnyObject>! {
+        return unmanagedObject
+    }
+    
+    func isProxy() -> Bool {
+        return true
+    }
+    
+    func isKind(of aClass: AnyClass) -> Bool {
+        return true
+    }
+    
+    func isMember(of aClass: AnyClass) -> Bool {
+        return true
+    }
+    
+    func conforms(to aProtocol: Protocol) -> Bool {
+        return true
+    }
+    
+    func responds(to aSelector: Selector!) -> Bool {
+        return true
+    }
+    
+    var description: String = ""
     
 }
