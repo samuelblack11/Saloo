@@ -16,6 +16,7 @@ struct MusicMenu: View {
     @EnvironmentObject var musicSub: MusicSubscription
     @State private var showStart = false
     @EnvironmentObject var appDelegate: AppDelegate
+    @EnvironmentObject var sceneDelegate: SceneDelegate
     //@UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
 
     var body: some View {

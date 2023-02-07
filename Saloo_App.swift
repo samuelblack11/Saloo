@@ -14,6 +14,8 @@ struct Saloo_App: App {
     @StateObject var showDetailView = ShowDetailView()
     let persistenceController = PersistenceController.shared
     @StateObject var appDelegate = AppDelegate()
+    @StateObject var sceneDelegate = SceneDelegate()
+
     @Environment (\.scenePhase) private var scenePhase
     
 
@@ -21,6 +23,7 @@ struct Saloo_App: App {
         WindowGroup {
             StartMenu()
                 .environment(\.managedObjectContext, persistenceController.persistentContainer.viewContext)
+                .environmentObject(sceneDelegate)
                 .environmentObject(appDelegate)
                 .environmentObject(musicSub)
                 .environmentObject(calViewModel)

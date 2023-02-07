@@ -16,6 +16,8 @@ struct StartMenu: View {
     @EnvironmentObject var calViewModel: CalViewModel
     @EnvironmentObject var showDetailView: ShowDetailView
     @EnvironmentObject var appDelegate: AppDelegate
+    @EnvironmentObject var sceneDelegate: SceneDelegate
+
     @State private var showOccassions = false
     @State private var showGridOfCards = false
     @State private var showCalendar = false

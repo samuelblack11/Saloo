@@ -11,7 +11,8 @@ import CloudKit
 import SwiftUI
 
 
-class SceneDelegate: UIResponder, UIWindowSceneDelegate, SPTAppRemoteDelegate, SPTAppRemotePlayerStateDelegate {
+class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject, SPTAppRemoteDelegate, SPTAppRemotePlayerStateDelegate {
+    
     var musicSubTimeToAddMusic: Bool = false
     var musicSubType: MusicSubscriptionOptions = .Neither
     @EnvironmentObject var appDelegate: AppDelegate
@@ -53,10 +54,12 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, SPTAppRemoteDelegate, S
     let SpotifyRedirectURL = URL(string: "https://www.google.com")!
     
     lazy var appRemote: SPTAppRemote = {
+        print("instantiated appRemote...")
         let configuration = SPTConfiguration(clientID: self.clientIdentifier, redirectURL: self.redirectUri)
         let appRemote = SPTAppRemote(configuration: configuration, logLevel: .debug)
         appRemote.connectionParameters.accessToken = self.accessToken
         appRemote.delegate = self
+        print("did it work")
         return appRemote
     }()
 

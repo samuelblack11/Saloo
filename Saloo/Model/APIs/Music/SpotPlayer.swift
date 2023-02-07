@@ -14,12 +14,14 @@ import MediaPlayer
 class SpotAppRemoteVC: UIViewController, SPTAppRemoteUserAPIDelegate, SPTAppRemotePlayerStateDelegate {
     @State private var subscribedToPlayerState: Bool = false
     @State private var subscribedToCapabilities: Bool = false
-    
+    @ObservedObject var sceneDelegate = SceneDelegate()
+    var appRemote: SPTAppRemote? {get {return (sceneDelegate.appRemote)}}
+
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .systemMint
+        appRemote?.authorizeAndPlayURI("")
     }
-    
     
     
     
@@ -32,10 +34,8 @@ class SpotAppRemoteVC: UIViewController, SPTAppRemoteUserAPIDelegate, SPTAppRemo
         
     }
     
+
     
-    var appRemote: SPTAppRemote? {
-        get {return (UIApplication.shared.connectedScenes.first?.delegate as? SceneDelegate)?.appRemote}
-    }
     var defaultCallback: SPTAppRemoteCallback {
         get {return {[weak self] _, error in if let error = error {print("***");print(error)}}}
     }
@@ -94,6 +94,7 @@ class SpotAppRemoteVC: UIViewController, SPTAppRemoteUserAPIDelegate, SPTAppRemo
 
 
 struct SpotPlayer2: UIViewControllerRepresentable {
+    @EnvironmentObject var sceneDelegate: SceneDelegate
     typealias UIViewControllerType = SpotAppRemoteVC
 
     func makeUIViewController(context: Context) -> SpotAppRemoteVC {
@@ -112,11 +113,11 @@ struct SpotPlayer2: UIViewControllerRepresentable {
 
 struct SpotPlayer3: View {
     @State var isPresented = false
+    @EnvironmentObject var sceneDelegate: SceneDelegate
     var body: some View {
-        Button("The View") {
-            isPresented = true
-        }
-        .sheet(isPresented: $isPresented){SpotPlayer2().frame(height: 100)}
+        Text("")
+            .onAppear{isPresented = true}
+            .sheet(isPresented: $isPresented){SpotPlayer2().frame(height: 100)}
     }
 }
 
