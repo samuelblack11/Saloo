@@ -24,11 +24,14 @@ class SpotPlayerVC: UIViewController, SPTAppRemoteUserAPIDelegate, SPTAppRemoteP
         super.viewDidLoad()
         view.backgroundColor = .systemMint
         print("Begin Authorize....")
-        appRemote?.authorizeAndPlayURI("spotify:track:32ftxJzxMPgUFCM6Km9WTS")
-        appRemote?.playerAPI?.play("32ftxJzxMPgUFCM6Km9WTS", callback: defaultCallback)
+        appRemote?.authorizeAndPlayURI("")
+        appRemote?.playerAPI?.resume(defaultCallback)
+        //appRemote?.playerAPI?.play("32ftxJzxMPgUFCM6Km9WTS", callback: defaultCallback)
         //str = defaults.object(forKey: SceneDelegate.kAccessTokenKey) as? String
         print("444")
         print(sceneDelegate.accessToken)
+        print("Calling2....")
+        print(appRemote?.isConnected)
     }
     
     func userAPI(_ userAPI: SPTAppRemoteUserAPI, didReceive capabilities: SPTAppRemoteUserCapabilities) {
@@ -43,6 +46,8 @@ class SpotPlayerVC: UIViewController, SPTAppRemoteUserAPIDelegate, SPTAppRemoteP
     var defaultCallback: SPTAppRemoteCallback {
         get {
             return {[weak self] _, error in
+                print("defaultCallBack Running...")
+
                 if let error = error {
                     self?.displayError(error as NSError)
                 }
@@ -122,7 +127,7 @@ class SpotPlayerVC: UIViewController, SPTAppRemoteUserAPIDelegate, SPTAppRemoteP
 }
 
 struct SpotPlayer: UIViewControllerRepresentable {
-    @EnvironmentObject var sceneDelegate: SceneDelegate
+    //@EnvironmentObject var sceneDelegate: SceneDelegate
     typealias UIViewControllerType = SpotPlayerVC
     let defaults = UserDefaults.standard
     

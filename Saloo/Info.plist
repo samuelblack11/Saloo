@@ -6,6 +6,14 @@
 	<array>
 		<dict>
 			<key>CFBundleURLName</key>
+			<string></string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>saloo</string>
+			</array>
+		</dict>
+		<dict>
+			<key>CFBundleURLName</key>
 			<string>com.spotify.iOS-SDK-Quick-Start</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
@@ -13,14 +21,12 @@
 			</array>
 		</dict>
 	</array>
+	<key>CKSharingSupported</key>
+	<true/>
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
 		<string>spotify</string>
 	</array>
-	<key>NSAppleMusicUsageDescription</key>
-	<string>Access to Music Library to include song previews in greetings cards</string>
-	<key>CKSharingSupported</key>
-	<true/>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>remote-notification</string>

@@ -748,6 +748,7 @@
 				);
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Saloo/Info.plist;
+				INFOPLIST_KEY_NSAppleMusicUsageDescription = "Access to Music Library to include song previews in greetings cards";
 				INFOPLIST_KEY_NSCameraUsageDescription = "Use Camera for Front Cover Image";
 				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "Add Photos Taken from Camera to Photo Library";
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "User Photos for Front Cover";
@@ -798,6 +799,7 @@
 				);
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Saloo/Info.plist;
+				INFOPLIST_KEY_NSAppleMusicUsageDescription = "Access to Music Library to include song previews in greetings cards";
 				INFOPLIST_KEY_NSCameraUsageDescription = "Use Camera for Front Cover Image";
 				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "Add Photos Taken from Camera to Photo Library";
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "User Photos for Front Cover";

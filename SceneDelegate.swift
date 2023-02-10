@@ -43,25 +43,16 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject, SPTAp
             self.window = window
             window.makeKeyAndVisible()
         }
-        appRemote.connect()
-        appRemote.authorizeAndPlayURI("")
+        //appRemote.connect()
+        //appRemote.authorizeAndPlayURI("")
    }
 
     static let kAccessTokenKey = "access-token-key"
-    private let redirectUri = URL(string:"comspotifytestsdk://")!
-    let clientIdentifier = "d15f76f932ce4a7c94c2ecb0dfb69f4b"
+    private let redirectUri = URL(string: "saloo://")!
+    let clientIdentifier = "089d841ccc194c10a77afad9e1c11d54    "
     let secretKey = "2dba2becb9d34ed9858e5ea116754f5b"
-    let SpotifyRedirectURL = URL(string: "https://www.google.com")!
+    //let SpotifyRedirectURL = URL(string: "saloo://callback")!
     
-    lazy var appRemote: SPTAppRemote = {
-        print("instantiated appRemote...")
-        let configuration = SPTConfiguration(clientID: self.clientIdentifier, redirectURL: self.redirectUri)
-        let appRemote = SPTAppRemote(configuration: configuration, logLevel: .debug)
-        appRemote.connectionParameters.accessToken = self.accessToken
-        appRemote.delegate = self
-        return appRemote
-    }()
-
     var accessToken = UserDefaults.standard.string(forKey: kAccessTokenKey) {
         didSet {
             let defaults = UserDefaults.standard
@@ -70,6 +61,19 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject, SPTAp
             print(accessToken)
         }
     }
+    
+    lazy var appRemote: SPTAppRemote = {
+        print("instantiated appRemote...")
+        let configuration = SPTConfiguration(clientID: self.clientIdentifier, redirectURL: self.redirectUri)
+        let appRemote = SPTAppRemote(configuration: configuration, logLevel: .debug)
+        appRemote.connectionParameters.accessToken = self.accessToken
+        appRemote.delegate = self
+        print("Calling....")
+        print(self.accessToken)
+        print(appRemote.connectionParameters.accessToken)
+        print(appRemote.isConnected)
+        return appRemote
+    }()
 
     func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
         guard let url = URLContexts.first?.url else {
@@ -82,10 +86,12 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject, SPTAp
             appRemote.connectionParameters.accessToken = access_token
             self.accessToken = access_token
             print("check3")
+            print(access_token)
             print(self.accessToken)
         } else if let errorDescription = parameters?[SPTAppRemoteErrorDescriptionKey] {
             print("There is an error.....")
             print(errorDescription)
+            playerViewController.showError(errorDescription)
         }
     }
 
@@ -94,14 +100,14 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject, SPTAp
     }
 
     func sceneWillResignActive(_ scene: UIScene) {
-        if self.appRemote.isConnected {
-          self.appRemote.disconnect()
-        }
+        playerViewController.appRemoteDisconnect()
+        appRemote.disconnect()
       }
 
     func connect() {
         playerViewController.appRemoteConnecting()
         appRemote.connect()
+        //self.appRemote.authorizeAndPlayURI("spotify:track:20I6sIOMTCkB6w7ryavxtO")
     }
 
     // MARK: AppRemoteDelegate
