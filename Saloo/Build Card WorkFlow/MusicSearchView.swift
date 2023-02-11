@@ -34,8 +34,9 @@ struct MusicSearchView: View {
     @State private var isPlaying = false
     @State private var songProgress = 0.0
     @State private var connectToSpot = false
-    
+    @StateObject var spotifyAuth = SpotifyAuth()
     func goToSpot() {connectToSpot = true}
+    
 
     var body: some View {
         TextField("Search Songs", text: $songSearch, onCommit: {
@@ -49,7 +50,7 @@ struct MusicSearchView: View {
                 case .Neither:
                     return searchWithAM()
                 case .Spotify:
-                    return goToSpot()
+                    return requestSpotAuth()
                 }
             }}).padding(.top, 15)
         NavigationView {
@@ -83,7 +84,7 @@ struct MusicSearchView: View {
         .onAppear{
             print("-----")
             print(appDelegate.musicSub.type)
-            if appDelegate.musicSub.type == .Spotify {connectToSpot = true}
+            //if appDelegate.musicSub.type == .Spotify {connectToSpot = true}
         }
         .popover(isPresented: $showSPV) {SmallPlayerView(songID: chosenSong.id, songName: chosenSong.name, songArtistName: chosenSong.artistName, songArtImageData: chosenSong.artwork, songDuration: chosenSong.durationInSeconds, songPreviewURL: chosenSong.songPreviewURL, confirmButton: true, showFCV: $showFCV)
         .presentationDetents([.fraction(0.4)])
@@ -94,6 +95,19 @@ struct MusicSearchView: View {
 
 }
 extension MusicSearchView {
+    
+
+    func requestSpotAuth() {
+        SpotifyAPI().requestAuth(completionHandler: {(response, error) in
+            if response != nil {
+                DispatchQueue.main.async {
+                    print(response)
+                    spotifyAuth.authForRedirect = response!
+                    print(spotifyAuth.authForRedirect)
+                    UIApplication.shared.open(URL(string: spotifyAuth.authForRedirect)!)
+                }
+            }})
+    }
     
     func searchWithSpotify() {
         print("Testing....")

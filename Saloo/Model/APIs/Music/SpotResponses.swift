@@ -50,6 +50,11 @@ struct SpotDevice: Decodable {
     let type: String
 }
 
+struct CallBackURL: Decodable {
+    let url: String
+}
+
+
 struct SpotAuthCode: Decodable {
     let code: String
 }

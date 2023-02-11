@@ -153,6 +153,13 @@ enum MusicSubscriptionOptions {
 class UnmanagedPlaceHolder: NSObject {}
 
 class ChosenCollageStyle: ObservableObject {@Published var chosenStyle: Int?}
+class SpotifyAuth: ObservableObject {
+    
+    @Published var authForRedirect = String()
+    @Published var returnedRedirectURI = String()
+    @Published var accessToken = String()
+    
+}
 
 class CollageBlocksAndViews {
 
