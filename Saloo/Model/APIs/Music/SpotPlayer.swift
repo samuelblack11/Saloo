@@ -18,16 +18,16 @@ class SpotPlayerVC: UIViewController, SPTAppRemoteUserAPIDelegate, SPTAppRemoteP
     var appRemote: SPTAppRemote? {get {return (sceneDelegate.appRemote)}}
     let defaults = UserDefaults.standard
     //var str: String?
-
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .systemMint
         print("Begin Authorize....")
-        appRemote?.authorizeAndPlayURI("")
-        appRemote?.playerAPI?.resume(defaultCallback)
+        //appRemote?.authorizeAndPlayURI("")
+        //appRemote?.playerAPI?.resume(defaultCallback)
+        SpotifyAPI().requestAuth()
         //SpotifyAPI().getToken()
-        //SpotifyAPI().requestAuth()
         print("Calling2....")
         print(defaults.object(forKey: SceneDelegate.kAccessTokenKey))
     }

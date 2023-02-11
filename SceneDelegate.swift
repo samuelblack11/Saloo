@@ -11,7 +11,7 @@ import CloudKit
 import SwiftUI
 
 
-class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject, SPTAppRemoteDelegate {
+class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject, SPTAppRemoteDelegate, SPTAppRemotePlayerStateDelegate {
     
     //var musicSubTimeToAddMusic: Bool = false
     //var musicSubType: MusicSubscriptionOptions = .Neither
@@ -20,14 +20,12 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject, SPTAp
     static let kAccessTokenKey = "access-token-key"
     private let redirectUri = URL(string: "saloo://")!
     let clientIdentifier = "d15f76f932ce4a7c94c2ecb0dfb69f4b"
-
     var window: UIWindow?
+    lazy var configuration = SPTConfiguration(clientID: clientIdentifier, redirectURL: redirectUri)
     
     lazy var appRemote: SPTAppRemote = {
         print("instantiated appRemote...")
-        let configuration = SPTConfiguration(clientID: self.clientIdentifier, redirectURL: self.redirectUri)  
-        
-        let appRemote = SPTAppRemote(configuration: configuration, logLevel: .debug)
+        let appRemote = SPTAppRemote(configuration: self.configuration, logLevel: .debug)
         
         appRemote.connectionParameters.accessToken = self.accessToken
         print("check1")
@@ -101,13 +99,18 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject, SPTAp
 
     func sceneDidBecomeActive(_ scene: UIScene) {
         print("scene is now active!")
-        connect()
+        if let _ = self.appRemote.connectionParameters.accessToken {
+          self.appRemote.connect()
+        }
     }
 
     func sceneWillResignActive(_ scene: UIScene) {
         print("scene is now inactive!")
         //playerViewController.appRemoteDisconnect()
         //appRemote.disconnect()
+        if self.appRemote.isConnected {
+          self.appRemote.disconnect()
+        }
       }
     
     func sceneDidEnterBackground(_ scene: UIScene) {
@@ -122,6 +125,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject, SPTAp
             //make spotify authorize and create an access token for us
             appRemote.authorizeAndPlayURI("")
         }
+        appRemote.authorizeAndPlayURI("")
+        //self.appRemote.authorizeAndPlayURI(self.playURI)
         
         //self.appRemote.authorizeAndPlayURI("spotify:track:20I6sIOMTCkB6w7ryavxtO")
     }
@@ -133,10 +138,12 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject, SPTAp
     }
     
     func appRemoteDidEstablishConnection(_ appRemote: SPTAppRemote) {
-        self.appRemote = appRemote
-        print("++++")
-        print(accessToken)
-        playerViewController.appRemoteConnected()
+        self.appRemote.playerAPI?.delegate = self
+        self.appRemote.playerAPI?.subscribe(toPlayerState: { (result, error) in
+          if let error = error {
+            debugPrint(error.localizedDescription)
+          }
+        })
       }
 
     func appRemote(_ appRemote: SPTAppRemote, didFailConnectionAttemptWithError error: Error?) {
