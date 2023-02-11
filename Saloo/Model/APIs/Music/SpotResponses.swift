@@ -50,5 +50,9 @@ struct SpotDevice: Decodable {
     let type: String
 }
 
+struct SpotAuthCode: Decodable {
+    let code: String
+}
+
 
 

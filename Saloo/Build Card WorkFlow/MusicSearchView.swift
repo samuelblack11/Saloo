@@ -17,7 +17,7 @@ struct MusicSearchView: View {
     @EnvironmentObject var musicSub: MusicSubscription
     @EnvironmentObject var chosenSong: ChosenSong
     @EnvironmentObject var appDelegate: AppDelegate
-    @EnvironmentObject var sceneDelegate: SceneDelegate
+    //@EnvironmentObject var sceneDelegate: SceneDelegate
 
     //@UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     @State var spotDeviceID: String = ""

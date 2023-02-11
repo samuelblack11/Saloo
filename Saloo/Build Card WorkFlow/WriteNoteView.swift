@@ -18,7 +18,7 @@ struct WriteNoteView: View {
     @EnvironmentObject var chosenStyle: ChosenCollageStyle
     @EnvironmentObject var musicSub: MusicSubscription
     @EnvironmentObject var appDelegate: AppDelegate
-    @EnvironmentObject var sceneDelegate: SceneDelegate
+    //@EnvironmentObject var sceneDelegate: SceneDelegate
     //@UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
 
     @StateObject var addMusic = AddMusic()

@@ -25,8 +25,9 @@ class SpotPlayerVC: UIViewController, SPTAppRemoteUserAPIDelegate, SPTAppRemoteP
         view.backgroundColor = .systemMint
         print("Begin Authorize....")
         appRemote?.authorizeAndPlayURI("")
-        //appRemote?.playerAPI?.resume(defaultCallback)
+        appRemote?.playerAPI?.resume(defaultCallback)
         //SpotifyAPI().getToken()
+        //SpotifyAPI().requestAuth()
         print("Calling2....")
         print(defaults.object(forKey: SceneDelegate.kAccessTokenKey))
     }

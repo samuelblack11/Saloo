@@ -25,8 +25,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject, SPTAp
     
     lazy var appRemote: SPTAppRemote = {
         print("instantiated appRemote...")
-        let configuration = SPTConfiguration(clientID: self.clientIdentifier, redirectURL: self.redirectUri)
+        let configuration = SPTConfiguration(clientID: self.clientIdentifier, redirectURL: self.redirectUri)  
+        
         let appRemote = SPTAppRemote(configuration: configuration, logLevel: .debug)
+        
         appRemote.connectionParameters.accessToken = self.accessToken
         print("check1")
         print(self.accessToken)
@@ -47,18 +49,18 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject, SPTAp
     }
     
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
-        
+        self.scene(scene, openURLContexts: connectionOptions.urlContexts)
         // Create the SwiftUI view that provides the window contents.
-        let contentView = MusicSearchView()
-        print("called willConnectTo")
+        //let contentView = MusicSearchView()
+        //print("called willConnectTo")
 
         // Use a UIHostingController as window root view controller.
-        if let windowScene = scene as? UIWindowScene {
-            let window = UIWindow(windowScene: windowScene)
-            window.rootViewController = UIHostingController(rootView: contentView)
-            self.window = window
-            window.makeKeyAndVisible()
-        }
+       // if let windowScene = scene as? UIWindowScene {
+       //     let window = UIWindow(windowScene: windowScene)
+       //     window.rootViewController = UIHostingController(rootView: contentView)
+        //    self.window = window
+       //     window.makeKeyAndVisible()
+       //}
         
         
         
@@ -78,7 +80,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject, SPTAp
         let parameters = appRemote.authorizationParameters(from: url);
         
         if let code = parameters?["code"] {
-            UserDefaults.standard.set(code, forKey: "access-token-key")
+            UserDefaults.standard.set(code, forKey: "code")
             print("^^^^")
             print(code)
         }
