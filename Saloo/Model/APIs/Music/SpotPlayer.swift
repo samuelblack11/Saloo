@@ -25,13 +25,18 @@ class SpotPlayerVC: UIViewController, SPTAppRemoteUserAPIDelegate, SPTAppRemoteP
         view.backgroundColor = .systemMint
         print("Begin Authorize....")
         appRemote?.authorizeAndPlayURI("")
-        appRemote?.playerAPI?.resume(defaultCallback)
-        //appRemote?.playerAPI?.play("32ftxJzxMPgUFCM6Km9WTS", callback: defaultCallback)
-        //str = defaults.object(forKey: SceneDelegate.kAccessTokenKey) as? String
-        print("444")
-        print(sceneDelegate.accessToken)
+        //appRemote?.playerAPI?.resume(defaultCallback)
+        //SpotifyAPI().getToken()
         print("Calling2....")
-        print(appRemote?.isConnected)
+        print(defaults.object(forKey: SceneDelegate.kAccessTokenKey))
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        print("Calling3....")
+        print(defaults.object(forKey: SceneDelegate.kAccessTokenKey))
+        //if appRemote?.isConnected == false {
+            //self.dismiss(animated: true)
+        //}
     }
     
     func userAPI(_ userAPI: SPTAppRemoteUserAPI, didReceive capabilities: SPTAppRemoteUserCapabilities) {

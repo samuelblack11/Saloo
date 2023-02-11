@@ -11,82 +11,84 @@ import CloudKit
 import SwiftUI
 
 
-class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject, SPTAppRemoteDelegate, SPTAppRemotePlayerStateDelegate {
+class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject, SPTAppRemoteDelegate {
     
-    var musicSubTimeToAddMusic: Bool = false
-    var musicSubType: MusicSubscriptionOptions = .Neither
-    @EnvironmentObject var appDelegate: AppDelegate
+    //var musicSubTimeToAddMusic: Bool = false
+    //var musicSubType: MusicSubscriptionOptions = .Neither
+    //@EnvironmentObject var appDelegate: AppDelegate
     //@UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
-
-    var window: UIWindow?
-
-    /**
-     To be able to accept a share, add a CKSharingSupported entry in the Info.plist file and set it to true.
-     */
-    func windowScene(_ windowScene: UIWindowScene, userDidAcceptCloudKitShareWith cloudKitShareMetadata: CKShare.Metadata) {
-        let persistenceController = PersistenceController.shared
-        let sharedStore = persistenceController.sharedPersistentStore
-        let container = persistenceController.persistentContainer
-        container.acceptShareInvitations(from: [cloudKitShareMetadata], into: sharedStore) { (_, error) in
-            if let error = error {
-                print("\(#function): Failed to accept share invitations: \(error)")
-            }
-        }
-    }
-    // tells the delegate about the addition of a scene to the app
-    func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
-        let spotView = SpotPlayer()
-        //appDelegate.musicSub
-        if let windowScene = scene as? UIWindowScene {
-            let window = UIWindow(windowScene: windowScene)
-            window.rootViewController = UIHostingController(rootView: spotView)
-            self.window = window
-            window.makeKeyAndVisible()
-        }
-        //appRemote.connect()
-        //appRemote.authorizeAndPlayURI("")
-   }
-
     static let kAccessTokenKey = "access-token-key"
     private let redirectUri = URL(string: "saloo://")!
-    let clientIdentifier = "089d841ccc194c10a77afad9e1c11d54    "
-    let secretKey = "2dba2becb9d34ed9858e5ea116754f5b"
-    //let SpotifyRedirectURL = URL(string: "saloo://callback")!
-    
-    var accessToken = UserDefaults.standard.string(forKey: kAccessTokenKey) {
-        didSet {
-            let defaults = UserDefaults.standard
-            defaults.set(accessToken, forKey: SceneDelegate.kAccessTokenKey)
-            print("updated access token value")
-            print(accessToken)
-        }
-    }
+    let clientIdentifier = "d15f76f932ce4a7c94c2ecb0dfb69f4b"
+
+    var window: UIWindow?
     
     lazy var appRemote: SPTAppRemote = {
         print("instantiated appRemote...")
         let configuration = SPTConfiguration(clientID: self.clientIdentifier, redirectURL: self.redirectUri)
         let appRemote = SPTAppRemote(configuration: configuration, logLevel: .debug)
         appRemote.connectionParameters.accessToken = self.accessToken
-        appRemote.delegate = self
-        print("Calling....")
+        print("check1")
         print(self.accessToken)
         print(appRemote.connectionParameters.accessToken)
-        print(appRemote.isConnected)
+        print(appRemote.connectionParameters.authenticationMethods)
+        appRemote.delegate = self
         return appRemote
     }()
+    
+    var accessToken = UserDefaults.standard.string(forKey: kAccessTokenKey) {
+        didSet {
+            print("check1.5")
+            let defaults = UserDefaults.standard
+            defaults.set(accessToken, forKey: SceneDelegate.kAccessTokenKey)
+            print("check2")
+            print(accessToken)
+        }
+    }
+    
+    func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
+        
+        // Create the SwiftUI view that provides the window contents.
+        let contentView = MusicSearchView()
+        print("called willConnectTo")
 
+        // Use a UIHostingController as window root view controller.
+        if let windowScene = scene as? UIWindowScene {
+            let window = UIWindow(windowScene: windowScene)
+            window.rootViewController = UIHostingController(rootView: contentView)
+            self.window = window
+            window.makeKeyAndVisible()
+        }
+        
+        
+        
+       // let url = connectionOptions.urlContexts.first?.url
+        //self.scene(scene, openURLContexts: url)
+
+      
+    }
+    
+    
     func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
+        print("called openurlcontexts")
         guard let url = URLContexts.first?.url else {
             return
         }
-
+        
         let parameters = appRemote.authorizationParameters(from: url);
-
+        
+        if let code = parameters?["code"] {
+            UserDefaults.standard.set(code, forKey: "access-token-key")
+            print("^^^^")
+            print(code)
+        }
+            
+            //let baseURL = "https://accounts.spotify.com/api/token"
+            
         if let access_token = parameters?[SPTAppRemoteAccessTokenKey] {
             appRemote.connectionParameters.accessToken = access_token
             self.accessToken = access_token
             print("check3")
-            print(access_token)
             print(self.accessToken)
         } else if let errorDescription = parameters?[SPTAppRemoteErrorDescriptionKey] {
             print("There is an error.....")
@@ -96,17 +98,29 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject, SPTAp
     }
 
     func sceneDidBecomeActive(_ scene: UIScene) {
+        print("scene is now active!")
         connect()
     }
 
     func sceneWillResignActive(_ scene: UIScene) {
-        playerViewController.appRemoteDisconnect()
-        appRemote.disconnect()
+        print("scene is now inactive!")
+        //playerViewController.appRemoteDisconnect()
+        //appRemote.disconnect()
       }
+    
+    func sceneDidEnterBackground(_ scene: UIScene) {
+        print("scene is now in the background!")
+    }
 
     func connect() {
         playerViewController.appRemoteConnecting()
         appRemote.connect()
+        //if it failed, aka we dont have a valid access token
+        if (!appRemote.isConnected) {//ultimately access token issues aren't the only thing that will cause this the connection to fail
+            //make spotify authorize and create an access token for us
+            appRemote.authorizeAndPlayURI("")
+        }
+        
         //self.appRemote.authorizeAndPlayURI("spotify:track:20I6sIOMTCkB6w7ryavxtO")
     }
 
@@ -137,6 +151,21 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject, SPTAp
         get {
             let navController = self.window?.rootViewController?.children[0] as! UINavigationController
             return navController.topViewController as! SpotPlayerVC
+        }
+    }
+    
+    
+    /**
+     To be able to accept a share, add a CKSharingSupported entry in the Info.plist file and set it to true.
+     */
+    func windowScene(_ windowScene: UIWindowScene, userDidAcceptCloudKitShareWith cloudKitShareMetadata: CKShare.Metadata) {
+        let persistenceController = PersistenceController.shared
+        let sharedStore = persistenceController.sharedPersistentStore
+        let container = persistenceController.persistentContainer
+        container.acceptShareInvitations(from: [cloudKitShareMetadata], into: sharedStore) { (_, error) in
+            if let error = error {
+                print("\(#function): Failed to accept share invitations: \(error)")
+            }
         }
     }
 
