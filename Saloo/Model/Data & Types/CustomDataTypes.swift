@@ -156,9 +156,11 @@ class ChosenCollageStyle: ObservableObject {@Published var chosenStyle: Int?}
 class SpotifyAuth: ObservableObject {
     
     @Published var authForRedirect = String()
-    @Published var returnedRedirectURI = String()
-    @Published var accessToken = String()
-    
+    @Published var auth_code = String()
+    //@Published var returnedRedirectURI = String()
+    @Published var access_Token = String()
+    @Published var refresh_Token = String()
+
 }
 
 class CollageBlocksAndViews {

@@ -17,9 +17,6 @@ struct MusicSearchView: View {
     @EnvironmentObject var musicSub: MusicSubscription
     @EnvironmentObject var chosenSong: ChosenSong
     @EnvironmentObject var appDelegate: AppDelegate
-    //@EnvironmentObject var sceneDelegate: SceneDelegate
-
-    //@UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     @State var spotDeviceID: String = ""
     
     let devToken = "eyJhbGciOiJFUzI1NiIsImtpZCI6Ik5KN0MzVzgzTFoiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJCU00zWVpGVVQyIiwiZXhwIjoxNjg5MjQzOTI3LCJpYXQiOjE2NzM0Nzk1Mjd9.28_a1GIJEEKWzvJgmdM9lAmvB4ilY5pFx6TF0Q4uhIIKu8FR0fOaXd2-3xVHPWANA8tqbLurVE5yE8wEZEqR8g"
@@ -36,6 +33,8 @@ struct MusicSearchView: View {
     @State private var songProgress = 0.0
     @State private var connectToSpot = false
     @StateObject var spotifyAuth = SpotifyAuth()
+    @State private var authCode: String? = ""
+    
     func goToSpot() {connectToSpot = true}
 
     var body: some View {
@@ -51,7 +50,7 @@ struct MusicSearchView: View {
                     case .Neither:
                         return searchWithAM()
                     case .Spotify:
-                        return requestSpotAuth()
+                        return determineSpotifyAction()
                     }
                 }}).padding(.top, 15)
             NavigationView {
@@ -93,14 +92,14 @@ struct MusicSearchView: View {
             }
             .environmentObject(spotifyAuth)
             .sheet(isPresented: $connectToSpot){SpotPlayer().frame(height: 100)}
-            .sheet(isPresented: $showWebView){WebVCView(authURLForView: spotifyAuth.authForRedirect)}
+            .sheet(isPresented: $showWebView){WebVCView(authURLForView: spotifyAuth.authForRedirect, authCode: $authCode)}
         }
         .environmentObject(spotifyAuth)
     }
 
 }
 extension MusicSearchView {
-
+    
     func requestSpotAuth() {
         SpotifyAPI().requestAuth(completionHandler: {(response, error) in
             if response != nil {
@@ -112,6 +111,22 @@ extension MusicSearchView {
             }})
         
     }
+    
+    func determineSpotifyAction() {
+        if authCode == "" {requestSpotAuth()}
+        else {
+            print("#####");
+            print(authCode!)
+            spotifyAuth.auth_code = authCode!
+            SpotifyAPI().getToken(authCode: authCode!, completionHandler: {(response, error) in
+                if response != nil {
+                    DispatchQueue.main.async {
+                        print("Token Response....")
+                        print(response)
+                        spotifyAuth.access_Token = response!.access_token
+                        spotifyAuth.refresh_Token = response!.refresh_token
+                    }
+        }})}}
     
     
 

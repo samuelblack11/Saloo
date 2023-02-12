@@ -59,5 +59,9 @@ struct SpotAuthCode: Decodable {
     let code: String
 }
 
+struct SpotTokenResponse: Decodable {
+    let access_token: String
+    let refresh_token: String
+}
 
 
