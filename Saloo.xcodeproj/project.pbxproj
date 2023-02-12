@@ -28,6 +28,7 @@
 		C2075AFF295FDBC60048ECEB /* ImagePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2075AFE295FDBC60048ECEB /* ImagePicker.swift */; };
 		C20DEF602986C9F30080AE03 /* SpotifyAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = C20DEF5F2986C9F30080AE03 /* SpotifyAPI.swift */; };
 		C2163D0E28C1609C00DEE861 /* ScheduleDelivery.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2163D0D28C1609C00DEE861 /* ScheduleDelivery.swift */; };
+		C21EACE02998525000401DC8 /* WebVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = C21EACDF2998525000401DC8 /* WebVC.swift */; };
 		C224F6C1297619AB000ED33E /* blankImage.png in Resources */ = {isa = PBXBuildFile; fileRef = C224F6C0297619AB000ED33E /* blankImage.png */; };
 		C225A84B29873B4D008FC699 /* SpotifyiOS.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C225A84A29873B4D008FC699 /* SpotifyiOS.framework */; };
 		C225A8512989E074008FC699 /* SpotResponses.swift in Sources */ = {isa = PBXBuildFile; fileRef = C225A8502989E074008FC699 /* SpotResponses.swift */; };
@@ -114,6 +115,7 @@
 		C20DEF672986D4FD0080AE03 /* Saloo-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Saloo-Bridging-Header.h"; sourceTree = "<group>"; };
 		C2163D0D28C1609C00DEE861 /* ScheduleDelivery.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleDelivery.swift; sourceTree = "<group>"; };
 		C217B029294FE5F200544B17 /* Pods.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Pods.xcodeproj; path = Pods/Pods.xcodeproj; sourceTree = "<group>"; };
+		C21EACDF2998525000401DC8 /* WebVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebVC.swift; sourceTree = "<group>"; };
 		C224F6C0297619AB000ED33E /* blankImage.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = blankImage.png; path = ../../../../blankImage.png; sourceTree = "<group>"; };
 		C225A84A29873B4D008FC699 /* SpotifyiOS.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = SpotifyiOS.framework; sourceTree = "<group>"; };
 		C225A8502989E074008FC699 /* SpotResponses.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpotResponses.swift; sourceTree = "<group>"; };
@@ -302,6 +304,7 @@
 				C271B2E629702D2200760B23 /* AMResponses.swift */,
 				C225A8502989E074008FC699 /* SpotResponses.swift */,
 				C24B77F8298B563900ECA882 /* SpotPlayer.swift */,
+				C21EACDF2998525000401DC8 /* WebVC.swift */,
 			);
 			path = Music;
 			sourceTree = "<group>";
@@ -576,6 +579,7 @@
 				260F68F5281DBDCD002E864B /* OccassionsMenu.swift in Sources */,
 				C22A5CB92980A97B006A0A8B /* GiftCardResponse.swift in Sources */,
 				260F68FA281DBE61002E864B /* PhotoAPI.swift in Sources */,
+				C21EACE02998525000401DC8 /* WebVC.swift in Sources */,
 				C275B6D529780C93009C59BC /* TremendousView.swift in Sources */,
 				C23A9D222897ECA90059B97C /* Card.swift in Sources */,
 				C22A5CBB2980AB28006A0A8B /* TremendousAPI.swift in Sources */,

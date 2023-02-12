@@ -11,7 +11,7 @@ import CoreData
 import CloudKit
 import StoreKit
 import MediaPlayer
-
+import WebKit
 struct MusicSearchView: View {
     @EnvironmentObject var addMusic: AddMusic
     @EnvironmentObject var musicSub: MusicSubscription
@@ -31,71 +31,75 @@ struct MusicSearchView: View {
     @State private var player: AVPlayer?
     @State var showFCV: Bool = false
     @State private var showSPV = false
+    @State private var showWebView = false
     @State private var isPlaying = false
     @State private var songProgress = 0.0
     @State private var connectToSpot = false
     @StateObject var spotifyAuth = SpotifyAuth()
     func goToSpot() {connectToSpot = true}
-    
 
     var body: some View {
-        TextField("Search Songs", text: $songSearch, onCommit: {
-            UIApplication.shared.resignFirstResponder()
-            if self.songSearch.isEmpty {
-                self.searchResults = []
-            } else {
-                switch appDelegate.musicSub.type {
-                case .Apple:
-                    return searchWithAM()
-                case .Neither:
-                    return searchWithAM()
-                case .Spotify:
-                    return requestSpotAuth()
-                }
-            }}).padding(.top, 15)
-        NavigationView {
-            List {
-                ForEach(searchResults, id: \.self) { song in
-                    HStack {
-                        Image(uiImage: UIImage(data: song.artImageData)!)
-                        VStack{
-                            Text(song.name)
-                                .font(.headline)
-                                .lineLimit(2)
-                            Text(song.artistName)
-                                .font(.caption)
-                                .foregroundColor(.secondary)
-                                .lineLimit(1)
-                        }
-                        Spacer()
+        NavigationStack {
+            TextField("Search Songs", text: $songSearch, onCommit: {
+                UIApplication.shared.resignFirstResponder()
+                if self.songSearch.isEmpty {
+                    self.searchResults = []
+                } else {
+                    switch appDelegate.musicSub.type {
+                    case .Apple:
+                        return searchWithAM()
+                    case .Neither:
+                        return searchWithAM()
+                    case .Spotify:
+                        return requestSpotAuth()
                     }
-                    .frame(width: UIScreen.screenWidth, height: (UIScreen.screenHeight/7))
-                    .onTapGesture {
-                        print("Playing \(song.name)")
-                        chosenSong.id = song.id; chosenSong.name = song.name
-                        chosenSong.artistName = song.artistName; chosenSong.artwork = song.artImageData
-                        chosenSong.durationInSeconds = Double(song.durationInMillis/1000)
-                        chosenSong.songPreviewURL = song.previewURL
-                        songProgress = 0.0; isPlaying = true; showSPV = true
+                }}).padding(.top, 15)
+            NavigationView {
+                List {
+                    ForEach(searchResults, id: \.self) { song in
+                        HStack {
+                            Image(uiImage: UIImage(data: song.artImageData)!)
+                            VStack{
+                                Text(song.name)
+                                    .font(.headline)
+                                    .lineLimit(2)
+                                Text(song.artistName)
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                                    .lineLimit(1)
+                            }
+                            Spacer()
+                        }
+                        .frame(width: UIScreen.screenWidth, height: (UIScreen.screenHeight/7))
+                        .onTapGesture {
+                            print("Playing \(song.name)")
+                            chosenSong.id = song.id; chosenSong.name = song.name
+                            chosenSong.artistName = song.artistName; chosenSong.artwork = song.artImageData
+                            chosenSong.durationInSeconds = Double(song.durationInMillis/1000)
+                            chosenSong.songPreviewURL = song.previewURL
+                            songProgress = 0.0; isPlaying = true; showSPV = true
+                        }
                     }
                 }
             }
+            .onAppear{
+                print("-----")
+                print(appDelegate.musicSub.type)
+                //if appDelegate.musicSub.type == .Spotify {connectToSpot = true}
+            }
+            .popover(isPresented: $showSPV) {SmallPlayerView(songID: chosenSong.id, songName: chosenSong.name, songArtistName: chosenSong.artistName, songArtImageData: chosenSong.artwork, songDuration: chosenSong.durationInSeconds, songPreviewURL: chosenSong.songPreviewURL, confirmButton: true, showFCV: $showFCV)
+                    .presentationDetents([.fraction(0.4)])
+                    .fullScreenCover(isPresented: $showFCV) {FinalizeCardView()}
+            }
+            .environmentObject(spotifyAuth)
+            .sheet(isPresented: $connectToSpot){SpotPlayer().frame(height: 100)}
+            .sheet(isPresented: $showWebView){WebVCView(authURLForView: spotifyAuth.authForRedirect)}
         }
-        .onAppear{
-            print("-----")
-            print(appDelegate.musicSub.type)
-            //if appDelegate.musicSub.type == .Spotify {connectToSpot = true}
-        }
-        .popover(isPresented: $showSPV) {SmallPlayerView(songID: chosenSong.id, songName: chosenSong.name, songArtistName: chosenSong.artistName, songArtImageData: chosenSong.artwork, songDuration: chosenSong.durationInSeconds, songPreviewURL: chosenSong.songPreviewURL, confirmButton: true, showFCV: $showFCV)
-        .presentationDetents([.fraction(0.4)])
-        .fullScreenCover(isPresented: $showFCV) {FinalizeCardView()}
-        }
-        .sheet(isPresented: $connectToSpot){SpotPlayer().frame(height: 100)}
+        .environmentObject(spotifyAuth)
     }
 
 }
 extension MusicSearchView {
-    
 
     func requestSpotAuth() {
         SpotifyAPI().requestAuth(completionHandler: {(response, error) in
@@ -103,11 +107,15 @@ extension MusicSearchView {
                 DispatchQueue.main.async {
                     print(response)
                     spotifyAuth.authForRedirect = response!
-                    print(spotifyAuth.authForRedirect)
-                    UIApplication.shared.open(URL(string: spotifyAuth.authForRedirect)!)
+                    showWebView = true
                 }
             }})
+        
     }
+    
+    
+
+    
     
     func searchWithSpotify() {
         print("Testing....")
