@@ -160,6 +160,8 @@ class SpotifyAuth: ObservableObject {
     //@Published var returnedRedirectURI = String()
     @Published var access_Token = String()
     @Published var refresh_Token = String()
+    @Published var deviceID = String()
+
 
 }
 

@@ -22,6 +22,8 @@ class WebVC: UIViewController, WKNavigationDelegate {
     @Published var authCode = ""
     //let spotAuth = SpotifyAuth()
     var delegate: MyDataSendingDelegateProtocol? = nil
+    @ObservedObject var sceneDelegate = SceneDelegate()
+    var appRemote: SPTAppRemote? {get {return (sceneDelegate.appRemote)}}
     
     init(authURL: String) {
         self.authURL = authURL
@@ -43,7 +45,8 @@ class WebVC: UIViewController, WKNavigationDelegate {
         let url = URL(string: authURL!)!
         webView.load(URLRequest(url: url))
         webView.allowsBackForwardNavigationGestures = true
-        
+        appRemote?.authorizeAndPlayURI("")
+        appRemote?.playerAPI?.pause()
         super.viewDidLoad()
         webView.addObserver(self, forKeyPath: "URL", options: .new, context: nil)
     }
@@ -74,7 +77,8 @@ class WebVC: UIViewController, WKNavigationDelegate {
     
 }
 
-
+//https://www.hackingwithswift.com/books/ios-swiftui/using-coordinators-to-manage-swiftui-view-controllers
+//https://medium.com/@astitv96/passing-data-between-view-controllers-using-delegate-and-protocol-ios-swift-4-beginners-e32828862d3f
 struct WebVCView: UIViewControllerRepresentable {
     typealias UIViewControllerType = WebVC
     @State var authURLForView: String
