@@ -18,8 +18,6 @@ struct MusicSearchView: View {
     @EnvironmentObject var chosenSong: ChosenSong
     @EnvironmentObject var appDelegate: AppDelegate
     @State var spotDeviceID: String = ""
-    
-    //let devToken = "eyJhbGciOiJFUzI1NiIsImtpZCI6Ik5KN0MzVzgzTFoiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJCU00zWVpGVVQyIiwiZXhwIjoxNjg5MjQzOTI3LCJpYXQiOjE2NzM0Nzk1Mjd9.28_a1GIJEEKWzvJgmdM9lAmvB4ilY5pFx6TF0Q4uhIIKu8FR0fOaXd2-3xVHPWANA8tqbLurVE5yE8wEZEqR8g"
     @State private var songSearch = ""
     @State private var storeFrontID = "us"
     @State private var userToken = ""
@@ -32,9 +30,25 @@ struct MusicSearchView: View {
     @State private var isPlaying = false
     @State private var songProgress = 0.0
     @State private var connectToSpot = false
+    @EnvironmentObject var sceneDelegate: SceneDelegate
+    var appRemote: SPTAppRemote? {get {return (sceneDelegate.appRemote)}}
     @StateObject var spotifyAuth = SpotifyAuth()
-    @State private var authCode: String? = ""
+    //@State private var authCode2 = String()
+    let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
+    @State private var tokenCounter = 0
+    @State private var devIDCounter = 0
+
+    @State private var authCode: String? = "" {
+        didSet {
+            print("Old Auth Code...\(oldValue!)")
+            print("AuthCode:....\(authCode!)")
+            spotifyAuth.auth_code = authCode!
+            defaults.set(authCode!, forKey: "SpotifyAuthCode")
+            getSpotToken()
+        }
+    }
     
+    let defaults = UserDefaults.standard
     func goToSpot() {connectToSpot = true}
 
     var body: some View {
@@ -50,9 +64,10 @@ struct MusicSearchView: View {
                     case .Neither:
                         return searchWithAM()
                     case .Spotify:
-                        return searchWithSpotify()
+                        return searchWithSpotify(authTokenMain: spotifyAuth.access_Token)
                     }
                 }}).padding(.top, 15)
+            //Text("Test Text").onReceive(timer) {time in print(authCode)}
             NavigationView {
                 List {
                     ForEach(searchResults, id: \.self) { song in
@@ -81,11 +96,16 @@ struct MusicSearchView: View {
                     }
                 }
             }
+            //.onChange(of: authCode2) {getSpotToken()}
             .onAppear{
                 print("-----")
+                print(spotifyAuth.access_Token)
                 print(appDelegate.musicSub.type)
-                if appDelegate.musicSub.type == .Spotify {determineSpotifyAction()}
+                if appDelegate.musicSub.type == .Spotify {requestSpotAuth()}
+                runGetToken()
+                runGetDevID()
             }
+            //.onChange(of: authCode){getSpotToken()}
             .popover(isPresented: $showSPV) {SmallPlayerView(songID: chosenSong.id, songName: chosenSong.name, songArtistName: chosenSong.artistName, songArtImageData: chosenSong.artwork, songDuration: chosenSong.durationInSeconds, songPreviewURL: chosenSong.songPreviewURL, confirmButton: true, showFCV: $showFCV)
                     .presentationDetents([.fraction(0.4)])
                     .fullScreenCover(isPresented: $showFCV) {FinalizeCardView()}
@@ -100,65 +120,120 @@ struct MusicSearchView: View {
 }
 extension MusicSearchView {
     
+    func runGetToken() {
+        Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { timer in
+            //print("Running runGetToken....")
+            if tokenCounter == 0 {if authCode != "" {getSpotToken()}}
+        }
+    }
+    
+    func runGetDevID() {
+        Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { timer in
+            //print("Running runGetDevID....")
+            if devIDCounter == 0 {if spotifyAuth.access_Token != "" {getSpotDevices()}}
+        }
+    }
+    
+    
+    
+    
+    func spotRequestLogic() {
+        // unsure wheter auth code expires
+        //if defaults.object(forKey: "SpotifyAuthCode") != nil {
+            // access token valid for one hour (3600 seconds)
+         //   print("check1")
+         //   print((defaults.object(forKey: "SpotifyAuthCode") as? String))
+          //  if defaults.object(forKey: "SpotifyAccessToken") != nil {
+          //      print("check2")
+           //     if defaults.object(forKey: "SpotifyDeviceID") != nil {}
+          //      else {print("check3");getSpotDevices()}
+           // }
+           // else {print("check4");
+           //     do{try getSpotToken()}
+           //     catch {requestSpotAuth(); getSpotToken()}
+                //getSpotDevices
+          //  }
+        //}
+        //do {print("check1"); try getSpotToken1();
+            //getSpotDevices()
+            
+        //}
+        //catch {print("check2"); requestSpotAuth(); getSpotToken2();
+            //getSpotDevices()
+        //}
+        //determineSpotifyAction()
+        //determineSpotifyAction()
+    }
+    
     func requestSpotAuth() {
         SpotifyAPI().requestAuth(completionHandler: {(response, error) in
             if response != nil {
                 DispatchQueue.main.async {
-                    print(response)
+                    print(response!)
                     spotifyAuth.authForRedirect = response!
                     showWebView = true
+                    //getSpotToken()
                 }
             }})
         
     }
     
-    func determineSpotifyAction() {
-        print("Access Values....")
-        print(authCode)
-        if authCode! == "" {requestSpotAuth()}
-        if spotifyAuth.access_Token == "" {
-            spotifyAuth.auth_code = authCode!
-            print("Access Values2....")
-            print(spotifyAuth.auth_code)
-            SpotifyAPI().getToken(authCode: authCode!, completionHandler: {(response, error) in
-                if response != nil {
-                    DispatchQueue.main.async {
-                        spotifyAuth.access_Token = response!.access_token
-                        spotifyAuth.refresh_Token = response!.refresh_token
-                        print("Access Values3....")
-                        print(spotifyAuth.auth_code)
-                        print(spotifyAuth.access_Token)
-                        print(spotifyAuth.refresh_Token)
-                        
-                        SpotifyAPI().getSpotDevices(authToken: spotifyAuth.access_Token, completionHandler: {(response, error) in
-                            if response != nil {
-                                DispatchQueue.main.async {
-                                    print("#####")
-                                    print(response)
-                                    for device in response!.devices {
-                                        print(device)
-                                        if device.type == "smartphone" {spotifyAuth.deviceID = device.id}
-                                        break
-                                    }
-                                }
-                            }})
-                        
-                        
-                        
-                        
-                    }}})
-        }
-        
-        
-        
+    //searchWithSpotify(authTokenMain: spotifyAuth.access_Token)
+    func getSpotToken() {
+        print("#####");
+        tokenCounter = 1
+        print(authCode!)
+        spotifyAuth.auth_code = authCode!
+        SpotifyAPI().getToken(authCode: authCode!, completionHandler: {(response, error) in
+            print("$$$$")
+            //print((defaults.object(forKey: "SpotifyAuthCode") as? String)!)
+            if response != nil {
+                DispatchQueue.main.async {
+                    spotifyAuth.access_Token = response!.access_token
+                    spotifyAuth.refresh_Token = response!.refresh_token
+                    defaults.set(response!.access_token, forKey: "SpotifyAccessToken")
+                    defaults.set(response!.refresh_token, forKey: "SpotifyRefreshToken")
+                    print("Access Values3....")
+                    print(spotifyAuth.auth_code)
+                    print(spotifyAuth.access_Token)
+                    print(spotifyAuth.refresh_Token)
+                }
+                if error != nil {
+                    print("Error... \(error?.localizedDescription)")
+                    
+                }
+            }
+        })
     }
     
+    //searchWithSpotify(authTokenMain: spotifyAuth.access_Token)
+    func getSpotDevices() {
+        print("Running getSpotDevices().....")
+        devIDCounter = 1
+        appRemote?.authorizeAndPlayURI("")
+        appRemote?.playerAPI?.pause()
+        SpotifyAPI().getSpotDevices(authToken: spotifyAuth.access_Token, completionHandler: {(response, error) in
+            if response != nil {
+                DispatchQueue.main.async {
+                    print("#####")
+                    print("Running getSpotDevices()...")
+                    print(response!)
+                    for device in response!.devices {
+                        print(device)
+                        if device.type == "smartphone" {
+                            print("Device ID...\(device.id)")
+                            spotifyAuth.deviceID = device.id
+                            //spotifyAuth.deviceID = device.id
+                            defaults.set(device.id, forKey: "SpotifyDeviceID")
+                        }
+                        break
+                    }
+                }
+            }})
+    }
     
-
-    
-    
-    func searchWithSpotify() {
-        SpotifyAPI().searchSpotify(self.songSearch, completionHandler: {(response, error) in
+    func searchWithSpotify(authTokenMain: String) {
+        SpotifyAPI().searchSpotify(self.songSearch, authToken: spotifyAuth.access_Token, completionHandler: {(response, error) in
             if response != nil {
                 DispatchQueue.main.async {
                     for song in response! {

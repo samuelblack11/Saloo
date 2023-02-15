@@ -15,15 +15,13 @@ import SwiftUI
 class WebVC: UIViewController, WKNavigationDelegate {
     
     func sendDataToFirstViewController(strCode: String?) {}
-    
+    let defaults = UserDefaults.standard
     var webView: WKWebView!
     var authURL: String?
     //var del: MyDataSendingDelegateProtocol
-    @Published var authCode = ""
     //let spotAuth = SpotifyAuth()
     var delegate: MyDataSendingDelegateProtocol? = nil
     @ObservedObject var sceneDelegate = SceneDelegate()
-    var appRemote: SPTAppRemote? {get {return (sceneDelegate.appRemote)}}
     
     init(authURL: String) {
         self.authURL = authURL
@@ -45,8 +43,6 @@ class WebVC: UIViewController, WKNavigationDelegate {
         let url = URL(string: authURL!)!
         webView.load(URLRequest(url: url))
         webView.allowsBackForwardNavigationGestures = true
-        appRemote?.authorizeAndPlayURI("")
-        appRemote?.playerAPI?.pause()
         super.viewDidLoad()
         webView.addObserver(self, forKeyPath: "URL", options: .new, context: nil)
     }
@@ -59,15 +55,13 @@ class WebVC: UIViewController, WKNavigationDelegate {
                 DispatchQueue.main.async {
                     let redirectURL = self.webView.url!.absoluteString
                     let splitRedirectURL = redirectURL.components(separatedBy: "code=")
-                    self.authCode = splitRedirectURL[1]
+                    let authCode = splitRedirectURL[1]
                     print("<<<<")
-                    print(self.authCode)
-                    self.delegate?.sendDataToFirstViewController(strCode: self.authCode)
-                    //self.spotAuth.auth_code = splitRedirectURL[1]
+                    print(authCode)
+                    self.delegate?.sendDataToFirstViewController(strCode: authCode)
                     self.dismiss(animated: true)
                 }
             }
-            //self.dismiss(animated: true)
         }
     }
     
@@ -91,6 +85,7 @@ struct WebVCView: UIViewControllerRepresentable {
         
         func sendDataToFirstViewController(strCode: String?) {
             //guard let provider = strCode else {return}
+            print("Received Auth code:....\(strCode!)")
             self.parent.authCode = strCode
         }
         
