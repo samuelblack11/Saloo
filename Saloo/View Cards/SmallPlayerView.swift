@@ -28,7 +28,9 @@ struct SmallPlayerView: View {
     @State private var musicPlayer = MPMusicPlayerController.applicationMusicPlayer
     @State var spotDeviceID: String?
     @EnvironmentObject var appDelegate: AppDelegate
-
+    @EnvironmentObject var sceneDelegate: SceneDelegate
+    @EnvironmentObject var spotifyAuth: SpotifyAuth
+    var appRemote: SPTAppRemote? {get {return (sceneDelegate.appRemote)}}
     
     var body: some View {
         NavigationStack {
@@ -201,6 +203,8 @@ struct SmallPlayerView: View {
                         .frame(maxWidth: UIScreen.screenHeight/12, maxHeight: UIScreen.screenHeight/12)
                         Button {
                             isPlaying.toggle()
+                            appRemote?.authorizeAndPlayURI("")
+                            appRemote?.playerAPI?.pause()
                             //if musicPlayer.playbackState.rawValue == 1 {musicPlayer.pause()}
                             //else {musicPlayer.play()}
                         } label: {
@@ -235,5 +239,18 @@ struct SmallPlayerView: View {
                     //SpotifyAPI().getToken()
                 }
     }
+    
+    
+    func startPlayback() {
+        
+    }
+    
+    func pausePlayback() {
+        SpotifyAPI().pauseSpotify(songID, authToken: spotifyAuth.access_Token, deviceID: spotifyAuth.deviceID)
+    }
+    
+    
+    
+    
     
 }

@@ -74,20 +74,13 @@ struct MusicSearchView: View {
                         .frame(width: UIScreen.screenWidth, height: (UIScreen.screenHeight/7))
                         .onTapGesture {
                             print("Playing \(song.name)")
-                            chosenSong.id = song.id
-                            chosenSong.name = song.name
-                            chosenSong.artistName = song.artistName; chosenSong.artwork = song.artImageData
-                            chosenSong.durationInSeconds = Double(song.durationInMillis/1000)
-                            chosenSong.songPreviewURL = song.previewURL
-                            songProgress = 0.0; isPlaying = true; showSPV = true
+                            createChosenSong(song: song)
                         }
                     }
                 }
             }
             .onAppear{
-                if appDelegate.musicSub.type == .Spotify {requestSpotAuth()}
-                runGetToken()
-                runGetDevID()
+                if appDelegate.musicSub.type == .Spotify {requestSpotAuth();runGetToken();runGetDevID()}
             }
             .popover(isPresented: $showSPV) {SmallPlayerView(songID: chosenSong.id, songName: chosenSong.name, songArtistName: chosenSong.artistName, songArtImageData: chosenSong.artwork, songDuration: chosenSong.durationInSeconds, songPreviewURL: chosenSong.songPreviewURL, confirmButton: true, showFCV: $showFCV)
                     .presentationDetents([.fraction(0.4)])
@@ -116,10 +109,7 @@ extension MusicSearchView {
             if devIDCounter == 0 {if spotifyAuth.access_Token != "" {getSpotDevices()}}
         }
     }
-    
-    
-    
-    
+
     func spotRequestLogic() {
         // unsure wheter auth code expires
         //if defaults.object(forKey: "SpotifyAuthCode") != nil {
@@ -203,7 +193,6 @@ extension MusicSearchView {
                         if device.type == "smartphone" {
                             print("Device ID...\(device.id)")
                             spotifyAuth.deviceID = device.id
-                            //spotifyAuth.deviceID = device.id
                             defaults.set(device.id, forKey: "SpotifyDeviceID")
                         }
                         break
@@ -212,13 +201,22 @@ extension MusicSearchView {
             }})
     }
     
+    func createChosenSong(song: SongForList) {
+        if appDelegate.musicSub.type == .Spotify {chosenSong.spotID = song.id}
+        if appDelegate.musicSub.type == .Apple {chosenSong.id = song.id; chosenSong.songPreviewURL = song.previewURL}
+        chosenSong.name = song.name
+        chosenSong.artistName = song.artistName; chosenSong.artwork = song.artImageData
+        chosenSong.durationInSeconds = Double(song.durationInMillis/1000)
+        songProgress = 0.0; isPlaying = true; showSPV = true
+    }
+    
     func searchWithSpotify(authTokenMain: String) {
         SpotifyAPI().searchSpotify(self.songSearch, authToken: spotifyAuth.access_Token, completionHandler: {(response, error) in
             if response != nil {
                 DispatchQueue.main.async {
                     for song in response! {
                         print("BBBBB")
-                        print(response)
+                        print(song)
                         let artURL = URL(string:song.album.images[2].url)
                         let _ = getURLData(url: artURL!, completionHandler: {(artResponse, error2) in
                             let songForList = SongForList(id: song.id, name: song.name, artistName: song.artists[0].name, artImageData: artResponse!, durationInMillis: song.duration_ms, isPlaying: false, previewURL: "")
