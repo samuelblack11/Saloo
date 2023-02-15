@@ -33,23 +33,11 @@ struct MusicSearchView: View {
     @EnvironmentObject var sceneDelegate: SceneDelegate
     var appRemote: SPTAppRemote? {get {return (sceneDelegate.appRemote)}}
     @StateObject var spotifyAuth = SpotifyAuth()
-    //@State private var authCode2 = String()
     let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
     @State private var tokenCounter = 0
     @State private var devIDCounter = 0
-
-    @State private var authCode: String? = "" {
-        didSet {
-            print("Old Auth Code...\(oldValue!)")
-            print("AuthCode:....\(authCode!)")
-            spotifyAuth.auth_code = authCode!
-            defaults.set(authCode!, forKey: "SpotifyAuthCode")
-            getSpotToken()
-        }
-    }
-    
+    @State private var authCode: String? = ""
     let defaults = UserDefaults.standard
-    func goToSpot() {connectToSpot = true}
 
     var body: some View {
         NavigationStack {
@@ -67,7 +55,6 @@ struct MusicSearchView: View {
                         return searchWithSpotify(authTokenMain: spotifyAuth.access_Token)
                     }
                 }}).padding(.top, 15)
-            //Text("Test Text").onReceive(timer) {time in print(authCode)}
             NavigationView {
                 List {
                     ForEach(searchResults, id: \.self) { song in
@@ -87,7 +74,8 @@ struct MusicSearchView: View {
                         .frame(width: UIScreen.screenWidth, height: (UIScreen.screenHeight/7))
                         .onTapGesture {
                             print("Playing \(song.name)")
-                            chosenSong.id = song.id; chosenSong.name = song.name
+                            chosenSong.id = song.id
+                            chosenSong.name = song.name
                             chosenSong.artistName = song.artistName; chosenSong.artwork = song.artImageData
                             chosenSong.durationInSeconds = Double(song.durationInMillis/1000)
                             chosenSong.songPreviewURL = song.previewURL
@@ -96,16 +84,11 @@ struct MusicSearchView: View {
                     }
                 }
             }
-            //.onChange(of: authCode2) {getSpotToken()}
             .onAppear{
-                print("-----")
-                print(spotifyAuth.access_Token)
-                print(appDelegate.musicSub.type)
                 if appDelegate.musicSub.type == .Spotify {requestSpotAuth()}
                 runGetToken()
                 runGetDevID()
             }
-            //.onChange(of: authCode){getSpotToken()}
             .popover(isPresented: $showSPV) {SmallPlayerView(songID: chosenSong.id, songName: chosenSong.name, songArtistName: chosenSong.artistName, songArtImageData: chosenSong.artwork, songDuration: chosenSong.durationInSeconds, songPreviewURL: chosenSong.songPreviewURL, confirmButton: true, showFCV: $showFCV)
                     .presentationDetents([.fraction(0.4)])
                     .fullScreenCover(isPresented: $showFCV) {FinalizeCardView()}
@@ -180,13 +163,10 @@ extension MusicSearchView {
     
     //searchWithSpotify(authTokenMain: spotifyAuth.access_Token)
     func getSpotToken() {
-        print("#####");
         tokenCounter = 1
         print(authCode!)
         spotifyAuth.auth_code = authCode!
         SpotifyAPI().getToken(authCode: authCode!, completionHandler: {(response, error) in
-            print("$$$$")
-            //print((defaults.object(forKey: "SpotifyAuthCode") as? String)!)
             if response != nil {
                 DispatchQueue.main.async {
                     spotifyAuth.access_Token = response!.access_token
