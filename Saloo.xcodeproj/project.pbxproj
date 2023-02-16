@@ -61,6 +61,8 @@
 		C24B77F9298B563900ECA882 /* SpotPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = C24B77F8298B563900ECA882 /* SpotPlayer.swift */; };
 		C2582A3B296E5841009F8FEC /* eCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2582A3A296E5841009F8FEC /* eCardView.swift */; };
 		C2582A3E296F7171009F8FEC /* AppleMusicAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2582A3D296F7171009F8FEC /* AppleMusicAPI.swift */; };
+		C26890AC299E571D00EA63A4 /* AMPlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C26890AB299E571D00EA63A4 /* AMPlayerView.swift */; };
+		C26890B0299E572900EA63A4 /* SpotPlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C26890AF299E572900EA63A4 /* SpotPlayerView.swift */; };
 		C271B2E729702D2200760B23 /* AMResponses.swift in Sources */ = {isa = PBXBuildFile; fileRef = C271B2E629702D2200760B23 /* AMResponses.swift */; };
 		C27430FC286335F000E17B19 /* CameraCapture.swift in Sources */ = {isa = PBXBuildFile; fileRef = C27430FB286335F000E17B19 /* CameraCapture.swift */; };
 		C275B6D32977818D009C59BC /* SmallPlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C275B6D22977818D009C59BC /* SmallPlayerView.swift */; };
@@ -148,6 +150,8 @@
 		C24B77F8298B563900ECA882 /* SpotPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpotPlayer.swift; sourceTree = "<group>"; };
 		C2582A3A296E5841009F8FEC /* eCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = eCardView.swift; sourceTree = "<group>"; };
 		C2582A3D296F7171009F8FEC /* AppleMusicAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppleMusicAPI.swift; sourceTree = "<group>"; };
+		C26890AB299E571D00EA63A4 /* AMPlayerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AMPlayerView.swift; sourceTree = "<group>"; };
+		C26890AF299E572900EA63A4 /* SpotPlayerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpotPlayerView.swift; sourceTree = "<group>"; };
 		C271B2E629702D2200760B23 /* AMResponses.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AMResponses.swift; sourceTree = "<group>"; };
 		C27430FB286335F000E17B19 /* CameraCapture.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraCapture.swift; sourceTree = "<group>"; };
 		C275B6D22977818D009C59BC /* SmallPlayerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SmallPlayerView.swift; sourceTree = "<group>"; };
@@ -352,6 +356,8 @@
 				26EB55642827120C00178F0B /* EnlargeECard.swift */,
 				C2582A3A296E5841009F8FEC /* eCardView.swift */,
 				C275B6D22977818D009C59BC /* SmallPlayerView.swift */,
+				C26890AB299E571D00EA63A4 /* AMPlayerView.swift */,
+				C26890AF299E572900EA63A4 /* SpotPlayerView.swift */,
 			);
 			path = "View Cards";
 			sourceTree = "<group>";
@@ -581,6 +587,7 @@
 				260F68FA281DBE61002E864B /* PhotoAPI.swift in Sources */,
 				C21EACE02998525000401DC8 /* WebVC.swift in Sources */,
 				C275B6D529780C93009C59BC /* TremendousView.swift in Sources */,
+				C26890B0299E572900EA63A4 /* SpotPlayerView.swift in Sources */,
 				C23A9D222897ECA90059B97C /* Card.swift in Sources */,
 				C22A5CBB2980AB28006A0A8B /* TremendousAPI.swift in Sources */,
 				C2075AFD295FDBA70048ECEB /* CollageBuilder.swift in Sources */,
@@ -598,6 +605,7 @@
 				C2582A3E296F7171009F8FEC /* AppleMusicAPI.swift in Sources */,
 				26A72180281DB8D500ADAE44 /* Saloo_App.swift in Sources */,
 				C271B2E729702D2200760B23 /* AMResponses.swift in Sources */,
+				C26890AC299E571D00EA63A4 /* AMPlayerView.swift in Sources */,
 				C22A84EA29667929001244CC /* SceneDelegate.swift in Sources */,
 				C22A84DF29666C23001244CC /* PersistenceController+Card.swift in Sources */,
 				26EB55652827120C00178F0B /* EnlargeECard.swift in Sources */,

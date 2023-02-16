@@ -25,6 +25,7 @@ struct MusicSearchView: View {
     //@State private var musicPlayer = MPMusicPlayerController.applicationMusicPlayer
     @State private var player: AVPlayer?
     @State var showFCV: Bool = false
+    @State private var showAPV = false
     @State private var showSPV = false
     @State private var showWebView = false
     @State private var isPlaying = false
@@ -80,12 +81,27 @@ struct MusicSearchView: View {
                 }
             }
             .onAppear{
-                if appDelegate.musicSub.type == .Spotify {requestSpotAuth();runGetToken();runGetDevID()}
+                if appDelegate.musicSub.type == .Spotify {
+                    if defaults.object(forKey: "SpotifyAuthCode") != nil {
+                        authCode = defaults.object(forKey: "SpotifyAuthCode") as? String
+                        spotifyAuth.auth_code = defaults.object(forKey: "SpotifyAuthCode") as! String
+                        runGetToken();
+                        runGetDevID()
+                    }
+                    else {requestSpotAuth();runGetToken();runGetDevID()}
+                }
             }
-            .popover(isPresented: $showSPV) {SmallPlayerView(songID: chosenSong.id, songName: chosenSong.name, songArtistName: chosenSong.artistName, songArtImageData: chosenSong.artwork, songDuration: chosenSong.durationInSeconds, songPreviewURL: chosenSong.songPreviewURL, confirmButton: true, showFCV: $showFCV, spotDeviceID: spotifyAuth.deviceID)
+            .popover(isPresented: $showAPV) {AMPlayerView(songID: chosenSong.id, songName: chosenSong.name, songArtistName: chosenSong.artistName, songArtImageData: chosenSong.artwork, songDuration: chosenSong.durationInSeconds, songPreviewURL: chosenSong.songPreviewURL, confirmButton: true, showFCV: $showFCV)
                     .presentationDetents([.fraction(0.4)])
                     .fullScreenCover(isPresented: $showFCV) {FinalizeCardView()}
             }
+            .popover(isPresented: $showSPV) {SpotPlayerView(songID: chosenSong.spotID, songName: chosenSong.name, songArtistName: chosenSong.artistName, songArtImageData: chosenSong.artwork, songDuration: chosenSong.durationInSeconds, songPreviewURL: chosenSong.songPreviewURL, confirmButton: true, showFCV: $showFCV, spotDeviceID: spotifyAuth.deviceID)
+                    .presentationDetents([.fraction(0.4)])
+                    .fullScreenCover(isPresented: $showFCV) {FinalizeCardView()}
+            }
+            
+            
+            
             .environmentObject(spotifyAuth)
             .sheet(isPresented: $connectToSpot){SpotPlayer().frame(height: 100)}
             .sheet(isPresented: $showWebView){WebVCView(authURLForView: spotifyAuth.authForRedirect, authCode: $authCode)}
@@ -144,6 +160,7 @@ extension MusicSearchView {
                 DispatchQueue.main.async {
                     print(response!)
                     spotifyAuth.authForRedirect = response!
+                    defaults.set(response!, forKey: "SpotifyAuthCode")
                     showWebView = true
                     //getSpotToken()
                 }
@@ -203,12 +220,12 @@ extension MusicSearchView {
     }
     
     func createChosenSong(song: SongForList) {
-        if appDelegate.musicSub.type == .Spotify {chosenSong.spotID = song.id}
-        if appDelegate.musicSub.type == .Apple {chosenSong.id = song.id; chosenSong.songPreviewURL = song.previewURL}
         chosenSong.name = song.name
         chosenSong.artistName = song.artistName; chosenSong.artwork = song.artImageData
         chosenSong.durationInSeconds = Double(song.durationInMillis/1000)
-        songProgress = 0.0; isPlaying = true; showSPV = true
+        songProgress = 0.0; isPlaying = true
+        if appDelegate.musicSub.type == .Spotify {chosenSong.spotID = song.id; showSPV = true}
+        if appDelegate.musicSub.type == .Apple {chosenSong.id = song.id; chosenSong.songPreviewURL = song.previewURL; showAPV = true}
     }
     
     func searchWithSpotify(authTokenMain: String) {
