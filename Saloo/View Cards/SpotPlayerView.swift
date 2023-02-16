@@ -28,13 +28,13 @@ struct SpotPlayerView: View {
     @State private var isPlaying = true
     @State var confirmButton: Bool
     @Binding var showFCV: Bool
-    @State private var player: AVPlayer?
     @State var spotDeviceID: String?
     @EnvironmentObject var appDelegate: AppDelegate
     @EnvironmentObject var sceneDelegate: SceneDelegate
     @EnvironmentObject var spotifyAuth: SpotifyAuth
     var appRemote: SPTAppRemote? {get {return (sceneDelegate.appRemote)}}
-    
+    @State private var playBackStateCounter = 0
+
     var body: some View {
         NavigationStack {SpotPlayerView()}.environmentObject(appDelegate)
     }
@@ -111,8 +111,18 @@ struct SpotPlayerView: View {
     }
     
     
+    
+    func runGetPlayBackState() {
+        Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { timer in
+            //print("Running runGetToken....")
+            if playBackStateCounter == 0 {if authCode != "" {getPlayBackState()}}
+        }
+    }
+    
+    
     func playSong() {
         SpotifyAPI().playSpotify(songID!, authToken: spotifyAuth.access_Token,deviceID: spotDeviceID!, songProgress: Int(songProgress))
+        
     }
     
     func pausePlayback() {

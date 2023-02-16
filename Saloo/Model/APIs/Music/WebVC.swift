@@ -58,7 +58,7 @@ class WebVC: UIViewController, WKNavigationDelegate {
                     let authCode = splitRedirectURL[1]
                     print("<<<<")
                     print(authCode)
-                    self.defaults.set(authCode, forKey: "SpotifyAccessToken")
+                    self.defaults.set(authCode, forKey: "SpotifyAuthCode")
                     self.delegate?.sendDataToFirstViewController(strCode: authCode)
                     self.dismiss(animated: true)
                 }
