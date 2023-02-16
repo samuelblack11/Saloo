@@ -74,7 +74,7 @@ struct SmallPlayerView: View {
                 } label: {
                     ZStack {
                         Circle()
-                            .accentColor(.green)
+                            .accentColor(.pink)
                             .shadow(radius: 10)
                         Image(systemName: "arrow.uturn.backward" )
                             .foregroundColor(.white)
@@ -189,6 +189,7 @@ struct SmallPlayerView: View {
                     HStack {
                         Button {
                             songProgress = 0.0
+                            playSong()
                             isPlaying = true
                         } label: {
                             ZStack {
@@ -202,11 +203,10 @@ struct SmallPlayerView: View {
                         }
                         .frame(maxWidth: UIScreen.screenHeight/12, maxHeight: UIScreen.screenHeight/12)
                         Button {
+                            if spotifyAuth.playingSong {pausePlayback()}
+                            else {playSong()}
                             isPlaying.toggle()
-                            appRemote?.authorizeAndPlayURI("")
-                            appRemote?.playerAPI?.pause()
-                            //if musicPlayer.playbackState.rawValue == 1 {musicPlayer.pause()}
-                            //else {musicPlayer.play()}
+                            spotifyAuth.playingSong.toggle()
                         } label: {
                             ZStack {
                                 Circle()
@@ -221,9 +221,7 @@ struct SmallPlayerView: View {
                     }
                     ProgressView(value: songProgress, total: songDuration!)
                         .onReceive(timer) {_ in
-                            //if songProgress < songDuration! && musicPlayer.playbackState.rawValue == 1 {
-                            //    songProgress += 1
-                            // }`
+                            if songProgress < songDuration! && musicPlayer.playbackState.rawValue == 1 {songProgress += 1}
                         }
                     HStack{
                         Text(convertToMinutes(seconds:Int(songProgress)))
@@ -232,24 +230,34 @@ struct SmallPlayerView: View {
                             .padding(.trailing, 10)
                     }
                 }
-                .onAppear{
-                    //SpotifyAPI().playSpotify(songID!, deviceID: spotDeviceID!)
-                    //appRemote!.connect()
-                    //appRemote!.authorizeAndPlayURI("")
-                    //SpotifyAPI().getToken()
-                }
+            .onAppear{playSong(); getPlayBackState()}
     }
     
     
-    func startPlayback() {
-        
+    func playSong() {
+        SpotifyAPI().playSpotify(songID!, authToken: spotifyAuth.access_Token,deviceID: spotDeviceID!, songProgress: Int(songProgress))
     }
     
     func pausePlayback() {
         SpotifyAPI().pauseSpotify(songID, authToken: spotifyAuth.access_Token, deviceID: spotifyAuth.deviceID)
     }
     
-    
+    func getPlayBackState() {
+        SpotifyAPI().getPlayBackState(authToken: spotifyAuth.access_Token, deviceID: spotifyAuth.deviceID, completionHandler: {(response, error) in
+            if response != nil {
+                DispatchQueue.main.async {
+                    print("Running GPBS on SPV...")
+                    print(response!.is_playing)
+                    spotifyAuth.playingSong = response!.is_playing
+                    isPlaying = true
+                }
+                if error != nil {
+                    print("Error... \(error?.localizedDescription)")
+                    
+                }
+            }
+        })
+    }
     
     
     

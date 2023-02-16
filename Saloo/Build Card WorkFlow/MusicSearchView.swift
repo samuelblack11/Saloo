@@ -82,7 +82,7 @@ struct MusicSearchView: View {
             .onAppear{
                 if appDelegate.musicSub.type == .Spotify {requestSpotAuth();runGetToken();runGetDevID()}
             }
-            .popover(isPresented: $showSPV) {SmallPlayerView(songID: chosenSong.id, songName: chosenSong.name, songArtistName: chosenSong.artistName, songArtImageData: chosenSong.artwork, songDuration: chosenSong.durationInSeconds, songPreviewURL: chosenSong.songPreviewURL, confirmButton: true, showFCV: $showFCV)
+            .popover(isPresented: $showSPV) {SmallPlayerView(songID: chosenSong.id, songName: chosenSong.name, songArtistName: chosenSong.artistName, songArtImageData: chosenSong.artwork, songDuration: chosenSong.durationInSeconds, songPreviewURL: chosenSong.songPreviewURL, confirmButton: true, showFCV: $showFCV, spotDeviceID: spotifyAuth.deviceID)
                     .presentationDetents([.fraction(0.4)])
                     .fullScreenCover(isPresented: $showFCV) {FinalizeCardView()}
             }
@@ -181,6 +181,7 @@ extension MusicSearchView {
         print("Running getSpotDevices().....")
         devIDCounter = 1
         appRemote?.authorizeAndPlayURI("")
+        appRemote?.playerAPI?.getPlayerState()
         appRemote?.playerAPI?.pause()
         SpotifyAPI().getSpotDevices(authToken: spotifyAuth.access_Token, completionHandler: {(response, error) in
             if response != nil {
