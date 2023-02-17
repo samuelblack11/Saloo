@@ -170,7 +170,6 @@ class SpotifyAuth: ObservableObject {
 class CollageBlocksAndViews {
 
     func blockForStyle() -> some View {return GeometryReader {geometry in HStack(spacing: 0) {Rectangle().fill(Color.gray).border(Color.black)}}}
-    
     func onePhotoView(block: some View) -> some View {return block}
     func twoPhotoWide(block: some View) -> some View {return VStack(spacing:0){block; block}}
     func twoPhotoLong(block: some View) -> some View {return HStack(spacing:0){block; block}}

@@ -34,6 +34,8 @@ struct SpotPlayerView: View {
     @EnvironmentObject var spotifyAuth: SpotifyAuth
     var appRemote: SPTAppRemote? {get {return (sceneDelegate.appRemote)}}
     @State private var playBackStateCounter = 0
+    @State private var rungSongOnAppearCounter = 0
+    @State private var beganPlayingSong = false
 
     var body: some View {
         NavigationStack {SpotPlayerView()}.environmentObject(appDelegate)
@@ -107,36 +109,43 @@ struct SpotPlayerView: View {
                             .padding(.trailing, 10)
                     }
                 }
-            .onAppear{playSong(); getPlayBackState()}
+            .onAppear{
+                getPlayBackState()
+                if isPlaying {pausePlayback(); runSongOnAppear()}
+                else {
+                    appRemote?.authorizeAndPlayURI("spotify:track:\(songID!)")
+                    //playSong()
+                }
+                //playSong();
+                beganPlayingSong = true
+                
+                
+                
+            }
     }
     
-    
-    
-    func runGetPlayBackState() {
+    func runSongOnAppear() {
         Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { timer in
             //print("Running runGetToken....")
-            if playBackStateCounter == 0 {if authCode != "" {getPlayBackState()}}
+            if rungSongOnAppearCounter == 0 {if spotifyAuth.playingSong {
+                //playSong()
+                appRemote?.authorizeAndPlayURI("spotify:track:\(songID!)")
+            }
+            }
         }
     }
     
-    
     func playSong() {
-        SpotifyAPI().playSpotify(songID!, authToken: spotifyAuth.access_Token,deviceID: spotDeviceID!, songProgress: Int(songProgress))
-        
-    }
-    
-    func pausePlayback() {
-        SpotifyAPI().pauseSpotify(songID, authToken: spotifyAuth.access_Token, deviceID: spotifyAuth.deviceID)
-    }
-    
-    func getPlayBackState() {
-        SpotifyAPI().getPlayBackState(authToken: spotifyAuth.access_Token, deviceID: spotifyAuth.deviceID, completionHandler: {(response, error) in
+        rungSongOnAppearCounter = 1
+        SpotifyAPI().playSpotify(songID!, authToken: spotifyAuth.access_Token,deviceID: spotDeviceID!, songProgress: Int(songProgress), completionHandler: {(response, error) in
             if response != nil {
                 DispatchQueue.main.async {
-                    print("Running GPBS on SPV...")
+                    print("Running PlaySong on SPV...")
+                    print(response!)
                     print(response!.is_playing)
-                    spotifyAuth.playingSong = response!.is_playing
                     isPlaying = true
+                    beganPlayingSong = true
+                    spotifyAuth.playingSong = true
                 }
                 if error != nil {
                     print("Error... \(error?.localizedDescription)")
@@ -146,6 +155,38 @@ struct SpotPlayerView: View {
         })
     }
     
+    func pausePlayback() {
+        SpotifyAPI().pauseSpotify(songID, authToken: spotifyAuth.access_Token, deviceID: spotifyAuth.deviceID, completionHandler: {(response, error) in
+            if response != nil {
+                DispatchQueue.main.async {
+                    print("Running PausePlayBack on SPV...")
+                    print(response!)
+                    isPlaying = false
+                    spotifyAuth.playingSong = false
+                }
+                if error != nil {
+                    print("Error... \(error?.localizedDescription)")
+                    
+                }
+            }
+        })
+    }
     
-    
+    func getPlayBackState() {
+        playBackStateCounter = 1
+        SpotifyAPI().getPlayBackState(authToken: spotifyAuth.access_Token, deviceID: spotifyAuth.deviceID, completionHandler: {(response, error) in
+            if response != nil {
+                DispatchQueue.main.async {
+                    print("Running GPBS on SPV...")
+                    print(response!.is_playing)
+                    spotifyAuth.playingSong = response!.is_playing
+                    isPlaying = response!.is_playing
+                }
+                if error != nil {
+                    print("Error... \(error?.localizedDescription)")
+                    
+                }
+            }
+        })
+    }
 }

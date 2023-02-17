@@ -235,11 +235,37 @@ struct SmallPlayerView: View {
     
     
     func playSong() {
-        SpotifyAPI().playSpotify(songID!, authToken: spotifyAuth.access_Token,deviceID: spotDeviceID!, songProgress: Int(songProgress))
+        SpotifyAPI().playSpotify(songID!, authToken: spotifyAuth.access_Token,deviceID: spotDeviceID!, songProgress: Int(songProgress), completionHandler: {(response, error) in
+            if response != nil {
+                DispatchQueue.main.async {
+                    print("Running PlaySong on SPV...")
+                    print(response!.is_playing)
+                    spotifyAuth.playingSong = response!.is_playing
+                    isPlaying = true
+                }
+                if error != nil {
+                    print("Error... \(error?.localizedDescription)")
+                    
+                }
+            }
+        })
     }
     
     func pausePlayback() {
-        SpotifyAPI().pauseSpotify(songID, authToken: spotifyAuth.access_Token, deviceID: spotifyAuth.deviceID)
+        SpotifyAPI().pauseSpotify(songID, authToken: spotifyAuth.access_Token, deviceID: spotifyAuth.deviceID, completionHandler: {(response, error) in
+            if response != nil {
+                DispatchQueue.main.async {
+                    print("Running PausePlayback on SPV...")
+                    print(response!.is_playing)
+                    spotifyAuth.playingSong = response!.is_playing
+                    isPlaying = true
+                }
+                if error != nil {
+                    print("Error... \(error?.localizedDescription)")
+                    
+                }
+            }
+        })
     }
     
     func getPlayBackState() {

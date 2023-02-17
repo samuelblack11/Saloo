@@ -161,6 +161,7 @@ extension MusicSearchView {
                     print(spotifyAuth.auth_code)
                     print(spotifyAuth.access_Token)
                     print(spotifyAuth.refresh_Token)
+                    appRemote?.authorizeAndPlayURI("")
                 }
                 if error != nil {
                     print("Error... \(error?.localizedDescription)")
@@ -174,18 +175,15 @@ extension MusicSearchView {
     func getSpotDevices() {
         print("Running getSpotDevices().....")
         devIDCounter = 1
-        appRemote?.authorizeAndPlayURI("")
-        appRemote?.playerAPI?.getPlayerState()
-        appRemote?.playerAPI?.pause()
         SpotifyAPI().getSpotDevices(authToken: spotifyAuth.access_Token, completionHandler: {(response, error) in
             if response != nil {
                 DispatchQueue.main.async {
                     print("#####")
-                    print("Running getSpotDevices()...")
+                    print("Running getSpotDevices()2...")
                     print(response!)
-                    for device in response!.devices {
+                    for device in response! {
                         print(device)
-                        if device.type == "smartphone" {
+                        if device.type == "Smartphone" {
                             print("Device ID...\(device.id)")
                             spotifyAuth.deviceID = device.id
                             defaults.set(device.id, forKey: "SpotifyDeviceID")
@@ -210,8 +208,8 @@ extension MusicSearchView {
             if response != nil {
                 DispatchQueue.main.async {
                     for song in response! {
-                        print("BBBBB")
-                        print(song)
+                        //print("BBBBB")
+                        //print(song)
                         let artURL = URL(string:song.album.images[2].url)
                         let _ = getURLData(url: artURL!, completionHandler: {(artResponse, error2) in
                             let songForList = SongForList(id: song.id, name: song.name, artistName: song.artists[0].name, artImageData: artResponse!, durationInMillis: song.duration_ms, isPlaying: false, previewURL: "")
