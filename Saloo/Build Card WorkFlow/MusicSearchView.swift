@@ -164,18 +164,23 @@ extension MusicSearchView {
         launchSpotifyCounter = 1
         let appRemote2 = SPTAppRemote(configuration: config, logLevel: .debug)
         appRemote2.connectionParameters.accessToken = spotifyAuth.access_Token
+        //appRemote2.delegate = SPTDel()
         appRemote2.connect()
-        // if Spotify is already open...
         DispatchQueue.main.async {
-            
+            // if Spotify is already open...
             if appRemote2.isConnected {}
             // Do Nothing
             else {
                 // Create session
                 let sptManager = SPTSessionManager(configuration: config, delegate: nil)
-                let scope = SPTScope()
-                sptManager.initiateSession(with: scope)
+                let scopes: SPTScope = [.userReadPrivate, .userReadPlaybackState, .appRemoteControl, .streaming]
+                sptManager.initiateSession(with: scopes, options: .default)
+                let appRemote3 = SPTAppRemote(configuration: config, logLevel: .debug)
+                appRemote3.connectionParameters.accessToken = spotifyAuth.access_Token
+                //appRemote2.delegate = SPTDel()
+                appRemote3.connect()
             }
+            //Trigger check for device ID
             canCheckForDevIDNow = true
         }
     }

@@ -190,7 +190,6 @@ struct SpotPlayerView: View {
                     isPlaying = true
                     beganPlayingSong = true
                     spotifyAuth.playingSong = true
-                    
                 }
                 if error != nil {
                     print("Error... \(error?.localizedDescription)")

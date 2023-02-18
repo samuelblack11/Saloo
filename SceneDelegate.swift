@@ -31,10 +31,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject, SPTAp
         print("instantiated appRemote...")
         //print(spotifyAuth.access_Token)
         let appRemote = SPTAppRemote(configuration: self.configuration, logLevel: .debug)
-        appRemote.connectionParameters.accessToken = defaults.object(forKey: "SpotifyAccessToken") as? String
+        //appRemote.connectionParameters.accessToken = defaults.object(forKey: "SpotifyAccessToken") as? String
         //appRemote.connectionParameters.accessToken = defaults.object(forKey: "SpotifyAccessToken") as? String
 
-        //appRemote.connectionParameters.accessToken = self.accessToken
+        appRemote.connectionParameters.accessToken = self.accessToken
         print("check1")
         appRemote.delegate = self
         return appRemote

@@ -28,6 +28,7 @@
 		C2075AFF295FDBC60048ECEB /* ImagePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2075AFE295FDBC60048ECEB /* ImagePicker.swift */; };
 		C20DEF602986C9F30080AE03 /* SpotifyAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = C20DEF5F2986C9F30080AE03 /* SpotifyAPI.swift */; };
 		C2163D0E28C1609C00DEE861 /* ScheduleDelivery.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2163D0D28C1609C00DEE861 /* ScheduleDelivery.swift */; };
+		C21A8A2429A1741300D06192 /* SPTDel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C21A8A2329A1741200D06192 /* SPTDel.swift */; };
 		C21EACE02998525000401DC8 /* WebVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = C21EACDF2998525000401DC8 /* WebVC.swift */; };
 		C224F6C1297619AB000ED33E /* blankImage.png in Resources */ = {isa = PBXBuildFile; fileRef = C224F6C0297619AB000ED33E /* blankImage.png */; };
 		C225A84B29873B4D008FC699 /* SpotifyiOS.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C225A84A29873B4D008FC699 /* SpotifyiOS.framework */; };
@@ -117,6 +118,7 @@
 		C20DEF672986D4FD0080AE03 /* Saloo-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Saloo-Bridging-Header.h"; sourceTree = "<group>"; };
 		C2163D0D28C1609C00DEE861 /* ScheduleDelivery.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleDelivery.swift; sourceTree = "<group>"; };
 		C217B029294FE5F200544B17 /* Pods.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Pods.xcodeproj; path = Pods/Pods.xcodeproj; sourceTree = "<group>"; };
+		C21A8A2329A1741200D06192 /* SPTDel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SPTDel.swift; sourceTree = "<group>"; };
 		C21EACDF2998525000401DC8 /* WebVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebVC.swift; sourceTree = "<group>"; };
 		C224F6C0297619AB000ED33E /* blankImage.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = blankImage.png; path = ../../../../blankImage.png; sourceTree = "<group>"; };
 		C225A84A29873B4D008FC699 /* SpotifyiOS.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = SpotifyiOS.framework; sourceTree = "<group>"; };
@@ -309,6 +311,7 @@
 				C225A8502989E074008FC699 /* SpotResponses.swift */,
 				C24B77F8298B563900ECA882 /* SpotPlayer.swift */,
 				C21EACDF2998525000401DC8 /* WebVC.swift */,
+				C21A8A2329A1741200D06192 /* SPTDel.swift */,
 			);
 			path = Music;
 			sourceTree = "<group>";
@@ -560,6 +563,7 @@
 				260F68F7281DBDD2002E864B /* UnsplashCollectionView.swift in Sources */,
 				260F68FE281DBEBD002E864B /* PingDownloadResponse.swift in Sources */,
 				C22A1817296D983E00A7E9B8 /* ManagingSharesView.swift in Sources */,
+				C21A8A2429A1741300D06192 /* SPTDel.swift in Sources */,
 				C24B77F9298B563900ECA882 /* SpotPlayer.swift in Sources */,
 				C237E6E1294E453600E472AD /* GridOfCards.swift in Sources */,
 				C23340EB28C3D589006222F5 /* FutureDelivery+CoreDataProperties.swift in Sources */,
