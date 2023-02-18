@@ -39,7 +39,7 @@ struct MusicSearchView: View {
     @State private var devIDCounter = 0
     @State private var authCode: String? = ""
     let defaults = UserDefaults.standard
-
+    
     var body: some View {
         NavigationStack {
             TextField("Search Songs", text: $songSearch, onCommit: {
@@ -161,7 +161,10 @@ extension MusicSearchView {
                     print(spotifyAuth.auth_code)
                     print(spotifyAuth.access_Token)
                     print(spotifyAuth.refresh_Token)
-                    appRemote?.authorizeAndPlayURI("")
+                    //appRemote?.auth
+                    //appRemote?.playerAPI?.resume(sceneDelegate.defaul)
+                    //appRemote?.authorizeAndPlayURI("")
+                    if UIApplication.shared.canOpenURL(URL(string:"spotify://")!) {UIApplication.shared.open(URL(string:"spotify://")!)}
                 }
                 if error != nil {
                     print("Error... \(error?.localizedDescription)")

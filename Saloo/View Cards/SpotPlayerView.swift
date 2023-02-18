@@ -36,6 +36,8 @@ struct SpotPlayerView: View {
     @State private var playBackStateCounter = 0
     @State private var rungSongOnAppearCounter = 0
     @State private var beganPlayingSong = false
+    @State private var triggerFirstSongPlay = false
+
 
     var body: some View {
         NavigationStack {SpotPlayerView()}.environmentObject(appDelegate)
@@ -70,6 +72,7 @@ struct SpotPlayerView: View {
                             songProgress = 0.0
                             playSong()
                             isPlaying = true
+                            spotifyAuth.playingSong = true
                         } label: {
                             ZStack {
                                 Circle()
@@ -110,27 +113,31 @@ struct SpotPlayerView: View {
                     }
                 }
             .onAppear{
-                getPlayBackState()
-                if isPlaying {pausePlayback(); runSongOnAppear()}
-                else {
-                    appRemote?.authorizeAndPlayURI("spotify:track:\(songID!)")
-                    //playSong()
-                }
-                //playSong();
-                beganPlayingSong = true
-                
-                
-                
+                pausePlayback()
+                triggerFirstSongPlay = true
+                runSongOnAppear()
+                runGetPlayBackState()
             }
     }
     
     func runSongOnAppear() {
         Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { timer in
             //print("Running runGetToken....")
-            if rungSongOnAppearCounter == 0 {if spotifyAuth.playingSong {
-                //playSong()
+            if rungSongOnAppearCounter == 0 {if triggerFirstSongPlay {
+                rungSongOnAppearCounter = 1
                 appRemote?.authorizeAndPlayURI("spotify:track:\(songID!)")
+                }
             }
+        }
+    }
+    
+    
+    func runGetPlayBackState() {
+        Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { timer in
+            //print("Running runGetToken....")
+            if playBackStateCounter == 0 {if spotifyAuth.playingSong {
+                getPlayBackState()
+                }
             }
         }
     }
@@ -163,6 +170,7 @@ struct SpotPlayerView: View {
                     print(response!)
                     isPlaying = false
                     spotifyAuth.playingSong = false
+                    
                 }
                 if error != nil {
                     print("Error... \(error?.localizedDescription)")
