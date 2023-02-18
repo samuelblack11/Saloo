@@ -22,16 +22,20 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject, SPTAp
     let clientIdentifier = "d15f76f932ce4a7c94c2ecb0dfb69f4b"
     var window: UIWindow?
     lazy var configuration = SPTConfiguration(clientID: clientIdentifier, redirectURL: redirectUri)
+    var accessToken2: String?
+    //@ObservedObject var spotifyAuth: SpotifyAuth
+    let defaults = UserDefaults.standard
+    //@State var accessTokenFromFunction: String?
     
     lazy var appRemote: SPTAppRemote = {
         print("instantiated appRemote...")
+        //print(spotifyAuth.access_Token)
         let appRemote = SPTAppRemote(configuration: self.configuration, logLevel: .debug)
-        
-        appRemote.connectionParameters.accessToken = self.accessToken
+        appRemote.connectionParameters.accessToken = defaults.object(forKey: "SpotifyAccessToken") as? String
+        //appRemote.connectionParameters.accessToken = defaults.object(forKey: "SpotifyAccessToken") as? String
+
+        //appRemote.connectionParameters.accessToken = self.accessToken
         print("check1")
-        print(self.accessToken)
-        print(appRemote.connectionParameters.accessToken)
-        print(appRemote.connectionParameters.authenticationMethods)
         appRemote.delegate = self
         return appRemote
     }()
@@ -87,9 +91,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject, SPTAp
             
         if let access_token = parameters?[SPTAppRemoteAccessTokenKey] {
             appRemote.connectionParameters.accessToken = access_token
+            //appRemote.connectionParameters.accessToken = spotifyAuth.access_Token
             self.accessToken = access_token
             print("check3")
-            print(self.accessToken)
+            //print(self.accessToken)
         } else if let errorDescription = parameters?[SPTAppRemoteErrorDescriptionKey] {
             print("There is an error.....")
             print(errorDescription)

@@ -22,7 +22,19 @@ class WebVC: UIViewController, WKNavigationDelegate {
     //let spotAuth = SpotifyAuth()
     var delegate: MyDataSendingDelegateProtocol? = nil
     @ObservedObject var sceneDelegate = SceneDelegate()
+    var appRemote: SPTAppRemote? {get {return (sceneDelegate.appRemote)}}
     
+    var defaultCallback: SPTAppRemoteCallback {
+        get {
+            return {[weak self] _, error in
+                print("defaultCallBack Running...")
+                if let error = error {
+                    print("Callback Error....")
+                    print(error.localizedDescription)
+                }
+            }
+        }
+    }
     init(authURL: String) {
         self.authURL = authURL
         //self.delegate = delegate
