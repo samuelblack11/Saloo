@@ -163,7 +163,8 @@ class SpotifyAuth: ObservableObject {
     @Published var refresh_Token = String()
     @Published var deviceID = String()
     @Published var playingSong = Bool()
-
+    @Published var userID = String()
+    @Published var salooPlaylistID = String()
 
 }
 

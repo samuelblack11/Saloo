@@ -54,7 +54,6 @@ struct CallBackURL: Decodable {
     let url: String
 }
 
-
 struct SpotAuthCode: Decodable {
     let code: String
 }
@@ -74,4 +73,18 @@ struct QueueResponse: Decodable {
 }
 struct QueueItem: Decodable {
     let id: String
+}
+
+struct SpotProfile: Decodable {
+    let id: String
+}
+
+
+struct SpotPlaylist: Decodable {
+    let id: String
+    let name: String
+}
+
+struct PlaylistArray: Decodable {
+    let items: [SpotPlaylist]
 }
