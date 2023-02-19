@@ -225,7 +225,15 @@ struct SpotPlayerView: View {
         Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { timer in
             //print("Running runGetToken....")
             if runningPlayPlaylist == 0 {if songAddedToPlaylist {
-                playPlaylist()
+                //playPlaylist()
+                print("Playlsit & Song IDs....")
+                print(spotifyAuth.salooPlaylistID)
+                print(songID)
+                runningPlayPlaylist = 1
+                //appRemote2.authorizeAndPlayURI("spotify:playlist:\(spotifyAuth.salooPlaylistID)")
+                appRemote2.playerAPI?.play("spotify:playlist:\(spotifyAuth.salooPlaylistID)", asRadio: false, callback: defaultCallback)
+                //appRemote2.playerAPI?.play("spotify:track:\(songID)", asRadio: false, callback: defaultCallback)
+
                 }
             }
         }
