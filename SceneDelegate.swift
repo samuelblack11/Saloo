@@ -26,7 +26,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject, SPTAp
     //@ObservedObject var spotifyAuth: SpotifyAuth
     let defaults = UserDefaults.standard
     //@State var accessTokenFromFunction: String?
-    
     lazy var appRemote: SPTAppRemote = {
         print("instantiated appRemote...")
         //print(spotifyAuth.access_Token)
@@ -124,13 +123,18 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject, SPTAp
 
     func connect() {
         playerViewController.appRemoteConnecting()
+        
+        let sptManager = SPTSessionManager(configuration: configuration, delegate: nil)
+        let scopes: SPTScope = [.userReadPrivate, .userReadPlaybackState, .appRemoteControl, .streaming]
+        sptManager.initiateSession(with: scopes, options: .default)
+        
         appRemote.connect()
         //if it failed, aka we dont have a valid access token
-        if (!appRemote.isConnected) {//ultimately access token issues aren't the only thing that will cause this the connection to fail
+        //if (!appRemote.isConnected) {//ultimately access token issues aren't the only thing that will cause this the connection to fail
             //make spotify authorize and create an access token for us
-            appRemote.authorizeAndPlayURI("")
-        }
-        appRemote.authorizeAndPlayURI("")
+       //     appRemote.authorizeAndPlayURI("")
+       // }
+       // appRemote.authorizeAndPlayURI("")
         //self.appRemote.authorizeAndPlayURI(self.playURI)
         
         //self.appRemote.authorizeAndPlayURI("spotify:track:20I6sIOMTCkB6w7ryavxtO")

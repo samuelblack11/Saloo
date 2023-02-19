@@ -44,7 +44,10 @@ struct MusicSearchView: View {
     private let redirectUri = URL(string: "saloo://")!
     let clientIdentifier = "d15f76f932ce4a7c94c2ecb0dfb69f4b"
     var config = SPTConfiguration(clientID: "d15f76f932ce4a7c94c2ecb0dfb69f4b", redirectURL: URL(string: "saloo://")!)
-
+    @State var appRemote: SPTAppRemote?
+    
+    
+    
     var body: some View {
         NavigationStack {
             TextField("Search Songs", text: $songSearch, onCommit: {
@@ -87,14 +90,17 @@ struct MusicSearchView: View {
             }
             .onAppear{
                 if appDelegate.musicSub.type == .Spotify {
-                    requestSpotAuth();runGetToken();runLaunchSpotify();runGetDevID()
+                    requestSpotAuth()
+                    runGetToken()
+                    runLaunchSpotify()
+                    runGetDevID()
                 }
             }
             .popover(isPresented: $showAPV) {AMPlayerView(songID: chosenSong.id, songName: chosenSong.name, songArtistName: chosenSong.artistName, songArtImageData: chosenSong.artwork, songDuration: chosenSong.durationInSeconds, songPreviewURL: chosenSong.songPreviewURL, confirmButton: true, showFCV: $showFCV)
                     .presentationDetents([.fraction(0.4)])
                     .fullScreenCover(isPresented: $showFCV) {FinalizeCardView()}
             }
-            .popover(isPresented: $showSPV) {SpotPlayerView(songID: chosenSong.spotID, songName: chosenSong.name, songArtistName: chosenSong.artistName, songArtImageData: chosenSong.artwork, songDuration: chosenSong.durationInSeconds, songPreviewURL: chosenSong.songPreviewURL, confirmButton: true, showFCV: $showFCV, spotDeviceID: spotifyAuth.deviceID)
+            .popover(isPresented: $showSPV) {SpotPlayerView(songID: chosenSong.spotID, songName: chosenSong.name, songArtistName: chosenSong.artistName, songArtImageData: chosenSong.artwork, songDuration: chosenSong.durationInSeconds, songPreviewURL: chosenSong.songPreviewURL, confirmButton: true, showFCV: $showFCV, spotDeviceID: spotifyAuth.deviceID, appRemote: appRemote!)
                     .presentationDetents([.fraction(0.4)])
                     .fullScreenCover(isPresented: $showFCV) {FinalizeCardView()}
             }
@@ -136,10 +142,11 @@ extension MusicSearchView {
                     print(spotifyAuth.auth_code)
                     print(spotifyAuth.access_Token)
                     print(spotifyAuth.refresh_Token)
+                    appRemote = SPTAppRemote(configuration: config, logLevel: .debug)
+                    appRemote?.connectionParameters.accessToken = spotifyAuth.access_Token
                 }
                 if error != nil {
                     print("Error... \(error?.localizedDescription)")
-                    
                 }
             }
         })
@@ -162,24 +169,23 @@ extension MusicSearchView {
         print("calling LaunchSpotify....")
         print(spotifyAuth.access_Token)
         launchSpotifyCounter = 1
-        let appRemote2 = SPTAppRemote(configuration: config, logLevel: .debug)
-        appRemote2.connectionParameters.accessToken = spotifyAuth.access_Token
-        //appRemote2.delegate = SPTDel()
-        appRemote2.connect()
+        appRemote?.connect()
         DispatchQueue.main.async {
             // if Spotify is already open...
-            if appRemote2.isConnected {}
-            // Do Nothing
-            else {
+            //if ((appRemote?.isConnected) != nil) {}
+             //Do Nothing
+            //else {
                 // Create session
                 let sptManager = SPTSessionManager(configuration: config, delegate: nil)
-                let scopes: SPTScope = [.userReadPrivate, .userReadPlaybackState, .appRemoteControl, .streaming]
+                let scopes: SPTScope = [.userReadPrivate, .userReadPlaybackState, .appRemoteControl, .streaming, .userModifyPlaybackState, .userReadCurrentlyPlaying, .userReadRecentlyPlayed]
                 sptManager.initiateSession(with: scopes, options: .default)
-                let appRemote3 = SPTAppRemote(configuration: config, logLevel: .debug)
-                appRemote3.connectionParameters.accessToken = spotifyAuth.access_Token
-                //appRemote2.delegate = SPTDel()
-                appRemote3.connect()
-            }
+                appRemote?.connect()
+                print("Is Connected?1")
+                print(appRemote?.connectionParameters.accessToken)
+                print(appRemote?.connectionParameters.authenticationMethods)
+
+                print(appRemote?.isConnected)
+            //}
             //Trigger check for device ID
             canCheckForDevIDNow = true
         }

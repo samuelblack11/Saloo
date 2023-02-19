@@ -32,23 +32,20 @@ struct SpotPlayerView: View {
     @EnvironmentObject var appDelegate: AppDelegate
     @EnvironmentObject var sceneDelegate: SceneDelegate
     @EnvironmentObject var spotifyAuth: SpotifyAuth
-    var appRemote: SPTAppRemote? {get {return (sceneDelegate.appRemote)}}
+    //var appRemote: SPTAppRemote? {get {return (sceneDelegate.appRemote)}}
     @State private var playBackStateCounter = 0
     @State private var rungSongOnAppearCounter = 0
     @State private var beganPlayingSong = false
     @State private var triggerFirstSongPlay = false
     @State private var devIDCounter = 0
     let defaults = UserDefaults.standard
-    //static let kAccessTokenKey = "access-token-key"
-    //private let redirectUri = URL(string: "saloo://")!
-    //let clientIdentifier = "d15f76f932ce4a7c94c2ecb0dfb69f4b"
-    //lazy var configuration = SPTConfiguration(clientID: clientIdentifier, redirectURL: redirectUri)
-    
+    var config = SPTConfiguration(clientID: "d15f76f932ce4a7c94c2ecb0dfb69f4b", redirectURL: URL(string: "saloo://")!)
+    var appRemote: SPTAppRemote
     //lazy var appRemote: SPTAppRemote = {
     //    print("instantiated appRemote...")
     //    let appRemote = SPTAppRemote(configuration: self.configuration, logLevel: .debug)
-   //    appRemote.connectionParameters.accessToken = spotifyAuth.access_Token
-   //    return appRemote
+    //   appRemote.connectionParameters.accessToken = spotifyAuth.access_Token
+    //   return appRemote
    // }()
 
     var body: some View {
@@ -133,8 +130,8 @@ struct SpotPlayerView: View {
             .onAppear{
                 triggerFirstSongPlay = true
                 runSongOnAppear()
-                runGetDevID()
-                runGetPlayBackState()
+                //runGetDevID()
+                //runGetPlayBackState()
             }
     }
     
@@ -144,7 +141,14 @@ struct SpotPlayerView: View {
             if rungSongOnAppearCounter == 0 {if triggerFirstSongPlay {
                 rungSongOnAppearCounter = 1
                 //appRemote?.authorizeAndPlayURI("spotify:track:\(songID!)")
-                playSong()
+                //playSong()
+                //appRemote.playerAPI?.getPlayerState(defaultCallback)
+                print("Is Connected?2")
+                print(appRemote.isConnected)
+                appRemote.playerAPI?.getPlayerState()
+                //appRemote.playerAPI?.play(songID!, callback: defaultCallback)
+                //appRemote.playerAPI?.play(songID!)
+
                 isPlaying = true
                 beganPlayingSong = true
                 spotifyAuth.playingSong = true
@@ -153,9 +157,6 @@ struct SpotPlayerView: View {
         }
     }
     
-    private func playTrack() {
-        appRemote?.playerAPI?.play(songID!, callback: defaultCallback)
-    }
     
     var defaultCallback: SPTAppRemoteCallback {
         get {
