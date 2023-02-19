@@ -40,7 +40,7 @@ struct SpotPlayerView: View {
     @State private var devIDCounter = 0
     let defaults = UserDefaults.standard
     var config = SPTConfiguration(clientID: "d15f76f932ce4a7c94c2ecb0dfb69f4b", redirectURL: URL(string: "saloo://")!)
-    var appRemote: SPTAppRemote
+    var appRemote2: SPTAppRemote
     //lazy var appRemote: SPTAppRemote = {
     //    print("instantiated appRemote...")
     //    let appRemote = SPTAppRemote(configuration: self.configuration, logLevel: .debug)
@@ -141,11 +141,12 @@ struct SpotPlayerView: View {
             if rungSongOnAppearCounter == 0 {if triggerFirstSongPlay {
                 rungSongOnAppearCounter = 1
                 //appRemote?.authorizeAndPlayURI("spotify:track:\(songID!)")
-                //playSong()
+                playSong()
                 //appRemote.playerAPI?.getPlayerState(defaultCallback)
-                print("Is Connected?2")
-                print(appRemote.isConnected)
-                appRemote.playerAPI?.getPlayerState()
+                print("Is Connected?3")
+                //print(appRemote?.isConnected)
+                print(appRemote2.isConnected)
+                //appRemote.playerAPI?.getPlayerState()
                 //appRemote.playerAPI?.play(songID!, callback: defaultCallback)
                 //appRemote.playerAPI?.play(songID!)
 

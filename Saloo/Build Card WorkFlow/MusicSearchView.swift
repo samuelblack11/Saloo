@@ -38,13 +38,14 @@ struct MusicSearchView: View {
     @State private var tokenCounter = 0
     @State private var devIDCounter = 0
     @State private var launchSpotifyCounter = 0
+    @State private var queueCounter = 0
     @State private var canCheckForDevIDNow = false
     @State private var authCode: String? = ""
     let defaults = UserDefaults.standard
     private let redirectUri = URL(string: "saloo://")!
     let clientIdentifier = "d15f76f932ce4a7c94c2ecb0dfb69f4b"
     var config = SPTConfiguration(clientID: "d15f76f932ce4a7c94c2ecb0dfb69f4b", redirectURL: URL(string: "saloo://")!)
-    @State var appRemote: SPTAppRemote?
+    @State var appRemote2: SPTAppRemote?
     
     
     
@@ -94,13 +95,14 @@ struct MusicSearchView: View {
                     runGetToken()
                     runLaunchSpotify()
                     runGetDevID()
+                    //runGetQueueLength()
                 }
             }
             .popover(isPresented: $showAPV) {AMPlayerView(songID: chosenSong.id, songName: chosenSong.name, songArtistName: chosenSong.artistName, songArtImageData: chosenSong.artwork, songDuration: chosenSong.durationInSeconds, songPreviewURL: chosenSong.songPreviewURL, confirmButton: true, showFCV: $showFCV)
                     .presentationDetents([.fraction(0.4)])
                     .fullScreenCover(isPresented: $showFCV) {FinalizeCardView()}
             }
-            .popover(isPresented: $showSPV) {SpotPlayerView(songID: chosenSong.spotID, songName: chosenSong.name, songArtistName: chosenSong.artistName, songArtImageData: chosenSong.artwork, songDuration: chosenSong.durationInSeconds, songPreviewURL: chosenSong.songPreviewURL, confirmButton: true, showFCV: $showFCV, spotDeviceID: spotifyAuth.deviceID, appRemote: appRemote!)
+            .popover(isPresented: $showSPV) {SpotPlayerView(songID: chosenSong.spotID, songName: chosenSong.name, songArtistName: chosenSong.artistName, songArtImageData: chosenSong.artwork, songDuration: chosenSong.durationInSeconds, songPreviewURL: chosenSong.songPreviewURL, confirmButton: true, showFCV: $showFCV, spotDeviceID: spotifyAuth.deviceID, appRemote2: appRemote2!)
                     .presentationDetents([.fraction(0.4)])
                     .fullScreenCover(isPresented: $showFCV) {FinalizeCardView()}
             }
@@ -142,8 +144,18 @@ extension MusicSearchView {
                     print(spotifyAuth.auth_code)
                     print(spotifyAuth.access_Token)
                     print(spotifyAuth.refresh_Token)
-                    appRemote = SPTAppRemote(configuration: config, logLevel: .debug)
-                    appRemote?.connectionParameters.accessToken = spotifyAuth.access_Token
+                    appRemote2 = SPTAppRemote(configuration: config, logLevel: .debug)
+                    appRemote2?.connectionParameters.accessToken = spotifyAuth.access_Token
+                    
+                    let sptManager = SPTSessionManager(configuration: config, delegate: nil)
+                    let scopes: SPTScope = [.userReadPrivate, .userReadPlaybackState, .appRemoteControl, .streaming, .userModifyPlaybackState, .userReadCurrentlyPlaying, .userReadRecentlyPlayed]
+                    sptManager.initiateSession(with: scopes, options: .default)
+                    print("Is Connected?1")
+                    //appRemote2?.connect()
+                    print(appRemote2?.connectionParameters.accessToken)
+                    print(appRemote2?.connectionParameters.authenticationMethods)
+
+                    print(appRemote2?.isConnected)
                 }
                 if error != nil {
                     print("Error... \(error?.localizedDescription)")
@@ -152,6 +164,26 @@ extension MusicSearchView {
         })
     }
     
+    
+    func runGetQueueLength() {
+        Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { timer in
+            if queueCounter == 0 {if spotifyAuth.deviceID != "" {getQueueLength()}}
+        }
+    }
+    
+    
+    func getQueueLength() {
+        queueCounter = 1
+        SpotifyAPI().getQueueLength(accessToken: spotifyAuth.access_Token, completionHandler: {(response, error) in
+            if response != nil {
+                DispatchQueue.main.async {
+                    print("#####")
+                    print("Running getQueueLength()2...")
+                    print(response!)
+                }
+            }})
+                                        
+    }
     
     func runGetToken() {
         Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { timer in
@@ -169,7 +201,7 @@ extension MusicSearchView {
         print("calling LaunchSpotify....")
         print(spotifyAuth.access_Token)
         launchSpotifyCounter = 1
-        appRemote?.connect()
+        //appRemote2?.connect()
         DispatchQueue.main.async {
             // if Spotify is already open...
             //if ((appRemote?.isConnected) != nil) {}
@@ -179,12 +211,11 @@ extension MusicSearchView {
                 let sptManager = SPTSessionManager(configuration: config, delegate: nil)
                 let scopes: SPTScope = [.userReadPrivate, .userReadPlaybackState, .appRemoteControl, .streaming, .userModifyPlaybackState, .userReadCurrentlyPlaying, .userReadRecentlyPlayed]
                 sptManager.initiateSession(with: scopes, options: .default)
-                appRemote?.connect()
-                print("Is Connected?1")
-                print(appRemote?.connectionParameters.accessToken)
-                print(appRemote?.connectionParameters.authenticationMethods)
-
-                print(appRemote?.isConnected)
+                appRemote2?.connect()
+                print("Is Connected?2")
+                print(appRemote2?.connectionParameters.accessToken)
+                print(appRemote2?.connectionParameters.authenticationMethods)
+                print(appRemote2?.isConnected)
             //}
             //Trigger check for device ID
             canCheckForDevIDNow = true

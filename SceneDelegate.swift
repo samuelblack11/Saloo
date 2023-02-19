@@ -23,9 +23,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject, SPTAp
     var window: UIWindow?
     lazy var configuration = SPTConfiguration(clientID: clientIdentifier, redirectURL: redirectUri)
     var accessToken2: String?
-    //@ObservedObject var spotifyAuth: SpotifyAuth
     let defaults = UserDefaults.standard
-    //@State var accessTokenFromFunction: String?
     lazy var appRemote: SPTAppRemote = {
         print("instantiated appRemote...")
         //print(spotifyAuth.access_Token)

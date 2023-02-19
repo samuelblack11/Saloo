@@ -68,3 +68,10 @@ struct SpotTokenResponse: Decodable {
 struct SpotPlayBackState: Decodable {
     let is_playing: Bool
 }
+
+struct QueueResponse: Decodable {
+    let queue: [QueueItem]
+}
+struct QueueItem: Decodable {
+    let id: String
+}
