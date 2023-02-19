@@ -88,3 +88,7 @@ struct SpotPlaylist: Decodable {
 struct PlaylistArray: Decodable {
     let items: [SpotPlaylist]
 }
+
+struct SnapShotID: Decodable {
+    let snapshot_id: String
+}

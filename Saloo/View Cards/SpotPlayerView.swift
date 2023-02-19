@@ -36,7 +36,8 @@ struct SpotPlayerView: View {
     @State private var playBackStateCounter = 0
     @State private var rungSongOnAppearCounter = 0
     @State private var addSongCounter = 0
-
+    @State private var runningPlayPlaylist = 0
+    @State private var songAddedToPlaylist = false
     @State private var beganPlayingSong = false
     @State private var triggerFirstSongPlay = false
     @State private var triggerAddSongToPlaylist = false
@@ -135,7 +136,7 @@ struct SpotPlayerView: View {
                 //triggerFirstSongPlay = true
                 triggerAddSongToPlaylist = true
                 runAddSongToPlaylist()
-                
+                runPlayPlaylist()
                 
                 
                 //runSongOnAppear()
@@ -209,6 +210,7 @@ struct SpotPlayerView: View {
                 DispatchQueue.main.async {
                     print("Running addSongToPlaylist on SPV...")
                     print(response!)
+                    songAddedToPlaylist = true
                 }
                 if error != nil {
                     print("Error... \(error?.localizedDescription)")
@@ -218,6 +220,32 @@ struct SpotPlayerView: View {
         })
     }
     
+    
+    func runPlayPlaylist() {
+        Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { timer in
+            //print("Running runGetToken....")
+            if runningPlayPlaylist == 0 {if songAddedToPlaylist {
+                playPlaylist()
+                }
+            }
+        }
+    }
+    
+    func playPlaylist() {
+        runningPlayPlaylist = 1
+        SpotifyAPI().playPlaylist(spotifyAuth.salooPlaylistID, authToken: spotifyAuth.access_Token, deviceID: spotDeviceID!, songProgress: 0, completionHandler: {(response, error) in
+            if response != nil {
+                DispatchQueue.main.async {
+                    print("Running playPlaylist on SPV...")
+                    print(response!)
+                    isPlaying = true
+                    beganPlayingSong = true
+                    spotifyAuth.playingSong = true
+                }
+                if error != nil {print("Error... \(error?.localizedDescription)")}
+            }
+        })
+    }
     
     
     func playSong() {
@@ -232,10 +260,7 @@ struct SpotPlayerView: View {
                     beganPlayingSong = true
                     spotifyAuth.playingSong = true
                 }
-                if error != nil {
-                    print("Error... \(error?.localizedDescription)")
-                    
-                }
+                if error != nil {print("Error... \(error?.localizedDescription)")}
             }
         })
     }
