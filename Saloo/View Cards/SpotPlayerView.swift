@@ -41,7 +41,7 @@ struct SpotPlayerView: View {
     @State private var beganPlayingSong = false
     @State private var triggerFirstSongPlay = false
     @State private var triggerAddSongToPlaylist = false
-
+    @State private var showProgressView = true
     @State private var devIDCounter = 0
     let defaults = UserDefaults.standard
     var config = SPTConfiguration(clientID: "d15f76f932ce4a7c94c2ecb0dfb69f4b", redirectURL: URL(string: "saloo://")!)
@@ -77,6 +77,7 @@ struct SpotPlayerView: View {
     func SpotPlayerView() -> some View {
         let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
         return VStack {
+                   if showProgressView {ProgressView().progressViewStyle(.circular) .tint(.green)}
                     Image(uiImage: UIImage(data: songArtImageData!)!)
                     Text(songName!)
                         .font(.headline)
@@ -91,7 +92,7 @@ struct SpotPlayerView: View {
                             ZStack {
                                 Circle()
                                     .accentColor(.green)
-                                    .shadow(radius: 10)
+                                    .shadow(radius: 8)
                                 Image(systemName: "arrow.uturn.backward" )
                                     .foregroundColor(.white)
                                     .font(.system(.title))
@@ -113,7 +114,7 @@ struct SpotPlayerView: View {
                             ZStack {
                                 Circle()
                                     .accentColor(.green)
-                                    .shadow(radius: 10)
+                                    .shadow(radius: 8)
                                 Image(systemName: isPlaying ? "pause.fill" : "play.fill")
                                     .foregroundColor(.white)
                                     .font(.system(.title))
@@ -131,55 +132,16 @@ struct SpotPlayerView: View {
                         Text(convertToMinutes(seconds: Int(songDuration!)-Int(songProgress)))
                             .padding(.trailing, 10)
                     }
+                selectButton
                 }
             .onAppear{
-                //triggerFirstSongPlay = true
                 triggerAddSongToPlaylist = true
                 runAddSongToPlaylist()
                 runPlayPlaylist()
-                
-                
-                //runSongOnAppear()
             }
+            .onDisappear{pausePlayback()}
     }
-    
-    func runSongOnAppear() {
-        Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { timer in
-            //print("Running runGetToken....")
-            if rungSongOnAppearCounter == 0 {if triggerFirstSongPlay {
-                rungSongOnAppearCounter = 1
-                //appRemote?.authorizeAndPlayURI("spotify:track:\(songID!)")
-                //playSong()
-                //appRemote.playerAPI?.getPlayerState(defaultCallback)
-                print("Is Connected?3")
-                //print(appRemote?.isConnected)
-                print(appRemote2.isConnected)
-                //appRemote2.playerAPI?.getPlayerState()
-                //appRemote2.authorizeAndPlayURI("spotify:track:\(songID)")
-                //appRemote.playerAPI?.play(songID!, callback: defaultCallback)
-                //appRemote2.playerAPI?.play("spotify:track:\(songID)", asRadio: false, callback: defaultCallback)
 
-                isPlaying = true
-                beganPlayingSong = true
-                spotifyAuth.playingSong = true
-                }
-            }
-        }
-    }
-    
-    
-    var defaultCallback: SPTAppRemoteCallback {
-        get {
-            return {[self] _, error in
-                print("defaultCallBack Running...")
-                if let error = error {
-                    print(error.localizedDescription)
-                }
-            }
-        }
-    }
-    
-    
     func runGetPlayBackState() {
         Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { timer in
             //print("Running runGetToken....")
@@ -189,37 +151,6 @@ struct SpotPlayerView: View {
             }
         }
     }
-    
-    
-    func runAddSongToPlaylist() {
-        Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { timer in
-            //print("Running runGetToken....")
-            if addSongCounter == 0 {if triggerAddSongToPlaylist {
-                addSongToPlaylist()
-                }
-            }
-        }
-    }
-    
-    
-    
-    func addSongToPlaylist() {
-        addSongCounter = 1
-        SpotifyAPI().addToPlaylist(accessToken: spotifyAuth.access_Token, playlist_id: spotifyAuth.salooPlaylistID, songID: songID!, completionHandler: {(response, error) in
-            if response != nil {
-                DispatchQueue.main.async {
-                    print("Running addSongToPlaylist on SPV...")
-                    print(response!)
-                    songAddedToPlaylist = true
-                }
-                if error != nil {
-                    print("Error... \(error?.localizedDescription)")
-                    
-                }
-            }
-        })
-    }
-    
     
     func runPlayPlaylist() {
         Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { timer in
@@ -232,47 +163,13 @@ struct SpotPlayerView: View {
                 runningPlayPlaylist = 1
                 //appRemote2.authorizeAndPlayURI("spotify:playlist:\(spotifyAuth.salooPlaylistID)")
                 appRemote2.playerAPI?.play("spotify:playlist:\(spotifyAuth.salooPlaylistID)", asRadio: false, callback: defaultCallback)
-                //appRemote2.playerAPI?.play("spotify:track:\(songID)", asRadio: false, callback: defaultCallback)
-
+                isPlaying = true
+                beganPlayingSong = true
+                spotifyAuth.playingSong = true
                 }
             }
         }
     }
-    
-    func playPlaylist() {
-        runningPlayPlaylist = 1
-        SpotifyAPI().playPlaylist(spotifyAuth.salooPlaylistID, authToken: spotifyAuth.access_Token, deviceID: spotDeviceID!, songProgress: 0, completionHandler: {(response, error) in
-            if response != nil {
-                DispatchQueue.main.async {
-                    print("Running playPlaylist on SPV...")
-                    print(response!)
-                    isPlaying = true
-                    beganPlayingSong = true
-                    spotifyAuth.playingSong = true
-                }
-                if error != nil {print("Error... \(error?.localizedDescription)")}
-            }
-        })
-    }
-    
-    
-    func playSong() {
-        rungSongOnAppearCounter = 1
-        SpotifyAPI().playSpotify(songID!, authToken: spotifyAuth.access_Token, deviceID: spotDeviceID!, songProgress: Int(songProgress), completionHandler: {(response, error) in
-            if response != nil {
-                DispatchQueue.main.async {
-                    print("Running PlaySong on SPV...")
-                    print(response!)
-                    print(response!.is_playing)
-                    isPlaying = true
-                    beganPlayingSong = true
-                    spotifyAuth.playingSong = true
-                }
-                if error != nil {print("Error... \(error?.localizedDescription)")}
-            }
-        })
-    }
-    
     func pausePlayback() {
         SpotifyAPI().pauseSpotify(songID, authToken: spotifyAuth.access_Token, deviceID: spotifyAuth.deviceID, completionHandler: {(response, error) in
             if response != nil {
@@ -290,6 +187,20 @@ struct SpotPlayerView: View {
             }
         })
     }
+        
+    var defaultCallback: SPTAppRemoteCallback {
+        get {
+            return {[self] _, error in
+                print("defaultCallBack Running...")
+                print("started playing playlist")
+                showProgressView = false
+                if let error = error {
+                    print(error.localizedDescription)
+                }
+            }
+        }
+    }
+    
     
     func runGetDevID() {
         Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { timer in
@@ -322,6 +233,30 @@ struct SpotPlayerView: View {
             }})
     }
     
+    func runSongOnAppear() {
+        Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { timer in
+            //print("Running runGetToken....")
+            if rungSongOnAppearCounter == 0 {if triggerFirstSongPlay {
+                rungSongOnAppearCounter = 1
+                //appRemote?.authorizeAndPlayURI("spotify:track:\(songID!)")
+                //playSong()
+                //appRemote.playerAPI?.getPlayerState(defaultCallback)
+                print("Is Connected?3")
+                //print(appRemote?.isConnected)
+                print(appRemote2.isConnected)
+                //appRemote2.playerAPI?.getPlayerState()
+                //appRemote2.authorizeAndPlayURI("spotify:track:\(songID)")
+                //appRemote.playerAPI?.play(songID!, callback: defaultCallback)
+                //appRemote2.playerAPI?.play("spotify:track:\(songID)", asRadio: false, callback: defaultCallback)
+
+                isPlaying = true
+                beganPlayingSong = true
+                spotifyAuth.playingSong = true
+                }
+            }
+        }
+    }
+    
     func getPlayBackState() {
         playBackStateCounter = 1
         SpotifyAPI().getPlayBackState(authToken: spotifyAuth.access_Token, deviceID: spotifyAuth.deviceID, completionHandler: {(response, error) in
@@ -336,6 +271,67 @@ struct SpotPlayerView: View {
                     print("Error... \(error?.localizedDescription)")
                     
                 }
+            }
+        })
+    }
+    
+    func runAddSongToPlaylist() {
+        Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { timer in
+            //print("Running runGetToken....")
+            if addSongCounter == 0 {if triggerAddSongToPlaylist {
+                addSongToPlaylist()
+                }
+            }
+        }
+    }
+    
+    func addSongToPlaylist() {
+        addSongCounter = 1
+        SpotifyAPI().addToPlaylist(accessToken: spotifyAuth.access_Token, playlist_id: spotifyAuth.salooPlaylistID, songID: songID!, completionHandler: {(response, error) in
+            if response != nil {
+                DispatchQueue.main.async {
+                    print("Running addSongToPlaylist on SPV...")
+                    print(response!)
+                    songAddedToPlaylist = true
+                }
+                if error != nil {
+                    print("Error... \(error?.localizedDescription)")
+                    
+                }
+            }
+        })
+    }
+    
+    
+    func playPlaylist() {
+        runningPlayPlaylist = 1
+        SpotifyAPI().playPlaylist(spotifyAuth.salooPlaylistID, authToken: spotifyAuth.access_Token, deviceID: spotDeviceID!, songProgress: 0, completionHandler: {(response, error) in
+            if response != nil {
+                DispatchQueue.main.async {
+                    print("Running playPlaylist on SPV...")
+                    print(response!)
+                    isPlaying = true
+                    beganPlayingSong = true
+                    spotifyAuth.playingSong = true
+                }
+                if error != nil {print("Error... \(error?.localizedDescription)")}
+            }
+        })
+    }
+    
+    func playSong() {
+        rungSongOnAppearCounter = 1
+        SpotifyAPI().playSpotify(songID!, authToken: spotifyAuth.access_Token, deviceID: spotDeviceID!, songProgress: Int(songProgress), completionHandler: {(response, error) in
+            if response != nil {
+                DispatchQueue.main.async {
+                    print("Running PlaySong on SPV...")
+                    print(response!)
+                    print(response!.is_playing)
+                    isPlaying = true
+                    beganPlayingSong = true
+                    spotifyAuth.playingSong = true
+                }
+                if error != nil {print("Error... \(error?.localizedDescription)")}
             }
         })
     }
