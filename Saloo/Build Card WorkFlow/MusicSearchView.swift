@@ -46,6 +46,7 @@ struct MusicSearchView: View {
     @State private var mustCreatePlaylist = false
     @State private var playListSearchCounter = 0
     @State private var authCode: String? = ""
+    @State private var invalidAuthCode = false
     let defaults = UserDefaults.standard
     private let redirectUri = URL(string: "saloo://")!
     let clientIdentifier = "d15f76f932ce4a7c94c2ecb0dfb69f4b"
@@ -96,8 +97,14 @@ struct MusicSearchView: View {
             }
             .onAppear{
                 if appDelegate.musicSub.type == .Spotify {
-                    requestSpotAuth()
-                    runGetToken()
+                    print("@#@#")
+                    print(defaults.object(forKey: "SpotifyAuthCode") as? String)
+                    if defaults.object(forKey: "SpotifyAuthCode") != nil {
+                        authCode = (defaults.object(forKey: "SpotifyAuthCode") as? String)!
+                        runGetToken()
+                        getAuthCodeAndTokenIfExpired()
+                    }
+                    else{requestSpotAuth();runGetToken()}
                     runLaunchSpotify()
                     runGetDevID()
                     runGetProfile()
@@ -125,6 +132,7 @@ struct MusicSearchView: View {
 extension MusicSearchView {
     
     func requestSpotAuth() {
+        invalidAuthCode = false
         SpotifyAPI().requestAuth(completionHandler: {(response, error) in
             if response != nil {
                 DispatchQueue.main.async {
@@ -136,42 +144,11 @@ extension MusicSearchView {
         }})
     }
     
-    
-    func runGetPlaylists() {
-        Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { timer in
-            if playListSearchCounter == 0 {if spotifyAuth.userID != "" {getPlaylists()}}
-        }
-    }
-    
-    func getPlaylists() {
-        playListSearchCounter = 1
-        SpotifyAPI().getPlaylists(userID: spotifyAuth.userID, accessToken: spotifyAuth.access_Token, completionHandler: {(response, error) in
-            if response != nil {
-                DispatchQueue.main.async {
-                    print("#####")
-                    print("Running getPlaylists()2...")
-                    print(response!)
-                    for item in response! {
-                        if item.name == "Saloo" {print("Found playlist named Saloo");spotifyAuth.salooPlaylistID = item.id}
-                    }
-                    if spotifyAuth.salooPlaylistID == "" {
-                        print("Didn't find playlist named Saloo")
-                        mustCreatePlaylist = true
-                    }
-                    playlistSearchisComplete = true
-                }
-            }})
-    }
-    
-    
-    
-    
-    
-    
-    
     func getSpotToken() {
         tokenCounter = 1
         spotifyAuth.auth_code = authCode!
+        print("AuthCode used in GetSpotToken....")
+        print(authCode!)
         SpotifyAPI().getToken(authCode: authCode!, completionHandler: {(response, error) in
             if response != nil {
                 DispatchQueue.main.async {
@@ -190,14 +167,30 @@ extension MusicSearchView {
                     let scopes: SPTScope = [.userReadPrivate, .userReadPlaybackState, .appRemoteControl, .streaming, .userModifyPlaybackState, .userReadCurrentlyPlaying, .userReadRecentlyPlayed, .playlistModifyPublic, .playlistModifyPrivate]
                     sptManager.initiateSession(with: scopes, options: .default)
                 }
-                if error != nil {
-                    print("Error... \(error?.localizedDescription)")
-                }
+            }
+            if error != nil {
+                print("Error... \(error?.localizedDescription)")
+                invalidAuthCode = true
+                authCode = ""
             }
         })
     }
+    
+    func getAuthCodeAndTokenIfExpired() {
+        Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { timer in
+            if invalidAuthCode {requestSpotAuth()}
+        }
+    }
+
 
     
+    func runGetToken() {
+        Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { timer in
+            if tokenCounter == 0 {if authCode != "" {getSpotToken()}}
+        }
+    }
+ ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
     func runGetProfile() {
         Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { timer in
             if profileCounter == 0 {if spotifyAuth.deviceID != "" {getProfile()}}
@@ -217,37 +210,32 @@ extension MusicSearchView {
             }})
     }
     
-    
-    func runCreatePlaylist() {
-        Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { timer in
-            if playlistCounter == 0 {if spotifyAuth.userID != "" && playlistSearchisComplete && mustCreatePlaylist {createPlaylist()}}
-        }
+    func runGetPlaylists() {
+    Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { timer in
+        if playListSearchCounter == 0 {if spotifyAuth.userID != "" {getPlaylists()}}
     }
-    
-    
-    func createPlaylist() {
-        playlistCounter = 1
-        SpotifyAPI().createPlaylist(accessToken: spotifyAuth.access_Token, user_id: spotifyAuth.userID, completionHandler: {(response, error) in
-            if response != nil {
-                DispatchQueue.main.async {
-                    print("#####")
-                    print("Running createPlaylist()2...")
-                    print(response!)
-                    spotifyAuth.salooPlaylistID = response!
+}
+
+func getPlaylists() {
+    playListSearchCounter = 1
+    SpotifyAPI().getPlaylists(userID: spotifyAuth.userID, accessToken: spotifyAuth.access_Token, completionHandler: {(response, error) in
+        if response != nil {
+            DispatchQueue.main.async {
+                print("#####")
+                print("Running getPlaylists()2...")
+                print(response!)
+                for item in response! {
+                    if item.name == "Saloo" {print("Found playlist named Saloo");spotifyAuth.salooPlaylistID = item.id}
                 }
-            }})
-    }
-    
-    
-    
-    
-    
-    func runGetToken() {
-        Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { timer in
-            if tokenCounter == 0 {if authCode != "" {getSpotToken()}}
-        }
-    }
-    
+                if spotifyAuth.salooPlaylistID == "" {
+                    print("Didn't find playlist named Saloo")
+                    mustCreatePlaylist = true
+                }
+                playlistSearchisComplete = true
+            }
+        }})
+}
+
     func runLaunchSpotify() {
         Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { timer in
             if launchSpotifyCounter == 0 {if spotifyAuth.access_Token != "" {launchSpotify()}}
@@ -278,7 +266,28 @@ extension MusicSearchView {
             canCheckForDevIDNow = true
         }
     }
-
+    
+    func runCreatePlaylist() {
+        Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { timer in
+            if playlistCounter == 0 {if spotifyAuth.userID != "" && playlistSearchisComplete && mustCreatePlaylist {createPlaylist()}}
+        }
+    }
+    
+    
+    func createPlaylist() {
+        playlistCounter = 1
+        SpotifyAPI().createPlaylist(accessToken: spotifyAuth.access_Token, user_id: spotifyAuth.userID, completionHandler: {(response, error) in
+            if response != nil {
+                DispatchQueue.main.async {
+                    print("#####")
+                    print("Running createPlaylist()2...")
+                    print(response!)
+                    spotifyAuth.salooPlaylistID = response!
+                }
+            }})
+    }
+    
+    
     
     func runGetDevID() {
         Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { timer in

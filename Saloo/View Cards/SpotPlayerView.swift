@@ -43,6 +43,7 @@ struct SpotPlayerView: View {
     @State private var triggerAddSongToPlaylist = false
     @State private var showProgressView = true
     @State private var devIDCounter = 0
+    @State private var clickedConfirm =  false
     let defaults = UserDefaults.standard
     var config = SPTConfiguration(clientID: "d15f76f932ce4a7c94c2ecb0dfb69f4b", redirectURL: URL(string: "saloo://")!)
     var appRemote2: SPTAppRemote
@@ -57,13 +58,9 @@ struct SpotPlayerView: View {
         NavigationStack {SpotPlayerView()}.environmentObject(appDelegate)
     }
     
-    @ViewBuilder var selectButtonPreview: some View {
-        if confirmButton == true {Button {showFCV = true; pausePlayback(); songProgress = 0.0} label: {Text("Select Song For Card").foregroundColor(.blue)}}
-        else {Text("")}
-    }
     
     @ViewBuilder var selectButton: some View {
-        if confirmButton == true {Button {showFCV = true; pausePlayback(); songProgress = 0.0} label: {Text("Select Song For Card").foregroundColor(.blue)}}
+        if confirmButton == true {Button {spotifyAuth.songID = songID!;showFCV = true} label: {Text("Select Song For Card").foregroundColor(.blue)}}
         else {Text("")}
     }
 
@@ -179,6 +176,7 @@ struct SpotPlayerView: View {
                     isPlaying = false
                     spotifyAuth.playingSong = false
                     triggerFirstSongPlay = true
+                    
                 }
                 if error != nil {
                     print("Error... \(error?.localizedDescription)")

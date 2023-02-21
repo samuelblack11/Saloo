@@ -165,7 +165,7 @@ class SpotifyAuth: ObservableObject {
     @Published var playingSong = Bool()
     @Published var userID = String()
     @Published var salooPlaylistID = String()
-
+    @Published var songID = String()
 }
 
 class CollageBlocksAndViews {

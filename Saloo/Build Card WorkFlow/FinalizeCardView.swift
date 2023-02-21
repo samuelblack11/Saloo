@@ -19,13 +19,14 @@ struct FinalizeCardView: View {
     @EnvironmentObject var noteField: NoteField
     @EnvironmentObject var addMusic: AddMusic
     @EnvironmentObject var annotation: Annotation
-    
+    @EnvironmentObject var spotifyAuth: SpotifyAuth
     @State private var showOccassions = false
     @State private var showUCV = false
     @State private var showCollageMenu = false
     @State private var showCollageBuilder = false
     @State private var showWriteNote = false
-    
+    @EnvironmentObject var appDelegate: AppDelegate
+
     @State var coreCard: CoreCard!
     @State var cardRecord: CKRecord!
     //@Binding var cardForExport: Data!
@@ -91,6 +92,9 @@ struct FinalizeCardView: View {
         .fullScreenCover(isPresented: $showShareSheet, content: {if let share = share {}})
         .fullScreenCover(isPresented: $showActivityController) {ActivityView(activityItems: $activityItemsArray, applicationActivities: nil)}
         }
+        .onAppear{if appDelegate.musicSub.type == .Spotify{pausePlayback()}
+                        
+        }
     }
 }
 
@@ -102,7 +106,27 @@ extension FinalizeCardView {
         taskContext.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
         controller.addCoreCard(noteField: noteField, chosenOccassion: chosenOccassion, an1: an1, an2: an2, an2URL: an2URL, an3: an3, an4: an4, chosenObject: chosenObject, collageImage: collageImage,context: taskContext, songID: songID, songName: songName, songArtistName: songArtistName, songArtImageData: songArtImageData, songPreviewURL: songPreviewURL, songDuration: songDuration, inclMusic: inclMusic)
     }
+    
+    func pausePlayback() {
+        SpotifyAPI().pauseSpotify(spotifyAuth.songID, authToken: spotifyAuth.access_Token, deviceID: spotifyAuth.deviceID, completionHandler: {(response, error) in
+            if response != nil {
+                DispatchQueue.main.async {
+                    print("Running PausePlayBack on SPV...")
+                    print(response!)
+                    spotifyAuth.playingSong = false
+                }
+                if error != nil {
+                    print("Error... \(error?.localizedDescription)")
+                    
+                }
+            }
+        })
+    }
 }
+
+
+
+
 
 extension UIScreen{
    static let screenWidth = UIScreen.main.bounds.size.width
