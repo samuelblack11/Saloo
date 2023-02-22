@@ -63,6 +63,9 @@ struct SpotTokenResponse: Decodable {
     let refresh_token: String
 }
 
+struct SpotTokenRefreshResponse: Decodable {
+    let access_token: String
+}
 
 struct SpotPlayBackState: Decodable {
     let is_playing: Bool

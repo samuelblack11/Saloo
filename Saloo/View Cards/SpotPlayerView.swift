@@ -82,7 +82,7 @@ struct SpotPlayerView: View {
                     HStack {
                         Button {
                             songProgress = 0.0
-                            playSong()
+                            appRemote2.playerAPI?.skip(toPrevious: defaultCallback)
                             isPlaying = true
                             spotifyAuth.playingSong = true
                         } label: {
@@ -97,14 +97,8 @@ struct SpotPlayerView: View {
                         }
                         .frame(maxWidth: UIScreen.screenHeight/12, maxHeight: UIScreen.screenHeight/12)
                         Button {
-                            if spotifyAuth.playingSong {
-                                pausePlayback()
-                                
-                                //appRemote?.playerAPI?.pause()
-                            }
-                            else {
-                                playSong()
-                            }
+                            if spotifyAuth.playingSong {appRemote2.playerAPI?.pause()}
+                            else {appRemote2.playerAPI?.resume()}
                             isPlaying.toggle()
                             spotifyAuth.playingSong.toggle()
                         } label: {

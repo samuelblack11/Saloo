@@ -46,6 +46,7 @@ struct MusicSearchView: View {
     @State private var mustCreatePlaylist = false
     @State private var playListSearchCounter = 0
     @State private var authCode: String? = ""
+    @State private var refresh_token: String? = ""
     @State private var invalidAuthCode = false
     let defaults = UserDefaults.standard
     private let redirectUri = URL(string: "saloo://")!
@@ -97,16 +98,16 @@ struct MusicSearchView: View {
             }
             .onAppear{
                 if appDelegate.musicSub.type == .Spotify {
-                    print("@#@#")
-                    print(defaults.object(forKey: "SpotifyAuthCode") as? String)
                     if defaults.object(forKey: "SpotifyAuthCode") != nil {
-                        authCode = (defaults.object(forKey: "SpotifyAuthCode") as? String)!
-                        runGetToken()
-                        getAuthCodeAndTokenIfExpired()
+                        refresh_token = (defaults.object(forKey: "SpotifyRefreshToken") as? String)!
+                        runGetToken(authType: "refresh_token")
                     }
-                    else{requestSpotAuth();runGetToken()}
-                    runLaunchSpotify()
-                    runGetDevID()
+                    else{
+                        requestSpotAuth();
+                        runGetToken(authType: "code");
+                    }
+                    runLaunchSpotify();
+                    runGetDevID();
                     runGetProfile()
                     runGetPlaylists()
                     runCreatePlaylist()
@@ -156,10 +157,33 @@ extension MusicSearchView {
                     defaults.set(response!.access_token, forKey: "SpotifyAccessToken")
                     defaults.set(response!.refresh_token, forKey: "SpotifyRefreshToken")
                     print("Access Values3....")
-                    //print(UIApplication.shared.canOpenURL(URL(string:"spotify://")!))
                     print(spotifyAuth.auth_code)
                     print(spotifyAuth.access_Token)
                     print(spotifyAuth.refresh_Token)
+                    appRemote2 = SPTAppRemote(configuration: config, logLevel: .debug)
+                    appRemote2?.connectionParameters.accessToken = spotifyAuth.access_Token
+                    let sptManager = SPTSessionManager(configuration: config, delegate: nil)
+                    let scopes: SPTScope = [.userReadPrivate, .userReadPlaybackState, .appRemoteControl, .streaming, .userModifyPlaybackState, .userReadCurrentlyPlaying, .userReadRecentlyPlayed, .playlistModifyPublic, .playlistModifyPrivate]
+                    sptManager.initiateSession(with: scopes, options: .default)
+                }
+            }
+            if error != nil {
+                print("Error... \(error?.localizedDescription)!")
+                invalidAuthCode = true
+                authCode = ""
+            }
+        })
+    }
+    func getSpotTokenViaRefresh() {
+        tokenCounter = 1
+        spotifyAuth.auth_code = authCode!
+        print("AuthCode used in GetSpotToken....")
+        print(authCode!)
+        SpotifyAPI().getTokenViaRefresh(refresh_token: refresh_token!, completionHandler: {(response, error) in
+            if response != nil {
+                DispatchQueue.main.async {
+                    spotifyAuth.access_Token = response!.access_token
+                    defaults.set(response!.access_token, forKey: "SpotifyAccessToken")
                     appRemote2 = SPTAppRemote(configuration: config, logLevel: .debug)
                     appRemote2?.connectionParameters.accessToken = spotifyAuth.access_Token
                     let sptManager = SPTSessionManager(configuration: config, delegate: nil)
@@ -183,11 +207,47 @@ extension MusicSearchView {
 
 
     
-    func runGetToken() {
+    func runGetToken(authType: String) {
         Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { timer in
-            if tokenCounter == 0 {if authCode != "" {getSpotToken()}}
+            if tokenCounter == 0 {
+                if authType == "code" {if authCode != "" {getSpotToken()}}
+                if authType == "refresh_token" {if refresh_token! != ""{getSpotTokenViaRefresh()}}
+                }
         }
     }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     func runGetProfile() {
@@ -205,13 +265,18 @@ extension MusicSearchView {
                     print("Running getProfile()2...")
                     print(response!)
                     spotifyAuth.userID = response!
+                    defaults.set(response!, forKey: "SpotifyUserID")
                 }
             }})
     }
     
     func runGetPlaylists() {
     Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { timer in
-        if playListSearchCounter == 0 {if spotifyAuth.userID != "" {getPlaylists()}}
+        if playListSearchCounter == 0 {
+            if spotifyAuth.userID != "" {
+                getPlaylists()
+            }
+        }
     }
 }
 
@@ -245,22 +310,12 @@ func getPlaylists() {
         print("calling LaunchSpotify....")
         print(spotifyAuth.access_Token)
         launchSpotifyCounter = 1
-        //appRemote2?.connect()
         DispatchQueue.main.async {
-            // if Spotify is already open...
-            //if ((appRemote?.isConnected) != nil) {}
-             //Do Nothing
-            //else {
-                // Create session
-                let sptManager = SPTSessionManager(configuration: config, delegate: nil)
-                let scopes: SPTScope = [.userReadPrivate, .userReadPlaybackState, .appRemoteControl, .streaming, .userModifyPlaybackState, .userReadCurrentlyPlaying, .userReadRecentlyPlayed]
-                sptManager.initiateSession(with: scopes, options: .default)
-                appRemote2?.connect()
-                print("Is Connected?2")
-                print(appRemote2?.connectionParameters.accessToken!)
-                print(appRemote2?.connectionParameters.authenticationMethods)
-                print(appRemote2?.isConnected)
-            //}
+            // Create session
+            let sptManager = SPTSessionManager(configuration: config, delegate: nil)
+            let scopes: SPTScope = [.userReadPrivate, .userReadPlaybackState, .appRemoteControl, .streaming, .userModifyPlaybackState, .userReadCurrentlyPlaying, .userReadRecentlyPlayed]
+            sptManager.initiateSession(with: scopes, options: .default)
+            appRemote2?.connect()
             //Trigger check for device ID
             canCheckForDevIDNow = true
         }
