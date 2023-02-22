@@ -60,7 +60,7 @@ struct SpotPlayerView: View {
     
     
     @ViewBuilder var selectButton: some View {
-        if confirmButton == true {Button {spotifyAuth.songID = songID!;showFCV = true} label: {Text("Select Song For Card").foregroundColor(.blue)}}
+        if confirmButton == true {Button {showFCV = true; spotifyAuth.songID = songID!} label: {Text("Select Song For Card").foregroundColor(.blue)}}
         else {Text("")}
     }
 

@@ -138,10 +138,9 @@ extension MusicSearchView {
                 DispatchQueue.main.async {
                     print("ccccccc")
                     print(response!)
-                    spotifyAuth.authForRedirect = response!
-                    showWebView = true
-                }
-        }})
+                    if response!.contains("https://www.google.com/?code="){}
+                    else{spotifyAuth.authForRedirect = response!; showWebView = true}
+                }}})
     }
     
     func getSpotToken() {
@@ -169,7 +168,7 @@ extension MusicSearchView {
                 }
             }
             if error != nil {
-                print("Error... \(error?.localizedDescription)")
+                print("Error... \(error?.localizedDescription)!")
                 invalidAuthCode = true
                 authCode = ""
             }
