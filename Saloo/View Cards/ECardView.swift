@@ -85,7 +85,7 @@ struct eCardView: View {
                     }
                     if appDelegate.musicSub.type == .Spotify {
                         HStack(alignment: .bottom){
-                            SpotPlayerView(songID: spotID, songName: songName, songArtistName: songArtistName, songArtImageData: songArtImageData, songDuration: songDuration, songPreviewURL: songPreviewURL, confirmButton: false, showFCV: $showFCV, spotDeviceID: (defaults.object(forKey: "SpotifyDeviceID") as? String)!, addSongToPlayList: false, appRemote2: appRemote2!)
+                            SpotPlayerView(songID: spotID, songName: songName, songArtistName: songArtistName, songArtImageData: songArtImageData, songDuration: songDuration, songPreviewURL: songPreviewURL, confirmButton: false, showFCV: $showFCV, spotDeviceID: (defaults.object(forKey: "SpotifyDeviceID") as? String)!, appRemote2: appRemote2!)
                                 .frame(height: UIScreen.screenHeight/1.5, alignment: .bottom)
                         }
                     }
