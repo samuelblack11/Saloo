@@ -134,17 +134,14 @@ struct SpotPlayerView: View {
                 print(spotifyAuth.salooPlaylistID)
                 print(songID)
                 runningPlayPlaylist = 1
-                //appRemote2.playerAPI?.enqueueTrackUri("spotify:playlist:\(spotifyAuth.salooPlaylistID)")
-                //appRemote2.playerAPI?.
-                appRemote2.playerAPI?.seek(toPosition: 0)
-                appRemote2.playerAPI?.play("spotify:playlist:\(spotifyAuth.salooPlaylistID)", asRadio: false, callback: defaultCallback)
-                //appRemote2.playerAPI?.enqueueTrackUri("spotify:track:\(songID)")
+                appRemote2.playerAPI?.pause(defaultCallback)
+                appRemote2.playerAPI?.enqueueTrackUri("spotify:track:\(songID!)", callback: defaultCallback)
+                appRemote2.playerAPI?.play("spotify:track:\(songID!)", callback: defaultCallback)
+                //appRemote2.playerAPI?.enqueueTrackUri(songID!, callback: defaultCallback)
+                //appRemote2.playerAPI?.play(songID!, callback: defaultCallback)
                 //appRemote2.playerAPI?.seek(toPosition: 0)
-                //appRemote2.playerAPI?.play("spotify:track:\(songID)", asRadio: false, callback: defaultCallback)
-                
-                
-                
                 //appRemote2.playerAPI?.play("spotify:playlist:\(spotifyAuth.salooPlaylistID)", asRadio: false, callback: defaultCallback)
+                //appRemote2.playerAPI?.seek(toPosition: 0)
                 isPlaying = true
                 beganPlayingSong = true
                 spotifyAuth.playingSong = true
