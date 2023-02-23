@@ -22,6 +22,7 @@ struct eCardView: View {
     @State var text3: String
     @State var text4: String
     @State var songID: String?
+    @State var spotID: String?
     @State var songName: String?
     @State var songArtistName: String?
     @State var songArtImageData: Data?
@@ -29,6 +30,16 @@ struct eCardView: View {
     @State var songPreviewURL: String?
     @State var showFCV: Bool = false
     @State var inclMusic: Bool
+    let defaults = UserDefaults.standard
+    @EnvironmentObject var appDelegate: AppDelegate
+    var config = SPTConfiguration(clientID: "d15f76f932ce4a7c94c2ecb0dfb69f4b", redirectURL: URL(string: "saloo://")!)
+    var appRemote2: SPTAppRemote?
+    
+    
+    
+    
+    
+
     var body: some View {
         HStack {
             VStack(spacing:1) {
@@ -64,11 +75,20 @@ struct eCardView: View {
                     Spacer()
                 }
             }
-            VStack {
+            VStack{
                 Spacer()
                 if inclMusic {
-                    SmallPlayerView(songID: songID, songName: songName, songArtistName: songArtistName, songArtImageData: songArtImageData, songDuration: songDuration, songPreviewURL: songPreviewURL, confirmButton: false, showFCV: $showFCV, spotDeviceID: "12345")
-                        .frame(height: UIScreen.screenHeight/1.5, alignment: .bottom)
+                    HStack(alignment: .bottom){
+                        if appDelegate.musicSub.type == .Apple {
+                            AMPlayerView(songID: songID, songName: songName, songArtistName: songArtistName, songArtImageData: songArtImageData, songDuration: songDuration, songPreviewURL: songPreviewURL, confirmButton: false, showFCV: $showFCV).frame(height: UIScreen.screenHeight/1.5, alignment: .bottom)
+                        }
+                    }
+                    if appDelegate.musicSub.type == .Spotify {
+                        HStack(alignment: .bottom){
+                            SpotPlayerView(songID: spotID, songName: songName, songArtistName: songArtistName, songArtImageData: songArtImageData, songDuration: songDuration, songPreviewURL: songPreviewURL, confirmButton: false, showFCV: $showFCV, spotDeviceID: (defaults.object(forKey: "SpotifyDeviceID") as? String)!, addSongToPlayList: false, appRemote2: appRemote2!)
+                                .frame(height: UIScreen.screenHeight/1.5, alignment: .bottom)
+                        }
+                    }
                 }
             }
         }

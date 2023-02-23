@@ -36,7 +36,9 @@ struct SmallPlayerView: View {
         NavigationStack {
             if appDelegate.musicSub.type == .Apple {AMPlayerView()}
             if appDelegate.musicSub.type == .Neither {AMPreviewPlayerView()}
-            if appDelegate.musicSub.type == .Spotify {SpotPlayerView()}
+            if appDelegate.musicSub.type == .Spotify {
+                //SpotPlayerView()
+            }
             }
             .environmentObject(appDelegate)
     }
@@ -178,113 +180,5 @@ struct SmallPlayerView: View {
         let completeTime = String("\(m):\(s)")
         return completeTime
     }
-    
-    func SpotPlayerView() -> some View {
-        let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
-        return VStack {
-                    Image(uiImage: UIImage(data: songArtImageData!)!)
-                    Text(songName!)
-                        .font(.headline)
-                    Text(songArtistName!)
-                    HStack {
-                        Button {
-                            songProgress = 0.0
-                            playSong()
-                            isPlaying = true
-                        } label: {
-                            ZStack {
-                                Circle()
-                                    .accentColor(.green)
-                                    .shadow(radius: 10)
-                                Image(systemName: "arrow.uturn.backward" )
-                                    .foregroundColor(.white)
-                                    .font(.system(.title))
-                            }
-                        }
-                        .frame(maxWidth: UIScreen.screenHeight/12, maxHeight: UIScreen.screenHeight/12)
-                        Button {
-                            if spotifyAuth.playingSong {pausePlayback()}
-                            else {playSong()}
-                            isPlaying.toggle()
-                            spotifyAuth.playingSong.toggle()
-                        } label: {
-                            ZStack {
-                                Circle()
-                                    .accentColor(.green)
-                                    .shadow(radius: 10)
-                                Image(systemName: isPlaying ? "pause.fill" : "play.fill")
-                                    .foregroundColor(.white)
-                                    .font(.system(.title))
-                            }
-                        }
-                        .frame(maxWidth: UIScreen.screenHeight/12, maxHeight: UIScreen.screenHeight/12)
-                    }
-                    ProgressView(value: songProgress, total: songDuration!)
-                        .onReceive(timer) {_ in
-                            if songProgress < songDuration! && musicPlayer.playbackState.rawValue == 1 {songProgress += 1}
-                        }
-                    HStack{
-                        Text(convertToMinutes(seconds:Int(songProgress)))
-                        Spacer()
-                        Text(convertToMinutes(seconds: Int(songDuration!)-Int(songProgress)))
-                            .padding(.trailing, 10)
-                    }
-                }
-            .onAppear{playSong(); getPlayBackState()}
-    }
-    
-    
-    func playSong() {
-        SpotifyAPI().playSpotify(songID!, authToken: spotifyAuth.access_Token,deviceID: spotDeviceID!, songProgress: Int(songProgress), completionHandler: {(response, error) in
-            if response != nil {
-                DispatchQueue.main.async {
-                    print("Running PlaySong on SPV...")
-                    print(response!.is_playing)
-                    spotifyAuth.playingSong = response!.is_playing
-                    isPlaying = true
-                }
-                if error != nil {
-                    print("Error... \(error?.localizedDescription)")
-                    
-                }
-            }
-        })
-    }
-    
-    func pausePlayback() {
-        SpotifyAPI().pauseSpotify(songID, authToken: spotifyAuth.access_Token, deviceID: spotifyAuth.deviceID, completionHandler: {(response, error) in
-            if response != nil {
-                DispatchQueue.main.async {
-                    print("Running PausePlayback on SPV...")
-                    print(response!.is_playing)
-                    spotifyAuth.playingSong = response!.is_playing
-                    isPlaying = true
-                }
-                if error != nil {
-                    print("Error... \(error?.localizedDescription)")
-                    
-                }
-            }
-        })
-    }
-    
-    func getPlayBackState() {
-        SpotifyAPI().getPlayBackState(authToken: spotifyAuth.access_Token, deviceID: spotifyAuth.deviceID, completionHandler: {(response, error) in
-            if response != nil {
-                DispatchQueue.main.async {
-                    print("Running GPBS on SPV...")
-                    print(response!.is_playing)
-                    spotifyAuth.playingSong = response!.is_playing
-                    isPlaying = true
-                }
-                if error != nil {
-                    print("Error... \(error?.localizedDescription)")
-                    
-                }
-            }
-        })
-    }
-    
-    
     
 }

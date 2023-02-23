@@ -102,10 +102,7 @@ struct MusicSearchView: View {
                         refresh_token = (defaults.object(forKey: "SpotifyRefreshToken") as? String)!
                         runGetToken(authType: "refresh_token")
                     }
-                    else{
-                        requestSpotAuth();
-                        runGetToken(authType: "code");
-                    }
+                    else{requestSpotAuth(); runGetToken(authType: "code")}
                     runLaunchSpotify();
                     runGetDevID();
                     runGetProfile()
@@ -117,9 +114,9 @@ struct MusicSearchView: View {
                     .presentationDetents([.fraction(0.4)])
                     .fullScreenCover(isPresented: $showFCV) {FinalizeCardView()}
             }
-            .popover(isPresented: $showSPV) {SpotPlayerView(songID: chosenSong.spotID, songName: chosenSong.name, songArtistName: chosenSong.artistName, songArtImageData: chosenSong.artwork, songDuration: chosenSong.durationInSeconds, songPreviewURL: chosenSong.songPreviewURL, confirmButton: true, showFCV: $showFCV, spotDeviceID: spotifyAuth.deviceID, appRemote2: appRemote2!)
+            .popover(isPresented: $showSPV) {SpotPlayerView(songID: chosenSong.spotID, songName: chosenSong.name, songArtistName: chosenSong.artistName, songArtImageData: chosenSong.artwork, songDuration: chosenSong.durationInSeconds, songPreviewURL: chosenSong.songPreviewURL, confirmButton: true, showFCV: $showFCV, spotDeviceID: spotifyAuth.deviceID, addSongToPlayList: true, appRemote2: appRemote2!)
                     .presentationDetents([.fraction(0.4)])
-                    .fullScreenCover(isPresented: $showFCV) {FinalizeCardView()}
+                    .fullScreenCover(isPresented: $showFCV) {FinalizeCardView(appRemote2: appRemote2)}
             }
             .environmentObject(spotifyAuth)
             .sheet(isPresented: $connectToSpot){SpotPlayer().frame(height: 100)}
@@ -147,8 +144,6 @@ extension MusicSearchView {
     func getSpotToken() {
         tokenCounter = 1
         spotifyAuth.auth_code = authCode!
-        print("AuthCode used in GetSpotToken....")
-        print(authCode!)
         SpotifyAPI().getToken(authCode: authCode!, completionHandler: {(response, error) in
             if response != nil {
                 DispatchQueue.main.async {
@@ -156,10 +151,6 @@ extension MusicSearchView {
                     spotifyAuth.refresh_Token = response!.refresh_token
                     defaults.set(response!.access_token, forKey: "SpotifyAccessToken")
                     defaults.set(response!.refresh_token, forKey: "SpotifyRefreshToken")
-                    print("Access Values3....")
-                    print(spotifyAuth.auth_code)
-                    print(spotifyAuth.access_Token)
-                    print(spotifyAuth.refresh_Token)
                     appRemote2 = SPTAppRemote(configuration: config, logLevel: .debug)
                     appRemote2?.connectionParameters.accessToken = spotifyAuth.access_Token
                     let sptManager = SPTSessionManager(configuration: config, delegate: nil)
@@ -177,8 +168,6 @@ extension MusicSearchView {
     func getSpotTokenViaRefresh() {
         tokenCounter = 1
         spotifyAuth.auth_code = authCode!
-        print("AuthCode used in GetSpotToken....")
-        print(authCode!)
         SpotifyAPI().getTokenViaRefresh(refresh_token: refresh_token!, completionHandler: {(response, error) in
             if response != nil {
                 DispatchQueue.main.async {
@@ -212,40 +201,9 @@ extension MusicSearchView {
             if tokenCounter == 0 {
                 if authType == "code" {if authCode != "" {getSpotToken()}}
                 if authType == "refresh_token" {if refresh_token! != ""{getSpotTokenViaRefresh()}}
-                }
+            }
         }
     }
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
     
     
  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -427,26 +385,6 @@ func getPlaylists() {
         }
         dataTask.resume()
     }
-    
-    func runGetQueueLength() {
-        Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { timer in
-            if queueCounter == 0 {if spotifyAuth.deviceID != "" {getQueueLength()}}
-        }
-    }
-    
-    
-    func getQueueLength() {
-        queueCounter = 1
-        SpotifyAPI().getQueueLength(accessToken: spotifyAuth.access_Token, completionHandler: {(response, error) in
-            if response != nil {
-                DispatchQueue.main.async {
-                    print("#####")
-                    print("Running getQueueLength()2...")
-                    print(response!)
-                }
-            }})
-                                        
-    }
-    
+ 
 }
             

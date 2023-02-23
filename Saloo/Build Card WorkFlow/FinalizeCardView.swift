@@ -26,7 +26,6 @@ struct FinalizeCardView: View {
     @State private var showCollageBuilder = false
     @State private var showWriteNote = false
     @EnvironmentObject var appDelegate: AppDelegate
-
     @State var coreCard: CoreCard!
     @State var cardRecord: CKRecord!
     //@Binding var cardForExport: Data!
@@ -45,7 +44,20 @@ struct FinalizeCardView: View {
     @State private var isProcessingShare = false
     @State private var activeShare: CKShare?
     @State private var activeContainer: CKContainer?
-
+    var config = SPTConfiguration(clientID: "d15f76f932ce4a7c94c2ecb0dfb69f4b", redirectURL: URL(string: "saloo://")!)
+    var appRemote2: SPTAppRemote?
+    var defaultCallback: SPTAppRemoteCallback? {
+        get {
+            return {[self] _, error in
+                print("defaultCallBack Running...")
+                print("started playing playlist")
+                if let error = error {
+                    print(error.localizedDescription)
+                }
+            }
+        }
+    }
+    
     @EnvironmentObject var chosenSong: ChosenSong
     
     var saveButton: some View {
@@ -78,7 +90,7 @@ struct FinalizeCardView: View {
     var body: some View {
         NavigationView {
         VStack(spacing: 0) {
-            eCardView(eCardText: noteField.eCardText, font: noteField.font, coverImage: chosenObject.coverImage, collageImage: collageImage.collageImage.pngData()!, text1: annotation.text1, text2: annotation.text2, text2URL: annotation.text2URL, text3: annotation.text3, text4: annotation.text4, songID: chosenSong.id, songName: chosenSong.name, songArtistName: chosenSong.artistName, songArtImageData: chosenSong.artwork, songDuration: chosenSong.durationInSeconds, songPreviewURL: chosenSong.songPreviewURL, inclMusic: addMusic.addMusic)
+            eCardView(eCardText: noteField.eCardText, font: noteField.font, coverImage: chosenObject.coverImage, collageImage: collageImage.collageImage.pngData()!, text1: annotation.text1, text2: annotation.text2, text2URL: annotation.text2URL, text3: annotation.text3, text4: annotation.text4, songID: chosenSong.id, spotID: chosenSong.spotID, songName: chosenSong.name, songArtistName: chosenSong.artistName, songArtImageData: chosenSong.artwork, songDuration: chosenSong.durationInSeconds, songPreviewURL: chosenSong.songPreviewURL, inclMusic: addMusic.addMusic, appRemote2: appRemote2)
             saveButton
                 //.frame(height: UIScreen.screenHeight/1)
         }
@@ -92,7 +104,10 @@ struct FinalizeCardView: View {
         .fullScreenCover(isPresented: $showShareSheet, content: {if let share = share {}})
         .fullScreenCover(isPresented: $showActivityController) {ActivityView(activityItems: $activityItemsArray, applicationActivities: nil)}
         }
-        .onAppear{if appDelegate.musicSub.type == .Spotify{pausePlayback()}
+        .onAppear{if appDelegate.musicSub.type == .Spotify{
+            appRemote2?.playerAPI?.pause()
+            deleteSongFromPlaylist()            
+        }
                         
         }
     }
@@ -107,13 +122,13 @@ extension FinalizeCardView {
         controller.addCoreCard(noteField: noteField, chosenOccassion: chosenOccassion, an1: an1, an2: an2, an2URL: an2URL, an3: an3, an4: an4, chosenObject: chosenObject, collageImage: collageImage,context: taskContext, songID: songID, songName: songName, songArtistName: songArtistName, songArtImageData: songArtImageData, songPreviewURL: songPreviewURL, songDuration: songDuration, inclMusic: inclMusic)
     }
     
-    func pausePlayback() {
-        SpotifyAPI().pauseSpotify(spotifyAuth.songID, authToken: spotifyAuth.access_Token, deviceID: spotifyAuth.deviceID, completionHandler: {(response, error) in
+    
+    func deleteSongFromPlaylist() {
+        SpotifyAPI().deleteFromPlaylist(accessToken: spotifyAuth.access_Token, playlist_id: spotifyAuth.salooPlaylistID, songID: spotifyAuth.songID, snapShotID: spotifyAuth.snapShotID, completionHandler: {(response, error) in
             if response != nil {
                 DispatchQueue.main.async {
-                    print("Running PausePlayBack on SPV...")
+                    print("Running deleteSongToPlaylist on SPV...")
                     print(response!)
-                    spotifyAuth.playingSong = false
                 }
                 if error != nil {
                     print("Error... \(error?.localizedDescription)")

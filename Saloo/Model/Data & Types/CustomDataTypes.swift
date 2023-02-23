@@ -155,7 +155,6 @@ class UnmanagedPlaceHolder: NSObject {}
 
 class ChosenCollageStyle: ObservableObject {@Published var chosenStyle: Int?}
 class SpotifyAuth: ObservableObject {
-    
     @Published var authForRedirect = String()
     @Published var auth_code = String()
     //@Published var returnedRedirectURI = String()
@@ -166,6 +165,7 @@ class SpotifyAuth: ObservableObject {
     @Published var userID = String()
     @Published var salooPlaylistID = String()
     @Published var songID = String()
+    @Published var snapShotID = String()
 }
 
 class CollageBlocksAndViews {
