@@ -34,13 +34,12 @@ struct SpotPlayerView: View {
     @State private var addSongCounter = 0
     @State private var showProgressView = true
     let defaults = UserDefaults.standard
-    var config = SPTConfiguration(clientID: "d15f76f932ce4a7c94c2ecb0dfb69f4b", redirectURL: URL(string: "saloo://")!)
-    var appRemote2: SPTAppRemote
-
+    
+    var appRemote2: SPTAppRemote?
     var body: some View {NavigationStack {SpotPlayerView()}.environmentObject(appDelegate)}
     
     @ViewBuilder var selectButton: some View {
-        if confirmButton == true {Button {appRemote2.playerAPI?.pause();showFCV = true; spotifyAuth.songID = songID!} label: {Text("Select Song For Card").foregroundColor(.blue)}}
+        if confirmButton == true {Button {appRemote2?.playerAPI?.pause();showFCV = true; spotifyAuth.songID = songID!} label: {Text("Select Song For Card").foregroundColor(.blue)}}
         else {Text("")}
     }
 
@@ -54,7 +53,7 @@ struct SpotPlayerView: View {
     func SpotPlayerView() -> some View {
         let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
         return VStack {
-                   if showProgressView {ProgressView().progressViewStyle(.circular) .tint(.green)}
+                   //if showProgressView {ProgressView().progressViewStyle(.circular) .tint(.green)}
                     Image(uiImage: UIImage(data: songArtImageData!)!)
                     Text(songName!)
                         .font(.headline)
@@ -62,7 +61,7 @@ struct SpotPlayerView: View {
                     HStack {
                         Button {
                             songProgress = 0.0
-                            appRemote2.playerAPI?.skip(toPrevious: defaultCallback)
+                            appRemote2?.playerAPI?.skip(toPrevious: defaultCallback)
                             isPlaying = true
                         } label: {
                             ZStack {
@@ -76,8 +75,8 @@ struct SpotPlayerView: View {
                         }
                         .frame(maxWidth: UIScreen.screenHeight/12, maxHeight: UIScreen.screenHeight/12)
                         Button {
-                            if isPlaying {appRemote2.playerAPI?.pause()}
-                            else {appRemote2.playerAPI?.resume()}
+                            if isPlaying {appRemote2?.playerAPI?.pause()}
+                            else {appRemote2?.playerAPI?.resume()}
                             isPlaying.toggle()
                         } label: {
                             ZStack {
@@ -94,7 +93,7 @@ struct SpotPlayerView: View {
                     ProgressView(value: songProgress, total: songDuration!)
                         .onReceive(timer) {_ in
                             if songProgress < songDuration! && isPlaying {songProgress += 1}
-                            if songProgress == songDuration{appRemote2.playerAPI?.pause()}
+                            if songProgress == songDuration{appRemote2?.playerAPI?.pause()}
                         }
                     HStack{
                         Text(convertToMinutes(seconds:Int(songProgress)))
@@ -105,15 +104,25 @@ struct SpotPlayerView: View {
                 selectButton
                 }
             .onAppear{playSong()}
-            .onDisappear{appRemote2.playerAPI?.pause()}
+            .onDisappear{appRemote2?.playerAPI?.pause()}
     }
     
     func playSong() {
         print("Playlsit & Song IDs....")
         print(songID)
-        appRemote2.playerAPI?.pause(defaultCallback)
-        appRemote2.playerAPI?.enqueueTrackUri("spotify:track:\(songID!)", callback: defaultCallback)
-        appRemote2.playerAPI?.play("spotify:track:\(songID!)", callback: defaultCallback)
+        print("$$$$$$")
+        print(appRemote2?.isConnected)
+        print(appRemote2?.connectionParameters.accessToken)
+        print(appRemote2?.connectionParameters.authenticationMethods)
+        print(appRemote2?.connectionParameters.roles)
+        //appRemote2?.connect()
+        //appRemote2?.authorizeAndPlayURI("spotify:track:\(songID!)")
+        if appRemote2?.isConnected == false {appRemote2?.connect()}
+        appRemote2?.authorizeAndPlayURI("")
+        appRemote2?.playerAPI?.pause(defaultCallback)
+        print(appRemote2?.isConnected)
+        appRemote2?.playerAPI?.enqueueTrackUri("spotify:track:\(songID!)", callback: defaultCallback)
+        appRemote2?.playerAPI?.play("spotify:track:\(songID!)", callback: defaultCallback)
         isPlaying = true
     }
 
@@ -122,7 +131,6 @@ struct SpotPlayerView: View {
         get {
             return {[self] _, error in
                 print("defaultCallBack Running...")
-                print("started playing playlist")
                 showProgressView = false
                 if let error = error {
                     print(error.localizedDescription)

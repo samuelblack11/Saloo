@@ -20,7 +20,7 @@ struct FinalizeCardView: View {
     @EnvironmentObject var addMusic: AddMusic
     @EnvironmentObject var annotation: Annotation
     @EnvironmentObject var spotifyAuth: SpotifyAuth
-    @State private var showOccassions = false
+    @State private var showStartMenu = false
     @State private var showUCV = false
     @State private var showCollageMenu = false
     @State private var showCollageBuilder = false
@@ -68,12 +68,12 @@ struct FinalizeCardView: View {
             }
             showCompleteAlert = true
             }
-            .fullScreenCover(isPresented: $showOccassions) {OccassionsMenu()}
+            .fullScreenCover(isPresented: $showStartMenu) {OccassionsMenu()}
             .fullScreenCover(isPresented: $showCollageMenu) {CollageStyleMenu()}
             .fullScreenCover(isPresented: $showUCV) {UnsplashCollectionView()}
             .disabled(saveAndShareIsActive)
             .alert("Save Complete", isPresented: $showCompleteAlert) {
-                Button("Ok", role: .cancel) {showCollageBuilder = false; showWriteNote = false; showCollageMenu = false; showUCV = false;showOccassions = true; let rootViewController = UIApplication.shared.connectedScenes
+                Button("Ok", role: .cancel) {showCollageBuilder = false; showWriteNote = false; showCollageMenu = false; showUCV = false;showStartMenu = true; let rootViewController = UIApplication.shared.connectedScenes
                             .filter {$0.activationState == .foregroundActive }
                             .map {$0 as? UIWindowScene }
                             .compactMap { $0 }
@@ -99,16 +99,15 @@ struct FinalizeCardView: View {
             leading:Button {showMusicSearch = true}
             label: {Image(systemName: "chevron.left").foregroundColor(.blue)
             Text("Back")},
-            trailing: Button {showOccassions = true} label: {Image(systemName: "menucard.fill").foregroundColor(.blue)
+            trailing: Button {showStartMenu = true} label: {Image(systemName: "menucard.fill").foregroundColor(.blue)
             Text("Menu")})
-        .fullScreenCover(isPresented: $showOccassions) {OccassionsMenu()}
+        .fullScreenCover(isPresented: $showStartMenu) {StartMenu(appRemote2: appRemote2)}
         .fullScreenCover(isPresented: $showMusicSearch) {MusicSearchView()}
         .fullScreenCover(isPresented: $showShareSheet, content: {if let share = share {}})
         .fullScreenCover(isPresented: $showActivityController) {ActivityView(activityItems: $activityItemsArray, applicationActivities: nil)}
         }
         .onAppear{if appDelegate.musicSub.type == .Spotify{
             appRemote2?.playerAPI?.pause()
-            deleteSongFromPlaylist()            
         }
                         
         }
@@ -122,22 +121,6 @@ extension FinalizeCardView {
         let taskContext = controller.persistentContainer.newTaskContext()
         taskContext.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
         controller.addCoreCard(noteField: noteField, chosenOccassion: chosenOccassion, an1: an1, an2: an2, an2URL: an2URL, an3: an3, an4: an4, chosenObject: chosenObject, collageImage: collageImage,context: taskContext, songID: songID, songName: songName, songArtistName: songArtistName, songArtImageData: songArtImageData, songPreviewURL: songPreviewURL, songDuration: songDuration, inclMusic: inclMusic)
-    }
-    
-    
-    func deleteSongFromPlaylist() {
-        SpotifyAPI().deleteFromPlaylist(accessToken: spotifyAuth.access_Token, playlist_id: spotifyAuth.salooPlaylistID, songID: spotifyAuth.songID, snapShotID: spotifyAuth.snapShotID, completionHandler: {(response, error) in
-            if response != nil {
-                DispatchQueue.main.async {
-                    print("Running deleteSongToPlaylist on SPV...")
-                    print(response!)
-                }
-                if error != nil {
-                    print("Error... \(error?.localizedDescription)")
-                    
-                }
-            }
-        })
     }
 }
 

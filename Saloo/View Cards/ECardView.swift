@@ -34,6 +34,11 @@ struct eCardView: View {
     @EnvironmentObject var appDelegate: AppDelegate
     var config = SPTConfiguration(clientID: "d15f76f932ce4a7c94c2ecb0dfb69f4b", redirectURL: URL(string: "saloo://")!)
     var appRemote2: SPTAppRemote?
+    
+    
+    
+    
+    
 
     var body: some View {
         HStack {

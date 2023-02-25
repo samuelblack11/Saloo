@@ -23,6 +23,7 @@ struct StartMenu: View {
     @State private var showCalendar = false
     @State private var showPref = false
     @State var showPrefMenu = false
+    @State var appRemote2: SPTAppRemote?
     var possibleSubscriptionValues = ["Apple Music", "Spotify", "Neither"]
     let defaults = UserDefaults.standard
     let buildCardWorkFlow = """
@@ -43,9 +44,9 @@ struct StartMenu: View {
                 Text(buildCardWorkFlow).onTapGesture {self.showOccassions = true}
                     .fullScreenCover(isPresented: $showOccassions){OccassionsMenu()}
                 Text("View Inbox 📥").onTapGesture {self.showGridOfCards = true}
-                    .fullScreenCover(isPresented: $showGridOfCards) {GridofCards(cardsForDisplay: loadCoreCards(), whichBoxVal: .inbox)}
+                    .fullScreenCover(isPresented: $showGridOfCards) {GridofCards(cardsForDisplay: loadCoreCards(), whichBoxVal: .inbox, appRemote2: appRemote2)}
                 Text("View Outbox 📤").onTapGesture {self.showGridOfCards = true}
-                    .fullScreenCover(isPresented: $showGridOfCards) {GridofCards(cardsForDisplay: loadCoreCards(), whichBoxVal: .outbox)}
+                    .fullScreenCover(isPresented: $showGridOfCards) {GridofCards(cardsForDisplay: loadCoreCards(), whichBoxVal: .outbox, appRemote2: appRemote2)}
                 Text("View Calendar 🗓").onTapGesture {self.showCalendar = true}
                     .fullScreenCover(isPresented: $showCalendar) {CalendarParent(calViewModel: calViewModel, showDetailView: showDetailView)}
                 Text("Preferences 📱").onTapGesture {self.showPref = true}
