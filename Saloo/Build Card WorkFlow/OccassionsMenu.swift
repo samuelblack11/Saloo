@@ -87,9 +87,7 @@ struct OccassionsMenu: View {
                         chosenOccassion.collectionID = customSearch
                     }
                     label: {Image(systemName: "magnifyingglass.circle.fill")}
-                        .fullScreenCover(isPresented: $showUCV) {
-                            UnsplashCollectionView()
-                    }
+                        .fullScreenCover(isPresented: $showUCV) {UnsplashCollectionView()}
                 }
             }
             Section(header: Text("Year-Round Occassions")) {ForEach(yearRoundCollection) {menuSection(for: $0, shareable: false)}}

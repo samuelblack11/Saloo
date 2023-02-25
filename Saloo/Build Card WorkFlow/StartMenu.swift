@@ -21,8 +21,9 @@ struct StartMenu: View {
     @State private var showOccassions = false
     @State private var showGridOfCards = false
     @State private var showCalendar = false
-    @State var showMusicMenu = false
-    @State var counter = 0
+    @State private var showPref = false
+    @State var showPrefMenu = false
+    var possibleSubscriptionValues = ["Apple Music", "Spotify", "Neither"]
     let defaults = UserDefaults.standard
     let buildCardWorkFlow = """
     Build a Card
@@ -47,17 +48,23 @@ struct StartMenu: View {
                     .fullScreenCover(isPresented: $showGridOfCards) {GridofCards(cardsForDisplay: loadCoreCards(), whichBoxVal: .outbox)}
                 Text("View Calendar 🗓").onTapGesture {self.showCalendar = true}
                     .fullScreenCover(isPresented: $showCalendar) {CalendarParent(calViewModel: calViewModel, showDetailView: showDetailView)}
-                Text("More Info 📱")
+                Text("Preferences 📱").onTapGesture {self.showPref = true}
+                    .fullScreenCover(isPresented: $showPref) {PrefMenu()}
             }
         }
         //.environmentObject(appDelegate)
         .environmentObject(musicSub)
         .onAppear {
             appDelegate.startMenuAppeared = true
-            if defaults.bool(forKey: "First Launch") == true && counter == 0 {showMusicMenu = true}
+            if (defaults.object(forKey: "MusicSubType") as? String) != nil && possibleSubscriptionValues.contains((defaults.object(forKey: "MusicSubType") as? String)!) {
+                if (defaults.object(forKey: "MusicSubType") as? String)! == "Apple Music" {appDelegate.musicSub.type = .Apple}
+                if (defaults.object(forKey: "MusicSubType") as? String)! == "Spotify" {appDelegate.musicSub.type = .Spotify}
+                if (defaults.object(forKey: "MusicSubType") as? String)! == "Neither" {appDelegate.musicSub.type = .Neither}
+            }
+            else{showPrefMenu = true }
         }
         
-        .fullScreenCover(isPresented: $showMusicMenu) {MusicMenu().environmentObject(musicSub)}
+        .fullScreenCover(isPresented: $showPrefMenu) {PrefMenu().environmentObject(musicSub)}
     }}
 
 extension StartMenu {
