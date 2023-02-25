@@ -110,6 +110,7 @@ struct AMPlayerView: View {
             selectButtonPreview
         }
         .onAppear{createPlayer(); player!.play()}
+        .onDisappear{player!.pause()}
     }
     
     func AMPlayerView() -> some View {
@@ -154,9 +155,8 @@ struct AMPlayerView: View {
             }
             ProgressView(value: songProgress, total: songDuration!)
                 .onReceive(timer) {_ in
-                    if songProgress < songDuration! && musicPlayer.playbackState.rawValue == 1 {
-                        songProgress += 1
-                    }
+                    if songProgress < songDuration! && musicPlayer.playbackState.rawValue == 1 {songProgress += 1}
+                    if songProgress == songDuration {musicPlayer.pause()}
                 }
             HStack{
                 Text(convertToMinutes(seconds:Int(songProgress)))
@@ -167,6 +167,7 @@ struct AMPlayerView: View {
             selectButton
         }
         .onAppear{self.musicPlayer.setQueue(with: [songID!]); self.musicPlayer.play()}
+        .onDisappear{self.musicPlayer.pause()}
     }
     
     func convertToMinutes(seconds: Int) -> String {

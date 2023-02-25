@@ -28,6 +28,7 @@ struct MusicSearchView: View {
     @State private var showAPV = false
     @State private var showSPV = false
     @State private var showWebView = false
+    @State private var showWriteNote = false
     @State private var isPlaying = false
     @State private var songProgress = 0.0
     @State private var connectToSpot = false
@@ -97,21 +98,25 @@ struct MusicSearchView: View {
             }
             .onAppear{
                 if appDelegate.musicSub.type == .Spotify {
+                    print("Run1")
                     if defaults.object(forKey: "SpotifyAuthCode") != nil {
+                        print("Run2")
                         refresh_token = (defaults.object(forKey: "SpotifyRefreshToken") as? String)!
                         runGetToken(authType: "refresh_token")
                     }
-                    else{requestSpotAuth(); runGetToken(authType: "code")}
+                    else{print("Run3");requestSpotAuth(); runGetToken(authType: "code")}
                     runLaunchSpotify();
                 }
             }
+            .navigationBarItems(leading:Button {showWriteNote.toggle()} label: {Image(systemName: "chevron.left").foregroundColor(.blue); Text("Back")})
             .popover(isPresented: $showAPV) {AMPlayerView(songID: chosenSong.id, songName: chosenSong.name, songArtistName: chosenSong.artistName, songArtImageData: chosenSong.artwork, songDuration: chosenSong.durationInSeconds, songPreviewURL: chosenSong.songPreviewURL, confirmButton: true, showFCV: $showFCV)
                     .presentationDetents([.fraction(0.4)])
                     .fullScreenCover(isPresented: $showFCV) {FinalizeCardView()}
             }
-            .popover(isPresented: $showSPV) {SpotPlayerView(songID: chosenSong.spotID, songName: chosenSong.name, songArtistName: chosenSong.artistName, songArtImageData: chosenSong.artwork, songDuration: chosenSong.durationInSeconds, songPreviewURL: chosenSong.songPreviewURL, confirmButton: true, showFCV: $showFCV, spotDeviceID: spotifyAuth.deviceID, appRemote2: appRemote2!)
+            .popover(isPresented: $showSPV) {SpotPlayerView(songID: chosenSong.spotID, songName: chosenSong.name, songArtistName: chosenSong.artistName, songArtImageData: chosenSong.artwork, songDuration: chosenSong.durationInSeconds, songPreviewURL: chosenSong.songPreviewURL, confirmButton: true, showFCV: $showFCV, appRemote2: appRemote2!)
                     .presentationDetents([.fraction(0.4)])
                     .fullScreenCover(isPresented: $showFCV) {FinalizeCardView(appRemote2: appRemote2)}
+                    .fullScreenCover(isPresented: $showWriteNote) {WriteNoteView()}
             }
             .environmentObject(spotifyAuth)
             .sheet(isPresented: $connectToSpot){SpotPlayer().frame(height: 100)}

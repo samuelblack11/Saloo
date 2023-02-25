@@ -28,7 +28,6 @@ struct SpotPlayerView: View {
     @State private var isPlaying = true
     @State var confirmButton: Bool
     @Binding var showFCV: Bool
-    @State var spotDeviceID: String?
     @EnvironmentObject var appDelegate: AppDelegate
     @EnvironmentObject var sceneDelegate: SceneDelegate
     @EnvironmentObject var spotifyAuth: SpotifyAuth
@@ -95,6 +94,7 @@ struct SpotPlayerView: View {
                     ProgressView(value: songProgress, total: songDuration!)
                         .onReceive(timer) {_ in
                             if songProgress < songDuration! && isPlaying {songProgress += 1}
+                            if songProgress == songDuration{appRemote2.playerAPI?.pause()}
                         }
                     HStack{
                         Text(convertToMinutes(seconds:Int(songProgress)))

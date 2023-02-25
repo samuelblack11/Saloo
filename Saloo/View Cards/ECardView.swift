@@ -34,11 +34,6 @@ struct eCardView: View {
     @EnvironmentObject var appDelegate: AppDelegate
     var config = SPTConfiguration(clientID: "d15f76f932ce4a7c94c2ecb0dfb69f4b", redirectURL: URL(string: "saloo://")!)
     var appRemote2: SPTAppRemote?
-    
-    
-    
-    
-    
 
     var body: some View {
         HStack {
@@ -85,7 +80,7 @@ struct eCardView: View {
                     }
                     if appDelegate.musicSub.type == .Spotify {
                         HStack(alignment: .bottom){
-                            SpotPlayerView(songID: spotID, songName: songName, songArtistName: songArtistName, songArtImageData: songArtImageData, songDuration: songDuration, songPreviewURL: songPreviewURL, confirmButton: false, showFCV: $showFCV, spotDeviceID: (defaults.object(forKey: "SpotifyDeviceID") as? String)!, appRemote2: appRemote2!)
+                            SpotPlayerView(songID: spotID, songName: songName, songArtistName: songArtistName, songArtImageData: songArtImageData, songDuration: songDuration, songPreviewURL: songPreviewURL, confirmButton: false, showFCV: $showFCV, appRemote2: appRemote2!)
                                 .frame(height: UIScreen.screenHeight/1.5, alignment: .bottom)
                         }
                     }

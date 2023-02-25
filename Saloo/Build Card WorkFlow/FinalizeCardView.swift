@@ -25,6 +25,7 @@ struct FinalizeCardView: View {
     @State private var showCollageMenu = false
     @State private var showCollageBuilder = false
     @State private var showWriteNote = false
+    @State private var showMusicSearch = false
     @EnvironmentObject var appDelegate: AppDelegate
     @State var coreCard: CoreCard!
     @State var cardRecord: CKRecord!
@@ -95,12 +96,13 @@ struct FinalizeCardView: View {
                 //.frame(height: UIScreen.screenHeight/1)
         }
         .navigationBarItems(
-            leading:Button {}
+            leading:Button {showMusicSearch = true}
             label: {Image(systemName: "chevron.left").foregroundColor(.blue)
             Text("Back")},
             trailing: Button {showOccassions = true} label: {Image(systemName: "menucard.fill").foregroundColor(.blue)
             Text("Menu")})
         .fullScreenCover(isPresented: $showOccassions) {OccassionsMenu()}
+        .fullScreenCover(isPresented: $showMusicSearch) {MusicSearchView()}
         .fullScreenCover(isPresented: $showShareSheet, content: {if let share = share {}})
         .fullScreenCover(isPresented: $showActivityController) {ActivityView(activityItems: $activityItemsArray, applicationActivities: nil)}
         }
