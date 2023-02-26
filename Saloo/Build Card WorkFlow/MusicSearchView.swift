@@ -38,7 +38,7 @@ struct MusicSearchView: View {
     let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
     @State private var tokenCounter = 0
     @State private var devIDCounter = 0
-    @State private var launchSpotifyCounter = 0
+    @State private var instantiateAppRemoteCounter = 0
     @State private var profileCounter = 0
     @State private var queueCounter = 0
     @State private var playlistCounter = 0
@@ -117,7 +117,7 @@ struct MusicSearchView: View {
                         counter += 1
                     }
                     else{print("Run3");requestSpotAuth(); runGetToken(authType: "code")}
-                    runLaunchSpotify()
+                    runInstantiateAppRemote()
                 }
             }
             .navigationBarItems(leading:Button {showWriteNote.toggle()} label: {Image(systemName: "chevron.left").foregroundColor(.blue); Text("Back")})
@@ -227,26 +227,19 @@ extension MusicSearchView {
  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-    func runLaunchSpotify() {
+    func runInstantiateAppRemote() {
         Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { timer in
-            if launchSpotifyCounter == 0 {if spotifyAuth.access_Token != "" {launchSpotify()}}
+            if instantiateAppRemoteCounter == 0 {if spotifyAuth.access_Token != "" {instantiateAppRemote()}}
         }
     }
     
-    func launchSpotify() {
-        print("called....launchSpotify")
+    func instantiateAppRemote() {
+        print("called....instantiateAppRemote")
         print(spotifyAuth.access_Token)
-        launchSpotifyCounter = 1
+        instantiateAppRemoteCounter = 1
         DispatchQueue.main.async {
-            // Create session
             appRemote2 = SPTAppRemote(configuration: config, logLevel: .debug)
             appRemote2?.connectionParameters.accessToken = spotifyAuth.access_Token
-            //let sptManager = SPTSessionManager(configuration: config, delegate: nil)
-            //let scopes: SPTScope = [.userReadPrivate, .userReadPlaybackState, .appRemoteControl, .streaming, .userModifyPlaybackState, .userReadCurrentlyPlaying, .userReadRecentlyPlayed]
-            //sptManager.initiateSession(with: scopes, options: .default)
-            //appRemote2?.authorizeAndPlayURI("")
-            //appRemote2?.playerAPI?.pause(defaultCallback)
-            //appRemote2?.connect()
         }
     }
     

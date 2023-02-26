@@ -111,8 +111,7 @@ struct SpotPlayerView: View {
         print("Playlsit & Song IDs....")
         print(songID)
         print("$$$$$$")
-        //appRemote2?.authorizeAndPlayURI("")
-        //appRemote2?.playerAPI?.pause(defaultCallback)
+        print(appRemote2?.isConnected)
         appRemote2?.authorizeAndPlayURI("spotify:track:\(songID!)")
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
             appRemote2?.connect()
