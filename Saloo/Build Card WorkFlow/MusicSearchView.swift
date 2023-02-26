@@ -220,7 +220,7 @@ extension MusicSearchView {
                 //refreshAccessToken = true
                 spotifyAuth.access_Token = (defaults.object(forKey: "SpotifyAccessToken") as? String)!
             }}
-            else{debugPrint(error?.localizedDescription)}
+            else{print("New Access Token Needed"); refresh_token = (defaults.object(forKey: "SpotifyRefreshToken") as? String)!; refreshAccessToken = true; debugPrint(error?.localizedDescription)}
         })
     }
     
@@ -241,9 +241,11 @@ extension MusicSearchView {
             // Create session
             appRemote2 = SPTAppRemote(configuration: config, logLevel: .debug)
             appRemote2?.connectionParameters.accessToken = spotifyAuth.access_Token
-            let sptManager = SPTSessionManager(configuration: config, delegate: nil)
-            let scopes: SPTScope = [.userReadPrivate, .userReadPlaybackState, .appRemoteControl, .streaming, .userModifyPlaybackState, .userReadCurrentlyPlaying, .userReadRecentlyPlayed]
-            sptManager.initiateSession(with: scopes, options: .default)
+            //let sptManager = SPTSessionManager(configuration: config, delegate: nil)
+            //let scopes: SPTScope = [.userReadPrivate, .userReadPlaybackState, .appRemoteControl, .streaming, .userModifyPlaybackState, .userReadCurrentlyPlaying, .userReadRecentlyPlayed]
+            //sptManager.initiateSession(with: scopes, options: .default)
+            //appRemote2?.authorizeAndPlayURI("")
+            //appRemote2?.playerAPI?.pause(defaultCallback)
             //appRemote2?.connect()
         }
     }
