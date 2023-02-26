@@ -75,7 +75,7 @@ struct eCardView: View {
                 Spacer()
                 if inclMusic {
                     HStack(alignment: .bottom){
-                        if appDelegate.musicSub.type == .Apple {
+                        if appDelegate.musicSub.type == .Apple || appDelegate.musicSub.type == .Neither {
                             AMPlayerView(songID: songID, songName: songName, songArtistName: songArtistName, songArtImageData: songArtImageData, songDuration: songDuration, songPreviewURL: songPreviewURL, confirmButton: false, showFCV: $showFCV).frame(height: UIScreen.screenHeight/1.5, alignment: .bottom)
                         }
                     }

@@ -24,6 +24,7 @@ struct SpotItem: Decodable {
     let album: AlbumData
     let artists: [ArtistObject]
     //let previews: [PreviewURL]
+    let preview_url: String
     let duration_ms: Int
 }
 

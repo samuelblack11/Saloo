@@ -247,11 +247,20 @@ extension MusicSearchView {
     
     func createChosenSong(song: SongForList) {
         chosenSong.name = song.name
-        chosenSong.artistName = song.artistName; chosenSong.artwork = song.artImageData
-        chosenSong.durationInSeconds = Double(song.durationInMillis/1000)
+        chosenSong.artistName = song.artistName
         songProgress = 0.0; isPlaying = true
-        if appDelegate.musicSub.type == .Spotify {chosenSong.spotID = song.id; showSPV = true}
-        if appDelegate.musicSub.type == .Apple {chosenSong.id = song.id; chosenSong.songPreviewURL = song.previewURL; showAPV = true}
+        if appDelegate.musicSub.type == .Spotify {
+            chosenSong.spotID = song.id
+            chosenSong.spotImageData = song.artImageData
+            chosenSong.spotSongDuration = Double(song.durationInMillis/1000)
+            chosenSong.spotPreviewURL = song.previewURL
+            showSPV = true}
+        if appDelegate.musicSub.type == .Apple {
+            chosenSong.id = song.id
+            chosenSong.songPreviewURL = song.previewURL
+            chosenSong.artwork = song.artImageData
+            chosenSong.durationInSeconds = Double(song.durationInMillis/1000)
+            showAPV = true}
     }
     
     func searchWithSpotify() {
@@ -259,8 +268,8 @@ extension MusicSearchView {
             if response != nil {
                 DispatchQueue.main.async {
                     for song in response! {
-                        //print("BBBBB")
-                        //print(song)
+                        print("BBBBB")
+                        print(song)
                         let artURL = URL(string:song.album.images[2].url)
                         let _ = getURLData(url: artURL!, completionHandler: {(artResponse, error2) in
                             let songForList = SongForList(id: song.id, name: song.name, artistName: song.artists[0].name, artImageData: artResponse!, durationInMillis: song.duration_ms, isPlaying: false, previewURL: "")

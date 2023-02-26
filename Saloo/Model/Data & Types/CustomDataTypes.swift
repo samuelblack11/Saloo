@@ -47,13 +47,18 @@ class GiftCard: ObservableObject {
 
 class ChosenSong: ObservableObject {
     @Published var id = String()
-    @Published var spotID = String()
     @Published var name = String()
     @Published var artistName = String()
     @Published var artwork = Data()
     @Published var isPlaying = Bool()
     @Published var durationInSeconds = Double()
     @Published var songPreviewURL = String()
+    
+    @Published var spotID = String()
+    @Published var spotImageData = Data()
+    @Published var spotSongDuration = Double()
+    @Published var spotPreviewURL = String()
+
 }
 
 class ChosenCoverImageObject: ObservableObject {
