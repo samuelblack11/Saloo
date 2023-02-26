@@ -35,6 +35,8 @@ struct eCardView: View {
     @State var spotPreviewURL: String?
     let defaults = UserDefaults.standard
     @EnvironmentObject var appDelegate: AppDelegate
+    @State var songAddedUsing: MusicSubscriptionOptions
+
     //var config = SPTConfiguration(clientID: "d15f76f932ce4a7c94c2ecb0dfb69f4b", redirectURL: URL(string: "saloo://")!)
     var appRemote2: SPTAppRemote = SPTAppRemote(configuration: SPTConfiguration(clientID: "d15f76f932ce4a7c94c2ecb0dfb69f4b", redirectURL: URL(string: "saloo://")!), logLevel: .debug)
     
@@ -78,7 +80,7 @@ struct eCardView: View {
                 Spacer()
                 if inclMusic {
                     HStack(alignment: .bottom){
-                        if appDelegate.musicSub.type == .Apple || appDelegate.musicSub.type == .Neither {
+                        if appDelegate.musicSub.type == .Apple {
                             AMPlayerView(songID: songID, songName: songName, songArtistName: songArtistName, songArtImageData: songArtImageData, songDuration: songDuration, songPreviewURL: songPreviewURL, confirmButton: false, showFCV: $showFCV).frame(height: UIScreen.screenHeight/1.5, alignment: .bottom)
                         }
                     }
@@ -88,6 +90,21 @@ struct eCardView: View {
                                 .frame(height: UIScreen.screenHeight/1.5, alignment: .bottom)
                         }
                     }
+                    if appDelegate.musicSub.type == .Neither {
+                        HStack(alignment: .bottom){
+                            if songAddedUsing == .Apple {
+                                SongPreviewPlayer(songID: songID, songName: songName, songArtistName: songArtistName, songArtImageData: songArtImageData, songDuration: songDuration, songPreviewURL: songPreviewURL, confirmButton: false, showFCV: $showFCV, songAddedUsing: .Apple)
+                                .frame(height: UIScreen.screenHeight/1.5, alignment: .bottom)
+                            }
+                            if songAddedUsing == .Spotify {
+                                SongPreviewPlayer(songID: spotID, songName: songName, songArtistName: songArtistName, songArtImageData: spotImageData, songDuration: spotSongDuration, songPreviewURL: spotPreviewURL,confirmButton: false, showFCV: $showFCV, songAddedUsing: .Spotify)
+                                .frame(height: UIScreen.screenHeight/1.5, alignment: .bottom)
+                            }
+                        }
+                    }
+                    
+                    
+                    
                 }
             }
         }

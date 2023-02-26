@@ -1,12 +1,9 @@
 //
-//  AMPlayerView.swift
+//  SongPreviewPlayer.swift
 //  Saloo
 //
-//  Created by Sam Black on 2/16/23.
+//  Created by Sam Black on 2/26/23.
 //
-
-import Foundation
-// https://santoshkumarjm.medium.com/how-to-design-a-custom-avplayer-to-play-audio-using-url-in-ios-swift-439f0dbf2ff2
 
 import Foundation
 import Foundation
@@ -16,7 +13,7 @@ import CloudKit
 import StoreKit
 import MediaPlayer
 
-struct AMPlayerView: View {
+struct SongPreviewPlayer: View {
     @State var songID: String?
     @State var songName: String?
     @State var songArtistName: String?
@@ -28,23 +25,23 @@ struct AMPlayerView: View {
     @State var confirmButton: Bool
     @Binding var showFCV: Bool
     @State private var player: AVPlayer?
-    @State private var musicPlayer = MPMusicPlayerController.applicationMusicPlayer
     @EnvironmentObject var appDelegate: AppDelegate
-    @EnvironmentObject var sceneDelegate: SceneDelegate
+    @State var songAddedUsing: MusicSubscriptionOptions
+    @State var color: Color?
+    var body: some View {NavigationStack {PreviewPlayerView()}.environmentObject(appDelegate)}
     
-    var body: some View {
-        NavigationStack {
-            if appDelegate.musicSub.type == .Apple {AMPlayerView()}
-            }
-            .environmentObject(appDelegate)
-    }
-    
-    @ViewBuilder var selectButton: some View {
-        if confirmButton == true {Button {showFCV = true; musicPlayer.pause(); songProgress = 0.0} label: {Text("Select Song For Card").foregroundColor(.blue)}}
+    @ViewBuilder var selectButtonPreview: some View {
+        if confirmButton == true {Button {showFCV = true; player!.pause(); songProgress = 0.0} label: {Text("Select Song For Card").foregroundColor(.blue)}}
         else {Text("")}
     }
     
-    func AMPlayerView() -> some View {
+    
+    func createPlayer() {
+        let playerItem = AVPlayerItem(url: URL(string: songPreviewURL!)!)
+        self.player = AVPlayer(playerItem: playerItem)
+    }
+
+    func PreviewPlayerView() -> some View {
         let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
         return  VStack {
             Image(uiImage: UIImage(data: songArtImageData!)!)
@@ -53,14 +50,14 @@ struct AMPlayerView: View {
             Text(songArtistName!)
             HStack {
                 Button {
-                    musicPlayer.setQueue(with: [songID!])
-                    musicPlayer.play()
+                    player!.seek(to: .zero)
+                    player!.play()
                     songProgress = 0.0
                     isPlaying = true
                 } label: {
                     ZStack {
                         Circle()
-                            .accentColor(.pink)
+                            .accentColor(color)
                             .shadow(radius: 10)
                         Image(systemName: "arrow.uturn.backward" )
                             .foregroundColor(.white)
@@ -70,12 +67,12 @@ struct AMPlayerView: View {
                 .frame(maxWidth: UIScreen.screenHeight/12, maxHeight: UIScreen.screenHeight/12)
                 Button {
                     isPlaying.toggle()
-                    if musicPlayer.playbackState.rawValue == 1 {musicPlayer.pause()}
-                    else {musicPlayer.play()}
+                    if player!.timeControlStatus.rawValue == 2 {player!.pause()}
+                    else {player!.play()}
                 } label: {
                     ZStack {
                         Circle()
-                            .accentColor(.pink)
+                            .accentColor(color)
                             .shadow(radius: 10)
                         Image(systemName: isPlaying ? "pause.fill" : "play.fill")
                             .foregroundColor(.white)
@@ -84,21 +81,24 @@ struct AMPlayerView: View {
                 }
                 .frame(maxWidth: UIScreen.screenHeight/12, maxHeight: UIScreen.screenHeight/12)
             }
-            ProgressView(value: songProgress, total: songDuration!)
+            ProgressView(value: songProgress, total: 30)
                 .onReceive(timer) {_ in
-                    if songProgress < songDuration! && musicPlayer.playbackState.rawValue == 1 {songProgress += 1}
-                    if songProgress == songDuration {musicPlayer.pause()}
+                    if songProgress < 30 && player!.timeControlStatus.rawValue == 2 {songProgress += 1}
                 }
             HStack{
                 Text(convertToMinutes(seconds:Int(songProgress)))
                 Spacer()
-                Text(convertToMinutes(seconds: Int(songDuration!)-Int(songProgress)))
+                Text(convertToMinutes(seconds: 30 - Int(songProgress)))
                     .padding(.trailing, 10)
             }
-            selectButton
+            selectButtonPreview
         }
-        .onAppear{self.musicPlayer.setQueue(with: [songID!]); self.musicPlayer.play()}
-        .onDisappear{self.musicPlayer.pause()}
+        .onAppear{
+            createPlayer(); player!.play()
+            if songAddedUsing == .Spotify{color = .green}
+            else {color = .pink}
+        }
+        .onDisappear{player!.pause()}
     }
     
     func convertToMinutes(seconds: Int) -> String {
