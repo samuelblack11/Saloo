@@ -36,8 +36,6 @@ struct eCardView: View {
     let defaults = UserDefaults.standard
     @EnvironmentObject var appDelegate: AppDelegate
     @State var songAddedUsing: MusicSubscriptionOptions
-
-    //var config = SPTConfiguration(clientID: "d15f76f932ce4a7c94c2ecb0dfb69f4b", redirectURL: URL(string: "saloo://")!)
     var appRemote2: SPTAppRemote = SPTAppRemote(configuration: SPTConfiguration(clientID: "d15f76f932ce4a7c94c2ecb0dfb69f4b", redirectURL: URL(string: "saloo://")!), logLevel: .debug)
     
 
@@ -102,9 +100,7 @@ struct eCardView: View {
                             }
                         }
                     }
-                    
-                    
-                    
+
                 }
             }
         }

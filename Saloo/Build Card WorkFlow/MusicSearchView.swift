@@ -112,7 +112,6 @@ struct MusicSearchView: View {
                     
                     if defaults.object(forKey: "SpotifyAuthCode") != nil && counter == 0 {
                         print("Run2")
-                        //testAccessToken()
                         refresh_token = (defaults.object(forKey: "SpotifyRefreshToken") as? String)!
                         refreshAccessToken = true
                         runGetToken(authType: "refresh_token")
@@ -213,18 +212,6 @@ extension MusicSearchView {
         }
     }
     
-    
-    func testAccessToken() {
-        print("called....testAccessToken")
-        SpotifyAPI().searchSpotify("Tiesto", authToken: (defaults.object(forKey: "SpotifyAccessToken") as? String)!, completionHandler: {(response, error) in
-            if response != nil {DispatchQueue.main.async {
-                print("No New Access Token Needed")
-                //refreshAccessToken = true
-                spotifyAuth.access_Token = (defaults.object(forKey: "SpotifyAccessToken") as? String)!
-            }}
-            else{print("New Access Token Needed"); refresh_token = (defaults.object(forKey: "SpotifyRefreshToken") as? String)!; refreshAccessToken = true; debugPrint(error?.localizedDescription)}
-        })
-    }
     
  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

@@ -40,11 +40,12 @@ struct EnlargeECardView: View {
         }
     
     
-    func getSongFromOtherService() {
+    func getSongFromOtherServiceIfNeeded() {
         //if song from Apple and recip has SPOT
         // Search for song and associated data points using SPOT API
         if chosenCard.songID != "" && appDelegate.musicSub.type == .Spotify {
             songAddedUsing = .Apple
+            getSongViaSpot()
         }
         //if song from SPOT and recip as Apple
         if chosenCard.spotID != "" && appDelegate.musicSub.type == .Apple {
@@ -53,22 +54,10 @@ struct EnlargeECardView: View {
             //update core data value for song id,
             
         }
-        // if recip has neither and preview url is available (sender had Apple)
-        // Do Nothing. All required data is there.
-        if appDelegate.musicSub.type == .Neither && chosenCard.spotPreviewURL == "" {
-            
-            songAddedUsing = .Apple
-            
-            
-        }
-        
-        
-        
-        // if recip has neither and preview url not available (sender had spotify)
-        if appDelegate.musicSub.type == .Neither && chosenCard.songPreviewURL == "" {
-            songAddedUsing = .Spotify
-            
-        }
+        // if recip has neither and preview url is available
+        // Just set songAddedUsing dependent on what musicSub the sender has. All required data is there.
+        if appDelegate.musicSub.type == .Neither && chosenCard.spotPreviewURL == "" {songAddedUsing = .Apple}
+        if appDelegate.musicSub.type == .Neither && chosenCard.songPreviewURL == "" {songAddedUsing = .Spotify}
     
     }
     
@@ -76,9 +65,48 @@ struct EnlargeECardView: View {
     
     
     }
+
+
 
 
 extension EnlargeECardView {
+    
+    func getSongViaSpot() {
+        SpotifyAPI().searchSpotify(chosenCard.songName, authToken: ,completionHandler: {(response, error) in
+            if response != nil {
+                DispatchQueue.main.async {
+                    for song in response! {
+                        if song.name == chosenCard.songName && song.artists[0].name == chosenCard.songArtistName {
+                            print("SSSSS")
+                            print(song)
+                            let artURL = URL(string:song.album.images[2].url)
+                            let _ = getURLData(url: artURL!, completionHandler: {(artResponse, error2) in
+                                chosenCard.spotID = song.id
+                                chosenCard.spotImageData = artResponse!
+                                chosenCard.spotSongDuration = String(Double(song.duration_ms))
+                                chosenCard.spotPreviewURL = song.preview_url
+                            })}; break}}} else{debugPrint(error?.localizedDescription)}
+        })
+    }
+    
+    func getSongViaAM() {
+        SKCloudServiceController.requestAuthorization {(status) in if status == .authorized {
+            self.userToken = AppleMusicAPI().getUserToken()
+            //self.storeFrontID = AppleMusicAPI().fetchStorefrontID(userToken: userToken)
+            AppleMusicAPI().searchAppleMusic(chosenCard.songName, storeFrontID: storeFrontID, userToken: userToken, completionHandler: {(response, error) in
+                if response != nil {
+                    DispatchQueue.main.async {
+                        for song in response! {
+                            if song.attributes.name == chosenCard.songName && song.attributes.artistName == chosenCard.songArtistName {
+                                let artURL = URL(string:song.attributes.artwork.url.replacingOccurrences(of: "{w}", with: "80").replacingOccurrences(of: "{h}", with: "80"))
+                                let _ = getURLData(url: artURL!, completionHandler: { (artResponse, error2) in
+                                    chosenCard.songID = song.attributes.playParams.id
+                                    chosenCard.songArtImageData = artResponse!
+                                    chosenCard.songDuration = String(Double(song.attributes.durationInMillis/1000))
+                                    chosenCard.songPreviewURL = song.attributes.previews[0].url
+                                });break}}}}else {debugPrint(error?.localizedDescription)}})}}
+    }
+    
     private func string(for permission: CKShare.ParticipantPermission) -> String {
       switch permission {
       case .unknown:
@@ -122,24 +150,6 @@ extension EnlargeECardView {
       @unknown default:
         fatalError("A new value added to CKShare.Participant.AcceptanceStatus")
       }
-    }
-    
-    func getSongViaAM() {
-        SKCloudServiceController.requestAuthorization {(status) in if status == .authorized {
-            self.userToken = AppleMusicAPI().getUserToken()
-            //self.storeFrontID = AppleMusicAPI().fetchStorefrontID(userToken: userToken)
-            AppleMusicAPI().searchAppleMusic(chosenCard.songName, storeFrontID: storeFrontID, userToken: userToken, completionHandler: { (response, error) in
-                if response != nil {
-                    DispatchQueue.main.async {
-                        for song in response! {
-                            if song.attributes.name == chosenCard.songName && song.attributes.artistName == chosenCard.songArtistName {
-                                let artURL = URL(string:song.attributes.artwork.url.replacingOccurrences(of: "{w}", with: "80").replacingOccurrences(of: "{h}", with: "80"))
-                                let _ = getURLData(url: artURL!, completionHandler: { (artResponse, error2) in
-                                    chosenCard.songID = song.attributes.playParams.id
-                                    chosenCard.songArtImageData = artResponse!
-                                    //chosenCard.songDuration = Double(song.attributes.durationInMillis/1000)
-                                    chosenCard.songPreviewURL = song.attributes.previews[0].url
-                                });break}}}}else {debugPrint(error?.localizedDescription)}})}}
     }
     
     func getURLData(url: URL, completionHandler: @escaping (Data?,Error?) -> Void) {
