@@ -127,7 +127,7 @@ struct MusicSearchView: View {
                     .presentationDetents([.fraction(0.4)])
                     .fullScreenCover(isPresented: $showFCV) {FinalizeCardView()}
             }
-            .popover(isPresented: $showSPV) {SpotPlayerView(songID: chosenSong.spotID, songName: chosenSong.name, songArtistName: chosenSong.artistName, songArtImageData: chosenSong.artwork, songDuration: chosenSong.durationInSeconds, songPreviewURL: chosenSong.songPreviewURL, confirmButton: true, showFCV: $showFCV, appRemote2: appRemote2)
+            .popover(isPresented: $showSPV) {SpotPlayerView(songID: chosenSong.spotID, songName: chosenSong.name, songArtistName: chosenSong.artistName, songArtImageData: chosenSong.spotImageData, songDuration: chosenSong.spotSongDuration, songPreviewURL: chosenSong.spotPreviewURL, confirmButton: true, showFCV: $showFCV, appRemote2: appRemote2)
                     .presentationDetents([.fraction(0.4)])
                     .fullScreenCover(isPresented: $showFCV) {FinalizeCardView(appRemote2: appRemote2)}
                     .fullScreenCover(isPresented: $showWriteNote) {WriteNoteView()}
@@ -254,13 +254,15 @@ extension MusicSearchView {
             chosenSong.spotImageData = song.artImageData
             chosenSong.spotSongDuration = Double(song.durationInMillis/1000)
             chosenSong.spotPreviewURL = song.previewURL
-            showSPV = true}
+            showSPV = true
+        }
         if appDelegate.musicSub.type == .Apple {
             chosenSong.id = song.id
             chosenSong.songPreviewURL = song.previewURL
             chosenSong.artwork = song.artImageData
             chosenSong.durationInSeconds = Double(song.durationInMillis/1000)
-            showAPV = true}
+            showAPV = true
+        }
     }
     
     func searchWithSpotify() {
@@ -272,7 +274,7 @@ extension MusicSearchView {
                         print(song)
                         let artURL = URL(string:song.album.images[2].url)
                         let _ = getURLData(url: artURL!, completionHandler: {(artResponse, error2) in
-                            let songForList = SongForList(id: song.id, name: song.name, artistName: song.artists[0].name, artImageData: artResponse!, durationInMillis: song.duration_ms, isPlaying: false, previewURL: "")
+                            let songForList = SongForList(id: song.id, name: song.name, artistName: song.artists[0].name, artImageData: artResponse!, durationInMillis: song.duration_ms, isPlaying: false, previewURL: song.preview_url)
                             searchResults.append(songForList)})
                     }}}; if response != nil {print("No Response!")}
                         else{debugPrint(error?.localizedDescription)}

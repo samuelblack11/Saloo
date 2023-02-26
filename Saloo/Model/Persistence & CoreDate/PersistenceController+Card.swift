@@ -11,7 +11,7 @@ import SwiftUI
 
 extension PersistenceController {
     
-    func addCoreCard(noteField: NoteField, chosenOccassion: Occassion, an1: String, an2: String, an2URL: String, an3: String, an4: String, chosenObject: ChosenCoverImageObject, collageImage: CollageImage, context: NSManagedObjectContext, songID: String?, spotID: String?, songName: String?, songArtistName: String?, songArtImageData: Data?, songPreviewURL: String?, songDuration: String?, inclMusic: Bool) {
+    func addCoreCard(noteField: NoteField, chosenOccassion: Occassion, an1: String, an2: String, an2URL: String, an3: String, an4: String, chosenObject: ChosenCoverImageObject, collageImage: CollageImage, context: NSManagedObjectContext, songID: String?, spotID: String?, songName: String?, songArtistName: String?, songArtImageData: Data?, songPreviewURL: String?, songDuration: String?, inclMusic: Bool, spotImageData: Data?, spotSongDuration: String?, spotPreviewURL: String?) {
         context.perform {
             let recordZone = CKRecordZone(zoneName: "Cards")
             let id = CKRecord.ID(zoneID: recordZone.zoneID)
@@ -34,13 +34,21 @@ extension PersistenceController {
             coreCard.font = noteField.font
             coreCard.message = noteField.noteText
             coreCard.songID = songID
-            coreCard.spotID = spotID
             coreCard.songName = songName
             coreCard.songArtistName = songArtistName
             coreCard.songArtImageData = songArtImageData
             coreCard.songPreviewURL = songPreviewURL
             coreCard.songDuration = songDuration
             coreCard.inclMusic = inclMusic
+            coreCard.spotID = spotID
+            coreCard.spotImageData = spotImageData
+            coreCard.spotSongDuration = spotSongDuration
+            coreCard.spotPreviewURL = spotPreviewURL
+
+            
+            
+            
+            
             context.save(with: .addCoreCard)
             print("Save Successful")
         }

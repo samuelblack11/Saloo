@@ -28,6 +28,9 @@
         <attribute name="songName" optional="YES" attributeType="String"/>
         <attribute name="songPreviewURL" optional="YES" attributeType="String"/>
         <attribute name="spotID" optional="YES" attributeType="String"/>
+        <attribute name="spotImageData" optional="YES" attributeType="Binary"/>
+        <attribute name="spotPreviewURL" optional="YES" attributeType="String"/>
+        <attribute name="spotSongDuration" optional="YES" attributeType="String"/>
         <attribute name="uniqueName" optional="YES" attributeType="String"/>
     </entity>
     <entity name="FutureDelivery" representedClassName=".FutureDelivery" syncable="YES">
