@@ -32,12 +32,8 @@ struct eCardView: View {
     @State var inclMusic: Bool
     let defaults = UserDefaults.standard
     @EnvironmentObject var appDelegate: AppDelegate
-    var config = SPTConfiguration(clientID: "d15f76f932ce4a7c94c2ecb0dfb69f4b", redirectURL: URL(string: "saloo://")!)
-    var appRemote2: SPTAppRemote?
-    
-    
-    
-    
+    //var config = SPTConfiguration(clientID: "d15f76f932ce4a7c94c2ecb0dfb69f4b", redirectURL: URL(string: "saloo://")!)
+    var appRemote2: SPTAppRemote = SPTAppRemote(configuration: SPTConfiguration(clientID: "d15f76f932ce4a7c94c2ecb0dfb69f4b", redirectURL: URL(string: "saloo://")!), logLevel: .debug)
     
 
     var body: some View {
@@ -85,12 +81,17 @@ struct eCardView: View {
                     }
                     if appDelegate.musicSub.type == .Spotify {
                         HStack(alignment: .bottom){
-                            SpotPlayerView(songID: spotID, songName: songName, songArtistName: songArtistName, songArtImageData: songArtImageData, songDuration: songDuration, songPreviewURL: songPreviewURL, confirmButton: false, showFCV: $showFCV, appRemote2: appRemote2!)
+                            SpotPlayerView(songID: spotID, songName: songName, songArtistName: songArtistName, songArtImageData: songArtImageData, songDuration: songDuration, songPreviewURL: songPreviewURL, confirmButton: false, showFCV: $showFCV, appRemote2: appRemote2)
                                 .frame(height: UIScreen.screenHeight/1.5, alignment: .bottom)
                         }
                     }
                 }
             }
+        }
+        .onAppear {
+            print("SpotID: \(spotID)")
+            appRemote2.connectionParameters.accessToken = (defaults.object(forKey: "SpotifyAccessToken") as? String)!
+            
         }
     }
 }

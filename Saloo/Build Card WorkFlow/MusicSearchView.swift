@@ -112,7 +112,9 @@ struct MusicSearchView: View {
                     
                     if defaults.object(forKey: "SpotifyAuthCode") != nil && counter == 0 {
                         print("Run2")
-                        testAccessToken()
+                        //testAccessToken()
+                        refresh_token = (defaults.object(forKey: "SpotifyRefreshToken") as? String)!
+                        refreshAccessToken = true
                         runGetToken(authType: "refresh_token")
                         counter += 1
                     }

@@ -35,7 +35,6 @@ struct GridofCards: View {
     @State private var sortByValue = "Card Name"
     @State private var searchText = ""
     @State private var nameToDisplay: String?
-    @State var appRemote2: SPTAppRemote?
     var cardsFilteredBySearch: [CoreCard] {
         if searchText.isEmpty { return cardsForDisplay}
         //else if sortByValue == "Card Name" {return privateCards.filter { $0.cardName.contains(searchText)}}
@@ -100,9 +99,9 @@ struct GridofCards: View {
                             Text("Saloo").font(.system(size: 4)).padding(.bottom,10).padding(.leading, 5)
                         }}.frame(width: (UIScreen.screenWidth/4), height: (UIScreen.screenHeight/15))
                 }
-                .onAppear{determineDisplayName(coreCard: card)}
+                .onAppear{determineDisplayName(coreCard: card); print("Card's SpotID: \(card.spotID)")}
                 //.sheet(isPresented: $showDeliveryScheduler) {ScheduleDelivery(card: card)}
-                .fullScreenCover(isPresented: $segueToEnlarge) {EnlargeECardView(chosenCard: card, share: $share, cardsForDisplay: cardsForDisplay, whichBoxVal: whichBoxVal, appRemote2: appRemote2)}
+                .fullScreenCover(isPresented: $segueToEnlarge) {EnlargeECardView(chosenCard: card, share: $share, cardsForDisplay: cardsForDisplay, whichBoxVal: whichBoxVal)}
                 Divider().padding(.bottom, 5)
                 HStack(spacing: 3) {
                     Text(determineDisplayName(coreCard: card)).font(.system(size: 8)).minimumScaleFactor(0.1)

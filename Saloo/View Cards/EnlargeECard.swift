@@ -18,12 +18,13 @@ struct EnlargeECardView: View {
     @State private var showGrid = false
     @State var cardsForDisplay: [CoreCard]
     @State var whichBoxVal: InOut.SendReceive
-    @State var appRemote2: SPTAppRemote?
+    
     var body: some View {
         NavigationView {
             VStack {
-                eCardView(eCardText: chosenCard.message, font: chosenCard.font, coverImage: chosenCard.coverImage!, collageImage: chosenCard.collage!, text1: chosenCard.an1, text2: chosenCard.an2, text2URL: URL(string: chosenCard.an2URL)!, text3: chosenCard.an3, text4: chosenCard.an4, songID: chosenCard.songID , songName: chosenCard.songName, songArtistName: chosenCard.songArtistName, songArtImageData: chosenCard.songArtImageData, songDuration: Double(chosenCard.songDuration!)!, inclMusic: chosenCard.inclMusic, appRemote2: appRemote2)
+                eCardView(eCardText: chosenCard.message, font: chosenCard.font, coverImage: chosenCard.coverImage!, collageImage: chosenCard.collage!, text1: chosenCard.an1, text2: chosenCard.an2, text2URL: URL(string: chosenCard.an2URL)!, text3: chosenCard.an3, text4: chosenCard.an4, songID: chosenCard.songID, spotID: chosenCard.spotID, songName: chosenCard.songName, songArtistName: chosenCard.songArtistName, songArtImageData: chosenCard.songArtImageData, songDuration: Double(chosenCard.songDuration!)!, inclMusic: chosenCard.inclMusic)
             }
+            .onAppear{print("Card's SpotID2: \(chosenCard.spotID)")}
             .navigationBarItems(
                 leading:Button {showGrid = true}
                 label: {Image(systemName: "chevron.left").foregroundColor(.blue)

@@ -44,9 +44,9 @@ struct StartMenu: View {
                 Text(buildCardWorkFlow).onTapGesture {self.showOccassions = true}
                     .fullScreenCover(isPresented: $showOccassions){OccassionsMenu()}
                 Text("View Inbox 📥").onTapGesture {self.showGridOfCards = true}
-                    .fullScreenCover(isPresented: $showGridOfCards) {GridofCards(cardsForDisplay: loadCoreCards(), whichBoxVal: .inbox, appRemote2: appRemote2)}
+                    .fullScreenCover(isPresented: $showGridOfCards) {GridofCards(cardsForDisplay: loadCoreCards(), whichBoxVal: .inbox)}
                 Text("View Outbox 📤").onTapGesture {self.showGridOfCards = true}
-                    .fullScreenCover(isPresented: $showGridOfCards) {GridofCards(cardsForDisplay: loadCoreCards(), whichBoxVal: .outbox, appRemote2: appRemote2)}
+                    .fullScreenCover(isPresented: $showGridOfCards) {GridofCards(cardsForDisplay: loadCoreCards(), whichBoxVal: .outbox)}
                 Text("View Calendar 🗓").onTapGesture {self.showCalendar = true}
                     .fullScreenCover(isPresented: $showCalendar) {CalendarParent(calViewModel: calViewModel, showDetailView: showDetailView)}
                 Text("Preferences 📱").onTapGesture {self.showPref = true}
