@@ -70,7 +70,6 @@ struct Card: Identifiable, Hashable {
     let date: Date?
     let font: String?
     let message: String?
-    let chosenSong: Data?
     let songID: String?
     let spotID: String?
     let songName: String?
@@ -102,7 +101,6 @@ extension Card {
               let date = record["date"] as? Date,
               let font = record["font"] as? String,
               let message = record["message"] as? String,
-              let chosenSong = record["chosenSong"] as? Data,
               let songID = record["songID"] as? String,
               let spotID = record["spotID"] as? String,
               let songName = record["songName"] as? String,
@@ -133,7 +131,6 @@ extension Card {
         self.date = date
         self.font = font
         self.message = message
-        self.chosenSong = chosenSong
         self.songID = songID
         self.spotID = spotID
         self.songName = songName
