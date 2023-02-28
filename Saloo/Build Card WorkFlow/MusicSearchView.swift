@@ -31,7 +31,6 @@ struct MusicSearchView: View {
     @State private var showWriteNote = false
     @State private var isPlaying = false
     @State private var songProgress = 0.0
-    @State private var connectToSpot = false
     @EnvironmentObject var sceneDelegate: SceneDelegate
     //var appRemote: SPTAppRemote? {get {return (sceneDelegate.appRemote)}}
     @StateObject var spotifyAuth = SpotifyAuth()
@@ -132,7 +131,6 @@ struct MusicSearchView: View {
                     .fullScreenCover(isPresented: $showWriteNote) {WriteNoteView()}
             }
             .environmentObject(spotifyAuth)
-            .sheet(isPresented: $connectToSpot){SpotPlayer().frame(height: 100)}
             .sheet(isPresented: $showWebView){WebVCView(authURLForView: spotifyAuth.authForRedirect, authCode: $authCode)}
         }
         .environmentObject(spotifyAuth)
