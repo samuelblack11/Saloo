@@ -24,16 +24,16 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         //self.scene(scene, openURLContexts: connectionOptions.urlContexts)
         // Create the SwiftUI view that provides the window contents.
-        let contentView = EnlargeECardView(chosenCard: coreCard!, share: $ckShare, cardsForDisplay: [], whichBoxVal: .inbox)
-        print("called willConnectTo")
+        //let contentView = EnlargeECardView(chosenCard: coreCard!, share: $ckShare, cardsForDisplay: [], whichBoxVal: .inbox)
+        //print("called willConnectTo")
         
         // Use a UIHostingController as window root view controller.
-        if let windowScene = scene as? UIWindowScene {
-            let window = UIWindow(windowScene: windowScene)
-            window.rootViewController = UIHostingController(rootView: contentView)
-            self.window = window
-            window.makeKeyAndVisible()
-        }
+        //if let windowScene = scene as? UIWindowScene {
+        //    let window = UIWindow(windowScene: windowScene)
+        //    window.rootViewController = UIHostingController(rootView: contentView)
+        //    self.window = window
+        //    window.makeKeyAndVisible()
+        //}
         
         
         
@@ -56,7 +56,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
                 print("11111")
                 ckShare = cloudKitShareMetadata.share
                 self.fetchShare(cloudKitShareMetadata)
-                self.shareStatus(card: self.coreCard!)
+                //self.shareStatus(card: self.coreCard!)
                 
                 // add card to inbox
                 // display card via -> Inbox -> EnlargeECardView -> eCardView
@@ -68,17 +68,15 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
         }
     }
     
-    func shareStatus(card: CoreCard) -> (Bool, Bool) {
-        var isCardShared: Bool?
-        var hasAnyShare: Bool?
-        isCardShared = (PersistenceController.shared.existingShare(coreCard: card) != nil)
-        hasAnyShare = PersistenceController.shared.shareTitles().isEmpty ? false : true
-        
-        return (isCardShared!, hasAnyShare!)
-    }
-    
     func fetchShare(_ metadata: CKShare.Metadata) {
-        let operation = CKFetchRecordsOperation(recordIDs: [metadata.hierarchicalRootRecordID!])
+        print("333")
+        print(metadata.rootRecord)
+        //metadata.share.owner
+        print("4444")
+        //print(metadata.hierarchicalRootRecordID!)
+        print("555")
+        //let op2 = CKFet
+        let operation = CKFetchRecordsOperation(recordIDs: [metadata.share.recordID])
         operation.perRecordResultBlock! = { recordID, recordResult in
             switch recordResult {
             case .success(let ref):
@@ -123,5 +121,14 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
                 }
             CKContainer.default().sharedCloudDatabase.add(operation)
         }
+    }
+    
+    func shareStatus(card: CoreCard) -> (Bool, Bool) {
+        var isCardShared: Bool?
+        var hasAnyShare: Bool?
+        isCardShared = (PersistenceController.shared.existingShare(coreCard: card) != nil)
+        hasAnyShare = PersistenceController.shared.shareTitles().isEmpty ? false : true
+        
+        return (isCardShared!, hasAnyShare!)
     }
 }
