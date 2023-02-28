@@ -15,9 +15,8 @@ struct Saloo_App: App {
     let persistenceController = PersistenceController.shared
     @StateObject var appDelegate = AppDelegate()
     @StateObject var sceneDelegate = SceneDelegate()
-
-    //@Environment (\.scenePhase) private var scenePhase
-    
+    //@UIApplicationDelegateAdaptor var appDelegate2: AppDelegate
+    @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate3
 
     var body: some Scene {
         WindowGroup {
