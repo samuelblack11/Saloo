@@ -24,7 +24,7 @@ struct EnlargeECardView: View {
     @EnvironmentObject var appDelegate: AppDelegate
     @State private var storeFrontID = "us"
     @State private var userToken = ""
-    @State var songAddedUsing: MusicSubscriptionOptions
+    @State var songAddedUsing: MusicSubscriptionOptions = .Spotify
 
     var body: some View {
         NavigationView {
@@ -45,7 +45,7 @@ struct EnlargeECardView: View {
         // Search for song and associated data points using SPOT API
         if chosenCard.songID != "" && appDelegate.musicSub.type == .Spotify {
             songAddedUsing = .Apple
-            getSongViaSpot()
+            //getSongViaSpot()
         }
         //if song from SPOT and recip as Apple
         if chosenCard.spotID != "" && appDelegate.musicSub.type == .Apple {
@@ -71,23 +71,23 @@ struct EnlargeECardView: View {
 
 extension EnlargeECardView {
     
-    func getSongViaSpot() {
-        SpotifyAPI().searchSpotify(chosenCard.songName, authToken: ,completionHandler: {(response, error) in
-            if response != nil {
-                DispatchQueue.main.async {
-                    for song in response! {
-                        if song.name == chosenCard.songName && song.artists[0].name == chosenCard.songArtistName {
-                            print("SSSSS")
-                            print(song)
-                            let artURL = URL(string:song.album.images[2].url)
-                            let _ = getURLData(url: artURL!, completionHandler: {(artResponse, error2) in
-                                chosenCard.spotID = song.id
-                                chosenCard.spotImageData = artResponse!
-                                chosenCard.spotSongDuration = String(Double(song.duration_ms))
-                                chosenCard.spotPreviewURL = song.preview_url
-                            })}; break}}} else{debugPrint(error?.localizedDescription)}
-        })
-    }
+   // func getSongViaSpot() {
+     //   SpotifyAPI().searchSpotify(chosenCard.songName, authToken: ,completionHandler: {(response, error) in
+     //       if response != nil {
+    //            DispatchQueue.main.async {
+     //               for song in response! {
+    //                    if song.name == chosenCard.songName && song.artists[0].name == chosenCard.songArtistName {
+    //                        print("SSSSS")
+    //                        print(song)
+    //                        let artURL = URL(string:song.album.images[2].url)
+    //                        let _ = getURLData(url: artURL!, completionHandler: {(artResponse, error2) in
+     //                           chosenCard.spotID = song.id
+     //                           chosenCard.spotImageData = artResponse!
+     //                           chosenCard.spotSongDuration = String(Double(song.duration_ms))
+     //                           chosenCard.spotPreviewURL = song.preview_url
+     //                       })}; break}}} else{debugPrint(error?.localizedDescription)}
+     //   })
+   // }
     
     func getSongViaAM() {
         SKCloudServiceController.requestAuthorization {(status) in if status == .authorized {

@@ -91,7 +91,7 @@ struct FinalizeCardView: View {
     var body: some View {
         NavigationView {
         VStack(spacing: 0) {
-            eCardView(eCardText: noteField.eCardText, font: noteField.font, coverImage: chosenObject.coverImage, collageImage: collageImage.collageImage.pngData()!, text1: annotation.text1, text2: annotation.text2, text2URL: annotation.text2URL, text3: annotation.text3, text4: annotation.text4, songID: chosenSong.id, spotID: chosenSong.spotID, songName: chosenSong.name, songArtistName: chosenSong.artistName, songArtImageData: chosenSong.artwork, songDuration: chosenSong.durationInSeconds, songPreviewURL: chosenSong.songPreviewURL, inclMusic: addMusic.addMusic, spotImageData: chosenSong.spotImageData, spotSongDuration: chosenSong.spotSongDuration, spotPreviewURL: chosenSong.spotPreviewURL, appRemote2: appRemote2!)
+            eCardView(eCardText: noteField.eCardText, font: noteField.font, coverImage: chosenObject.coverImage, collageImage: collageImage.collageImage.pngData()!, text1: annotation.text1, text2: annotation.text2, text2URL: annotation.text2URL, text3: annotation.text3, text4: annotation.text4, songID: chosenSong.id, spotID: chosenSong.spotID, songName: chosenSong.name, songArtistName: chosenSong.artistName, songArtImageData: chosenSong.artwork, songDuration: chosenSong.durationInSeconds, songPreviewURL: chosenSong.songPreviewURL, inclMusic: addMusic.addMusic, spotImageData: chosenSong.spotImageData, spotSongDuration: chosenSong.spotSongDuration, spotPreviewURL: chosenSong.spotPreviewURL, songAddedUsing: .Spotify, appRemote2: appRemote2)
             saveButton
                 //.frame(height: UIScreen.screenHeight/1)
         }
@@ -106,9 +106,7 @@ struct FinalizeCardView: View {
         .fullScreenCover(isPresented: $showShareSheet, content: {if let share = share {}})
         .fullScreenCover(isPresented: $showActivityController) {ActivityView(activityItems: $activityItemsArray, applicationActivities: nil)}
         }
-        .onAppear{if appDelegate.musicSub.type == .Spotify{
-            appRemote2?.playerAPI?.pause()
-        }
+        .onAppear{if appDelegate.musicSub.type == .Spotify{appRemote2?.playerAPI?.pause()}
                         
         }
     }

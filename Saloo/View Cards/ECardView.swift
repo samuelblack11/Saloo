@@ -36,7 +36,7 @@ struct eCardView: View {
     let defaults = UserDefaults.standard
     @EnvironmentObject var appDelegate: AppDelegate
     @State var songAddedUsing: MusicSubscriptionOptions
-    var appRemote2: SPTAppRemote = SPTAppRemote(configuration: SPTConfiguration(clientID: "d15f76f932ce4a7c94c2ecb0dfb69f4b", redirectURL: URL(string: "saloo://")!), logLevel: .debug)
+    var appRemote2: SPTAppRemote? = SPTAppRemote(configuration: SPTConfiguration(clientID: "d15f76f932ce4a7c94c2ecb0dfb69f4b", redirectURL: URL(string: "saloo://")!), logLevel: .debug)
     
 
     var body: some View {
@@ -106,7 +106,7 @@ struct eCardView: View {
         }
         .onAppear {
             print("SpotID: \(spotID)")
-            appRemote2.connectionParameters.accessToken = (defaults.object(forKey: "SpotifyAccessToken") as? String)!
+            appRemote2?.connectionParameters.accessToken = (defaults.object(forKey: "SpotifyAccessToken") as? String)!
             
         }
     }
