@@ -69,6 +69,8 @@ class PersistenceController: NSObject, ObservableObject {
         let cloudKitContainerOptions = NSPersistentCloudKitContainerOptions(containerIdentifier: gCloudKitContainerIdentifier)
         
         cloudKitContainerOptions.databaseScope = .private
+        //cloudKitContainerOptions.databaseScope = .public
+
         privateStoreDescription.cloudKitContainerOptions = cloudKitContainerOptions
                 
         /**

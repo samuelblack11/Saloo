@@ -44,15 +44,33 @@ extension PersistenceController {
             coreCard.spotImageData = spotImageData
             coreCard.spotSongDuration = spotSongDuration
             coreCard.spotPreviewURL = spotPreviewURL
-
-            
-            
-            
-            
             context.save(with: .addCoreCard)
             print("Save Successful")
+            //self.createShare(coreCard: coreCard)
         }
     }
+    
+    
+    func createShare(coreCard: CoreCard) {
+        let recordZone = CKRecordZone(zoneName: "Cards")
+        let id = CKRecord.ID(zoneID: recordZone.zoneID)
+        let shareID = CKRecord.ID(recordName: UUID().uuidString, zoneID: recordZone.zoneID)
+        var share = CKShare(rootRecord: coreCard.associatedRecord, shareID: shareID)
+        share[CKShare.SystemFieldKey.title] = "A Greeting, from GreetMe"
+        share[CKShare.SystemFieldKey.thumbnailImageData] = coreCard.coverImage
+        share.publicPermission = .readWrite
+        
+        let modifyRecordsOp = CKModifyRecordsOperation(recordsToSave: [share, coreCard.associatedRecord])
+    }
+    
+    
+    func shareRecord() {
+        
+    }
+    
+    
+    
+    
     
     func deleteCoreCard(card: CoreCard) {
         if let context = card.managedObjectContext {

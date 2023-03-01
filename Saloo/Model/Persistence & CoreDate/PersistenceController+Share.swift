@@ -26,21 +26,22 @@ extension PersistenceController {
 
         let sharingController: UICloudSharingController
         if coreCardShare == nil {
-            sharingController = newSharingController(unsharedCoreCard: coreCard, persistenceController: self)
-        } else {
-            sharingController = UICloudSharingController(share: coreCardShare!, container: cloudKitContainer)
-        }
-        sharingController.delegate = self
-        /**
-         Setting the presentation style to .formSheet so there's no need to specify sourceView, sourceItem, or sourceRect.
-         */
-        guard var topVC = UIApplication.shared.windows.first?.rootViewController else {
-            return
-        }
-        while let presentedVC = topVC.presentedViewController {topVC = presentedVC }
-            sharingController.modalPresentationStyle = .formSheet
-            topVC.present(sharingController, animated: true)
-        }
+                    sharingController = newSharingController(unsharedCoreCard: coreCard, persistenceController: self)
+                } else {
+                    sharingController = UICloudSharingController(share: coreCardShare!, container: cloudKitContainer)
+                }
+                sharingController.delegate = self
+                /**
+                 Setting the presentation style to .formSheet so there's no need to specify sourceView, sourceItem, or sourceRect.
+                 */
+                guard var topVC = UIApplication.shared.windows.first?.rootViewController else {
+                    return
+                }
+                while let presentedVC = topVC.presentedViewController {topVC = presentedVC }
+                    sharingController.modalPresentationStyle = .formSheet
+                    topVC.present(sharingController, animated: true)
+                }
+            
     
     func presentCloudSharingController(share: CKShare) {
         let sharingController = UICloudSharingController(share: share, container: cloudKitContainer)
@@ -68,11 +69,34 @@ extension PersistenceController {
              */
             self.persistentContainer.share([unsharedCoreCard], to: nil) { objectIDs, share, container, error in
                 if let share = share {
+                    unsharedCoreCard.associatedRecord
                     self.configure(share: share)
                 }
                 completion(share, container, error)
             }
         }
+    }
+    
+    
+    
+    private func newSharingController(sharedRootRecord: CKRecord,
+                                      database: CKDatabase,
+                                      completionHandler: @escaping (UICloudSharingController?) -> Void) {
+        let shareRecordID = sharedRootRecord.share!.recordID
+        let fetchRecordsOp = CKFetchRecordsOperation(recordIDs: [shareRecordID])
+
+        fetchRecordsOp.fetchRecordsCompletionBlock = { recordsByRecordID, error in
+            guard handleCloudKitError(error, operation: .fetchRecords, affectedObjects: [shareRecordID]) == nil,
+                let share = recordsByRecordID?[shareRecordID] as? CKShare else {
+                return
+            }
+            
+            DispatchQueue.main.async {
+                let sharingController = UICloudSharingController(share: share, container: self.cloudKitContainer)
+                completionHandler(sharingController)
+            }
+        }
+        database.add(fetchRecordsOp)
     }
 
     private var rootViewController: UIViewController? {
@@ -208,7 +232,7 @@ extension PersistenceController {
         share[CKShare.SystemFieldKey.title] = "A Greeting, from GreetMe"
         share[CKShare.SystemFieldKey.thumbnailImageData] = coreCard?.coverImage
         share.publicPermission = .readWrite
-        share.recordID = coreCard?.associatedRecord.
+        //share.recordID = coreCard?.associatedRecord
     }
 }
 

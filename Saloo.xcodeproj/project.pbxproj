@@ -31,6 +31,7 @@
 		C217021029AC0C9500BE48DC /* SongPreviewPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = C217020F29AC0C9500BE48DC /* SongPreviewPlayer.swift */; };
 		C21A8A2429A1741300D06192 /* SPTDel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C21A8A2329A1741200D06192 /* SPTDel.swift */; };
 		C21EACE02998525000401DC8 /* WebVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = C21EACDF2998525000401DC8 /* WebVC.swift */; };
+		C2233BF729AEEE4F00DB098D /* HandleCloudKitError.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2233BF629AEEE4F00DB098D /* HandleCloudKitError.swift */; };
 		C224F6C1297619AB000ED33E /* blankImage.png in Resources */ = {isa = PBXBuildFile; fileRef = C224F6C0297619AB000ED33E /* blankImage.png */; };
 		C225A84B29873B4D008FC699 /* SpotifyiOS.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C225A84A29873B4D008FC699 /* SpotifyiOS.framework */; };
 		C225A8512989E074008FC699 /* SpotResponses.swift in Sources */ = {isa = PBXBuildFile; fileRef = C225A8502989E074008FC699 /* SpotResponses.swift */; };
@@ -120,6 +121,7 @@
 		C217B029294FE5F200544B17 /* Pods.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Pods.xcodeproj; path = Pods/Pods.xcodeproj; sourceTree = "<group>"; };
 		C21A8A2329A1741200D06192 /* SPTDel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SPTDel.swift; sourceTree = "<group>"; };
 		C21EACDF2998525000401DC8 /* WebVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebVC.swift; sourceTree = "<group>"; };
+		C2233BF629AEEE4F00DB098D /* HandleCloudKitError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HandleCloudKitError.swift; sourceTree = "<group>"; };
 		C224F6C0297619AB000ED33E /* blankImage.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = blankImage.png; path = ../../../../blankImage.png; sourceTree = "<group>"; };
 		C225A84A29873B4D008FC699 /* SpotifyiOS.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = SpotifyiOS.framework; sourceTree = "<group>"; };
 		C225A8502989E074008FC699 /* SpotResponses.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpotResponses.swift; sourceTree = "<group>"; };
@@ -384,6 +386,7 @@
 			children = (
 				C22A84DA29666123001244CC /* PersistenceController.swift */,
 				C22A84DC29666C0F001244CC /* PersistenceController+Share.swift */,
+				C2233BF629AEEE4F00DB098D /* HandleCloudKitError.swift */,
 				C22A84E22966719A001244CC /* PersistenceController+Deduplicate.swift */,
 				C22A84DE29666C23001244CC /* PersistenceController+Card.swift */,
 				C22A84E029666C84001244CC /* CoreDataHelper.swift */,
@@ -584,6 +587,7 @@
 				C23A9D3C28989C340059B97C /* CalendarView.swift in Sources */,
 				26AD8129281F05310069C3F0 /* FinalizeCardView.swift in Sources */,
 				260F68F5281DBDCD002E864B /* OccassionsMenu.swift in Sources */,
+				C2233BF729AEEE4F00DB098D /* HandleCloudKitError.swift in Sources */,
 				C22A5CB92980A97B006A0A8B /* GiftCardResponse.swift in Sources */,
 				260F68FA281DBE61002E864B /* PhotoAPI.swift in Sources */,
 				C21EACE02998525000401DC8 /* WebVC.swift in Sources */,
