@@ -50,13 +50,31 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
         let persistenceController = PersistenceController.shared
         let sharedStore = persistenceController.sharedPersistentStore
         let container = persistenceController.persistentContainer
+        let ckContainer = persistenceController.cloudKitContainer
         container.acceptShareInvitations(from: [cloudKitShareMetadata], into: sharedStore) { [self] (_, error) in
             if let error = error {print("\(#function): Failed to accept share invitations: \(error)")}
             else {
                 print("11111")
                 ckShare = cloudKitShareMetadata.share
-                self.fetchShare(cloudKitShareMetadata)
-                //self.shareStatus(card: self.coreCard!)
+                // Accept the share. If successful, schedule a fetch of the
+                // share's root record.
+                acceptShare(metadata: cloudKitShareMetadata) { [weak self] result in
+                    switch result {
+                    case .success(let recordID):
+                        //self?.fetchRootRecordAndNotifyObservers(recordID)
+                        //self?.fetch(withRecordID)
+                        ckContainer.publicCloudDatabase.fetch(withRecordID: recordID) {_,_ in
+                            
+                            print("Did it fetch the record???")
+                        }
+                    case .failure(let error):
+                        // Handle the error...
+                        print("Error Accepting Share")
+                        print(error.localizedDescription)
+                    }
+                }
+                
+                
                 
                 // add card to inbox
                 // display card via -> Inbox -> EnlargeECardView -> eCardView
@@ -68,14 +86,67 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
         }
     }
     
+    
+    func acceptShare(metadata: CKShare.Metadata,
+        completion: @escaping (Result<CKRecord.ID, Error>) -> Void) {
+        
+        // Create a reference to the share's container so the operation
+        // executes in the correct context.
+        let container = CKContainer(identifier: metadata.containerIdentifier)
+        
+        // Create the operation using the metadata the caller provides.
+        let operation = CKAcceptSharesOperation(shareMetadatas: [metadata])
+            
+        var rootRecordID: CKRecord.ID!
+        // If CloudKit accepts the share, cache the root record's ID.
+        // The completion closure handles any errors.
+        operation.perShareCompletionBlock = { metadata, share, error in
+            if let _ = share, error == nil {
+                rootRecordID = metadata.hierarchicalRootRecordID
+            }
+        }
+
+        // If the operation fails, return the error to the caller.
+        // Otherwise, return the record ID of the share's root record.
+        operation.acceptSharesCompletionBlock = { error in
+            if let error = error {
+                completion(.failure(error))
+            } else {
+                completion(.success(rootRecordID))
+            }
+        }
+
+        // Set an appropriate QoS and add the operation to the
+        // container's queue to execute it.
+        operation.qualityOfService = .utility
+        container.add(operation)
+    }
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     func fetchShare(_ metadata: CKShare.Metadata) {
         print("333")
+        
+        print(metadata)
+        
+        
         print(metadata.rootRecord)
         //metadata.share.owner
         print("4444")
         //print(metadata.hierarchicalRootRecordID!)
         print("555")
-        //let op2 = CKFet
+        //let op2 = CKFetchRecordsOperation(recordIDs: )
         let operation = CKFetchRecordsOperation(recordIDs: [metadata.share.recordID])
         operation.perRecordResultBlock! = { recordID, recordResult in
             switch recordResult {
