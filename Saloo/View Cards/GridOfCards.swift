@@ -35,6 +35,7 @@ struct GridofCards: View {
     @State private var sortByValue = "Card Name"
     @State private var searchText = ""
     @State private var nameToDisplay: String?
+    @State var userID = String()
     var cardsFilteredBySearch: [CoreCard] {
         if searchText.isEmpty { return cardsForDisplay}
         //else if sortByValue == "Card Name" {return privateCards.filter { $0.cardName.contains(searchText)}}
@@ -159,9 +160,13 @@ extension GridofCards {
    // }
     
     
-    
-    
-    
+    func getCurrentUserID() {
+        PersistenceController.shared.cloudKitContainer.fetchUserRecordID { ckRecordID, error in
+            self.userID = (ckRecordID?.recordName)!
+            //print("Current User ID: \((ckRecordID?.recordName)!)")
+        }
+        
+    }
     func cardsFilteredByBox(_ coreCards: [CoreCard], whichBox: InOut.SendReceive) -> [CoreCard] {
         var filteredCoreCards: [CoreCard] = []
             for coreCard in coreCards {
@@ -169,14 +174,23 @@ extension GridofCards {
                 let ckShare: CKShare = CKShare(recordZoneID: coreCard.associatedRecord.recordID.zoneID)
                 //ckShare.participants.filter{ $0.role != .owner }
                 //print(ckShare.owner)
-                print(ckShare.participants)
-                
+                //print(ckShare.participants)
                 print(coreCard.associatedRecord.creatorUserRecordID?.recordName)
                 print(coreCard.associatedRecord.creatorUserRecordID)
                 print(coreCard.associatedRecord.recordID.zoneID.ownerName)
                 print(CKCurrentUserDefaultName)
-                print(coreCard.associatedRecord.recordID.zoneID.ownerName.contains(CKCurrentUserDefaultName))
-                print("&&&")
+                ///print(coreCard.associatedRecord.recordID.zoneID.ownerName.contains(CKCurrentUserDefaultName))
+                //print("&&&")
+                
+                
+                getCurrentUserID()
+                print("Self.userID:......")
+                print(self.userID)
+                print("Creator User Record ID....")
+                print(coreCard.associatedRecord.wasCreatedByThisUser)
+                
+                
+                
                 switch whichBoxVal {
                 case .outbox:
                     filteredCoreCards = coreCards.filter{_ in (coreCard.associatedRecord.recordID.zoneID.ownerName.contains(CKCurrentUserDefaultName))}
@@ -237,5 +251,11 @@ extension GridofCards {
         var cardsFromCore: [CoreCard] = []
         do {cardsFromCore = try PersistenceController.shared.persistentContainer.viewContext.fetch(request); for card in cardsFromCore {deleteCoreCard(coreCard: card)}}
         catch{}
+    }
+}
+
+extension CKRecord{
+    var wasCreatedByThisUser: Bool{
+        return (creatorUserRecordID == nil) || (creatorUserRecordID?.recordName == "__defaultOwner__")
     }
 }

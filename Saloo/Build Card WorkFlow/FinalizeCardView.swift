@@ -119,6 +119,9 @@ extension FinalizeCardView {
         let taskContext = controller.persistentContainer.newTaskContext()
         taskContext.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
         controller.addCoreCard(noteField: noteField, chosenOccassion: chosenOccassion, an1: an1, an2: an2, an2URL: an2URL, an3: an3, an4: an4, chosenObject: chosenObject, collageImage: collageImage,context: taskContext, songID: songID, spotID: spotID, songName: songName, songArtistName: songArtistName, songArtImageData: songArtImageData, songPreviewURL: songPreviewURL, songDuration: songDuration, inclMusic: inclMusic, spotImageData: spotImageData, spotSongDuration: spotSongDuration, spotPreviewURL: spotPreviewURL)
+       // PersistenceController.shared.cloudKitContainer.fetchUserRecordID { ckRecordID, error in
+        //    coreCard.associatedRecord.creatorUserRecordID = (ckRecordID?.recordName)!
+       // }
     }
 }
 

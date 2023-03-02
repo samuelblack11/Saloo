@@ -15,6 +15,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
     var window: UIWindow?
     @State var coreCard: CoreCard?
     @State var ckShare: CKShare?
+    @State var userID = String()
+
     //var musicSubTimeToAddMusic: Bool = false
     //var musicSubType: MusicSubscriptionOptions = .Neither
     //@EnvironmentObject var appDelegate: AppDelegate
@@ -53,11 +55,18 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
         container.acceptShareInvitations(from: [cloudKitShareMetadata], into: sharedStore) { [self] (_, error) in
             if let error = error {print("\(#function): Failed to accept share invitations: \(error)")}
             else {
+            
+                ckContainer.fetchUserRecordID { ckRecordID, error in
+                    self.userID = (ckRecordID?.recordName)!
+                    print("Current User ID: \((ckRecordID?.recordName)!)")
+                }
+                
+                print("------")
+                print(self.userID)
                 
                 
                 
                 
-                ckContainer.fetchUserRecordID { ckRecordID, error in print("Current User ID: \((ckRecordID?.recordName)!)")}
                 //the created_by value displayed in CloudKit -> "_b4f706f0a40fb208d7562813fa8f15da"
                 print("Creator User ID.....\((cloudKitShareMetadata.ownerIdentity.userRecordID?.recordName)!)")
                 //ckShare = cloudKitShareMetadata.share
