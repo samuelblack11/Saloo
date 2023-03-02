@@ -55,24 +55,24 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
             if let error = error {print("\(#function): Failed to accept share invitations: \(error)")}
             else {
                 print("11111")
-                ckShare = cloudKitShareMetadata.share
+                //ckShare = cloudKitShareMetadata.share
                 // Accept the share. If successful, schedule a fetch of the
                 // share's root record.
-                acceptShare(metadata: cloudKitShareMetadata) { [weak self] result in
-                    switch result {
-                    case .success(let recordID):
-                        //self?.fetchRootRecordAndNotifyObservers(recordID)
+               // acceptShare(metadata: cloudKitShareMetadata) { [weak self] result in
+               //     switch result {
+               //     case .success(let recordID):
+               //         //self?.fetchRootRecordAndNotifyObservers(recordID)
                         //self?.fetch(withRecordID)
-                        ckContainer.publicCloudDatabase.fetch(withRecordID: recordID) {_,_ in
+                 //       ckContainer.publicCloudDatabase.fetch(withRecordID: recordID) {_,_ in
                             
-                            print("Did it fetch the record???")
-                        }
-                    case .failure(let error):
+                 //           print("Did it fetch the record???")
+                 //       }
+                 //   case .failure(let error):
                         // Handle the error...
-                        print("Error Accepting Share")
-                        print(error.localizedDescription)
-                    }
-                }
+                 //       print("Error Accepting Share")
+                 //       print(error.localizedDescription)
+                 //   }
+              //  }
                 
                 
                 

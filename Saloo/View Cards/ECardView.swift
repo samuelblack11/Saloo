@@ -105,9 +105,10 @@ struct eCardView: View {
             }
         }
         .onAppear {
-            print("SpotID: \(spotID)")
-            appRemote2?.connectionParameters.accessToken = (defaults.object(forKey: "SpotifyAccessToken") as? String)!
-            
+            if appDelegate.musicSub.type == .Spotify {
+                print("SpotID: \(spotID)")
+                appRemote2?.connectionParameters.accessToken = (defaults.object(forKey: "SpotifyAccessToken") as? String)!
+            }
         }
     }
 }

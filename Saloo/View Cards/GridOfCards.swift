@@ -158,6 +158,7 @@ extension GridofCards {
                 print("---------")
                 print(coreCard.associatedRecord.recordID.zoneID.ownerName)
                 print(CKCurrentUserDefaultName)
+                print(coreCard.associatedRecord.recordID.zoneID.ownerName.contains(CKCurrentUserDefaultName))
                 print("&&&")
                 switch whichBoxVal {
                 case .outbox:

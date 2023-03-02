@@ -69,7 +69,6 @@ extension PersistenceController {
              */
             self.persistentContainer.share([unsharedCoreCard], to: nil) { objectIDs, share, container, error in
                 if let share = share {
-                    unsharedCoreCard.associatedRecord
                     self.configure(share: share)
                 }
                 completion(share, container, error)
@@ -232,6 +231,7 @@ extension PersistenceController {
         share[CKShare.SystemFieldKey.title] = "A Greeting, from GreetMe"
         share[CKShare.SystemFieldKey.thumbnailImageData] = coreCard?.coverImage
         share.publicPermission = .readWrite
+        
         //share.recordID = coreCard?.associatedRecord
     }
 }
