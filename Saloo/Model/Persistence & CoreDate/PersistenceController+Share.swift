@@ -230,7 +230,7 @@ extension PersistenceController {
     private func configure(share: CKShare, with coreCard: CoreCard? = nil) {
         share[CKShare.SystemFieldKey.title] = "A Greeting, from GreetMe"
         share[CKShare.SystemFieldKey.thumbnailImageData] = coreCard?.coverImage
-        share.publicPermission = .readWrite
+        share.publicPermission = .readOnly
         
         //share.recordID = coreCard?.associatedRecord
     }

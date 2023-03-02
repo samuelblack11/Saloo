@@ -152,10 +152,27 @@ extension GridofCards {
         hasAnyShare = PersistenceController.shared.shareTitles().isEmpty ? false : true
     }
     
+   // func addParticipant(ckShare: CKShare) {
+    //    CKShare.Participant(coder: )
+    //    ckShare.addParticipant()
+//
+   // }
+    
+    
+    
+    
+    
     func cardsFilteredByBox(_ coreCards: [CoreCard], whichBox: InOut.SendReceive) -> [CoreCard] {
         var filteredCoreCards: [CoreCard] = []
             for coreCard in coreCards {
                 print("---------")
+                let ckShare: CKShare = CKShare(recordZoneID: coreCard.associatedRecord.recordID.zoneID)
+                //ckShare.participants.filter{ $0.role != .owner }
+                //print(ckShare.owner)
+                print(ckShare.participants)
+                
+                print(coreCard.associatedRecord.creatorUserRecordID?.recordName)
+                print(coreCard.associatedRecord.creatorUserRecordID)
                 print(coreCard.associatedRecord.recordID.zoneID.ownerName)
                 print(CKCurrentUserDefaultName)
                 print(coreCard.associatedRecord.recordID.zoneID.ownerName.contains(CKCurrentUserDefaultName))

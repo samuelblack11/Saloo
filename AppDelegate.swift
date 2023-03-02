@@ -11,9 +11,9 @@ import CloudKit
 import UIKit
 
 class AppDelegate: UIResponder, UIApplicationDelegate, ObservableObject {
+    //@State var acceptedShare: CKShare?
     @State var musicSub = MusicSubscription()
     @State var startMenuAppeared = false
-
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil) -> Bool {
         print("didFinishLaunchingWithOptions")
         return true

@@ -24,16 +24,15 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         //self.scene(scene, openURLContexts: connectionOptions.urlContexts)
         // Create the SwiftUI view that provides the window contents.
-        //let contentView = EnlargeECardView(chosenCard: coreCard!, share: $ckShare, cardsForDisplay: [], whichBoxVal: .inbox)
-        //print("called willConnectTo")
-        
+
         // Use a UIHostingController as window root view controller.
         //if let windowScene = scene as? UIWindowScene {
+        //    let contentView = EnlargeECardView(chosenCard: coreCard!, share: $ckShare, cardsForDisplay: [], whichBoxVal: .inbox)
+        //    print("called willConnectTo")
         //    let window = UIWindow(windowScene: windowScene)
-        //    window.rootViewController = UIHostingController(rootView: contentView)
-        //    self.window = window
-        //    window.makeKeyAndVisible()
-        //}
+         ///   window.rootViewController = UIHostingController(rootView: contentView)
+         //   self.window = window
+         //   window.makeKeyAndVisible()
         
         
         
@@ -54,34 +53,18 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
         container.acceptShareInvitations(from: [cloudKitShareMetadata], into: sharedStore) { [self] (_, error) in
             if let error = error {print("\(#function): Failed to accept share invitations: \(error)")}
             else {
-                print("11111")
+                
+                
+                
+                
+                ckContainer.fetchUserRecordID { ckRecordID, error in print("Current User ID: \((ckRecordID?.recordName)!)")}
+                //the created_by value displayed in CloudKit -> "_b4f706f0a40fb208d7562813fa8f15da"
+                print("Creator User ID.....\((cloudKitShareMetadata.ownerIdentity.userRecordID?.recordName)!)")
                 //ckShare = cloudKitShareMetadata.share
-                // Accept the share. If successful, schedule a fetch of the
-                // share's root record.
-               // acceptShare(metadata: cloudKitShareMetadata) { [weak self] result in
-               //     switch result {
-               //     case .success(let recordID):
-               //         //self?.fetchRootRecordAndNotifyObservers(recordID)
-                        //self?.fetch(withRecordID)
-                 //       ckContainer.publicCloudDatabase.fetch(withRecordID: recordID) {_,_ in
-                            
-                 //           print("Did it fetch the record???")
-                 //       }
-                 //   case .failure(let error):
-                        // Handle the error...
-                 //       print("Error Accepting Share")
-                 //       print(error.localizedDescription)
-                 //   }
-              //  }
-                
-                
-                
                 // add card to inbox
                 // display card via -> Inbox -> EnlargeECardView -> eCardView
-                print("22222")
-                print(cloudKitShareMetadata.rootRecord?.object(forKey: "songName"))
-                //EnlargeECardView(chosenCard: , share: , cardsForDisplay: persistenceController., whichBoxVal: .inbox)
-                //if owner of card, whichBoxVal: .outbox. Else, .inbox
+                // EnlargeECardView(chosenCard: , share: , cardsForDisplay: persistenceController., whichBoxVal: .inbox)
+                // if owner of card, whichBoxVal: .outbox. Else, .inbox
             }
         }
     }
