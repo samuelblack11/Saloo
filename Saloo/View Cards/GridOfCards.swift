@@ -172,31 +172,20 @@ extension GridofCards {
             for coreCard in coreCards {
                 print("---------")
                 let ckShare: CKShare = CKShare(recordZoneID: coreCard.associatedRecord.recordID.zoneID)
-                //ckShare.participants.filter{ $0.role != .owner }
-                //print(ckShare.owner)
-                //print(ckShare.participants)
-                print(coreCard.associatedRecord.creatorUserRecordID?.recordName)
-                print(coreCard.associatedRecord.creatorUserRecordID)
-                print(coreCard.associatedRecord.recordID.zoneID.ownerName)
-                print(CKCurrentUserDefaultName)
-                ///print(coreCard.associatedRecord.recordID.zoneID.ownerName.contains(CKCurrentUserDefaultName))
-                //print("&&&")
-                
-                
                 getCurrentUserID()
-                print("Self.userID:......")
-                print(self.userID)
                 print("Creator User Record ID....")
-                print(coreCard.associatedRecord.wasCreatedByThisUser)
-                
-                
-                
+                print(coreCard.creator!)
+                print("Current User Record ID....")
+                print(self.userID)
+                print(coreCard.creator! == self.userID)
+                print(coreCard.creator! != self.userID)
+
                 switch whichBoxVal {
                 case .outbox:
-                    filteredCoreCards = coreCards.filter{_ in (coreCard.associatedRecord.recordID.zoneID.ownerName.contains(CKCurrentUserDefaultName))}
+                    filteredCoreCards = coreCards.filter{_ in (coreCard.creator! == self.userID)}
                     return filteredCoreCards
                 case .inbox:
-                    filteredCoreCards = coreCards.filter{_ in (coreCard.associatedRecord.recordID.zoneID.ownerName.contains(CKCurrentUserDefaultName) == false)}
+                    filteredCoreCards = coreCards.filter{_ in (coreCard.creator! != self.userID)}
                     return filteredCoreCards
                 }
         }

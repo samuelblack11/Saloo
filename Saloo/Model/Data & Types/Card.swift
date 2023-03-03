@@ -49,7 +49,7 @@ extension CoreCard {
     @NSManaged public var spotImageData: Data?
     @NSManaged public var spotSongDuration: String?
     @NSManaged public var spotPreviewURL: String?
-
+    @NSManaged public var creator: String?
 
 }
 
@@ -81,6 +81,7 @@ struct Card: Identifiable, Hashable {
     let spotImageData: Data?
     let spotSongDuration: String?
     let spotPreviewURL: String?
+    let creator: String?
 
 }
 
@@ -111,7 +112,8 @@ extension Card {
               let inclMusic = record["inclMusic"] as? Bool,
               let spotImageData = record["spotImageData"] as? Data,
               let spotSongDuration = record["spotSongDuration"] as? String,
-              let spotPreviewURL = record["spotPreviewURL"] as? String else {
+              let spotPreviewURL = record["spotPreviewURL"] as? String,
+              let creator = record["creator"] as? String else {
             return nil
         }
         
@@ -142,7 +144,7 @@ extension Card {
         self.spotImageData = spotImageData
         self.spotSongDuration = spotSongDuration
         self.spotPreviewURL = spotPreviewURL
-
+        self.creator = creator
 
     }
 }

@@ -13,6 +13,7 @@ extension PersistenceController {
     
     func addCoreCard(noteField: NoteField, chosenOccassion: Occassion, an1: String, an2: String, an2URL: String, an3: String, an4: String, chosenObject: ChosenCoverImageObject, collageImage: CollageImage, context: NSManagedObjectContext, songID: String?, spotID: String?, songName: String?, songArtistName: String?, songArtImageData: Data?, songPreviewURL: String?, songDuration: String?, inclMusic: Bool, spotImageData: Data?, spotSongDuration: String?, spotPreviewURL: String?) {
         context.perform {
+            
             let recordZone = CKRecordZone(zoneName: "Cards")
             let id = CKRecord.ID(zoneID: recordZone.zoneID)
             let cardRecord = CKRecord(recordType: "Card", recordID: id)
@@ -44,6 +45,9 @@ extension PersistenceController {
             coreCard.spotImageData = spotImageData
             coreCard.spotSongDuration = spotSongDuration
             coreCard.spotPreviewURL = spotPreviewURL
+            PersistenceController.shared.cloudKitContainer.fetchUserRecordID { ckRecordID, error in
+                coreCard.creator = (ckRecordID?.recordName)!
+            }
             context.save(with: .addCoreCard)
             print("Save Successful")
             //self.createShare(coreCard: coreCard)
