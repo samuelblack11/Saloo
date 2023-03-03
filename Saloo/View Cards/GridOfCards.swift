@@ -164,18 +164,13 @@ extension GridofCards {
     func cardsFilteredByBox(_ coreCards: [CoreCard], whichBox: InOut.SendReceive) -> [CoreCard] {
         var filteredCoreCards: [CoreCard] = []
             for coreCard in coreCards {
-                print("---------")
                 let ckShare: CKShare = CKShare(recordZoneID: coreCard.associatedRecord.recordID.zoneID)
                 getCurrentUserID()
-                print("Creator User Record ID....")
+                print("Creator & Current User Record IDs....")
                 print(coreCard.creator!)
-                print("Current User Record ID....")
                 print(self.userID)
-                print(coreCard.creator! == self.userID)
-                print(coreCard.creator! != self.userID)
 
                 switch whichBoxVal {
-                    //ONLY OUTBOX IS SHOWING
                 case .outbox:
                     filteredCoreCards = coreCards.filter{_ in (coreCard.creator!.contains(self.userID))}
                     return filteredCoreCards

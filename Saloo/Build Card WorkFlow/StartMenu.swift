@@ -10,6 +10,7 @@ import SwiftUI
 import UIKit
 import FSCalendar
 import CoreData
+import CloudKit
 
 struct StartMenu: View {
     @EnvironmentObject var musicSub: MusicSubscription
@@ -17,13 +18,12 @@ struct StartMenu: View {
     @EnvironmentObject var showDetailView: ShowDetailView
     @EnvironmentObject var appDelegate: AppDelegate
     //@EnvironmentObject var sceneDelegate: SceneDelegate
-    @State var whichBoxVal: InOut.SendReceive?
     @State private var showOccassions = false
     @State private var showInbox = false
     @State private var showOutbox = false
-
     @State private var showCalendar = false
     @State private var showPref = false
+    @State private var showEnlargeECard = false
     @State var showPrefMenu = false
     @State var appRemote2: SPTAppRemote?
     var possibleSubscriptionValues = ["Apple Music", "Spotify", "Neither"]
@@ -57,6 +57,8 @@ struct StartMenu: View {
         }
         //.environmentObject(appDelegate)
         .environmentObject(musicSub)
+        .onChange(of: appDelegate.acceptedShare!){acceptedECard in showEnlargeECard = true}
+        .onChange(of: appDelegate.coreCard!){acceptedECard in showEnlargeECard = true}
         .onAppear {
             appDelegate.startMenuAppeared = true
             if (defaults.object(forKey: "MusicSubType") as? String) != nil && possibleSubscriptionValues.contains((defaults.object(forKey: "MusicSubType") as? String)!) {
@@ -66,7 +68,7 @@ struct StartMenu: View {
             }
             else{showPrefMenu = true }
         }
-        
+        .fullScreenCover(isPresented: $showEnlargeECard){EnlargeECardView(chosenCard: appDelegate.coreCard!, share: appDelegate.$acceptedShare, cardsForDisplay: [], whichBoxVal: .inbox)}
         .fullScreenCover(isPresented: $showPrefMenu) {PrefMenu().environmentObject(musicSub)}
     }}
 
@@ -83,4 +85,24 @@ extension StartMenu {
         catch {print("Fetch failed")}
         return cardsFromCore
     }
+    
+    
+    
+    
+    
+    
+    
+    //func getShare(_ destination: Destination) -> CKShare? {
+   //   guard isShared(object: destination) else { return nil }
+   //   guard let shareDictionary = try? persistentContainer.fetchShares(matching: [destination.objectID]),
+   //     let share = shareDictionary[destination.objectID] else {
+   //     print("Unable to get CKShare")
+   //     return nil
+   //   }
+   //   share[CKShare.SystemFieldKey.title] = destination.caption
+   //   return share
+   // }
+    
+    
+    
 }

@@ -13,9 +13,10 @@ import SwiftUI
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
     var window: UIWindow?
-    @State var coreCard: CoreCard?
+    //@State var coreCard: CoreCard?
     @State var ckShare: CKShare?
     @State var userID = String()
+    @EnvironmentObject var appDelegate: AppDelegate
 
     //var musicSubTimeToAddMusic: Bool = false
     //var musicSubType: MusicSubscriptionOptions = .Neither
@@ -56,16 +57,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
             if let error = error {print("\(#function): Failed to accept share invitations: \(error)")}
             else {
             
-                ckContainer.fetchUserRecordID { ckRecordID, error in
-                    self.userID = (ckRecordID?.recordName)!
-                    print("Current User ID: \((ckRecordID?.recordName)!)")
-                }
-                
-                print("------")
-                print(self.userID)
-                
-                
-                
+                appDelegate.acceptedShare = cloudKitShareMetadata.share
+                fetchShare(cloudKitShareMetadata)
                 
                 //the created_by value displayed in CloudKit -> "_b4f706f0a40fb208d7562813fa8f15da"
                 print("Creator User ID.....\((cloudKitShareMetadata.ownerIdentity.userRecordID?.recordName)!)")
@@ -144,31 +137,31 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
             switch recordResult {
             case .success(let ref):
                 DispatchQueue.main.async() {
-                    self.coreCard?.cardName = ref.object(forKey: "cardName") as! String
-                    self.coreCard?.occassion = ref.object(forKey: "occassion") as! String
-                    self.coreCard?.recipient = ref.object(forKey: "recipient") as! String
-                    self.coreCard?.sender = ref.object(forKey: "sender") as? String
-                    self.coreCard?.an1 = ref.object(forKey: "an1") as! String
-                    self.coreCard?.an2 = ref.object(forKey: "an2") as! String
-                    self.coreCard?.an2URL = ref.object(forKey: "an2URL") as! String
-                    self.coreCard?.an3 = ref.object(forKey: "an3") as! String
-                    self.coreCard?.an4 = ref.object(forKey: "an4") as! String
-                    self.coreCard?.collage = ref.object(forKey: "collage") as? Data
-                    self.coreCard?.coverImage = ref.object(forKey: "coverImage") as? Data
-                    self.coreCard?.date = ref.object(forKey: "date") as! Date
-                    self.coreCard?.font = ref.object(forKey: "font") as! String
-                    self.coreCard?.message = ref.object(forKey: "message") as! String
-                    self.coreCard?.songID = ref.object(forKey: "songID") as? String
-                    self.coreCard?.spotID = ref.object(forKey: "spotID") as? String
-                    self.coreCard?.songName = ref.object(forKey: "songName") as? String
-                    self.coreCard?.songArtistName = ref.object(forKey: "songArtistName") as? String
-                    self.coreCard?.songArtImageData = ref.object(forKey: "songArtImageData") as? Data
-                    self.coreCard?.songPreviewURL = ref.object(forKey: "songPreviewURL") as? String
-                    self.coreCard?.songDuration = ref.object(forKey: "songDuration") as? String
-                    self.coreCard?.inclMusic = ref.object(forKey: "inclMusic") as! Bool
-                    self.coreCard?.spotImageData = ref.object(forKey: "spotImageData") as? Data
-                    self.coreCard?.spotSongDuration = ref.object(forKey: "spotSongDuration") as? String
-                    self.coreCard?.spotPreviewURL = ref.object(forKey: "spotPreviewURL") as? String
+                    self.appDelegate.coreCard?.cardName = ref.object(forKey: "cardName") as! String
+                    self.appDelegate.coreCard?.occassion = ref.object(forKey: "occassion") as! String
+                    self.appDelegate.coreCard?.recipient = ref.object(forKey: "recipient") as! String
+                    self.appDelegate.coreCard?.sender = ref.object(forKey: "sender") as? String
+                    self.appDelegate.coreCard?.an1 = ref.object(forKey: "an1") as! String
+                    self.appDelegate.coreCard?.an2 = ref.object(forKey: "an2") as! String
+                    self.appDelegate.coreCard?.an2URL = ref.object(forKey: "an2URL") as! String
+                    self.appDelegate.coreCard?.an3 = ref.object(forKey: "an3") as! String
+                    self.appDelegate.coreCard?.an4 = ref.object(forKey: "an4") as! String
+                    self.appDelegate.coreCard?.collage = ref.object(forKey: "collage") as? Data
+                    self.appDelegate.coreCard?.coverImage = ref.object(forKey: "coverImage") as? Data
+                    self.appDelegate.coreCard?.date = ref.object(forKey: "date") as! Date
+                    self.appDelegate.coreCard?.font = ref.object(forKey: "font") as! String
+                    self.appDelegate.coreCard?.message = ref.object(forKey: "message") as! String
+                    self.appDelegate.coreCard?.songID = ref.object(forKey: "songID") as? String
+                    self.appDelegate.coreCard?.spotID = ref.object(forKey: "spotID") as? String
+                    self.appDelegate.coreCard?.songName = ref.object(forKey: "songName") as? String
+                    self.appDelegate.coreCard?.songArtistName = ref.object(forKey: "songArtistName") as? String
+                    self.appDelegate.coreCard?.songArtImageData = ref.object(forKey: "songArtImageData") as? Data
+                    self.appDelegate.coreCard?.songPreviewURL = ref.object(forKey: "songPreviewURL") as? String
+                    self.appDelegate.coreCard?.songDuration = ref.object(forKey: "songDuration") as? String
+                    self.appDelegate.coreCard?.inclMusic = ref.object(forKey: "inclMusic") as! Bool
+                    self.appDelegate.coreCard?.spotImageData = ref.object(forKey: "spotImageData") as? Data
+                    self.appDelegate.coreCard?.spotSongDuration = ref.object(forKey: "spotSongDuration") as? String
+                    self.appDelegate.coreCard?.spotPreviewURL = ref.object(forKey: "spotPreviewURL") as? String
                 }
             case .failure:
                 print("Record Result Returned Error")
