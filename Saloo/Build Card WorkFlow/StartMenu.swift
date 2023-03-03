@@ -17,9 +17,11 @@ struct StartMenu: View {
     @EnvironmentObject var showDetailView: ShowDetailView
     @EnvironmentObject var appDelegate: AppDelegate
     //@EnvironmentObject var sceneDelegate: SceneDelegate
-
+    @State var whichBoxVal: InOut.SendReceive?
     @State private var showOccassions = false
-    @State private var showGridOfCards = false
+    @State private var showInbox = false
+    @State private var showOutbox = false
+
     @State private var showCalendar = false
     @State private var showPref = false
     @State var showPrefMenu = false
@@ -43,11 +45,11 @@ struct StartMenu: View {
             List {
                 Text(buildCardWorkFlow).onTapGesture {self.showOccassions = true}
                     .fullScreenCover(isPresented: $showOccassions){OccassionsMenu()}
-                Text("View Inbox 📥").onTapGesture {self.showGridOfCards = true}
-                    .fullScreenCover(isPresented: $showGridOfCards) {GridofCards(cardsForDisplay: loadCoreCards(), whichBoxVal: .inbox)}
-                Text("View Outbox 📤").onTapGesture {self.showGridOfCards = true}
-                    .fullScreenCover(isPresented: $showGridOfCards) {GridofCards(cardsForDisplay: loadCoreCards(), whichBoxVal: .outbox)}
-                Text("View Calendar 🗓").onTapGesture {self.showCalendar = true}
+                Text("Inbox 📥").onTapGesture {self.showInbox = true}
+                    .fullScreenCover(isPresented: $showInbox) {GridofCards(cardsForDisplay: loadCoreCards(), whichBoxVal: .inbox)}
+                Text("Outbox 📥").onTapGesture {self.showOutbox = true}
+                    .fullScreenCover(isPresented: $showOutbox) {GridofCards(cardsForDisplay: loadCoreCards(), whichBoxVal: .outbox)}
+                Text("Calendar 🗓").onTapGesture {self.showCalendar = true}
                     .fullScreenCover(isPresented: $showCalendar) {CalendarParent(calViewModel: calViewModel, showDetailView: showDetailView)}
                 Text("Preferences 📱").onTapGesture {self.showPref = true}
                     .fullScreenCover(isPresented: $showPref) {PrefMenu()}

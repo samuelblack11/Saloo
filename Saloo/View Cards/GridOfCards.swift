@@ -68,6 +68,7 @@ struct GridofCards: View {
             .navigationBarItems(leading:Button {showStartMenu.toggle()} label: {Image(systemName: "chevron.left").foregroundColor(.blue); Text("Back")})
         }
         // "Search by \(sortByValue)"
+        .onAppear{print("Testing....");print(whichBoxVal)}
         .searchable(text: $searchText, prompt: "Search by Card Name")
         .fullScreenCover(isPresented: $showStartMenu) {StartMenu()}
     }
@@ -153,13 +154,6 @@ extension GridofCards {
         hasAnyShare = PersistenceController.shared.shareTitles().isEmpty ? false : true
     }
     
-   // func addParticipant(ckShare: CKShare) {
-    //    CKShare.Participant(coder: )
-    //    ckShare.addParticipant()
-//
-   // }
-    
-    
     func getCurrentUserID() {
         PersistenceController.shared.cloudKitContainer.fetchUserRecordID { ckRecordID, error in
             self.userID = (ckRecordID?.recordName)!
@@ -181,11 +175,12 @@ extension GridofCards {
                 print(coreCard.creator! != self.userID)
 
                 switch whichBoxVal {
+                    //ONLY OUTBOX IS SHOWING
                 case .outbox:
-                    filteredCoreCards = coreCards.filter{_ in (coreCard.creator! == self.userID)}
+                    filteredCoreCards = coreCards.filter{_ in (coreCard.creator!.contains(self.userID))}
                     return filteredCoreCards
                 case .inbox:
-                    filteredCoreCards = coreCards.filter{_ in (coreCard.creator! != self.userID)}
+                    filteredCoreCards = coreCards.filter{_ in (coreCard.creator!.contains(self.userID) == false)}
                     return filteredCoreCards
                 }
         }
