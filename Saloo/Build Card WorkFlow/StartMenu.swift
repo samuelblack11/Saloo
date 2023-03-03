@@ -26,6 +26,9 @@ struct StartMenu: View {
     @State private var showEnlargeECard = false
     @State var showPrefMenu = false
     @State var appRemote2: SPTAppRemote?
+    @State var whichBoxForCKAccept: InOut.SendReceive?
+    @State var userID = String()
+
     var possibleSubscriptionValues = ["Apple Music", "Spotify", "Neither"]
     let defaults = UserDefaults.standard
     let buildCardWorkFlow = """
@@ -57,8 +60,14 @@ struct StartMenu: View {
         }
         //.environmentObject(appDelegate)
         .environmentObject(musicSub)
-        .onChange(of: appDelegate.acceptedShare!){acceptedECard in showEnlargeECard = true}
-        .onChange(of: appDelegate.coreCard!){acceptedECard in showEnlargeECard = true}
+        //.onChange(of: appDelegate.acceptedShare!){acceptedECard in showEnlargeECard = true}
+        .onChange(of: appDelegate.coreCard!){acceptedECard in
+            
+            if appDelegate.coreCard!.creator! == self.userID { whichBoxForCKAccept = .outbox}
+            else {whichBoxForCKAccept = .inbox}
+            
+            showEnlargeECard = true
+        }
         .onAppear {
             appDelegate.startMenuAppeared = true
             if (defaults.object(forKey: "MusicSubType") as? String) != nil && possibleSubscriptionValues.contains((defaults.object(forKey: "MusicSubType") as? String)!) {
@@ -68,7 +77,7 @@ struct StartMenu: View {
             }
             else{showPrefMenu = true }
         }
-        .fullScreenCover(isPresented: $showEnlargeECard){EnlargeECardView(chosenCard: appDelegate.coreCard!, share: appDelegate.$acceptedShare, cardsForDisplay: [], whichBoxVal: .inbox)}
+        .fullScreenCover(isPresented: $showEnlargeECard){EnlargeECardView(chosenCard: appDelegate.coreCard!, share: appDelegate.$acceptedShare, cardsForDisplay: loadCoreCards(), whichBoxVal: .inbox)}
         .fullScreenCover(isPresented: $showPrefMenu) {PrefMenu().environmentObject(musicSub)}
     }}
 
@@ -87,7 +96,13 @@ extension StartMenu {
     }
     
     
-    
+    func getCurrentUserID() {
+        PersistenceController.shared.cloudKitContainer.fetchUserRecordID { ckRecordID, error in
+            self.userID = (ckRecordID?.recordName)!
+            //print("Current User ID: \((ckRecordID?.recordName)!)")
+        }
+        
+    }
     
     
     

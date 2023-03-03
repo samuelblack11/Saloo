@@ -62,11 +62,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
                 
                 //the created_by value displayed in CloudKit -> "_b4f706f0a40fb208d7562813fa8f15da"
                 print("Creator User ID.....\((cloudKitShareMetadata.ownerIdentity.userRecordID?.recordName)!)")
-                //ckShare = cloudKitShareMetadata.share
-                // add card to inbox
-                // display card via -> Inbox -> EnlargeECardView -> eCardView
-                // EnlargeECardView(chosenCard: , share: , cardsForDisplay: persistenceController., whichBoxVal: .inbox)
-                // if owner of card, whichBoxVal: .outbox. Else, .inbox
             }
         }
     }
