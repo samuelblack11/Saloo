@@ -17,7 +17,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
     @State var ckShare: CKShare?
     @State var userID = String()
     @EnvironmentObject var appDelegate: AppDelegate
-
+    @State var acceptedShare: CKShare?
+    @State var coreCard: CoreCard?
     //var musicSubTimeToAddMusic: Bool = false
     //var musicSubType: MusicSubscriptionOptions = .Neither
     //@EnvironmentObject var appDelegate: AppDelegate
@@ -25,6 +26,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
     
     
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
+        
+        
+        
+        
         //self.scene(scene, openURLContexts: connectionOptions.urlContexts)
         // Create the SwiftUI view that provides the window contents.
 
@@ -56,15 +61,41 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
         container.acceptShareInvitations(from: [cloudKitShareMetadata], into: sharedStore) { [self] (_, error) in
             if let error = error {print("\(#function): Failed to accept share invitations: \(error)")}
             else {
-            
-                appDelegate.acceptedShare = cloudKitShareMetadata.share
-                fetchShare(cloudKitShareMetadata)
+                print("CKShareMetaData Code...")
+                print(cloudKitShareMetadata.share)
+                print("----")
+                print(cloudKitShareMetadata.share.recordID)
+                print("***")
+                print(cloudKitShareMetadata.share.recordID.zoneID)
+                print("[[[[")
+                print(cloudKitShareMetadata.share.recordID.zoneID.zoneName)
                 
-                //the created_by value displayed in CloudKit -> "_b4f706f0a40fb208d7562813fa8f15da"
-                print("Creator User ID.....\((cloudKitShareMetadata.ownerIdentity.userRecordID?.recordName)!)")
+                let pred = NSPredicate(value: true)
+                let query = CKQuery(recordType: "CD_CoreCard", predicate: pred)
+                let op3 = CKQueryOperation(query: query)
+                op3.zoneID = cloudKitShareMetadata.share.recordID.zoneID//.zoneName
+                op3.recordMatchedBlock = {recordID, result in
+                    print("Got Record...")
+                    print(recordID)
+                }
+                op3.queryResultBlock = {result in
+                    
+                    print(result)
+
+                    
+                    print("queryResultBlock Called")
+                    
+                }
+                ckContainer.sharedCloudDatabase.add(op3)
+                print("Query Complete...")
             }
         }
     }
+    
+    
+    
+    
+    
     
     
     func acceptShare(metadata: CKShare.Metadata,
@@ -120,58 +151,41 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
         
         print(metadata)
         
-        
+        metadata.rootRecord?.object(forKey: "cardName") as! String
         print(metadata.rootRecord)
         //metadata.share.owner
         print("4444")
         //print(metadata.hierarchicalRootRecordID!)
         print("555")
-        //let op2 = CKFetchRecordsOperation(recordIDs: )
-        let operation = CKFetchRecordsOperation(recordIDs: [metadata.share.recordID])
-        operation.perRecordResultBlock! = { recordID, recordResult in
-            switch recordResult {
-            case .success(let ref):
-                DispatchQueue.main.async() {
-                    self.appDelegate.coreCard?.cardName = ref.object(forKey: "cardName") as! String
-                    self.appDelegate.coreCard?.occassion = ref.object(forKey: "occassion") as! String
-                    self.appDelegate.coreCard?.recipient = ref.object(forKey: "recipient") as! String
-                    self.appDelegate.coreCard?.sender = ref.object(forKey: "sender") as? String
-                    self.appDelegate.coreCard?.an1 = ref.object(forKey: "an1") as! String
-                    self.appDelegate.coreCard?.an2 = ref.object(forKey: "an2") as! String
-                    self.appDelegate.coreCard?.an2URL = ref.object(forKey: "an2URL") as! String
-                    self.appDelegate.coreCard?.an3 = ref.object(forKey: "an3") as! String
-                    self.appDelegate.coreCard?.an4 = ref.object(forKey: "an4") as! String
-                    self.appDelegate.coreCard?.collage = ref.object(forKey: "collage") as? Data
-                    self.appDelegate.coreCard?.coverImage = ref.object(forKey: "coverImage") as? Data
-                    self.appDelegate.coreCard?.date = ref.object(forKey: "date") as! Date
-                    self.appDelegate.coreCard?.font = ref.object(forKey: "font") as! String
-                    self.appDelegate.coreCard?.message = ref.object(forKey: "message") as! String
-                    self.appDelegate.coreCard?.songID = ref.object(forKey: "songID") as? String
-                    self.appDelegate.coreCard?.spotID = ref.object(forKey: "spotID") as? String
-                    self.appDelegate.coreCard?.songName = ref.object(forKey: "songName") as? String
-                    self.appDelegate.coreCard?.songArtistName = ref.object(forKey: "songArtistName") as? String
-                    self.appDelegate.coreCard?.songArtImageData = ref.object(forKey: "songArtImageData") as? Data
-                    self.appDelegate.coreCard?.songPreviewURL = ref.object(forKey: "songPreviewURL") as? String
-                    self.appDelegate.coreCard?.songDuration = ref.object(forKey: "songDuration") as? String
-                    self.appDelegate.coreCard?.inclMusic = ref.object(forKey: "inclMusic") as! Bool
-                    self.appDelegate.coreCard?.spotImageData = ref.object(forKey: "spotImageData") as? Data
-                    self.appDelegate.coreCard?.spotSongDuration = ref.object(forKey: "spotSongDuration") as? String
-                    self.appDelegate.coreCard?.spotPreviewURL = ref.object(forKey: "spotPreviewURL") as? String
-                }
-            case .failure:
-                print("Record Result Returned Error")
-            }
+        //op3.zoneID = acceptedShare?.recordID.zoneID
+        DispatchQueue.main.async() {
+            self.coreCard?.cardName = metadata.rootRecord?.object(forKey: "cardName") as! String
+            self.coreCard?.occassion = metadata.rootRecord?.object(forKey: "occassion") as! String
+            self.coreCard?.recipient = metadata.rootRecord?.object(forKey: "recipient") as! String
+            self.coreCard?.sender = metadata.rootRecord?.object(forKey: "sender") as? String
+            self.coreCard?.an1 = metadata.rootRecord?.object(forKey: "an1") as! String
+            self.coreCard?.an2 = metadata.rootRecord?.object(forKey: "an2") as! String
+            self.coreCard?.an2URL = metadata.rootRecord?.object(forKey: "an2URL") as! String
+            self.coreCard?.an3 = metadata.rootRecord?.object(forKey: "an3") as! String
+            self.coreCard?.an4 = metadata.rootRecord?.object(forKey: "an4") as! String
+            self.coreCard?.collage = metadata.rootRecord?.object(forKey: "collage") as? Data
+            self.coreCard?.coverImage = metadata.rootRecord?.object(forKey: "coverImage") as? Data
+            self.coreCard?.date = metadata.rootRecord?.object(forKey: "date") as! Date
+            self.coreCard?.font = metadata.rootRecord?.object(forKey: "font") as! String
+            self.coreCard?.message = metadata.rootRecord?.object(forKey: "message") as! String
+            self.coreCard?.songID = metadata.rootRecord?.object(forKey: "songID") as? String
+            self.coreCard?.spotID = metadata.rootRecord?.object(forKey: "spotID") as? String
+            self.coreCard?.songName = metadata.rootRecord?.object(forKey: "songName") as? String
+            self.coreCard?.songArtistName = metadata.rootRecord?.object(forKey: "songArtistName") as? String
+            self.coreCard?.songArtImageData = metadata.rootRecord?.object(forKey: "songArtImageData") as? Data
+            self.coreCard?.songPreviewURL = metadata.rootRecord?.object(forKey: "songPreviewURL") as? String
+            self.coreCard?.songDuration = metadata.rootRecord?.object(forKey: "songDuration") as? String
+            self.coreCard?.inclMusic = metadata.rootRecord?.object(forKey: "inclMusic") as! Bool
+            self.coreCard?.spotImageData = metadata.rootRecord?.object(forKey: "spotImageData") as? Data
+            self.coreCard?.spotSongDuration = metadata.rootRecord?.object(forKey: "spotSongDuration") as? String
+            self.coreCard?.spotPreviewURL = metadata.rootRecord?.object(forKey: "spotPreviewURL") as? String
         }
         
-        operation.fetchRecordsResultBlock = { result in
-            switch result {
-                case .success:
-                    print("Disregard")
-                case .failure(let error):
-                    print(error.localizedDescription)
-                }
-            CKContainer.default().sharedCloudDatabase.add(operation)
-        }
     }
     
     func shareStatus(card: CoreCard) -> (Bool, Bool) {

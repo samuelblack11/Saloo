@@ -17,7 +17,7 @@ struct StartMenu: View {
     @EnvironmentObject var calViewModel: CalViewModel
     @EnvironmentObject var showDetailView: ShowDetailView
     @EnvironmentObject var appDelegate: AppDelegate
-    //@EnvironmentObject var sceneDelegate: SceneDelegate
+    @EnvironmentObject var sceneDelegate: SceneDelegate
     @State private var showOccassions = false
     @State private var showInbox = false
     @State private var showOutbox = false
@@ -61,9 +61,9 @@ struct StartMenu: View {
         //.environmentObject(appDelegate)
         .environmentObject(musicSub)
         //.onChange(of: appDelegate.acceptedShare!){acceptedECard in showEnlargeECard = true}
-        .onChange(of: appDelegate.coreCard!){acceptedECard in
+        .onChange(of: sceneDelegate.acceptedShare){acceptedECard in
             
-            if appDelegate.coreCard!.creator! == self.userID { whichBoxForCKAccept = .outbox}
+            if sceneDelegate.coreCard!.creator! == self.userID { whichBoxForCKAccept = .outbox}
             else {whichBoxForCKAccept = .inbox}
             
             showEnlargeECard = true

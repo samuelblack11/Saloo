@@ -231,7 +231,7 @@ extension PersistenceController {
         share[CKShare.SystemFieldKey.title] = "A Greeting, from GreetMe"
         share[CKShare.SystemFieldKey.thumbnailImageData] = coreCard?.coverImage
         share.publicPermission = .readOnly
-        
+        //share.recordID = coreCard?.associatedRecord.recordID
         //share.recordID = coreCard?.associatedRecord
     }
 }
