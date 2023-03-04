@@ -64,14 +64,14 @@ struct StartMenu: View {
         //.environmentObject(appDelegate)
         .environmentObject(musicSub)
         //.onChange(of: appDelegate.acceptedShare!){acceptedECard in showEnlargeECard = true}
-        .onChange(of: sceneDelegate.gotRecord) {acceptedECard in
+        //.onChange(of: sceneDelegate.gotRecord) {acceptedECard in
             
-            if sceneDelegate.coreCard!.creator! == self.userID { whichBoxForCKAccept = .outbox}
-            else {whichBoxForCKAccept = .inbox}
-            print("Calling...")
-            print(sceneDelegate.coreCard)
-            showEnlargeECard = true
-        }
+       //     if sceneDelegate.coreCard.creator! == self.userID { whichBoxForCKAccept = .outbox}
+       //     else {whichBoxForCKAccept = .inbox}
+       //     print("Calling...")
+        //    print(sceneDelegate.coreCard)
+        //    showEnlargeECard = true
+        //}
         .onAppear {
             //checkForShare()
             print("Opened App...")

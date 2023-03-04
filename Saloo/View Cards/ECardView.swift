@@ -107,6 +107,7 @@ struct eCardView: View {
         .onAppear {
             if appDelegate.musicSub.type == .Spotify {
                 print("SpotID: \(spotID)")
+                print((defaults.object(forKey: "SpotifyAccessToken") as? String)!)
                 appRemote2?.connectionParameters.accessToken = (defaults.object(forKey: "SpotifyAccessToken") as? String)!
             }
         }
