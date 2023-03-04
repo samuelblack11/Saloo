@@ -15,7 +15,7 @@ import WebKit
 //https://www.appcoda.com/swiftui-confetti-animation/
 struct EnlargeECardView: View {
     var chosenCard: CoreCard
-    @Binding var share: CKShare?
+    @State var share: CKShare?
     @State private var counter = 1
     private let stack = PersistenceController.shared
     @State private var showGrid = false

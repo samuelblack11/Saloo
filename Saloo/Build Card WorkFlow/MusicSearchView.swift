@@ -52,18 +52,7 @@ struct MusicSearchView: View {
     @State var appRemote2: SPTAppRemote?
     @State var counter = 0
     @State var refreshAccessToken = false
-    //lazy var config: SPTConfiguration = {
-   //     let config = SPTConfiguration(clientID: "d15f76f932ce4a7c94c2ecb0dfb69f4b", redirectURL: URL(string: "saloo://")!)
-    //    config.playURI("")
-   // }()
 
-
-    
-    //lazy var appRemote3: SPTAppRemote = {
-   //     let appRemote3 = SPTAppRemote(configuration: config, logLevel: .debug)
-   //     return appRemote3
-   // }()
-    
     
     var body: some View {
         NavigationStack {

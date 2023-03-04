@@ -29,7 +29,6 @@
 		C20DEF602986C9F30080AE03 /* SpotifyAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = C20DEF5F2986C9F30080AE03 /* SpotifyAPI.swift */; };
 		C2163D0E28C1609C00DEE861 /* ScheduleDelivery.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2163D0D28C1609C00DEE861 /* ScheduleDelivery.swift */; };
 		C217021029AC0C9500BE48DC /* SongPreviewPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = C217020F29AC0C9500BE48DC /* SongPreviewPlayer.swift */; };
-		C21A8A2429A1741300D06192 /* SPTDel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C21A8A2329A1741200D06192 /* SPTDel.swift */; };
 		C21EACE02998525000401DC8 /* WebVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = C21EACDF2998525000401DC8 /* WebVC.swift */; };
 		C2233BF729AEEE4F00DB098D /* HandleCloudKitError.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2233BF629AEEE4F00DB098D /* HandleCloudKitError.swift */; };
 		C224F6C1297619AB000ED33E /* blankImage.png in Resources */ = {isa = PBXBuildFile; fileRef = C224F6C0297619AB000ED33E /* blankImage.png */; };
@@ -119,7 +118,6 @@
 		C2163D0D28C1609C00DEE861 /* ScheduleDelivery.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleDelivery.swift; sourceTree = "<group>"; };
 		C217020F29AC0C9500BE48DC /* SongPreviewPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SongPreviewPlayer.swift; sourceTree = "<group>"; };
 		C217B029294FE5F200544B17 /* Pods.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Pods.xcodeproj; path = Pods/Pods.xcodeproj; sourceTree = "<group>"; };
-		C21A8A2329A1741200D06192 /* SPTDel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SPTDel.swift; sourceTree = "<group>"; };
 		C21EACDF2998525000401DC8 /* WebVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebVC.swift; sourceTree = "<group>"; };
 		C2233BF629AEEE4F00DB098D /* HandleCloudKitError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HandleCloudKitError.swift; sourceTree = "<group>"; };
 		C224F6C0297619AB000ED33E /* blankImage.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = blankImage.png; path = ../../../../blankImage.png; sourceTree = "<group>"; };
@@ -310,7 +308,6 @@
 				C271B2E629702D2200760B23 /* AMResponses.swift */,
 				C225A8502989E074008FC699 /* SpotResponses.swift */,
 				C21EACDF2998525000401DC8 /* WebVC.swift */,
-				C21A8A2329A1741200D06192 /* SPTDel.swift */,
 			);
 			path = Music;
 			sourceTree = "<group>";
@@ -564,7 +561,6 @@
 				260F68FE281DBEBD002E864B /* PingDownloadResponse.swift in Sources */,
 				C22A1817296D983E00A7E9B8 /* ManagingSharesView.swift in Sources */,
 				C217021029AC0C9500BE48DC /* SongPreviewPlayer.swift in Sources */,
-				C21A8A2429A1741300D06192 /* SPTDel.swift in Sources */,
 				C237E6E1294E453600E472AD /* GridOfCards.swift in Sources */,
 				C23340EB28C3D589006222F5 /* FutureDelivery+CoreDataProperties.swift in Sources */,
 				C22A84E529667587001244CC /* PersistenceController+History.swift in Sources */,

@@ -18,6 +18,7 @@ import StoreKit
 import MediaPlayer
 
 struct SpotPlayerView: View {
+    
     @State var songID: String?
     @State var songName: String?
     @State var songArtistName: String?
@@ -34,8 +35,18 @@ struct SpotPlayerView: View {
     @State private var addSongCounter = 0
     @State private var showProgressView = true
     let defaults = UserDefaults.standard
-    
-    var appRemote2: SPTAppRemote?
+    @State var accessedViaGrid = false
+    @State var appRemote2: SPTAppRemote?
+    @State private var refresh_token: String? = ""
+    @State var counter = 0
+    @State var refreshAccessToken = false
+    @State private var authCode: String? = ""
+    @State private var invalidAuthCode = false
+    @State private var tokenCounter = 0
+    @State private var instantiateAppRemoteCounter = 0
+    let config = SPTConfiguration(clientID: "d15f76f932ce4a7c94c2ecb0dfb69f4b", redirectURL: URL(string: "saloo://")!)
+    @State private var showWebView = false
+
     var body: some View {NavigationStack {SpotPlayerView()}.environmentObject(appDelegate)}
     
     @ViewBuilder var selectButton: some View {
@@ -103,7 +114,27 @@ struct SpotPlayerView: View {
                     }
                 selectButton
                 }
-            .onAppear{playSong()}
+            .onAppear{
+                if accessedViaGrid {
+                    if appDelegate.musicSub.type == .Spotify {
+                        print("Run1")
+                        
+                        if defaults.object(forKey: "SpotifyAuthCode") != nil && counter == 0 {
+                            print("Run2")
+                            refresh_token = (defaults.object(forKey: "SpotifyRefreshToken") as? String)!
+                            refreshAccessToken = true
+                            runGetToken(authType: "refresh_token")
+                            counter += 1
+                        }
+                        else{print("Run3");requestSpotAuth(); runGetToken(authType: "code")}
+                        runInstantiateAppRemote()
+                    }
+                    
+                    
+                    
+                }
+                playSong()
+            }
             .onDisappear{appRemote2?.playerAPI?.pause()}
     }
     
@@ -133,6 +164,99 @@ struct SpotPlayerView: View {
                     print(error.localizedDescription)
                 }
             }
+        }
+    }
+    
+    
+    func requestSpotAuth() {
+        print("called....requestSpotAuth")
+        invalidAuthCode = false
+        SpotifyAPI().requestAuth(completionHandler: {(response, error) in
+            if response != nil {
+                DispatchQueue.main.async {
+                    print("ccccccc")
+                    print(response!)
+                    if response!.contains("https://www.google.com/?code="){}
+                    else{spotifyAuth.authForRedirect = response!; showWebView = true}
+                    refreshAccessToken = true
+                }}})
+    }
+    
+    func getSpotToken() {
+        print("called....requestSpotToken")
+        tokenCounter = 1
+        spotifyAuth.auth_code = authCode!
+        SpotifyAPI().getToken(authCode: authCode!, completionHandler: {(response, error) in
+            if response != nil {
+                DispatchQueue.main.async {
+                    spotifyAuth.access_Token = response!.access_token
+                    spotifyAuth.refresh_Token = response!.refresh_token
+                    
+                    defaults.set(response!.access_token, forKey: "SpotifyAccessToken")
+                    defaults.set(response!.refresh_token, forKey: "SpotifyRefreshToken")
+                }
+            }
+            if error != nil {
+                print("Error... \(error?.localizedDescription)!")
+                invalidAuthCode = true
+                authCode = ""
+            }
+        })
+    }
+    
+    func getSpotTokenViaRefresh() {
+        print("called....requestSpotTokenViaRefresh")
+        tokenCounter = 1
+        spotifyAuth.auth_code = authCode!
+        refresh_token = (defaults.object(forKey: "SpotifyRefreshToken") as? String)!
+        SpotifyAPI().getTokenViaRefresh(refresh_token: refresh_token!, completionHandler: {(response, error) in
+            if response != nil {
+                DispatchQueue.main.async {
+                    spotifyAuth.access_Token = response!.access_token
+                    appRemote2?.connectionParameters.accessToken = spotifyAuth.access_Token
+                    defaults.set(response!.access_token, forKey: "SpotifyAccessToken")
+                }
+            }
+            if error != nil {
+                print("Error... \(error?.localizedDescription)!")
+                invalidAuthCode = true
+                authCode = ""
+            }
+        })
+    }
+    
+    func getAuthCodeAndTokenIfExpired() {
+        Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { timer in
+            if invalidAuthCode {requestSpotAuth()}
+        }
+    }
+
+    func runGetToken(authType: String) {
+        Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { timer in
+            if tokenCounter == 0 && refreshAccessToken {
+                if authType == "code" {if authCode != "" {getSpotToken()}}
+                if authType == "refresh_token" {if refresh_token! != ""{getSpotTokenViaRefresh()}}
+            }
+        }
+    }
+    
+    
+ ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    func runInstantiateAppRemote() {
+        Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { timer in
+            if instantiateAppRemoteCounter == 0 {if spotifyAuth.access_Token != "" {instantiateAppRemote()}}
+        }
+    }
+    
+    func instantiateAppRemote() {
+        print("called....instantiateAppRemote")
+        print(spotifyAuth.access_Token)
+        instantiateAppRemoteCounter = 1
+        DispatchQueue.main.async {
+            appRemote2 = SPTAppRemote(configuration: config, logLevel: .debug)
+            appRemote2?.connectionParameters.accessToken = spotifyAuth.access_Token
         }
     }
 }
