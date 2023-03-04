@@ -228,6 +228,7 @@ extension MusicSearchView {
             chosenSong.spotImageData = song.artImageData
             chosenSong.spotSongDuration = Double(song.durationInMillis/1000)
             chosenSong.spotPreviewURL = song.previewURL
+            chosenSong.songAddedUsing = "Spotify"
             showSPV = true
         }
         if appDelegate.musicSub.type == .Apple {
@@ -235,6 +236,7 @@ extension MusicSearchView {
             chosenSong.songPreviewURL = song.previewURL
             chosenSong.artwork = song.artImageData
             chosenSong.durationInSeconds = Double(song.durationInMillis/1000)
+            chosenSong.songAddedUsing = "Apple"
             showAPV = true
         }
     }

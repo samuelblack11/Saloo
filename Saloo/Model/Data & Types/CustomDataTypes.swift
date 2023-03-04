@@ -58,7 +58,7 @@ class ChosenSong: ObservableObject {
     @Published var spotImageData = Data()
     @Published var spotSongDuration = Double()
     @Published var spotPreviewURL = String()
-
+    @Published var songAddedUsing = String()
 }
 
 class ChosenCoverImageObject: ObservableObject {

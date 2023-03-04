@@ -14,9 +14,6 @@ import CloudKit
 
 struct StartMenu: View {
     
-    
-    
-    @EnvironmentObject var musicSub: MusicSubscription
     @EnvironmentObject var calViewModel: CalViewModel
     @EnvironmentObject var showDetailView: ShowDetailView
     @EnvironmentObject var appDelegate: AppDelegate
@@ -62,7 +59,7 @@ struct StartMenu: View {
             }
         }
         //.environmentObject(appDelegate)
-        .environmentObject(musicSub)
+        //.environmentObject(musicSub)
         //.onChange(of: appDelegate.acceptedShare!){acceptedECard in showEnlargeECard = true}
         //.onChange(of: sceneDelegate.gotRecord) {acceptedECard in
             
@@ -73,9 +70,7 @@ struct StartMenu: View {
         //    showEnlargeECard = true
         //}
         .onAppear {
-            //checkForShare()
             print("Opened App...")
-            print(sceneDelegate.gotRecord)
             appDelegate.startMenuAppeared = true
             if (defaults.object(forKey: "MusicSubType") as? String) != nil && possibleSubscriptionValues.contains((defaults.object(forKey: "MusicSubType") as? String)!) {
                 if (defaults.object(forKey: "MusicSubType") as? String)! == "Apple Music" {appDelegate.musicSub.type = .Apple}
@@ -85,25 +80,11 @@ struct StartMenu: View {
             else{showPrefMenu = true }
         }
         //.fullScreenCover(isPresented: $showEnlargeECard){EnlargeECardView(chosenCard: sceneDelegate.coreCard!, share: appDelegate.acceptedShare, cardsForDisplay: loadCoreCards(), whichBoxVal: .inbox)}
-        .fullScreenCover(isPresented: $showPrefMenu) {PrefMenu().environmentObject(musicSub)}
+        .fullScreenCover(isPresented: $showPrefMenu) {PrefMenu()}
     }}
 
 extension StartMenu {
-    
-    func checkForShare() {
-        Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { timer in
-            print("++++")
-            print(sceneDelegate.acceptedShare)
-            print(sceneDelegate.gotRecord)
-        }
-    }
-    
-    
-    
-    
-    
-    
-    
+
     func loadCoreCards() -> [CoreCard] {
         let request = CoreCard.createFetchRequest()
         let sort = NSSortDescriptor(key: "date", ascending: false)

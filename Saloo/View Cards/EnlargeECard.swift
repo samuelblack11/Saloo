@@ -24,12 +24,11 @@ struct EnlargeECardView: View {
     @EnvironmentObject var appDelegate: AppDelegate
     @State private var storeFrontID = "us"
     @State private var userToken = ""
-    @State var songAddedUsing: MusicSubscriptionOptions = .Spotify
 
     var body: some View {
         NavigationView {
             VStack {
-                eCardView(eCardText: chosenCard.message, font: chosenCard.font, coverImage: chosenCard.coverImage!, collageImage: chosenCard.collage!, text1: chosenCard.an1, text2: chosenCard.an2, text2URL: URL(string: chosenCard.an2URL)!, text3: chosenCard.an3, text4: chosenCard.an4, songID: chosenCard.songID, spotID: chosenCard.spotID, songName: chosenCard.songName, songArtistName: chosenCard.songArtistName,songArtImageData: chosenCard.songArtImageData, songDuration: Double(chosenCard.songDuration!)!, songPreviewURL: chosenCard.songPreviewURL, inclMusic: chosenCard.inclMusic, spotImageData: chosenCard.spotImageData, spotSongDuration: Double(chosenCard.spotSongDuration!)!, spotPreviewURL: chosenCard.spotPreviewURL, songAddedUsing: songAddedUsing)
+                eCardView(eCardText: chosenCard.message, font: chosenCard.font, coverImage: chosenCard.coverImage!, collageImage: chosenCard.collage!, text1: chosenCard.an1, text2: chosenCard.an2, text2URL: URL(string: chosenCard.an2URL)!, text3: chosenCard.an3, text4: chosenCard.an4, songID: chosenCard.songID, spotID: chosenCard.spotID, songName: chosenCard.songName, songArtistName: chosenCard.songArtistName,songArtImageData: chosenCard.songArtImageData, songDuration: Double(chosenCard.songDuration!)!, songPreviewURL: chosenCard.songPreviewURL, inclMusic: chosenCard.inclMusic, spotImageData: chosenCard.spotImageData, spotSongDuration: Double(chosenCard.spotSongDuration!)!, spotPreviewURL: chosenCard.spotPreviewURL, songAddedUsing: chosenCard.songAddedUsing)
             }
             .navigationBarItems(
                 leading:Button {showGrid = true}
@@ -44,20 +43,20 @@ struct EnlargeECardView: View {
         //if song from Apple and recip has SPOT
         // Search for song and associated data points using SPOT API
         if chosenCard.songID != "" && appDelegate.musicSub.type == .Spotify {
-            songAddedUsing = .Apple
+            chosenCard.songAddedUsing = "Apple"
             //getSongViaSpot()
         }
         //if song from SPOT and recip as Apple
         if chosenCard.spotID != "" && appDelegate.musicSub.type == .Apple {
-            songAddedUsing = .Spotify
+            chosenCard.songAddedUsing = "Spotify"
             getSongViaAM()
             //update core data value for song id,
             
         }
         // if recip has neither and preview url is available
         // Just set songAddedUsing dependent on what musicSub the sender has. All required data is there.
-        if appDelegate.musicSub.type == .Neither && chosenCard.spotPreviewURL == "" {songAddedUsing = .Apple}
-        if appDelegate.musicSub.type == .Neither && chosenCard.songPreviewURL == "" {songAddedUsing = .Spotify}
+        if appDelegate.musicSub.type == .Neither && chosenCard.spotPreviewURL == "" {chosenCard.songAddedUsing = "Apple"}
+        if appDelegate.musicSub.type == .Neither && chosenCard.songPreviewURL == "" {chosenCard.songAddedUsing = "Spotify"}
     
     }
     

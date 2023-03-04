@@ -16,11 +16,7 @@ struct WriteNoteView: View {
     @EnvironmentObject var collageImage: CollageImage
     @EnvironmentObject var chosenOccassion: Occassion
     @EnvironmentObject var chosenStyle: ChosenCollageStyle
-    @EnvironmentObject var musicSub: MusicSubscription
     @EnvironmentObject var appDelegate: AppDelegate
-    //@EnvironmentObject var sceneDelegate: SceneDelegate
-    //@UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
-
     @StateObject var addMusic = AddMusic()
     @StateObject var chosenSong = ChosenSong()
 
@@ -31,15 +27,10 @@ struct WriteNoteView: View {
     @State private var showFinalize = false
     @State private var showCollageBuilder = false
     
-    //@State private var message: String = "Write Your Note Here"
     @ObservedObject var message = TextLimiter(limit: 225, value: "Write Your Note Here")
     @ObservedObject var recipient = TextLimiter(limit: 20, value: "To:")
     @ObservedObject var sender = TextLimiter(limit: 20, value: "From:")
     @ObservedObject var cardName = TextLimiter(limit: 20, value: "Name Your Card")
-    //@State private var recipient: String = ""
-    //@State private var sender: String = ""
-    //@State private var cardName: String = ""
-    
     @State private var tappedTextEditor = false
     @State private var namesNotEntered = false
     @State private var addMusicPrompt = false

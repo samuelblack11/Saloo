@@ -89,6 +89,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
             self.coreCard.spotSongDuration = record?.object(forKey: "CD_spotSongDuration") as? String
             self.coreCard.spotPreviewURL = record?.object(forKey: "CD_spotPreviewURL") as? String
             self.coreCard.creator = record?.object(forKey: "CD_creator") as? String
+            self.coreCard.songAddedUsing = record?.object(forKey: "CD_songAddedUsing") as? String
             if self.coreCard.creator! == self.userID { self.whichBoxForCKAccept = .outbox}
             else {self.whichBoxForCKAccept = .inbox}
             self.gotRecord = true
@@ -103,16 +104,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
         
     }
     
-    
-    
-    func shareStatus(card: CoreCard) -> (Bool, Bool) {
-        var isCardShared: Bool?
-        var hasAnyShare: Bool?
-        isCardShared = (PersistenceController.shared.existingShare(coreCard: card) != nil)
-        hasAnyShare = PersistenceController.shared.shareTitles().isEmpty ? false : true
-        
-        return (isCardShared!, hasAnyShare!)
-    }
     
     
     func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
@@ -132,7 +123,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
                     window.rootViewController = UIHostingController(rootView: contentView)
                     self.window = window
                     window.makeKeyAndVisible()
-                    self.connectToScene = false
                     self.connectToScene = false
                     //let url = connectionOptions.urlContexts.first?.url
                     //self.scene(scene, openURLContexts: url)

@@ -133,7 +133,7 @@ extension GridofCards {
                 .disabled(shareStatus(card: card).0)
         }
             Button("Manage Participation") { manageParticipation(coreCard: card)}
-            Button {segueToEnlarge = true} label: {Text("Enlarge eCard"); Image(systemName: "plus.magnifyingglass")}
+        Button {segueToEnlarge = true; print("Song Art Image Data....\(card.songArtImageData)")} label: {Text("Enlarge eCard"); Image(systemName: "plus.magnifyingglass")}
             Button {deleteCoreCard(coreCard: card)} label: {Text("Delete eCard"); Image(systemName: "trash").foregroundColor(.red)}
             Button {showDeliveryScheduler = true} label: {Text("Schedule eCard Delivery")}
         }

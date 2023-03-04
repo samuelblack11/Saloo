@@ -11,7 +11,7 @@ import SwiftUI
 
 extension PersistenceController {
     
-    func addCoreCard(noteField: NoteField, chosenOccassion: Occassion, an1: String, an2: String, an2URL: String, an3: String, an4: String, chosenObject: ChosenCoverImageObject, collageImage: CollageImage, context: NSManagedObjectContext, songID: String?, spotID: String?, songName: String?, songArtistName: String?, songArtImageData: Data?, songPreviewURL: String?, songDuration: String?, inclMusic: Bool, spotImageData: Data?, spotSongDuration: String?, spotPreviewURL: String?) {
+    func addCoreCard(noteField: NoteField, chosenOccassion: Occassion, an1: String, an2: String, an2URL: String, an3: String, an4: String, chosenObject: ChosenCoverImageObject, collageImage: CollageImage, context: NSManagedObjectContext, songID: String?, spotID: String?, songName: String?, songArtistName: String?, songArtImageData: Data?, songPreviewURL: String?, songDuration: String?, inclMusic: Bool, spotImageData: Data?, spotSongDuration: String?, spotPreviewURL: String?, songAddedUsing: String?) {
         context.perform {
             
             let recordZone = CKRecordZone(zoneName: "Cards")
@@ -45,6 +45,7 @@ extension PersistenceController {
             coreCard.spotImageData = spotImageData
             coreCard.spotSongDuration = spotSongDuration
             coreCard.spotPreviewURL = spotPreviewURL
+            coreCard.songAddedUsing = songAddedUsing
             PersistenceController.shared.cloudKitContainer.fetchUserRecordID { ckRecordID, error in
                 coreCard.creator = (ckRecordID?.recordName)!
             }

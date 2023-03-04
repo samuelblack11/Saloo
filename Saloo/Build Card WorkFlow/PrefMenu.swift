@@ -13,7 +13,6 @@ import CoreData
 
 
 struct PrefMenu: View {
-    @EnvironmentObject var musicSub: MusicSubscription
     @State private var showStart = false
     @EnvironmentObject var appDelegate: AppDelegate
     @EnvironmentObject var sceneDelegate: SceneDelegate
