@@ -38,7 +38,7 @@ struct eCardView: View {
     @State var songAddedUsing: String?
     var appRemote2: SPTAppRemote? = SPTAppRemote(configuration: SPTConfiguration(clientID: "d15f76f932ce4a7c94c2ecb0dfb69f4b", redirectURL: URL(string: "saloo://")!), logLevel: .debug)
     
-
+    
     var body: some View {
         HStack {
             VStack(spacing:1) {
@@ -50,7 +50,7 @@ struct eCardView: View {
                     .font(Font.custom(font, size: 500)).minimumScaleFactor(0.01)
                 Image(uiImage: UIImage(data: collageImage)!)
                     .interpolation(.none).resizable().scaledToFit()
-               //Spacer()
+                //Spacer()
                 HStack(spacing: 0) {
                     Spacer()
                     VStack(spacing:0){
@@ -74,43 +74,47 @@ struct eCardView: View {
                     Spacer()
                 }
             }
-            VStack{
-                Spacer()
+            VStack(alignment: .center){
+                Text("{Gift Card Will Go Here}")
+                    .font(.system(size: 24)).frame(alignment: .center)
+                    .multilineTextAlignment(.center)
+                    .frame(maxHeight: .infinity)
                 if inclMusic {
                     HStack(alignment: .bottom){
                         if appDelegate.musicSub.type == .Apple {
-                            AMPlayerView(songID: songID, songName: songName, songArtistName: songArtistName, songArtImageData: songArtImageData, songDuration: songDuration, songPreviewURL: songPreviewURL, confirmButton: false, showFCV: $showFCV).frame(height: UIScreen.screenHeight/1.5, alignment: .bottom)
+                            AMPlayerView(songID: songID, songName: songName, songArtistName: songArtistName, songArtImageData: songArtImageData, songDuration: songDuration, songPreviewURL: songPreviewURL, confirmButton: false, showFCV: $showFCV)
+                                .frame(maxHeight: .infinity, alignment: .bottom)
+                            //.frame(height: UIScreen.screenHeight/1.5, alignment: .bottom)
                         }
                     }
                     if appDelegate.musicSub.type == .Spotify {
                         HStack(alignment: .bottom){
                             SpotPlayerView(songID: spotID, songName: songName, songArtistName: songArtistName, songArtImageData: spotImageData, songDuration: spotSongDuration, songPreviewURL: spotPreviewURL, confirmButton: false, showFCV: $showFCV, appRemote2: appRemote2)
-                                .frame(height: UIScreen.screenHeight/1.5, alignment: .bottom)
+                                .frame(maxHeight: .infinity)
+                            //.frame(height: UIScreen.screenHeight/1.5, alignment: .bottom)
                         }
                     }
                     if appDelegate.musicSub.type == .Neither {
                         HStack(alignment: .bottom){
                             if songAddedUsing == "Apple" {
-                                SongPreviewPlayer(songID: songID, songName: songName, songArtistName: songArtistName, songArtImageData: songArtImageData, songDuration: songDuration, songPreviewURL: songPreviewURL, confirmButton: false, showFCV: $showFCV, songAddedUsing: .Apple)
-                                .frame(height: UIScreen.screenHeight/1.5, alignment: .bottom)
+                                SongPreviewPlayer(songID: songID, songName: songName, songArtistName: songArtistName, songArtImageData: songArtImageData, songDuration: songDuration, songPreviewURL: songPreviewURL, confirmButton: false, showFCV: $showFCV, songAddedUsing: "Apple")
+                                    .frame(maxHeight: .infinity)
+                                //.frame(height: UIScreen.screenHeight/1.5, alignment: .bottom)
                             }
                             if songAddedUsing == "Spotify" {
-                                SongPreviewPlayer(songID: spotID, songName: songName, songArtistName: songArtistName, songArtImageData: spotImageData, songDuration: spotSongDuration, songPreviewURL: spotPreviewURL,confirmButton: false, showFCV: $showFCV, songAddedUsing: .Spotify)
-                                .frame(height: UIScreen.screenHeight/1.5, alignment: .bottom)
+                                SongPreviewPlayer(songID: spotID, songName: songName, songArtistName: songArtistName, songArtImageData: spotImageData, songDuration: spotSongDuration, songPreviewURL: spotPreviewURL,confirmButton: false, showFCV: $showFCV, songAddedUsing: "Spotify")
+                                    .frame(maxHeight: .infinity)
+                                //.frame(height: UIScreen.screenHeight/1.5, alignment: .bottom)
                             }
                         }
                     }
-
                 }
             }
+            .frame(width: UIScreen.screenWidth/2.1)
+            .fixedSize(horizontal: true, vertical: false)
         }
         .onAppear {
-            
-            if appDelegate.musicSub.type == .Spotify {
-                print("SpotID: \(spotID)")
-                print((defaults.object(forKey: "SpotifyAccessToken") as? String)!)
-                appRemote2?.connectionParameters.accessToken = (defaults.object(forKey: "SpotifyAccessToken") as? String)!
-            }
+            if appDelegate.musicSub.type == .Spotify {appRemote2?.connectionParameters.accessToken = (defaults.object(forKey: "SpotifyAccessToken") as? String)!}
         }
     }
 }

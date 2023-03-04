@@ -49,8 +49,10 @@ struct AMPlayerView: View {
         return  VStack {
             Image(uiImage: UIImage(data: songArtImageData!)!)
             Text(songName!)
+                .multilineTextAlignment(.center)
                 .font(.headline)
             Text(songArtistName!)
+                .multilineTextAlignment(.center)
             HStack {
                 Button {
                     musicPlayer.setQueue(with: [songID!])

@@ -12,7 +12,30 @@ import CoreData
 import CloudKit
 import StoreKit
 import MediaPlayer
+import AVFoundation
+import AVFAudio
 // https://santoshkumarjm.medium.com/how-to-design-a-custom-avplayer-to-play-audio-using-url-in-ios-swift-439f0dbf2ff2
+
+
+
+
+class AudioURLPlayer: ObservableObject {
+    var player: AVPlayer?
+    
+    func playPreview(song: String) {
+        if let url = URL(string: song) {
+            self.player = AVPlayer(url: url)
+        }
+    }
+    
+}
+
+
+
+
+
+
+
 struct SongPreviewPlayer: View {
     @State var songID: String?
     @State var songName: String?
@@ -24,22 +47,20 @@ struct SongPreviewPlayer: View {
     @State private var isPlaying = true
     @State var confirmButton: Bool
     @Binding var showFCV: Bool
-    @State private var player: AVPlayer?
     @EnvironmentObject var appDelegate: AppDelegate
-    @State var songAddedUsing: MusicSubscriptionOptions
+    @State var songAddedUsing: String
     @State var color: Color?
+    @State var audioPlayer: AVPlayer!
+    @StateObject private var audioURLPlayer = AudioURLPlayer()
+    
+    
     var body: some View {NavigationStack {PreviewPlayerView()}.environmentObject(appDelegate)}
     
     @ViewBuilder var selectButtonPreview: some View {
-        if confirmButton == true {Button {showFCV = true; player!.pause(); songProgress = 0.0} label: {Text("Select Song For Card").foregroundColor(.blue)}}
+        if confirmButton == true {Button {showFCV = true; audioURLPlayer.player?.pause(); songProgress = 0.0} label: {Text("Select Song For Card").foregroundColor(.blue)}}
         else {Text("")}
     }
     
-    
-    func createPlayer() {
-        let playerItem = AVPlayerItem(url: URL(string: songPreviewURL!)!)
-        self.player = AVPlayer(playerItem: playerItem)
-    }
 
     func PreviewPlayerView() -> some View {
         let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
@@ -50,8 +71,8 @@ struct SongPreviewPlayer: View {
             Text(songArtistName!)
             HStack {
                 Button {
-                    player!.seek(to: .zero)
-                    player!.play()
+                    audioURLPlayer.player?.seek(to: .zero)
+                    audioURLPlayer.player?.play()
                     songProgress = 0.0
                     isPlaying = true
                 } label: {
@@ -67,8 +88,8 @@ struct SongPreviewPlayer: View {
                 .frame(maxWidth: UIScreen.screenHeight/12, maxHeight: UIScreen.screenHeight/12)
                 Button {
                     isPlaying.toggle()
-                    if player!.timeControlStatus.rawValue == 2 {player!.pause()}
-                    else {player!.play()}
+                    if audioURLPlayer.player?.timeControlStatus.rawValue == 2 {audioURLPlayer.player?.pause()}
+                    else {audioURLPlayer.player?.play()}
                 } label: {
                     ZStack {
                         Circle()
@@ -83,7 +104,7 @@ struct SongPreviewPlayer: View {
             }
             ProgressView(value: songProgress, total: 30)
                 .onReceive(timer) {_ in
-                    if songProgress < 30 && player!.timeControlStatus.rawValue == 2 {songProgress += 1}
+                    if songProgress < 30 && audioURLPlayer.player?.timeControlStatus.rawValue == 2 {songProgress += 1}
                 }
             HStack{
                 Text(convertToMinutes(seconds:Int(songProgress)))
@@ -94,11 +115,16 @@ struct SongPreviewPlayer: View {
             selectButtonPreview
         }
         .onAppear{
-            createPlayer(); player!.play()
-            if songAddedUsing == .Spotify{color = .green}
+            self.audioPlayer = try! AVPlayer(url: URL(string: songPreviewURL!)!)
+            self.audioPlayer.play()
+            
+            print("SongPreviewPlayer Appeared....")
+            audioURLPlayer.playPreview(song: songPreviewURL!); audioURLPlayer.player?.play()
+            print(audioURLPlayer.player?.status.rawValue)
+            if songAddedUsing == "Spotify" {color = .green}
             else {color = .pink}
         }
-        .onDisappear{player!.pause()}
+        .onDisappear{audioURLPlayer.player?.pause()}
     }
     
     func convertToMinutes(seconds: Int) -> String {
