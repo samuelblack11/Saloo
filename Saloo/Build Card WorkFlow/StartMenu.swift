@@ -61,7 +61,7 @@ struct StartMenu: View {
         //.environmentObject(appDelegate)
         .environmentObject(musicSub)
         //.onChange(of: appDelegate.acceptedShare!){acceptedECard in showEnlargeECard = true}
-        .onChange(of: sceneDelegate.acceptedShare){acceptedECard in
+        .onChange(of: sceneDelegate.gotRecord){acceptedECard in
             
             if sceneDelegate.coreCard!.creator! == self.userID { whichBoxForCKAccept = .outbox}
             else {whichBoxForCKAccept = .inbox}
@@ -77,7 +77,7 @@ struct StartMenu: View {
             }
             else{showPrefMenu = true }
         }
-        .fullScreenCover(isPresented: $showEnlargeECard){EnlargeECardView(chosenCard: appDelegate.coreCard!, share: appDelegate.$acceptedShare, cardsForDisplay: loadCoreCards(), whichBoxVal: .inbox)}
+        .fullScreenCover(isPresented: $showEnlargeECard){EnlargeECardView(chosenCard: sceneDelegate.coreCard!, share: appDelegate.$acceptedShare, cardsForDisplay: loadCoreCards(), whichBoxVal: .inbox)}
         .fullScreenCover(isPresented: $showPrefMenu) {PrefMenu().environmentObject(musicSub)}
     }}
 
