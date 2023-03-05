@@ -15,12 +15,12 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
     var window: UIWindow?
     @State var userID = String()
     var acceptedShare: CKShare?
-    var acceptedRecord: CKRecord?
     //taskContext.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
     let coreCard = CoreCard(context: PersistenceController.shared.persistentContainer.newTaskContext())
     var whichBoxForCKAccept: InOut.SendReceive?
     var gotRecord = false
     var connectToScene = true
+    var checkIfRecordAddedToStore = true
     //@StateObject var appDelegate = AppDelegate()
     @ObservedObject var appDelegate = AppDelegate()
     
@@ -31,8 +31,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
         if let windowScene = scene as? UIWindowScene {
             Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { timer in
                 if self.gotRecord && self.connectToScene {
-                    let contentView = GridofCards(cardsForDisplay: self.loadCoreCards(), whichBoxVal: self.whichBoxForCKAccept!, selectionFromAcceptedShare: self.acceptedRecord)
-                    //let contentView = EnlargeECardView(chosenCard: self.coreCard, share: self.acceptedShare, cardsForDisplay: self.loadCoreCards(), whichBoxVal: self.whichBoxForCKAccept!).environmentObject(self.appDelegate)
+                    let contentView = EnlargeECardView(chosenCard: self.coreCard, share: self.acceptedShare, cardsForDisplay: self.loadCoreCards(), whichBoxVal: self.whichBoxForCKAccept!).environmentObject(self.appDelegate)
                     print("called willConnectTo")
                     let window = UIWindow(windowScene: windowScene)
                     window.rootViewController = UIHostingController(rootView: contentView)
@@ -45,16 +44,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
             }
         }
     }
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
 
     /**
      To be able to accept a share, add a CKSharingSupported entry in the Info.plist file and set it to true.
@@ -67,29 +56,46 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
             if let error = error {print("\(#function): Failed to accept share invitations: \(error)")}
             else {
                 self.acceptedShare = cloudKitShareMetadata.share; print("Accepted Share..."); print(self.acceptedShare as Any)
-                getRecordViaQuery(share: cloudKitShareMetadata.share)
+                print("/////\(self.checkIfRecordAddedToStore)")
+                Task {
+                    await self.runGetRecord(shareMetaData: cloudKitShareMetadata)
+                }
             }
         }
     }
     
-    func getRecordViaQuery(share: CKShare) {
+    func runGetRecord(shareMetaData: CKShare.Metadata) async {
+        print("called getRecord")
+        //Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { timer in
+        DispatchQueue.main.asyncAfter(deadline: .now() + 4.0) {
+            print("check1")
+            print(self.checkIfRecordAddedToStore)
+            if self.checkIfRecordAddedToStore {
+                print("We Checked....")
+                self.getRecordViaQuery(shareMetaData: shareMetaData)
+            }
+       }
+        //}
+    }
+    
+    
+    
+    
+    
+    func getRecordViaQuery(shareMetaData: CKShare.Metadata) {
         let ckContainer = PersistenceController.shared.cloudKitContainer
         let pred = NSPredicate(value: true)
         let query = CKQuery(recordType: "CD_CoreCard", predicate: pred)
         let op3 = CKQueryOperation(query: query)
-        op3.zoneID = share.recordID.zoneID//.zoneName
+        
+        op3.zoneID = shareMetaData.share.recordID.zoneID//.zoneName
         op3.recordMatchedBlock = {recordID, result in
             print("Got Record...")
+            self.checkIfRecordAddedToStore = false
             ckContainer.sharedCloudDatabase.fetch(withRecordID: recordID){ record, error in
                 print("***")
-                
-                self.acceptedRecord = record
                 print(record?.object(forKey: "CD_songArtistName") as! String)
-                self.getCurrentUserID()
-                if record?.object(forKey: "CD_creator") as? String == self.userID { self.whichBoxForCKAccept = .outbox}
-                else {self.whichBoxForCKAccept = .inbox}
-                self.gotRecord = true
-                //self.parseRecord(record: record)
+                self.parseRecord(record: record)
             }
         }
         op3.queryResultBlock = {result in
@@ -102,7 +108,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
     
     func parseRecord(record: CKRecord?) {
         DispatchQueue.main.async() {
-            self.coreCard.cardName = record?.object(forKey: "CD_cardName") as! String
             self.coreCard.occassion = record?.object(forKey: "CD_occassion") as! String
             self.coreCard.recipient = record?.object(forKey: "CD_recipient") as! String
             self.coreCard.sender = record?.object(forKey: "CD_sender") as? String
@@ -129,6 +134,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
             self.coreCard.spotPreviewURL = record?.object(forKey: "CD_spotPreviewURL") as? String
             self.coreCard.creator = record?.object(forKey: "CD_creator") as? String
             self.coreCard.songAddedUsing = record?.object(forKey: "CD_songAddedUsing") as? String
+            self.coreCard.cardName = record?.object(forKey: "CD_cardName") as! String
             if self.coreCard.creator! == self.userID { self.whichBoxForCKAccept = .outbox}
             else {self.whichBoxForCKAccept = .inbox}
             self.gotRecord = true
