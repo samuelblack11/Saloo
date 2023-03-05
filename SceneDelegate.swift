@@ -15,6 +15,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
     var window: UIWindow?
     @State var userID = String()
     var acceptedShare: CKShare?
+    var acceptedRecord: CKRecord?
     //taskContext.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
     let coreCard = CoreCard(context: PersistenceController.shared.persistentContainer.newTaskContext())
     var whichBoxForCKAccept: InOut.SendReceive?
@@ -30,7 +31,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
         if let windowScene = scene as? UIWindowScene {
             Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { timer in
                 if self.gotRecord && self.connectToScene {
-                    let contentView = EnlargeECardView(chosenCard: self.coreCard, share: self.acceptedShare, cardsForDisplay: self.loadCoreCards(), whichBoxVal: self.whichBoxForCKAccept!).environmentObject(self.appDelegate)
+                    let contentView = GridofCards(cardsForDisplay: self.loadCoreCards(), whichBoxVal: self.whichBoxForCKAccept!, selectionFromAcceptedShare: self.acceptedRecord)
+                    //let contentView = EnlargeECardView(chosenCard: self.coreCard, share: self.acceptedShare, cardsForDisplay: self.loadCoreCards(), whichBoxVal: self.whichBoxForCKAccept!).environmentObject(self.appDelegate)
                     print("called willConnectTo")
                     let window = UIWindow(windowScene: windowScene)
                     window.rootViewController = UIHostingController(rootView: contentView)
@@ -43,6 +45,16 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
             }
         }
     }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
 
     /**
      To be able to accept a share, add a CKSharingSupported entry in the Info.plist file and set it to true.
@@ -70,8 +82,14 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
             print("Got Record...")
             ckContainer.sharedCloudDatabase.fetch(withRecordID: recordID){ record, error in
                 print("***")
+                
+                self.acceptedRecord = record
                 print(record?.object(forKey: "CD_songArtistName") as! String)
-                self.parseRecord(record: record)
+                self.getCurrentUserID()
+                if record?.object(forKey: "CD_creator") as? String == self.userID { self.whichBoxForCKAccept = .outbox}
+                else {self.whichBoxForCKAccept = .inbox}
+                self.gotRecord = true
+                //self.parseRecord(record: record)
             }
         }
         op3.queryResultBlock = {result in
@@ -129,27 +147,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
     
     func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
         let url = URLContexts.first!.url
-    }
-    
-    func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
-        //self.scene(scene, openURLContexts: connectionOptions.urlContexts)
-        // Create the SwiftUI view that provides the window contents.
-        // Use a UIHostingController as window root view controller.
-        if let windowScene = scene as? UIWindowScene {
-            Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { timer in
-                if self.gotRecord && self.connectToScene {
-                    let contentView = EnlargeECardView(chosenCard: self.coreCard, share: self.acceptedShare, cardsForDisplay: self.loadCoreCards(), whichBoxVal: self.whichBoxForCKAccept!).environmentObject(self.appDelegate)
-                    print("called willConnectTo")
-                    let window = UIWindow(windowScene: windowScene)
-                    window.rootViewController = UIHostingController(rootView: contentView)
-                    self.window = window
-                    window.makeKeyAndVisible()
-                    self.connectToScene = false
-                    //let url = connectionOptions.urlContexts.first?.url
-                    //self.scene(scene, openURLContexts: url)
-                }
-            }
-        }
     }
     
     func loadCoreCards() -> [CoreCard] {
