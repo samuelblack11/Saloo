@@ -56,15 +56,45 @@ struct SongPreviewPlayer: View {
     @State var songAddedUsing: String
     @State var color: Color?
     @State var audioPlayer: AVPlayer!
-    @StateObject private var audioURLPlayer = AudioURLPlayer()
+    //@StateObject private var audioURLPlayer = AudioURLPlayer()
+    @State private var player: AVPlayer?
     
-    
-    var body: some View {NavigationStack {PreviewPlayerView()}.environmentObject(appDelegate)}
+    var body: some View {
+        NavigationStack {
+            PreviewPlayerView()
+        }
+        .onDisappear {
+            print("Called from bod...")
+            player?.replaceCurrentItem(with: nil)
+            player?.pause()
+            //player?.pause()
+        }
+        .environmentObject(appDelegate)
+        
+    }
+        
     
     @ViewBuilder var selectButtonPreview: some View {
-        if confirmButton == true {Button {showFCV = true; audioURLPlayer.player?.pause(); songProgress = 0.0} label: {Text("Select Song For Card").foregroundColor(.blue)}}
+        if confirmButton == true {Button {showFCV = true; player?.pause(); songProgress = 0.0} label: {Text("Select Song For Card").foregroundColor(.blue)}}
         else {Text("")}
     }
+    
+    
+    func createPlayer() {
+        let audioSession = AVAudioSession.sharedInstance()
+        do {
+            try audioSession.setCategory(.playback)
+            try audioSession.overrideOutputAudioPort(AVAudioSession.PortOverride.none)
+            try audioSession.setActive(true)
+            let playerItem = AVPlayerItem(url: URL(string: songPreviewURL!)!)
+            self.player = AVPlayer.init(playerItem: playerItem)
+        }
+        catch{print(error.localizedDescription)}
+    }
+    
+    
+    
+    
     
 
     func PreviewPlayerView() -> some View {
@@ -76,8 +106,8 @@ struct SongPreviewPlayer: View {
             Text(songArtistName!)
             HStack {
                 Button {
-                    audioURLPlayer.player?.seek(to: .zero)
-                    audioURLPlayer.player?.play()
+                    player?.seek(to: .zero)
+                    player?.play()
                     songProgress = 0.0
                     isPlaying = true
                 } label: {
@@ -93,8 +123,8 @@ struct SongPreviewPlayer: View {
                 .frame(maxWidth: UIScreen.screenHeight/12, maxHeight: UIScreen.screenHeight/12)
                 Button {
                     isPlaying.toggle()
-                    if audioURLPlayer.player?.timeControlStatus.rawValue == 2 {audioURLPlayer.player?.pause()}
-                    else {audioURLPlayer.player?.play()}
+                    if player?.timeControlStatus.rawValue == 2 {player?.pause()}
+                    else {player?.play()}
                 } label: {
                     ZStack {
                         Circle()
@@ -109,7 +139,7 @@ struct SongPreviewPlayer: View {
             }
             ProgressView(value: songProgress, total: 30)
                 .onReceive(timer) {_ in
-                    if songProgress < 30 && audioURLPlayer.player?.timeControlStatus.rawValue == 2 {songProgress += 1}
+                    if songProgress < 30 && player?.timeControlStatus.rawValue == 2 {songProgress += 1}
                 }
             HStack{
                 Text(convertToMinutes(seconds:Int(songProgress)))
@@ -120,14 +150,21 @@ struct SongPreviewPlayer: View {
             selectButtonPreview
         }
         .onAppear{
-            audioURLPlayer.playPreview(song: songPreviewURL!)
+            createPlayer()
+            player?.play()
+            //audioURLPlayer.playPreview(song: songPreviewURL!)
             if songAddedUsing == "Spotify" {color = .green}
             else {color = .pink}
         }
         .onDisappear{
-            audioURLPlayer.player?.pause()
-            audioURLPlayer.player?.replaceCurrentItem(with: nil)
-            audioURLPlayer.player = nil
+            print("Called On Disapper...")
+            player?.replaceCurrentItem(with: nil)
+            player?.play()
+            //player?.replaceCurrentItem(with: nil)
+            //player?.pause()
+            //audioURLPlayer.player?.pause()
+            //audioURLPlayer.player?.replaceCurrentItem(with: nil)
+            //audioURLPlayer.player = nil
         }
     }
     

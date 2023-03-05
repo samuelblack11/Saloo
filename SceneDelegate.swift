@@ -21,38 +21,52 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
     var gotRecord = false
     var connectToScene = true
     var checkIfRecordAddedToStore = true
+    var waitingToAcceptRecord = false
     //@StateObject var appDelegate = AppDelegate()
     @ObservedObject var appDelegate = AppDelegate()
+    
+    
+ 
+    
+    
     
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         //self.scene(scene, openURLContexts: connectionOptions.urlContexts)
         // Create the SwiftUI view that provides the window contents.
         // Use a UIHostingController as window root view controller.
+        
+        //if waitingToAcceptRecord {
+       //     if let windowScene = scene as? UIWindowScene {
+       //         let window1 = UIWindow(windowScene: windowScene)
+       //         window1.rootViewController = UIHostingController(rootView: StartMenu())
+       //         window1.windowLevel = UIWindow.Level.alert + 1
+        //        let alertController = UIAlertController(title: "Your Card is Loading...", message: "Please Wait", preferredStyle: UIAlertController.Style.alert)
+        //        window1.makeKeyAndVisible()
+        //        window1.rootViewController?.present(alertController, animated: true)
+        //        waitingToAcceptRecord = false
+        //    }
+        //}
         if let windowScene = scene as? UIWindowScene {
             Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { timer in
                 if self.gotRecord && self.connectToScene {
                     let contentView = EnlargeECardView(chosenCard: self.coreCard, share: self.acceptedShare, cardsForDisplay: self.loadCoreCards(), whichBoxVal: self.whichBoxForCKAccept!).environmentObject(self.appDelegate)
+                    //let contentView = GridofCards(cardsForDisplay: self.loadCoreCards(), whichBoxVal: .inbox)
                     print("called willConnectTo")
                     let window = UIWindow(windowScene: windowScene)
-                    
-                    
-                    
                     window.rootViewController = UIHostingController(rootView: contentView)
                     self.window = window
                     
                     let options: UIView.AnimationOptions = [.transitionCrossDissolve]
                     let duration: TimeInterval = 0.3
-                    UIView.transition(with: window, duration: duration, options: options, animations: {}, completion:  { completed in
+                    UIWindow.transition(with: window, duration: duration, options: options, animations: {}, completion:  { completed in
                         window.makeKeyAndVisible()
                     })
                     
                     
                     
-                    
-                    //let options: UIView.AnimationOptions = .transitionCrossDissolve
-                    //UIView.transition(with: window, duration: 0.3, options: options, animations: nil) {_ in print("transition complete")}
-                    //UIView.animate(withDuration: 0.3, delay: 0, options: [.curveEaseOut], animations: )
-                    //window.makeKeyAndVisible()
+                    //UIView.transition(with: window, duration: duration, options: options, animations: {}, completion:  { completed in
+                    //    window.makeKeyAndVisible()
+                    //})
                     self.connectToScene = false
                     //let url = connectionOptions.urlContexts.first?.url
                     //self.scene(scene, openURLContexts: url)
@@ -72,7 +86,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
             if let error = error {print("\(#function): Failed to accept share invitations: \(error)")}
             else {
                 self.acceptedShare = cloudKitShareMetadata.share; print("Accepted Share..."); print(self.acceptedShare as Any)
-                print("/////\(self.checkIfRecordAddedToStore)")
+                waitingToAcceptRecord = true
+                //self.gotRecord = true
                 Task {
                     await self.runGetRecord(shareMetaData: cloudKitShareMetadata)
                 }
@@ -82,15 +97,17 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
     
     func runGetRecord(shareMetaData: CKShare.Metadata) async {
         print("called getRecord")
-        //Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { timer in
-        //DispatchQueue.main.asyncAfter(deadline: .now() + 4.0) {
-            print("check1")
-            print(self.checkIfRecordAddedToStore)
+        //if shareMetaData.share.participants.count > 1 {
             if self.checkIfRecordAddedToStore {
-                print("We Checked....")
                 self.getRecordViaQuery(shareMetaData: shareMetaData)
             }
-       //}
+        //}
+        //else {
+        //    DispatchQueue.main.asyncAfter(deadline: .now() + 5.0) {
+        //        if self.checkIfRecordAddedToStore {
+        //            self.getRecordViaQuery(shareMetaData: shareMetaData)
+        //        }
+        //    }
         //}
     }
     
@@ -103,23 +120,15 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
         let pred = NSPredicate(value: true)
         let query = CKQuery(recordType: "CD_CoreCard", predicate: pred)
         let op3 = CKQueryOperation(query: query)
-        
         op3.zoneID = shareMetaData.share.recordID.zoneID//.zoneName
         op3.recordMatchedBlock = {recordID, result in
-            print("Got Record...")
             self.checkIfRecordAddedToStore = false
             ckContainer.sharedCloudDatabase.fetch(withRecordID: recordID){ record, error in
-                print("***")
-                print(record?.object(forKey: "CD_songArtistName") as! String)
                 self.parseRecord(record: record)
             }
         }
-        op3.queryResultBlock = {result in
-            print("queryResultBlock Called")
-            //switch result {//case .success(let win): print("This was a success"); //case .failure(let _): print("This faield")//}
-        }
+
         ckContainer.sharedCloudDatabase.add(op3)
-        print("Query Complete...")
     }
     
     func parseRecord(record: CKRecord?) {
@@ -163,12 +172,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
             self.userID = (ckRecordID?.recordName)!
         }
         
-    }
-    
-    
-    
-    func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
-        let url = URLContexts.first!.url
     }
     
     func loadCoreCards() -> [CoreCard] {

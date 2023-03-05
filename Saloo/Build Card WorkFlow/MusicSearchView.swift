@@ -250,7 +250,13 @@ extension MusicSearchView {
                         print(song)
                         let artURL = URL(string:song.album.images[2].url)
                         let _ = getURLData(url: artURL!, completionHandler: {(artResponse, error2) in
-                            let songForList = SongForList(id: song.id, name: song.name, artistName: song.artists[0].name, artImageData: artResponse!, durationInMillis: song.duration_ms, isPlaying: false, previewURL: song.preview_url)
+                            let blankString: String? = ""
+                            var songPrev: String?
+                            
+                            if song.preview_url != nil {print("it's not nil"); songPrev = song.preview_url}
+                            else {songPrev = blankString}
+                            
+                            let songForList = SongForList(id: song.id, name: song.name, artistName: song.artists[0].name, artImageData: artResponse!, durationInMillis: song.duration_ms, isPlaying: false, previewURL: songPrev!)
                             searchResults.append(songForList)})
                     }}}; if response != nil {print("No Response!")}
                         else{debugPrint(error?.localizedDescription)}
