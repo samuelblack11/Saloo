@@ -20,11 +20,32 @@ import AVFAudio
 
 
 class AudioURLPlayer: ObservableObject {
-    var player: AVPlayer?
+   @Published var player: AVPlayer?
     
     func playPreview(song: String) {
         if let url = URL(string: song) {
-            self.player = AVPlayer(url: url)
+            let playerItem = AVPlayerItem(url: url)
+            //print(playerItem.statu.rawValue)
+            //self.player = AVPlayer(playerItem: playerItem)
+            self.player = AVPlayer.init(url: url)
+            self.player?.automaticallyWaitsToMinimizeStalling = false
+            //print(playerItem.status.rawValue)
+            //player!.rate = 1.0
+            //player?.playImmediately(atRate: 1.0)
+            //player?.b
+            self.player?.play()
+            print("Player Item Status....")
+            // timeControlStatus = 2. This means "playing". Not paused or waitingToPlayAtSpecifiedRate
+            print(url)
+            print(self.player?.timeControlStatus.rawValue)
+            // player status raw value = 0. Meaning its media hasn't been loaded or enqueed for playback
+            print(self.player?.status.rawValue)
+            print("---")
+            print(self.player?.currentItem?.status.rawValue)
+            //print(self?.playe)
+            print(self.player?.reasonForWaitingToPlay)
+            print(self.player?.reasonForWaitingToPlay?.rawValue)
+
         }
     }
     
@@ -118,9 +139,10 @@ struct SongPreviewPlayer: View {
             self.audioPlayer = try! AVPlayer(url: URL(string: songPreviewURL!)!)
             self.audioPlayer.play()
             
-            print("SongPreviewPlayer Appeared....")
-            audioURLPlayer.playPreview(song: songPreviewURL!); audioURLPlayer.player?.play()
-            print(audioURLPlayer.player?.status.rawValue)
+            print("SongPreviewPlayer Appeared....\(songPreviewURL)")
+            audioURLPlayer.playPreview(song: songPreviewURL!); //audioURLPlayer.player?.play()
+            //print(audioURLPlayer.player?.status.rawValue)
+            //print(audioURLPlayer.player?.isMuted)
             if songAddedUsing == "Spotify" {color = .green}
             else {color = .pink}
         }

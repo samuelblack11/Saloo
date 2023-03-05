@@ -22,6 +22,27 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
     var connectToScene = true
     //@StateObject var appDelegate = AppDelegate()
     @ObservedObject var appDelegate = AppDelegate()
+    
+    func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
+        //self.scene(scene, openURLContexts: connectionOptions.urlContexts)
+        // Create the SwiftUI view that provides the window contents.
+        // Use a UIHostingController as window root view controller.
+        if let windowScene = scene as? UIWindowScene {
+            Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { timer in
+                if self.gotRecord && self.connectToScene {
+                    let contentView = EnlargeECardView(chosenCard: self.coreCard, share: self.acceptedShare, cardsForDisplay: self.loadCoreCards(), whichBoxVal: self.whichBoxForCKAccept!).environmentObject(self.appDelegate)
+                    print("called willConnectTo")
+                    let window = UIWindow(windowScene: windowScene)
+                    window.rootViewController = UIHostingController(rootView: contentView)
+                    self.window = window
+                    window.makeKeyAndVisible()
+                    self.connectToScene = false
+                    //let url = connectionOptions.urlContexts.first?.url
+                    //self.scene(scene, openURLContexts: url)
+                }
+            }
+        }
+    }
 
     /**
      To be able to accept a share, add a CKSharingSupported entry in the Info.plist file and set it to true.
