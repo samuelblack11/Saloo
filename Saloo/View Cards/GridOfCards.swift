@@ -35,7 +35,6 @@ struct GridofCards: View {
     @State private var sortByValue = "Card Name"
     @State private var searchText = ""
     @State private var nameToDisplay: String?
-    @State var selectionFromAcceptedShare: CKRecord?
     @State var userID = String()
     var cardsFilteredBySearch: [CoreCard] {
         if searchText.isEmpty { return cardsForDisplay}
@@ -102,15 +101,6 @@ struct GridofCards: View {
                             Text("Saloo").font(.system(size: 4)).padding(.bottom,10).padding(.leading, 5)
                         }}.frame(width: (UIScreen.screenWidth/4), height: (UIScreen.screenHeight/15))
                 }
-                .onAppear{
-                    
-                    if selectionFromAcceptedShare != nil {
-                        print(card.associatedRecord.recordID.recordName)
-                        print("??? \(selectionFromAcceptedShare!.recordID.recordName)")
-                        if card.associatedRecord.recordID.recordName == selectionFromAcceptedShare!.recordID.recordName {
-                            segueToEnlarge = true}
-                        }
-                    }
                 //.sheet(isPresented: $showDeliveryScheduler) {ScheduleDelivery(card: card)}
                 .fullScreenCover(isPresented: $segueToEnlarge) {EnlargeECardView(chosenCard: card, share: share, cardsForDisplay: cardsForDisplay, whichBoxVal: whichBoxVal)}
                 Divider().padding(.bottom, 5)
@@ -126,16 +116,6 @@ struct GridofCards: View {
 
 // MARK: Returns CKShare participant permission, methods and properties to share
 extension GridofCards {
-    
-    
-    func selectAcceptedCKRecord() {
-        
-        
-        
-        segueToEnlarge = true
-    }
-    
-    
     
     func shareStatus(card: CoreCard) -> (Bool, Bool) {
         var isCardShared: Bool?
@@ -153,7 +133,7 @@ extension GridofCards {
                 .disabled(shareStatus(card: card).0)
         }
             Button("Manage Participation") { manageParticipation(coreCard: card)}
-            Button {segueToEnlarge = true} label: {Text("Enlarge eCard"); Image(systemName: "plus.magnifyingglass")}
+        Button {segueToEnlarge = true; print("Song Art Image Data....\(card.songArtImageData)")} label: {Text("Enlarge eCard"); Image(systemName: "plus.magnifyingglass")}
             Button {deleteCoreCard(coreCard: card)} label: {Text("Delete eCard"); Image(systemName: "trash").foregroundColor(.red)}
             Button {showDeliveryScheduler = true} label: {Text("Schedule eCard Delivery")}
         }
@@ -189,6 +169,7 @@ extension GridofCards {
                 print("Creator & Current User Record IDs....")
                 print(coreCard.creator!)
                 print(self.userID)
+
                 switch whichBoxVal {
                 case .outbox:
                     filteredCoreCards = coreCards.filter{_ in (coreCard.creator!.contains(self.userID))}

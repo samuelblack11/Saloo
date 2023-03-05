@@ -34,9 +34,25 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
                     let contentView = EnlargeECardView(chosenCard: self.coreCard, share: self.acceptedShare, cardsForDisplay: self.loadCoreCards(), whichBoxVal: self.whichBoxForCKAccept!).environmentObject(self.appDelegate)
                     print("called willConnectTo")
                     let window = UIWindow(windowScene: windowScene)
+                    
+                    
+                    
                     window.rootViewController = UIHostingController(rootView: contentView)
                     self.window = window
-                    window.makeKeyAndVisible()
+                    
+                    let options: UIView.AnimationOptions = [.transitionCrossDissolve]
+                    let duration: TimeInterval = 0.3
+                    UIView.transition(with: window, duration: duration, options: options, animations: {}, completion:  { completed in
+                        window.makeKeyAndVisible()
+                    })
+                    
+                    
+                    
+                    
+                    //let options: UIView.AnimationOptions = .transitionCrossDissolve
+                    //UIView.transition(with: window, duration: 0.3, options: options, animations: nil) {_ in print("transition complete")}
+                    //UIView.animate(withDuration: 0.3, delay: 0, options: [.curveEaseOut], animations: )
+                    //window.makeKeyAndVisible()
                     self.connectToScene = false
                     //let url = connectionOptions.urlContexts.first?.url
                     //self.scene(scene, openURLContexts: url)
@@ -67,14 +83,14 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
     func runGetRecord(shareMetaData: CKShare.Metadata) async {
         print("called getRecord")
         //Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { timer in
-        DispatchQueue.main.asyncAfter(deadline: .now() + 4.0) {
+        //DispatchQueue.main.asyncAfter(deadline: .now() + 4.0) {
             print("check1")
             print(self.checkIfRecordAddedToStore)
             if self.checkIfRecordAddedToStore {
                 print("We Checked....")
                 self.getRecordViaQuery(shareMetaData: shareMetaData)
             }
-       }
+       //}
         //}
     }
     
