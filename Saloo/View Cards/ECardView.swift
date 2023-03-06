@@ -49,7 +49,9 @@ struct eCardView: View {
                 Text(eCardText)
                     .font(Font.custom(font, size: 500)).minimumScaleFactor(0.01)
                 Image(uiImage: UIImage(data: collageImage)!)
-                    .interpolation(.none).resizable().scaledToFit()
+                    .interpolation(.high).resizable().scaledToFill()
+                    .frame(width: UIScreen.screenHeight/4, height: UIScreen.screenHeight/4)
+
                 //Spacer()
                 HStack(spacing: 0) {
                     Spacer()

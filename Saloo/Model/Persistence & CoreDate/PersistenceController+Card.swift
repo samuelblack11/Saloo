@@ -29,7 +29,7 @@ extension PersistenceController {
             coreCard.an2URL = an2URL
             coreCard.an3 = an3
             coreCard.an4 = an4
-            coreCard.collage = collageImage.collageImage.pngData()!
+            coreCard.collage = collageImage.collageImage
             coreCard.coverImage = chosenObject.coverImage
             coreCard.date = Date.now
             coreCard.font = noteField.font
@@ -46,6 +46,10 @@ extension PersistenceController {
             coreCard.spotSongDuration = spotSongDuration
             coreCard.spotPreviewURL = spotPreviewURL
             coreCard.songAddedUsing = songAddedUsing
+            coreCard.collage1 = collageImage.image1
+            coreCard.collage2 = collageImage.image2
+            coreCard.collage3 = collageImage.image3
+            coreCard.collage4 = collageImage.image4
             PersistenceController.shared.cloudKitContainer.fetchUserRecordID { ckRecordID, error in
                 coreCard.creator = (ckRecordID?.recordName)!
             }

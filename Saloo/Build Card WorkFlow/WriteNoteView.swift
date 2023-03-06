@@ -69,9 +69,9 @@ struct WriteNoteView: View {
             }
         HStack {
         Text("\(225 - message.value.count) Characters Remaining").font(Font.custom(selectedFont, size: 10))
-        Image(uiImage: collageImage.collageImage)
-                .resizable()
-                .frame(width: (UIScreen.screenWidth/5)-10, height: (UIScreen.screenWidth/5),alignment: .center)
+            //Image(uiImage: UIImage(data: collageImage.image1)!)
+                //.resizable()
+                //.frame(width: (UIScreen.screenWidth/5)-10, height: (UIScreen.screenWidth/5),alignment: .center)
         }
         //Spacer()
         fontMenu.frame(height: 65)
@@ -113,7 +113,6 @@ struct WriteNoteView: View {
         .environmentObject(chosenSong)
 
 
-        .onAppear{print("called writeNoteView....//"); print(collageImage.collageImage)}
     }
 }
 

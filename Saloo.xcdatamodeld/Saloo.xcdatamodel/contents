@@ -13,6 +13,10 @@
         <attribute name="associatedRecord" optional="YES" attributeType="Transformable"/>
         <attribute name="cardName" optional="YES" attributeType="String"/>
         <attribute name="collage" optional="YES" attributeType="Binary"/>
+        <attribute name="collage1" optional="YES" attributeType="Binary"/>
+        <attribute name="collage2" optional="YES" attributeType="Binary"/>
+        <attribute name="collage3" optional="YES" attributeType="Binary"/>
+        <attribute name="collage4" optional="YES" attributeType="Binary"/>
         <attribute name="coverImage" optional="YES" attributeType="Binary"/>
         <attribute name="creator" optional="YES" attributeType="String"/>
         <attribute name="date" optional="YES" attributeType="Date" usesScalarValueType="NO"/>

@@ -7,6 +7,7 @@
 
 import Foundation
 import SwiftUI
+import PDFKit
 
 struct CollageBuilder: View {
     // The image, and it's components, selected by the user
@@ -39,23 +40,30 @@ struct CollageBuilder: View {
     @State private var imageC: Image?
     @State private var imageD: Image?
     @State private var imageNumber: Int?
-
+    @Environment(\.displayScale) var displayScale
+    @State var lastScaleValue: CGFloat = 1.0
+    var minWidth = CGFloat(100)
+    var maxWidth = CGFloat(300)
+    var minHeight = CGFloat(100)
+    var maxHeight = CGFloat(320)
+    var width = UIScreen.screenWidth/2
+    var height = UIScreen.screenHeight/3
+    
+    
     
     var collageView: some View {
-        VStack {chosenTemplate}.frame(minWidth: 100, maxWidth: 300, minHeight: 100,maxHeight: 325)
+        VStack {chosenTemplate}.frame(width: width, height: height)
     }
     
     var body: some View {
         NavigationStack {
             VStack {
                 Spacer()
-                collageView
+                collageView//.frame(width: UIScreen.screenHeight/4, height: UIScreen.screenHeight/4)
                 Spacer()
                 Button("Confirm Collage for Inside Cover") {
                     showWriteNote = true
-                    let theSnapShot = collageView.snapshot()
-                    collageImage.collageImage = theSnapShot
-                    //UIImageWriteToSavedPhotosAlbum(theSnapShot, nil, nil, nil)
+                    //collageImage.collageImage = snap2()
                 }.padding(.bottom, 30).fullScreenCover(isPresented: $showWriteNote ) {
                     WriteNoteView()}
             }
@@ -89,14 +97,38 @@ extension CollageBuilder {
         ]
         return imageDict[imageNumber]!
     }
+    
+    
+    
+    
+    
 
     
     func blockForPhotoSelection(imageForBlock: Image?, imageNum: Int) -> some View {
+        let shapeOptions = defineShapes()
+        var thisShape = String()
+        if imageNum == 1 {thisShape = shapeOptions.0}
+        if imageNum == 2 {thisShape = shapeOptions.1}
+        if imageNum == 3 {thisShape = shapeOptions.2}
+        if imageNum == 4 {thisShape = shapeOptions.3}
+        let (w2, h2) = shapeToDimensions(shape: thisShape)
+        
+        
+        
+        
+        print("Result of shapeToDimensions....\(shapeToDimensions(shape: thisShape))")
+        
+        
         return GeometryReader {geometry in
             ZStack(alignment: .center) {
                 Rectangle().fill(Color.gray).border(Color.black)
                 Text("Tap to select a picture").foregroundColor(.white).font(.headline)
-                imageForBlock?.resizable()
+                imageForBlock?
+                    .resizable()
+                    .scaledToFill()
+                    .frame(width: w2, height: h2)
+                    .border(Color.pink)
+                    .clipped()
             }
         }
         .onTapGesture{self.showImagePicker.toggle(); imageNumber = imageNum}
@@ -140,12 +172,47 @@ extension CollageBuilder {
     func twoNarrowOneWide(block1: some View, block2: some View, block3: some View) -> some View {return VStack(spacing:0){HStack(spacing:0){block1; block2}; block3}}
     func fourPhoto(block1: some View, block2: some View, block3: some View, block4: some View) -> some View {return VStack(spacing:0){HStack(spacing:0){block1; block2}; HStack(spacing:0){block3; block4}}}
     
-    func snap2() {
+    func defineShapes() -> (String, String, String, String) {
+        
+        var shape1 = ""; var shape2 = ""; var shape3 = ""; var shape4 = ""
+        // List shape of each block for each collage style
+        if chosenStyle.chosenStyle == 1{shape1 = "largeSquare" }
+        if chosenStyle.chosenStyle == 2{shape1 = "wide"; shape2 = "wide"}
+        if chosenStyle.chosenStyle == 3{shape1 = "tall"; shape2 = "tall" }
+        if chosenStyle.chosenStyle == 4{shape1 = "smallSquare"; shape2 = "smallSquare"; shape3 = "tall"}
+        if chosenStyle.chosenStyle == 5{shape1 = "smallSquare"; shape2 = "smallSquare"; shape3 = "wide"}
+        if chosenStyle.chosenStyle == 6{shape1 = "smallSquare"; shape2 = "smallSquare"; shape3 = "smallSquare"; shape4 = "smallSquare"}
+
+        return (shape1, shape2, shape3, shape4)
+    }
+    
+    
+    func shapeToDimensions(shape: String) -> (CGFloat, CGFloat){
+
+        var w = CGFloat(0.0)
+        var h = CGFloat(0.0)
+        
+        if shape == "largeSquare" {w = width; h = height}
+        if shape == "wide" {w = width; h = height/2}
+        if shape == "tall" {w = width/w; h = height}
+        if shape == "smallSquare" {w = width/2; h = height/2}
+        
+        return (h, w)
+    }
+    
+    
+    
+    
+    @MainActor func snap2() -> Data {
         let renderer = ImageRenderer(content: collageView)
         
+        renderer.scale = displayScale
+        var data = Data()
         if let uiImage = renderer.uiImage {
-            uiImage.pngData()
+            data = uiImage.jpegData(compressionQuality: 1.0)!
+            //data = uiImage.pngData()!
         }
+        return data
     }
 
     func loadImage(chosenImage: UIImage?) {
@@ -154,22 +221,34 @@ extension CollageBuilder {
         
         print("called load image.....")
         guard let chosenImage = chosenImage else {return print("loadImage() failed....")}
-        if imageNumber == 1 {imageA = Image(uiImage: chosenImage)}
-        if imageNumber == 2 {imageB = Image(uiImage: chosenImage)}
-        if imageNumber == 3 {imageC = Image(uiImage: chosenImage)}
-        if imageNumber == 4 {imageD = Image(uiImage: chosenImage)}
+        if imageNumber == 1 {imageA = Image(uiImage: chosenImage); collageImage.image1 = chosenImage.pngData()!}
+        if imageNumber == 2 {imageB = Image(uiImage: chosenImage); collageImage.image2 = chosenImage.pngData()!}
+        if imageNumber == 3 {imageC = Image(uiImage: chosenImage); collageImage.image3 = chosenImage.pngData()!}
+        if imageNumber == 4 {imageD = Image(uiImage: chosenImage); collageImage.image4 = chosenImage.pngData()!}
     }
     
 }
 
+
+struct PhotoDetailView: UIViewRepresentable {
+    let image: UIImage
+
+    func makeUIView(context: Context) -> PDFView {
+        let view = PDFView()
+        view.document = PDFDocument()
+        guard let page = PDFPage(image: image) else { return view }
+        view.document?.insert(page, at: 0)
+        view.autoScales = true
+        return view
+    }
+
+    func updateUIView(_ uiView: PDFView, context: Context) {
+        // empty
+    }
+}
+
 // https://www.hackingwithswift.com/quick-start/swiftui/how-to-convert-a-swiftui-view-to-an-image
 extension View {
-    
-
-    
-    
-    
-    
     func snapshot() -> UIImage {
         let controller = UIHostingController(rootView: self)
         let view = controller.view

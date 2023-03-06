@@ -93,7 +93,7 @@ struct FinalizeCardView: View {
         NavigationView {
         VStack(spacing: 0) {
             VStack{
-                eCardView(eCardText: noteField.noteText, font: noteField.font, coverImage: chosenObject.coverImage, collageImage: collageImage.collageImage.pngData()!, text1: annotation.text1, text2: annotation.text2, text2URL: annotation.text2URL, text3: annotation.text3, text4: annotation.text4, songID: chosenSong.id, spotID: chosenSong.spotID, songName: chosenSong.name, songArtistName: chosenSong.artistName, songArtImageData: chosenSong.artwork, songDuration: chosenSong.durationInSeconds, songPreviewURL: chosenSong.songPreviewURL, inclMusic: addMusic.addMusic, spotImageData: chosenSong.spotImageData, spotSongDuration: chosenSong.spotSongDuration, spotPreviewURL: chosenSong.spotPreviewURL, songAddedUsing: chosenSong.songAddedUsing, appRemote2: appRemote2)
+                eCardView(eCardText: noteField.noteText, font: noteField.font, coverImage: chosenObject.coverImage, collageImage: collageImage.image1, text1: annotation.text1, text2: annotation.text2, text2URL: annotation.text2URL, text3: annotation.text3, text4: annotation.text4, songID: chosenSong.id, spotID: chosenSong.spotID, songName: chosenSong.name, songArtistName: chosenSong.artistName, songArtImageData: chosenSong.artwork, songDuration: chosenSong.durationInSeconds, songPreviewURL: chosenSong.songPreviewURL, inclMusic: addMusic.addMusic, spotImageData: chosenSong.spotImageData, spotSongDuration: chosenSong.spotSongDuration, spotPreviewURL: chosenSong.spotPreviewURL, songAddedUsing: chosenSong.songAddedUsing, appRemote2: appRemote2)
             }
             VStack{saveButton}
         }
@@ -108,11 +108,7 @@ struct FinalizeCardView: View {
         .fullScreenCover(isPresented: $showShareSheet, content: {if let share = share {}})
         .fullScreenCover(isPresented: $showActivityController) {ActivityView(activityItems: $activityItemsArray, applicationActivities: nil)}
         }
-        .onAppear{
-            print("eCardText...\(noteField.eCardText)")
-            if appDelegate.musicSub.type == .Spotify{appRemote2?.playerAPI?.pause()}
-                        
-        }
+        .onAppear{ if appDelegate.musicSub.type == .Spotify{appRemote2?.playerAPI?.pause()}}
     }
 }
 

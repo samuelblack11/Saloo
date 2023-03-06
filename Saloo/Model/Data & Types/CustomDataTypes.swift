@@ -109,7 +109,19 @@ class Annotation: ObservableObject {
     @Published var text4 = String()
 }
 
-class CollageImage: ObservableObject {@Published var collageImage = UIImage()}
+//class CollageImage: ObservableObject {@Published var collageImage = UIImage()}
+
+class CollageImage: ObservableObject {
+    
+    @Published var collageImage = Data()
+    @Published var image1 = Data()
+    @Published var image2 = Data()
+    @Published var image3 = Data()
+    @Published var image4 = Data()
+
+}
+
+
 class AddMusic: ObservableObject {@Published var addMusic: Bool = false}
 
 // https://programmingwithswift.com/swiftui-textfield-character-limit/

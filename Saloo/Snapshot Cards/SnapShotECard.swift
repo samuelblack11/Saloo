@@ -41,10 +41,10 @@ struct SnapShotECard: View {
                 .foregroundColor(.black)
                 .minimumScaleFactor(0.01)
                 .frame(width: (UIScreen.screenWidth/1.5), height: (UIScreen.screenHeight/4))
-            Image(uiImage: collageImage.collageImage)
-                    .resizable()
-                    .scaledToFit()
-                    .frame(maxWidth: (UIScreen.screenWidth/1.5), maxHeight: (UIScreen.screenHeight/4))
+            Image(uiImage: UIImage(data: collageImage.collageImage)!)
+                .resizable()
+                .scaledToFit()
+                .frame(maxWidth: (UIScreen.screenWidth/1.5), maxHeight: (UIScreen.screenHeight/4))
             HStack(spacing: 0) {
                 Spacer()
                 VStack(spacing:0){
@@ -100,7 +100,7 @@ struct SnapShotECard: View {
                 }
                 .frame(width: (UIScreen.screenHeight/3)-10)
 
-            Image(uiImage: collageImage.collageImage)
+            Image(uiImage: UIImage(data:collageImage.collageImage)!)
                 .interpolation(.none)
                 .resizable()
                 .frame(width: (UIScreen.screenHeight/3)-2)
