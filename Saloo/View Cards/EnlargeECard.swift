@@ -14,7 +14,7 @@ import StoreKit
 import WebKit
 //https://www.appcoda.com/swiftui-confetti-animation/
 struct EnlargeECardView: View {
-    var chosenCard: CoreCard
+    @State var chosenCard: CoreCard
     @State var share: CKShare?
     @State private var counter = 1
     private let stack = PersistenceController.shared
@@ -40,15 +40,16 @@ struct EnlargeECardView: View {
     
     
     func getSongFromOtherServiceIfNeeded() {
+        print("gettingSongFromOtherService...")
+        print(chosenCard.songAddedUsing as? String)
+        print(appDelegate.musicSub.type)
         //if song from Apple and recip has SPOT
         // Search for song and associated data points using SPOT API
-        if chosenCard.songID != "" && appDelegate.musicSub.type == .Spotify {
-            chosenCard.songAddedUsing = "Apple"
+        if chosenCard.songAddedUsing == "Apple" && appDelegate.musicSub.type == .Spotify {
             //getSongViaSpot()
         }
         //if song from SPOT and recip as Apple
-        if chosenCard.spotID != "" && appDelegate.musicSub.type == .Apple {
-            chosenCard.songAddedUsing = "Spotify"
+        if chosenCard.songAddedUsing == "Spotify"  && appDelegate.musicSub.type == .Apple {
             getSongViaAM()
             //update core data value for song id,
             

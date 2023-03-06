@@ -43,6 +43,7 @@ struct GridofCards: View {
         //else if sortByValue == "Occassion" {return privateCards.filter { $0.occassion!.contains(searchText)}}
         else {return cardsForDisplay.filter { $0.cardName.contains(searchText)}}
     }
+    @State var cardForEnlarge: CoreCard?
     
     var sortOptions = ["Date","Card Name","Occassion"]
     
@@ -101,17 +102,21 @@ struct GridofCards: View {
                             Text("Saloo").font(.system(size: 4)).padding(.bottom,10).padding(.leading, 5)
                         }}.frame(width: (UIScreen.screenWidth/4), height: (UIScreen.screenHeight/15))
                 }
+                .contextMenu {contextMenuButtons(card: card)}
                 //.sheet(isPresented: $showDeliveryScheduler) {ScheduleDelivery(card: card)}
-                .fullScreenCover(isPresented: $segueToEnlarge) {EnlargeECardView(chosenCard: card, share: share, cardsForDisplay: cardsForDisplay, whichBoxVal: whichBoxVal)}
+                .fullScreenCover(isPresented: $segueToEnlarge) {EnlargeECardView(chosenCard: card, cardsForDisplay: cardsForDisplay, whichBoxVal: whichBoxVal)}
                 Divider().padding(.bottom, 5)
                 HStack(spacing: 3) {
                     Text(determineDisplayName(coreCard: card)).font(.system(size: 8)).minimumScaleFactor(0.1)
                     Spacer()
                     Text(card.cardName).font(.system(size: 8)).minimumScaleFactor(0.1)
                 }
-            }.padding().overlay(RoundedRectangle(cornerRadius: 6).stroke(.blue, lineWidth: 2))
+            }
+            .padding().overlay(RoundedRectangle(cornerRadius: 6).stroke(.blue, lineWidth: 2))
                 .font(.headline).padding(.horizontal).frame(maxHeight: 600)
-                .contextMenu {contextMenuButtons(card: card)}}
+                
+        
+        }
 }
 
 // MARK: Returns CKShare participant permission, methods and properties to share
@@ -133,7 +138,7 @@ extension GridofCards {
                 .disabled(shareStatus(card: card).0)
         }
             Button("Manage Participation") { manageParticipation(coreCard: card)}
-        Button {segueToEnlarge = true; print("Song Art Image Data....\(card.songArtImageData)")} label: {Text("Enlarge eCard"); Image(systemName: "plus.magnifyingglass")}
+        Button {print("CardName...\(card.cardName)"); self.cardForEnlarge = card    ; segueToEnlarge = true} label: {Text("Enlarge eCard"); Image(systemName: "plus.magnifyingglass")}
             Button {deleteCoreCard(coreCard: card)} label: {Text("Delete eCard"); Image(systemName: "trash").foregroundColor(.red)}
             Button {showDeliveryScheduler = true} label: {Text("Schedule eCard Delivery")}
         }

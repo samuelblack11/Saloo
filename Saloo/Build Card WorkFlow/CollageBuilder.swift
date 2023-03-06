@@ -140,7 +140,13 @@ extension CollageBuilder {
     func twoNarrowOneWide(block1: some View, block2: some View, block3: some View) -> some View {return VStack(spacing:0){HStack(spacing:0){block1; block2}; block3}}
     func fourPhoto(block1: some View, block2: some View, block3: some View, block4: some View) -> some View {return VStack(spacing:0){HStack(spacing:0){block1; block2}; HStack(spacing:0){block3; block4}}}
     
-
+    func snap2() {
+        let renderer = ImageRenderer(content: collageView)
+        
+        if let uiImage = renderer.uiImage {
+            uiImage.pngData()
+        }
+    }
 
     func loadImage(chosenImage: UIImage?) {
         
@@ -158,6 +164,12 @@ extension CollageBuilder {
 
 // https://www.hackingwithswift.com/quick-start/swiftui/how-to-convert-a-swiftui-view-to-an-image
 extension View {
+    
+
+    
+    
+    
+    
     func snapshot() -> UIImage {
         let controller = UIHostingController(rootView: self)
         let view = controller.view
