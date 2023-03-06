@@ -83,7 +83,7 @@ struct GridofCards: View {
                     Text(card.message)
                         .font(Font.custom(card.font, size: 500)).minimumScaleFactor(0.01)
                         .frame(width: (UIScreen.screenWidth/4), height: (UIScreen.screenHeight/8))
-                    Image(uiImage: UIImage(data: card.collage1!)!)
+                    Image(uiImage: UIImage(data: card.collage!)!)
                         .resizable()
                         .frame(maxWidth: (UIScreen.screenWidth/4), maxHeight: (UIScreen.screenHeight/7))
                     HStack(spacing: 0) {

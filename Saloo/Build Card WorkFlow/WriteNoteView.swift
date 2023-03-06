@@ -15,7 +15,6 @@ struct WriteNoteView: View {
     @EnvironmentObject var chosenObject: ChosenCoverImageObject
     @EnvironmentObject var collageImage: CollageImage
     @EnvironmentObject var chosenOccassion: Occassion
-    @EnvironmentObject var chosenStyle: ChosenCollageStyle
     @EnvironmentObject var appDelegate: AppDelegate
     @StateObject var addMusic = AddMusic()
     @StateObject var chosenSong = ChosenSong()

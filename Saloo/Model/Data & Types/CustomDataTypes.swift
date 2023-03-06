@@ -112,7 +112,7 @@ class Annotation: ObservableObject {
 //class CollageImage: ObservableObject {@Published var collageImage = UIImage()}
 
 class CollageImage: ObservableObject {
-    
+    @Published var chosenStyle = Int()
     @Published var collageImage = Data()
     @Published var image1 = Data()
     @Published var image2 = Data()

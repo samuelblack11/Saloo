@@ -17,7 +17,7 @@ struct CollageBuilder: View {
     //@State public var chosenCollageStyle: CollageStyles.choices
     @EnvironmentObject var chosenStyle: ChosenCollageStyle
     // Variable for collageImage object
-    @StateObject var collageImage = CollageImage()
+    @EnvironmentObject var collageImage: CollageImage
     @StateObject var chosenImagesObject = ChosenImages()
     @State private var showCollageMenu = false
     @State private var showCollageBuilder = false
@@ -31,8 +31,6 @@ struct CollageBuilder: View {
     // Create instance of CollageBuildingBlocks, with blocks sized to fit the CollageBuilder view (menuSize = false)
     @State private var image: Image?
     @State private var chosenImage: UIImage?
-    @State var eCardText: String = ""
-    @State var printCardText: String = ""
     @State var fillColor = Color.secondary
     
     @State private var imageA: Image?
@@ -63,7 +61,7 @@ struct CollageBuilder: View {
                 Spacer()
                 Button("Confirm Collage for Inside Cover") {
                     showWriteNote = true
-                    //collageImage.collageImage = snap2()
+                    collageImage.collageImage = snap2()
                 }.padding(.bottom, 30).fullScreenCover(isPresented: $showWriteNote ) {
                     WriteNoteView()}
             }
@@ -77,12 +75,12 @@ struct CollageBuilder: View {
         }
     
     @ViewBuilder var chosenTemplate: some View {
-        if chosenStyle.chosenStyle == 1 {onePhotoView(block: block1()) }
-        if chosenStyle.chosenStyle == 2 {twoPhotoWide(block1: block1(),block2: block2())}
-        if chosenStyle.chosenStyle == 3 {twoPhotoLong(block1: block1(),block2: block2())}
-        if chosenStyle.chosenStyle == 4 { twoShortOneLong(block1: block1(), block2: block2(), block3: block3())}
-        if chosenStyle.chosenStyle == 5 {twoNarrowOneWide(block1: block1(),block2: block2(),block3: block3())}
-        if chosenStyle.chosenStyle == 6 {fourPhoto(block1: block1(),block2: block2(), block3: block3(), block4: block4())}
+        if collageImage.chosenStyle == 1 {onePhotoView(block: block1()) }
+        if collageImage.chosenStyle == 2 {twoPhotoWide(block1: block1(),block2: block2())}
+        if collageImage.chosenStyle == 3 {twoPhotoLong(block1: block1(),block2: block2())}
+        if collageImage.chosenStyle == 4 { twoShortOneLong(block1: block1(), block2: block2(), block3: block3())}
+        if collageImage.chosenStyle == 5 {twoNarrowOneWide(block1: block1(),block2: block2(),block3: block3())}
+        if collageImage.chosenStyle == 6 {fourPhoto(block1: block1(),block2: block2(), block3: block3(), block4: block4())}
     }
 }
 
@@ -127,7 +125,7 @@ extension CollageBuilder {
                     .resizable()
                     .scaledToFill()
                     .frame(width: w2, height: h2)
-                    .border(Color.pink)
+                    //.border(Color.pink)
                     .clipped()
             }
         }
@@ -173,31 +171,31 @@ extension CollageBuilder {
     func fourPhoto(block1: some View, block2: some View, block3: some View, block4: some View) -> some View {return VStack(spacing:0){HStack(spacing:0){block1; block2}; HStack(spacing:0){block3; block4}}}
     
     func defineShapes() -> (String, String, String, String) {
-        
         var shape1 = ""; var shape2 = ""; var shape3 = ""; var shape4 = ""
-        // List shape of each block for each collage style
-        if chosenStyle.chosenStyle == 1{shape1 = "largeSquare" }
-        if chosenStyle.chosenStyle == 2{shape1 = "wide"; shape2 = "wide"}
-        if chosenStyle.chosenStyle == 3{shape1 = "tall"; shape2 = "tall" }
-        if chosenStyle.chosenStyle == 4{shape1 = "smallSquare"; shape2 = "smallSquare"; shape3 = "tall"}
-        if chosenStyle.chosenStyle == 5{shape1 = "smallSquare"; shape2 = "smallSquare"; shape3 = "wide"}
-        if chosenStyle.chosenStyle == 6{shape1 = "smallSquare"; shape2 = "smallSquare"; shape3 = "smallSquare"; shape4 = "smallSquare"}
+        // List shape of each block for each collage styl e
+        if collageImage.chosenStyle == 1{shape1 = "largeSquare" }
+        if collageImage.chosenStyle == 2{shape1 = "wide"; shape2 = "wide"}
+        if collageImage.chosenStyle == 3{shape1 = "tall"; shape2 = "tall" }
+        if collageImage.chosenStyle == 4{shape1 = "smallSquare"; shape2 = "smallSquare"; shape3 = "tall"}
+        if collageImage.chosenStyle == 5{shape1 = "smallSquare"; shape2 = "smallSquare"; shape3 = "wide"}
+        if collageImage.chosenStyle == 6{shape1 = "smallSquare"; shape2 = "smallSquare"; shape3 = "smallSquare"; shape4 = "smallSquare"}
 
         return (shape1, shape2, shape3, shape4)
     }
     
     
     func shapeToDimensions(shape: String) -> (CGFloat, CGFloat){
-
+        print("---")
+        print(shape)
         var w = CGFloat(0.0)
         var h = CGFloat(0.0)
         
         if shape == "largeSquare" {w = width; h = height}
         if shape == "wide" {w = width; h = height/2}
-        if shape == "tall" {w = width/w; h = height}
+        if shape == "tall" {w = width/2; h = height}
         if shape == "smallSquare" {w = width/2; h = height/2}
         
-        return (h, w)
+        return (w, h)
     }
     
     

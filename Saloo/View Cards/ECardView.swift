@@ -16,6 +16,13 @@ struct eCardView: View {
     @State var font: String
     @State var coverImage: Data
     @State var collageImage: Data
+    
+    //@State var chosenCollageStyle: Int
+    //@State var collage1: Data
+    //@State var collage2: Data?
+    //@State var collage3: Data?
+    //@State var collage4: Data?
+    
     @State var text1: String
     @State var text2: String
     @State var text2URL: URL
@@ -51,8 +58,8 @@ struct eCardView: View {
                 Image(uiImage: UIImage(data: collageImage)!)
                     .interpolation(.high).resizable().scaledToFill()
                     .frame(width: UIScreen.screenHeight/4, height: UIScreen.screenHeight/4)
-
-                //Spacer()
+                    .padding(.bottom, 5)
+                Spacer()
                 HStack(spacing: 0) {
                     Spacer()
                     VStack(spacing:0){
@@ -115,4 +122,7 @@ struct eCardView: View {
             if appDelegate.musicSub.type == .Spotify {appRemote2?.connectionParameters.accessToken = (defaults.object(forKey: "SpotifyAccessToken") as? String)!}
         }
     }
+    
+    
+    
 }

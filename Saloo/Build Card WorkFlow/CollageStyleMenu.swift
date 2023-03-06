@@ -15,8 +15,7 @@ struct CollageStyleMenu: View {
     // Object for collection selected by user
     @EnvironmentObject var chosenObject: ChosenCoverImageObject
     @EnvironmentObject var chosenOccassion: Occassion
-    @StateObject var chosenStyle = ChosenCollageStyle()
-
+    @StateObject var collageImage = CollageImage()
     @State private var showConfirmFrontCover = false
     @State private var showCollageBuilder = false
     @State private var showImagePicker = false
@@ -32,23 +31,23 @@ struct CollageStyleMenu: View {
         NavigationStack {
             VStack {
                 HStack {
-                    collageBlocks.onePhotoView(block: collageBlocks.blockForStyle()).onTapGesture{chosenStyle.chosenStyle = 1; showCollageBuilder = true}
-                    collageBlocks.twoPhotoWide(block: collageBlocks.blockForStyle()).onTapGesture{chosenStyle.chosenStyle = 2; showCollageBuilder = true}
+                    collageBlocks.onePhotoView(block: collageBlocks.blockForStyle()).onTapGesture{collageImage.chosenStyle = 1; showCollageBuilder = true}
+                    collageBlocks.twoPhotoWide(block: collageBlocks.blockForStyle()).onTapGesture{collageImage.chosenStyle = 2; showCollageBuilder = true}
                 }
                 HStack {
-                    collageBlocks.twoPhotoLong(block: collageBlocks.blockForStyle()).onTapGesture{chosenStyle.chosenStyle = 3; showCollageBuilder = true}
-                    collageBlocks.twoShortOneLong(block: collageBlocks.blockForStyle()).onTapGesture{chosenStyle.chosenStyle = 4; showCollageBuilder = true}
+                    collageBlocks.twoPhotoLong(block: collageBlocks.blockForStyle()).onTapGesture{collageImage.chosenStyle = 3; showCollageBuilder = true}
+                    collageBlocks.twoShortOneLong(block: collageBlocks.blockForStyle()).onTapGesture{collageImage.chosenStyle = 4; showCollageBuilder = true}
                 }
                 HStack {
-                    collageBlocks.twoNarrowOneWide(block: collageBlocks.blockForStyle()).onTapGesture{chosenStyle.chosenStyle = 5; showCollageBuilder = true}
-                    collageBlocks.fourPhoto(block: collageBlocks.blockForStyle()).onTapGesture{chosenStyle.chosenStyle = 6; showCollageBuilder = true}
+                    collageBlocks.twoNarrowOneWide(block: collageBlocks.blockForStyle()).onTapGesture{collageImage.chosenStyle = 5; showCollageBuilder = true}
+                    collageBlocks.fourPhoto(block: collageBlocks.blockForStyle()).onTapGesture{collageImage.chosenStyle = 6; showCollageBuilder = true}
                 }
             }
             .navigationTitle("Pick Collage Style").font(.headline).padding(.horizontal)
             .navigationBarItems(leading:Button {showConfirmFrontCover = true} label: {Image(systemName: "chevron.left").foregroundColor(.blue); Text("Back")})
         }
-        .environmentObject(chosenStyle)
-        .fullScreenCover(isPresented: $showCollageBuilder) {CollageBuilder(showImagePicker: false).environmentObject(chosenStyle)}
+        .environmentObject(collageImage)
+        .fullScreenCover(isPresented: $showCollageBuilder) {CollageBuilder(showImagePicker: false).environmentObject(collageImage)}
         .fullScreenCover(isPresented: $showConfirmFrontCover) {ConfirmFrontCoverView()}
     }
 }
