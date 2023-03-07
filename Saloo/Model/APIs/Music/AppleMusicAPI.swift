@@ -14,6 +14,32 @@ class AppleMusicAPI {
     
     let devToken = "eyJhbGciOiJFUzI1NiIsImtpZCI6Ik5KN0MzVzgzTFoiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJCU00zWVpGVVQyIiwiZXhwIjoxNjg5MjQzOTI3LCJpYXQiOjE2NzM0Nzk1Mjd9.28_a1GIJEEKWzvJgmdM9lAmvB4ilY5pFx6TF0Q4uhIIKu8FR0fOaXd2-3xVHPWANA8tqbLurVE5yE8wEZEqR8g"
     
+    
+    
+    func fetchUserStorefront(userToken: String) -> String {
+        print("User Token...\(userToken)")
+        var userStoreFront: String!
+        let musicURL = URL(string: "https://api.music.apple.com/v1/me/storefront")!
+        var musicRequest = URLRequest(url: musicURL)
+        musicRequest.httpMethod = "GET"
+        musicRequest.addValue("Bearer \(devToken)", forHTTPHeaderField: "Authorization")
+        musicRequest.addValue(userToken, forHTTPHeaderField: "Music-User-Token")
+        let lock = DispatchSemaphore(value: 0)
+
+        URLSession.shared.dataTask(with: musicRequest) { (data, response, error) in
+
+            guard error == nil else { return }
+                let jsonString = String(data: data!, encoding: String.Encoding.utf8)!
+                print("UserStoreFront....***")
+                print(jsonString)
+                userStoreFront = String(data: data!, encoding: String.Encoding.utf8)!.slice(from: "id", to: ",")!.stripped
+                lock.signal()
+        }
+        .resume()
+        lock.wait()
+        return userStoreFront
+    }
+    
     func fetchStorefrontID(userToken: String) -> String {
             var storeFrontID: String!
             let musicURL = URL(string: "https://api.music.apple.com/v1/me/storefront")!
@@ -37,9 +63,6 @@ class AppleMusicAPI {
             return storeFrontID
     }
     
-    
-    
-    
     func getUserToken() -> String {
         var taskToken = String()
         let lock = DispatchSemaphore(value: 1)
@@ -48,6 +71,7 @@ class AppleMusicAPI {
             if let token = receivedToken {taskToken = token; lock.signal()}
         }
         lock.wait()
+        print("getUserToken.....\(taskToken)")
         return taskToken
     }
     

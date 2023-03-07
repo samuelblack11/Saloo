@@ -244,6 +244,7 @@ extension MusicSearchView {
     func searchWithSpotify() {
         SpotifyAPI().searchSpotify(self.songSearch, authToken: spotifyAuth.access_Token, completionHandler: {(response, error) in
             if response != nil {
+                searchResults = []
                 DispatchQueue.main.async {
                     for song in response! {
                         print("BBBBB")
@@ -266,9 +267,13 @@ extension MusicSearchView {
     func searchWithAM() {
         SKCloudServiceController.requestAuthorization {(status) in if status == .authorized {
             self.userToken = AppleMusicAPI().getUserToken()
+            print("User Token....\(userToken)")
+            print("User Token2....\(self.userToken)")
+            AppleMusicAPI().fetchUserStorefront(userToken: AppleMusicAPI().getUserToken())
             //self.storeFrontID = AppleMusicAPI().fetchStorefrontID(userToken: userToken)
             self.searchResults = AppleMusicAPI().searchAppleMusic(self.songSearch, storeFrontID: storeFrontID, userToken: userToken, completionHandler: { (response, error) in
                 if response != nil {
+                    print("User Token3....\(userToken)")
                     DispatchQueue.main.async {
                         for song in response! {
                             let artURL = URL(string:song.attributes.artwork.url.replacingOccurrences(of: "{w}", with: "80").replacingOccurrences(of: "{h}", with: "80"))
