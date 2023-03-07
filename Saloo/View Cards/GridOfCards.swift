@@ -43,8 +43,9 @@ struct GridofCards: View {
         //else if sortByValue == "Occassion" {return privateCards.filter { $0.occassion!.contains(searchText)}}
         else {return cardsForDisplay.filter { $0.cardName.contains(searchText)}}
     }
-    @State var cardForEnlarge: CoreCard?
-    
+    @State var cardSelectionNumber: Int?
+    @State var chosenGridCard: CoreCard? = nil
+
     var sortOptions = ["Date","Card Name","Occassion"]
     
     func determineDisplayName(coreCard: CoreCard) -> String {
@@ -59,9 +60,10 @@ struct GridofCards: View {
             ScrollView {
                 sortResults
                 LazyVGrid(columns: columns, spacing: 10) {
-                    ForEach(cardsFilteredByBox(sortedCards(cardsFilteredBySearch, sortBy: sortByValue), whichBox: whichBoxVal)) {
-                    //ForEach(cardsFilteredBySearch) {
-                        cardView(for: $0, shareable: false)
+                    //ForEach(cardsFilteredByBox(sortedCards(cardsFilteredBySearch, sortBy: sortByValue), whichBox: whichBoxVal), id: \.self) { gridCard in
+                    //ForEach(cardsFilteredByBox(cardsForDisplay, whichBox: whichBoxVal)) { gridCard in
+                    ForEach(self.cardsForDisplay, id: \.self) { gridCard in
+                        cardView(for: gridCard, shareable: false)
                     }
                 }
             }
@@ -74,24 +76,24 @@ struct GridofCards: View {
         .fullScreenCover(isPresented: $showStartMenu) {StartMenu()}
     }
     
-    private func cardView(for card: CoreCard, shareable: Bool = true) -> some View {
+    private func cardView(for gridCard: CoreCard, shareable: Bool = true) -> some View {
             VStack(spacing: 0) {
                 VStack(spacing:1) {
-                    Image(uiImage: UIImage(data: card.coverImage!)!)
+                    Image(uiImage: UIImage(data: gridCard.coverImage!)!)
                         .resizable()
                         .frame(width: (UIScreen.screenWidth/4), height: (UIScreen.screenHeight/7))
-                    Text(card.message)
-                        .font(Font.custom(card.font, size: 500)).minimumScaleFactor(0.01)
+                    Text(gridCard.message)
+                        .font(Font.custom(gridCard.font, size: 500)).minimumScaleFactor(0.01)
                         .frame(width: (UIScreen.screenWidth/4), height: (UIScreen.screenHeight/8))
-                    Image(uiImage: UIImage(data: card.collage!)!)
+                    Image(uiImage: UIImage(data: gridCard.collage!)!)
                         .resizable()
                         .frame(maxWidth: (UIScreen.screenWidth/4), maxHeight: (UIScreen.screenHeight/7))
                     HStack(spacing: 0) {
                         VStack(spacing: 0) {
-                            Text(card.an1).font(.system(size: 4))
-                            Link(card.an2, destination: URL(string: card.an2URL)!).font(.system(size: 4))
-                            Text(card.an3).font(.system(size: 4))
-                            Link(card.an4, destination: URL(string: "https://unsplash.com")!).font(.system(size: 4))
+                            Text(gridCard.an1).font(.system(size: 4))
+                            Link(gridCard.an2, destination: URL(string: gridCard.an2URL)!).font(.system(size: 4))
+                            Text(gridCard.an3).font(.system(size: 4))
+                            Link(gridCard.an4, destination: URL(string: "https://unsplash.com")!).font(.system(size: 4))
                         }.padding(.trailing, 5)
                         Spacer()
                         Image(systemName: "greetingcard.fill").foregroundColor(.blue).font(.system(size: 24))
@@ -102,16 +104,17 @@ struct GridofCards: View {
                             Text("Saloo").font(.system(size: 4)).padding(.bottom,10).padding(.leading, 5)
                         }}.frame(width: (UIScreen.screenWidth/4), height: (UIScreen.screenHeight/15))
                 }
-                .contextMenu {contextMenuButtons(card: card)}
+                .onTapGesture {print("gridCard Card Name...\(gridCard.cardName)")}
                 //.sheet(isPresented: $showDeliveryScheduler) {ScheduleDelivery(card: card)}
-                .fullScreenCover(isPresented: $segueToEnlarge) {EnlargeECardView(chosenCard: card, cardsForDisplay: cardsForDisplay, whichBoxVal: whichBoxVal)}
                 Divider().padding(.bottom, 5)
                 HStack(spacing: 3) {
-                    Text(determineDisplayName(coreCard: card)).font(.system(size: 8)).minimumScaleFactor(0.1)
+                    Text(determineDisplayName(coreCard: gridCard)).font(.system(size: 8)).minimumScaleFactor(0.1)
                     Spacer()
-                    Text(card.cardName).font(.system(size: 8)).minimumScaleFactor(0.1)
+                    Text(gridCard.cardName).font(.system(size: 8)).minimumScaleFactor(0.1)
                 }
             }
+            .contextMenu {contextMenuButtons(card: gridCard)}
+            .fullScreenCover(item: $chosenGridCard) { chosenCard in EnlargeECardView(chosenCard: chosenCard, cardsForDisplay: cardsForDisplay, whichBoxVal: whichBoxVal)}
             .padding().overlay(RoundedRectangle(cornerRadius: 6).stroke(.blue, lineWidth: 2))
                 .font(.headline).padding(.horizontal).frame(maxHeight: 600)
                 
@@ -137,15 +140,14 @@ extension GridofCards {
             Button("Create New Share") {showCloudShareController = true; createNewShare(coreCard: card)}
                 .disabled(shareStatus(card: card).0)
         }
-            Button("Manage Participation") { manageParticipation(coreCard: card)}
-        Button {print("CardName...\(card.cardName)"); self.cardForEnlarge = card    ; segueToEnlarge = true} label: {Text("Enlarge eCard"); Image(systemName: "plus.magnifyingglass")}
-            Button {deleteCoreCard(coreCard: card)} label: {Text("Delete eCard"); Image(systemName: "trash").foregroundColor(.red)}
-            Button {showDeliveryScheduler = true} label: {Text("Schedule eCard Delivery")}
+        Button("Manage Participation \(card.cardName)") { manageParticipation(coreCard: card)}
+        Button {chosenGridCard = card; segueToEnlarge = true} label: {Text("Enlarge eCard"); Image(systemName: "plus.magnifyingglass")}
+        Button {deleteCoreCard(coreCard: card)} label: {Text("Delete eCard"); Image(systemName: "trash").foregroundColor(.red)}
+        Button {showDeliveryScheduler = true} label: {Text("Schedule eCard Delivery")}
         }
     
     private func createNewShare(coreCard: CoreCard) {PersistenceController.shared.presentCloudSharingController(coreCard: coreCard)}
     private func manageParticipation(coreCard: CoreCard) {PersistenceController.shared.presentCloudSharingController(coreCard: coreCard)}
-    
     private func processStoreChangeNotification(_ notification: Notification) {
         guard let storeUUID = notification.userInfo?[UserInfoKey.storeUUID] as? String,
               storeUUID == PersistenceController.shared.privatePersistentStore.identifier else {
@@ -169,13 +171,10 @@ extension GridofCards {
     func cardsFilteredByBox(_ coreCards: [CoreCard], whichBox: InOut.SendReceive) -> [CoreCard] {
         var filteredCoreCards: [CoreCard] = []
             for coreCard in coreCards {
-
-
                 getCurrentUserID()
                 print("Creator & Current User Record IDs....")
                 print(coreCard.creator!)
                 print(self.userID)
-
                 switch whichBoxVal {
                 case .outbox:
                     filteredCoreCards = coreCards.filter{_ in (coreCard.creator!.contains(self.userID))}

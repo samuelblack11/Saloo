@@ -56,10 +56,10 @@ struct eCardView: View {
                 Text(eCardText)
                     .font(Font.custom(font, size: 500)).minimumScaleFactor(0.01)
                 Image(uiImage: UIImage(data: collageImage)!)
-                    .interpolation(.high).resizable().scaledToFill()
-                    .frame(width: UIScreen.screenHeight/4, height: UIScreen.screenHeight/4)
-                    .padding(.bottom, 5)
-                Spacer()
+                    .interpolation(.high).resizable().scaledToFit()
+                    .frame(alignment: .bottom)
+                    .padding([.bottom, .top], 5)
+                //Spacer()
                 HStack(spacing: 0) {
                     Spacer()
                     VStack(spacing:0){
@@ -81,7 +81,7 @@ struct eCardView: View {
                         Text("Saloo").font(.system(size: 10)).padding(.bottom,10).padding(.leading, 5)
                     }
                     Spacer()
-                }
+                } .frame(alignment: .bottom)
             }
             VStack(alignment: .center){
                 Text("{Gift Card Will Go Here}")
