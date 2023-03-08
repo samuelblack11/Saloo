@@ -11,14 +11,15 @@ import UIKit
 import CoreData
 //https://www.appcoda.com/musickit-music-api/
 class AppleMusicAPI {
-    
+    var taskToken: String?
+    var storeFrontID: String?
     let devToken = "eyJhbGciOiJFUzI1NiIsImtpZCI6Ik5KN0MzVzgzTFoiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJCU00zWVpGVVQyIiwiZXhwIjoxNjg5MjQzOTI3LCJpYXQiOjE2NzM0Nzk1Mjd9.28_a1GIJEEKWzvJgmdM9lAmvB4ilY5pFx6TF0Q4uhIIKu8FR0fOaXd2-3xVHPWANA8tqbLurVE5yE8wEZEqR8g"
     
     
     
-    func fetchUserStorefront(userToken: String) -> String {
+    func fetchUserStorefront(userToken: String, completionHandler: @escaping (AMStoreFrontResponse?,Error?) -> Void) -> String{
         print("User Token...\(userToken)")
-        var userStoreFront: String!
+        let userStoreFront = String()
         let musicURL = URL(string: "https://api.music.apple.com/v1/me/storefront")!
         var musicRequest = URLRequest(url: musicURL)
         musicRequest.httpMethod = "GET"
@@ -32,7 +33,16 @@ class AppleMusicAPI {
                 let jsonString = String(data: data!, encoding: String.Encoding.utf8)!
                 print("UserStoreFront....***")
                 print(jsonString)
-                userStoreFront = String(data: data!, encoding: String.Encoding.utf8)!.slice(from: "id", to: ",")!.stripped
+            do {
+                let response = try JSONDecoder().decode(AMStoreFrontResponse.self, from: data!)
+                print(";;;\(response)")
+                DispatchQueue.main.async {completionHandler(response, nil)}
+                }
+            catch {
+                print("Invalid Response")
+                print("Request failed: \(error)")
+                DispatchQueue.main.async {completionHandler(nil, error)}
+                }
                 lock.signal()
         }
         .resume()
@@ -40,40 +50,34 @@ class AppleMusicAPI {
         return userStoreFront
     }
     
-    func fetchStorefrontID(userToken: String) -> String {
-            var storeFrontID: String!
-            let musicURL = URL(string: "https://api.music.apple.com/v1/me/storefront")!
-            var musicRequest = URLRequest(url: musicURL)
-            musicRequest.httpMethod = "GET"
-            musicRequest.addValue("Bearer \(devToken)", forHTTPHeaderField: "Authorization")
-            musicRequest.addValue(userToken, forHTTPHeaderField: "Music-User-Token")
-            let lock = DispatchSemaphore(value: 0)
-
-            URLSession.shared.dataTask(with: musicRequest) { (data, response, error) in
-
-                guard error == nil else { return }
-                    let jsonString = String(data: data!, encoding: String.Encoding.utf8)!
-                    print("***")
-                    print(jsonString)
-                    storeFrontID = String(data: data!, encoding: String.Encoding.utf8)!.slice(from: "id", to: ",")!.stripped
-                    lock.signal()
-            }
-            .resume()
-            lock.wait()
-            return storeFrontID
-    }
-    
-    func getUserToken() -> String {
+    func getUserToken2() -> String {
         var taskToken = String()
-        let lock = DispatchSemaphore(value: 1)
+        //let lock = DispatchSemaphore(value: 1)
         SKCloudServiceController().requestUserToken(forDeveloperToken: devToken) {(receivedToken, error) in
             guard error == nil else { return }
-            if let token = receivedToken {taskToken = token; lock.signal()}
+            if let token = receivedToken {
+                taskToken = token;
+                //lock.signal()
+            }
         }
-        lock.wait()
+        //lock.wait()
         print("getUserToken.....\(taskToken)")
         return taskToken
     }
+    
+    func getUserToken() {
+        let lock = DispatchSemaphore(value: 1)
+        SKCloudServiceController().requestUserToken(forDeveloperToken: devToken) {(receivedToken, error) in
+            guard error == nil else { return }
+                print("receivedToken....\(receivedToken!)")
+                self.taskToken = receivedToken!
+                lock.signal()
+        }
+        lock.wait()
+        //print("getUserToken.....\(self.taskToken!)")
+    }
+    
+    
     
     func searchAppleMusic(_ searchTerm: String!, storeFrontID: String, userToken: String, completionHandler: @escaping ([Song]?,Error?) -> Void) -> [SongForList] {
             let lock = DispatchSemaphore(value: 1)

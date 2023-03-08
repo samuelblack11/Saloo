@@ -52,7 +52,8 @@ struct MusicSearchView: View {
     @State var appRemote2: SPTAppRemote?
     @State var counter = 0
     @State var refreshAccessToken = false
-
+    @State private var ranAMStoreFront = false
+    var amAPI = AppleMusicAPI()
     
     var body: some View {
         NavigationStack {
@@ -97,7 +98,6 @@ struct MusicSearchView: View {
             .onAppear{
                 if appDelegate.musicSub.type == .Spotify {
                     print("Run1")
-                    
                     if defaults.object(forKey: "SpotifyAuthCode") != nil && counter == 0 {
                         print("Run2")
                         refresh_token = (defaults.object(forKey: "SpotifyRefreshToken") as? String)!
@@ -108,6 +108,12 @@ struct MusicSearchView: View {
                     else{print("Run3");requestSpotAuth(); runGetToken(authType: "code")}
                     runInstantiateAppRemote()
                 }
+                if appDelegate.musicSub.type == .Apple {
+                    getAMUserToken()
+                    getAMStoreFront()
+                }
+                
+                
             }
             .navigationBarItems(leading:Button {showWriteNote.toggle()} label: {Image(systemName: "chevron.left").foregroundColor(.blue); Text("Back")})
             .popover(isPresented: $showAPV) {AMPlayerView(songID: chosenSong.id, songName: chosenSong.name, songArtistName: chosenSong.artistName, songArtImageData: chosenSong.artwork, songDuration: chosenSong.durationInSeconds, songPreviewURL: chosenSong.songPreviewURL, confirmButton: true, showFCV: $showFCV)
@@ -128,6 +134,41 @@ struct MusicSearchView: View {
 }
 
 extension MusicSearchView {
+    
+    func getAMUserToken() {
+        Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { timer in
+            if amAPI.taskToken == nil {
+                SKCloudServiceController.requestAuthorization {(status) in if status == .authorized {amAPI.getUserToken()} }
+            }
+        }
+    }
+
+    
+    func getAMStoreFront() {
+        Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { timer in
+            if amAPI.taskToken != nil && ranAMStoreFront == false {
+                ranAMStoreFront = true
+                SKCloudServiceController.requestAuthorization {(status) in if status == .authorized {
+                    amAPI.storeFrontID = amAPI.fetchUserStorefront(userToken: amAPI.taskToken!, completionHandler: { ( response, error) in
+                        amAPI.storeFrontID = response!.data[0].id
+                    })}}}
+            }
+        }
+            
+    func searchWithAM() {
+        SKCloudServiceController.requestAuthorization {(status) in if status == .authorized {
+            self.searchResults = AppleMusicAPI().searchAppleMusic(self.songSearch, storeFrontID: amAPI.storeFrontID!, userToken: amAPI.taskToken!, completionHandler: { (response, error) in
+                if response != nil {
+                    DispatchQueue.main.async {
+                        for song in response! {
+                            let artURL = URL(string:song.attributes.artwork.url.replacingOccurrences(of: "{w}", with: "80").replacingOccurrences(of: "{h}", with: "80"))
+                            let _ = getURLData(url: artURL!, completionHandler: { (artResponse, error2) in
+                                let songForList = SongForList(id: song.attributes.playParams.id, name: song.attributes.name, artistName: song.attributes.artistName, artImageData: artResponse!, durationInMillis: song.attributes.durationInMillis, isPlaying: false, previewURL: song.attributes.previews[0].url)
+                                searchResults.append(songForList)
+                            })}}}; if response != nil {print("No Response!")}
+                else {debugPrint(error?.localizedDescription)}}
+            )}}
+    }
     
     func requestSpotAuth() {
         print("called....requestSpotAuth")
@@ -262,27 +303,6 @@ extension MusicSearchView {
                     }}}; if response != nil {print("No Response!")}
                         else{debugPrint(error?.localizedDescription)}
         })
-    }
-
-    func searchWithAM() {
-        SKCloudServiceController.requestAuthorization {(status) in if status == .authorized {
-            self.userToken = AppleMusicAPI().getUserToken()
-            print("User Token....\(userToken)")
-            print("User Token2....\(self.userToken)")
-            AppleMusicAPI().fetchUserStorefront(userToken: AppleMusicAPI().getUserToken())
-            //self.storeFrontID = AppleMusicAPI().fetchStorefrontID(userToken: userToken)
-            self.searchResults = AppleMusicAPI().searchAppleMusic(self.songSearch, storeFrontID: storeFrontID, userToken: userToken, completionHandler: { (response, error) in
-                if response != nil {
-                    print("User Token3....\(userToken)")
-                    DispatchQueue.main.async {
-                        for song in response! {
-                            let artURL = URL(string:song.attributes.artwork.url.replacingOccurrences(of: "{w}", with: "80").replacingOccurrences(of: "{h}", with: "80"))
-                            let _ = getURLData(url: artURL!, completionHandler: { (artResponse, error2) in
-                                let songForList = SongForList(id: song.attributes.playParams.id, name: song.attributes.name, artistName: song.attributes.artistName, artImageData: artResponse!, durationInMillis: song.attributes.durationInMillis, isPlaying: false, previewURL: song.attributes.previews[0].url)
-                                searchResults.append(songForList)
-                            })}}}; if response != nil {print("No Response!")}
-                else {debugPrint(error?.localizedDescription)}}
-            )}}
     }
     
     func getSongDetailsFromOtherService() {}

@@ -50,7 +50,7 @@ struct EnlargeECardView: View {
         }
         //if song from SPOT and recip as Apple
         if chosenCard.songAddedUsing == "Spotify"  && appDelegate.musicSub.type == .Apple {
-            getSongViaAM()
+            //getSongViaAM()
             //update core data value for song id,
             
         }
@@ -89,23 +89,23 @@ extension EnlargeECardView {
      //   })
    // }
     
-    func getSongViaAM() {
-        SKCloudServiceController.requestAuthorization {(status) in if status == .authorized {
-            self.userToken = AppleMusicAPI().getUserToken()
-            //self.storeFrontID = AppleMusicAPI().fetchStorefrontID(userToken: userToken)
-            AppleMusicAPI().searchAppleMusic(chosenCard.songName, storeFrontID: storeFrontID, userToken: userToken, completionHandler: {(response, error) in
-                if response != nil {
-                    DispatchQueue.main.async {
-                        for song in response! {
-                            if song.attributes.name == chosenCard.songName && song.attributes.artistName == chosenCard.songArtistName {
-                                let artURL = URL(string:song.attributes.artwork.url.replacingOccurrences(of: "{w}", with: "80").replacingOccurrences(of: "{h}", with: "80"))
-                                let _ = getURLData(url: artURL!, completionHandler: { (artResponse, error2) in
-                                    chosenCard.songID = song.attributes.playParams.id
-                                    chosenCard.songArtImageData = artResponse!
-                                    chosenCard.songDuration = String(Double(song.attributes.durationInMillis/1000))
-                                    chosenCard.songPreviewURL = song.attributes.previews[0].url
-                                });break}}}}else {debugPrint(error?.localizedDescription)}})}}
-    }
+    //func getSongViaAM() {
+   //     SKCloudServiceController.requestAuthorization {(status) in if status == .authorized {
+    //        self.userToken = AppleMusicAPI().getUserToken()
+    //        //self.storeFrontID = AppleMusicAPI().fetchStorefrontID(userToken: userToken)
+     //       AppleMusicAPI().searchAppleMusic(chosenCard.songName, storeFrontID: storeFrontID, userToken: amAPI.taskToken!, completionHandler: {(response, error) in
+     //           if response != nil {
+     //               DispatchQueue.main.async {
+     //                   for song in response! {
+      //                      if song.attributes.name == chosenCard.songName && song.attributes.artistName == chosenCard.songArtistName {
+      //                          let artURL = URL(string:song.attributes.artwork.url.replacingOccurrences(of: "{w}", with: "80").replacingOccurrences(of: "{h}", with: "80"))
+     //                           let _ = getURLData(url: artURL!, completionHandler: { (artResponse, error2) in
+     //                               chosenCard.songID = song.attributes.playParams.id
+     //                               chosenCard.songArtImageData = artResponse!
+     //                               chosenCard.songDuration = String(Double(song.attributes.durationInMillis/1000))
+     //                               chosenCard.songPreviewURL = song.attributes.previews[0].url
+     //                           });break}}}}else {debugPrint(error?.localizedDescription)}})}}
+    //}
     
     private func string(for permission: CKShare.ParticipantPermission) -> String {
       switch permission {

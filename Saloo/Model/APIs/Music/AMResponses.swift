@@ -69,3 +69,10 @@ struct PreviewURL: Decodable {
     let url: String
 }
 
+struct AMStoreFrontResponse: Decodable {
+    let data: [StoreFrontDataPoints]
+}
+
+struct StoreFrontDataPoints: Decodable {
+    let id: String
+}
