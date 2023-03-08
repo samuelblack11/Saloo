@@ -36,14 +36,7 @@ struct MusicSearchView: View {
     @StateObject var spotifyAuth = SpotifyAuth()
     let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
     @State private var tokenCounter = 0
-    @State private var devIDCounter = 0
     @State private var instantiateAppRemoteCounter = 0
-    @State private var profileCounter = 0
-    @State private var queueCounter = 0
-    @State private var playlistCounter = 0
-    @State private var playlistSearchisComplete = false
-    @State private var mustCreatePlaylist = false
-    @State private var playListSearchCounter = 0
     @State private var authCode: String? = ""
     @State private var refresh_token: String? = ""
     @State private var invalidAuthCode = false
@@ -143,7 +136,6 @@ extension MusicSearchView {
         }
     }
 
-    
     func getAMStoreFront() {
         Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { timer in
             if amAPI.taskToken != nil && ranAMStoreFront == false {

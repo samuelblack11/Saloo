@@ -60,9 +60,9 @@ struct GridofCards: View {
             ScrollView {
                 sortResults
                 LazyVGrid(columns: columns, spacing: 10) {
-                    //ForEach(cardsFilteredByBox(sortedCards(cardsFilteredBySearch, sortBy: sortByValue), whichBox: whichBoxVal), id: \.self) { gridCard in
+                    ForEach(cardsFilteredByBox(sortedCards(cardsFilteredBySearch, sortBy: sortByValue), whichBox: whichBoxVal), id: \.self) { gridCard in
                     //ForEach(cardsFilteredByBox(cardsForDisplay, whichBox: whichBoxVal)) { gridCard in
-                    ForEach(self.cardsForDisplay, id: \.self) { gridCard in
+                    //ForEach(self.cardsForDisplay, id: \.self) { gridCard in
                         cardView(for: gridCard, shareable: false)
                     }
                 }

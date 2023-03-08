@@ -22,9 +22,11 @@ struct EnlargeECardView: View {
     @State var cardsForDisplay: [CoreCard]
     @State var whichBoxVal: InOut.SendReceive
     @EnvironmentObject var appDelegate: AppDelegate
-    @State private var storeFrontID = "us"
-    @State private var userToken = ""
 
+    
+    
+    
+    
     var body: some View {
         NavigationView {
             VStack {
@@ -34,8 +36,9 @@ struct EnlargeECardView: View {
                 leading:Button {showGrid = true}
                 label: {Image(systemName: "chevron.left").foregroundColor(.blue)
                 Text("Back")})
+            .onAppear{}
             .fullScreenCover(isPresented: $showGrid) {GridofCards(cardsForDisplay: cardsForDisplay, whichBoxVal: whichBoxVal)}
-        }
+            }
         }
     
     
@@ -60,11 +63,8 @@ struct EnlargeECardView: View {
         if appDelegate.musicSub.type == .Neither && chosenCard.songPreviewURL == "" {chosenCard.songAddedUsing = "Spotify"}
     
     }
-    
-    
-    
-    
     }
+
 
 
 
@@ -106,6 +106,10 @@ extension EnlargeECardView {
      //                               chosenCard.songPreviewURL = song.attributes.previews[0].url
      //                           });break}}}}else {debugPrint(error?.localizedDescription)}})}}
     //}
+    
+
+    
+    
     
     private func string(for permission: CKShare.ParticipantPermission) -> String {
       switch permission {
