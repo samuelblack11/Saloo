@@ -12,6 +12,7 @@ import CoreData
 //https://www.appcoda.com/musickit-music-api/
 class AppleMusicAPI {
     var taskToken: String?
+    var tokenError: Bool = false
     var storeFrontID: String?
     let devToken = "eyJhbGciOiJFUzI1NiIsImtpZCI6Ik5KN0MzVzgzTFoiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJCU00zWVpGVVQyIiwiZXhwIjoxNjg5MjQzOTI3LCJpYXQiOjE2NzM0Nzk1Mjd9.28_a1GIJEEKWzvJgmdM9lAmvB4ilY5pFx6TF0Q4uhIIKu8FR0fOaXd2-3xVHPWANA8tqbLurVE5yE8wEZEqR8g"
     
@@ -50,30 +51,20 @@ class AppleMusicAPI {
         return userStoreFront
     }
     
-    func getUserToken2() -> String {
-        var taskToken = String()
+
+    
+    func getUserToken(completionHandler: @escaping (String?,Error?) -> Void) {
         //let lock = DispatchSemaphore(value: 1)
         SKCloudServiceController().requestUserToken(forDeveloperToken: devToken) {(receivedToken, error) in
-            guard error == nil else { return }
-            if let token = receivedToken {
-                taskToken = token;
+            //guard error == nil else { return }
+            if error != nil {print("Token Error..."); self.tokenError = true; completionHandler(nil, error)}
+            else{
+                print("receivedToken....\(receivedToken!)"); self.taskToken = receivedToken!
+                completionHandler(receivedToken, nil)
                 //lock.signal()
             }
         }
         //lock.wait()
-        print("getUserToken.....\(taskToken)")
-        return taskToken
-    }
-    
-    func getUserToken() {
-        let lock = DispatchSemaphore(value: 1)
-        SKCloudServiceController().requestUserToken(forDeveloperToken: devToken) {(receivedToken, error) in
-            guard error == nil else { return }
-                print("receivedToken....\(receivedToken!)")
-                self.taskToken = receivedToken!
-                lock.signal()
-        }
-        lock.wait()
         //print("getUserToken.....\(self.taskToken!)")
     }
     

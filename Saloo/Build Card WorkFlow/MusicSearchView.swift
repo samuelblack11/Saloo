@@ -132,10 +132,12 @@ extension MusicSearchView {
     func getAMUserToken() {
         Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { timer in
             if amAPI.taskToken == nil {
-                SKCloudServiceController.requestAuthorization {(status) in if status == .authorized {amAPI.getUserToken()} }
-            }
-        }
-    }
+                SKCloudServiceController.requestAuthorization {(status) in if status == .authorized {amAPI.getUserToken(completionHandler: { ( response, error) in
+                    print("Checking Token")
+                    print(response)
+                    print("^^")
+                    print(error)
+        })}}}}}
 
     func getAMStoreFront() {
         Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { timer in

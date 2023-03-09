@@ -38,6 +38,10 @@ struct PrefMenu: View {
     @State var counter = 0
     @State var appRemote2: SPTAppRemote?
     @State private var showSpotAuthFailedAlert = false
+    @State private var showAMAuthFailedAlert = false
+    @State private var runGetAMToken = true
+
+    @State private var runCheckAMTokenErrorIfNeeded = false
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     init() {
@@ -57,9 +61,15 @@ struct PrefMenu: View {
                 Text("Current Selection: \(currentSubSelection)")
                 List {
                     Text("Apple Music")
-                        .onTapGesture {appDelegate.musicSub.type = .Apple; defaults.set("Apple Music", forKey: "MusicSubType"); showStart = true}
+                        .onTapGesture {
+                            verifyAMSubscription()
+                        }
                     Text("Spotify")
-                        .onTapGesture {counter = 0; tokenCounter = 0; showWebView = false; verifySpotSubscription()}
+                        .onTapGesture {
+                            if spotifyAuth.auth_code == "AuthFailed" {spotifyAuth.auth_code = ""}
+                            counter = 0; tokenCounter = 0; showWebView = false; refreshAccessToken = false; verifySpotSubscription()
+                            
+                        }
                     Text("I don't subscribe to either")
                         .onTapGesture {appDelegate.musicSub.type = .Neither; defaults.set("Neither", forKey: "MusicSubType"); showStart = true}
                 }
@@ -67,19 +77,75 @@ struct PrefMenu: View {
             .navigationBarItems(leading:Button {showStart.toggle()} label: {Image(systemName: "chevron.left").foregroundColor(.blue); Text("Back")})
         }
         .onAppear {
-            //verifySpotSubscription()
-            print("&&& \(defaults.object(forKey: "MusicSubType"))")
             if defaults.object(forKey: "MusicSubType") != nil {currentSubSelection = (defaults.object(forKey: "MusicSubType") as? String)!}
             else {currentSubSelection = "Neither"}
         }
         //.environmentObject(appDelegate)
-        .alert("Spotify Authorization Failed. If you do have a Spotify Subscription, please try authorizing again", isPresented: $showSpotAuthFailedAlert){Button("Ok"){}}
+        .alert("Spotify Authorization Failed. If you have a Spotify Subscription, please try authorizing again", isPresented: $showSpotAuthFailedAlert){Button("Ok"){showSpotAuthFailedAlert = false}}
+        .alert("Apple Music Authorization Failed. If you have an Apple Music Subscription, please try authorizing again", isPresented: $showAMAuthFailedAlert){Button("Ok"){showAMAuthFailedAlert = false}}
         .sheet(isPresented: $showWebView){WebVCView(authURLForView: spotifyAuth.authForRedirect, authCode: $authCode)}
         .fullScreenCover(isPresented: $showStart) {StartMenu()}
     }
 }
 
 extension PrefMenu {
+    
+    func verifyAMSubscription() {
+        // try to get token...if it fails, do what?
+        getAMUserToken()
+        checkAMTokenError()
+        getAMStoreFront()
+        
+        //appDelegate.musicSub.type = .Apple
+        //defaults.set("Apple Music", forKey: "MusicSubType")
+        //showStart = true
+    }
+    
+    
+    func getAMUserToken() {
+        Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { timer in
+            if amAPI.taskToken == nil && runGetAMToken == true {
+                runGetAMToken = false
+                SKCloudServiceController.requestAuthorization {(status) in if status == .authorized {amAPI.getUserToken(completionHandler: {(response, error) in
+                    print("Checking Token")
+                    print(response)
+                    print("^^")
+                    print(error)
+                    runCheckAMTokenErrorIfNeeded = true
+                    runGetAMToken = true
+        })}}}}}
+    
+    func checkAMTokenError() {
+        Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { timer in
+            
+            if amAPI.tokenError == true && runCheckAMTokenErrorIfNeeded {
+                showAMAuthFailedAlert = true
+                runCheckAMTokenErrorIfNeeded = false
+            }
+        }
+    }
+    
+    
+
+    func getAMStoreFront() {
+        Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { timer in
+            if amAPI.taskToken != nil && ranAMStoreFront == false {
+                ranAMStoreFront = true
+                SKCloudServiceController.requestAuthorization {(status) in if status == .authorized {
+                    amAPI.storeFrontID = amAPI.fetchUserStorefront(userToken: amAPI.taskToken!, completionHandler: { ( response, error) in
+                        amAPI.storeFrontID = response!.data[0].id
+                        currentSubSelection = "Apple Music"
+                        appDelegate.musicSub.type = .Apple
+                    })}}}
+            }
+        }
+    
+    
+    
+    
+    
+    
+    
     func verifySpotSubscription() {
             print("Run1")
             if defaults.object(forKey: "SpotifyAuthCode") != nil && (defaults.object(forKey: "SpotifyAuthCode") as? String)! != "AuthFailed" && counter == 0 {
@@ -114,20 +180,18 @@ extension PrefMenu {
     func runGetToken(authType: String) {
         Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { timer in
             if tokenCounter == 0 && refreshAccessToken {
-                if authType == "code" {if authCode != "" {getSpotToken();showStart = true}}
-                if authType == "refresh_token" {if refresh_token! != ""{getSpotTokenViaRefresh();showStart = true}}
-                if defaults.object(forKey: "SpotifyAuthCode") != nil {
-                    if (defaults.object(forKey: "SpotifyAuthCode") as? String)! == "AuthFailed" {
+                if authType == "code" {if authCode != "" {getSpotToken()}}
+                if authType == "refresh_token" {if refresh_token! != ""{getSpotTokenViaRefresh()}}
+                if authCode == "AuthFailed" || spotifyAuth.auth_code == "AuthFailed" {
                         print("Unable to authorize")
                         tokenCounter = 1
                         appDelegate.musicSub.type = .Neither
                         currentSubSelection = "Neither"
                         showSpotAuthFailedAlert = true
                         print("---")
+                        spotifyAuth.auth_code = "AuthFailed"
                         print(showSpotAuthFailedAlert)
-                    }
                 }
-                
             }
         }
     }
@@ -145,6 +209,8 @@ extension PrefMenu {
                     defaults.set(response!.refresh_token, forKey: "SpotifyRefreshToken")
                     appDelegate.musicSub.type = .Spotify
                     defaults.set("Spotify", forKey: "MusicSubType")
+                    print("???")
+                    showStart = true
                 }
             }
             if error != nil {
@@ -167,6 +233,8 @@ extension PrefMenu {
                     defaults.set(response!.access_token, forKey: "SpotifyAccessToken")
                     appDelegate.musicSub.type = .Spotify
                     defaults.set("Spotify", forKey: "MusicSubType")
+                    print("!!!")
+                    showStart = true
                 }
             }
             if error != nil {
@@ -201,34 +269,4 @@ extension PrefMenu {
             appRemote2?.connectionParameters.accessToken = spotifyAuth.access_Token
         }
     }
-    
-    
-    
-    func verifyAMSubscription() {
-        // try to get token...if it fails, do what?
-        getAMUserToken()
-        getAMStoreFront()
-    }
-    
-    
-    func getAMUserToken() {
-        Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { timer in
-            if amAPI.taskToken == nil {
-                SKCloudServiceController.requestAuthorization {(status) in if status == .authorized {amAPI.getUserToken()} }
-            }
-        }
-    }
-
-    func getAMStoreFront() {
-        Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { timer in
-            if amAPI.taskToken != nil && ranAMStoreFront == false {
-                ranAMStoreFront = true
-                SKCloudServiceController.requestAuthorization {(status) in if status == .authorized {
-                    amAPI.storeFrontID = amAPI.fetchUserStorefront(userToken: amAPI.taskToken!, completionHandler: { ( response, error) in
-                        amAPI.storeFrontID = response!.data[0].id
-                    })}}}
-            }
-        }
-    
-    
 }

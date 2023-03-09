@@ -40,7 +40,8 @@ class WebVC: UIViewController, WKNavigationDelegate {
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         print("called view will disapper")
-        if defaults.object(forKey: "SpotifyAuthCode") == nil {
+        print((defaults.object(forKey: "SpotifyAuthCode") as? String))
+        if defaults.object(forKey: "SpotifyAuthCode") == nil || (defaults.object(forKey: "SpotifyAuthCode") as? String) == "AuthFailed" {
             print("AuthFailed...")
             self.defaults.set("AuthFailed", forKey: "SpotifyAuthCode")
             self.delegate?.sendDataToFirstViewController(strCode: "AuthFailed")
