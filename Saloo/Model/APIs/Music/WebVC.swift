@@ -37,6 +37,17 @@ class WebVC: UIViewController, WKNavigationDelegate {
         view = webView
     }
     
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        print("called view will disapper")
+        if defaults.object(forKey: "SpotifyAuthCode") == nil {
+            print("AuthFailed...")
+            self.defaults.set("AuthFailed", forKey: "SpotifyAuthCode")
+            self.delegate?.sendDataToFirstViewController(strCode: "AuthFailed")
+        }
+    }
+    
+    
     override func viewDidLoad() {
         print("%%%")
         print(authURL)
@@ -58,8 +69,6 @@ class WebVC: UIViewController, WKNavigationDelegate {
                     let authCode = splitRedirectURL[1]
                     print("<<<<")
                     print(authCode)
-                    //self.appRemote?.connect()
-                    //print(self.appRemote?.isConnected)
                     self.defaults.set(authCode, forKey: "SpotifyAuthCode")
                     self.delegate?.sendDataToFirstViewController(strCode: authCode)
                     self.dismiss(animated: true)

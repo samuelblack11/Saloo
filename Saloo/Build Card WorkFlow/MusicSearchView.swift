@@ -47,7 +47,8 @@ struct MusicSearchView: View {
     @State var refreshAccessToken = false
     @State private var ranAMStoreFront = false
     var amAPI = AppleMusicAPI()
-    
+    @State private var showSpotAuthFailedAlert = false
+
     var body: some View {
         NavigationStack {
             TextField("Search Songs", text: $songSearch, onCommit: {
@@ -228,6 +229,13 @@ extension MusicSearchView {
             if tokenCounter == 0 && refreshAccessToken {
                 if authType == "code" {if authCode != "" {getSpotToken()}}
                 if authType == "refresh_token" {if refresh_token! != ""{getSpotTokenViaRefresh()}}
+                if authCode == "AuthFailed" {
+                    print("Unable to authorize")
+                    tokenCounter = 1
+                    appDelegate.musicSub.type = .Neither
+                    showSpotAuthFailedAlert = true
+                    
+                }
             }
         }
     }
