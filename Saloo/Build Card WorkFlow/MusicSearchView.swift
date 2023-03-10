@@ -156,9 +156,15 @@ extension MusicSearchView {
                 if response != nil {
                     DispatchQueue.main.async {
                         for song in response! {
+                            
+                            let blankString: String? = ""
+                            var songPrev: String?
+                            if song.attributes.previews.count > 0 {print("it's not nil"); songPrev = song.attributes.previews[0].url}
+                            else {songPrev = blankString}
+                            
                             let artURL = URL(string:song.attributes.artwork.url.replacingOccurrences(of: "{w}", with: "80").replacingOccurrences(of: "{h}", with: "80"))
                             let _ = getURLData(url: artURL!, completionHandler: { (artResponse, error2) in
-                                let songForList = SongForList(id: song.attributes.playParams.id, name: song.attributes.name, artistName: song.attributes.artistName, artImageData: artResponse!, durationInMillis: song.attributes.durationInMillis, isPlaying: false, previewURL: song.attributes.previews[0].url)
+                                let songForList = SongForList(id: song.attributes.playParams.id, name: song.attributes.name, artistName: song.attributes.artistName, artImageData: artResponse!, durationInMillis: song.attributes.durationInMillis, isPlaying: false, previewURL: songPrev!)
                                 searchResults.append(songForList)
                             })}}}; if response != nil {print("No Response!")}
                 else {debugPrint(error?.localizedDescription)}}

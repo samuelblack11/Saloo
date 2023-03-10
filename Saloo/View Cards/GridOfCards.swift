@@ -45,6 +45,7 @@ struct GridofCards: View {
     }
     @State var cardSelectionNumber: Int?
     @State var chosenGridCard: CoreCard? = nil
+    @EnvironmentObject var appDelegate: AppDelegate
 
     var sortOptions = ["Date","Card Name","Occassion"]
     
@@ -56,17 +57,16 @@ struct GridofCards: View {
     }
     
     var body: some View {
-        NavigationStack {
+        NavigationView {
             ScrollView {
                 sortResults
                 LazyVGrid(columns: columns, spacing: 10) {
                     ForEach(cardsFilteredByBox(sortedCards(cardsFilteredBySearch, sortBy: sortByValue), whichBox: whichBoxVal), id: \.self) { gridCard in
-                    //ForEach(cardsFilteredByBox(cardsForDisplay, whichBox: whichBoxVal)) { gridCard in
-                    //ForEach(self.cardsForDisplay, id: \.self) { gridCard in
                         cardView(for: gridCard, shareable: false)
                     }
                 }
             }
+            .fullScreenCover(item: $chosenGridCard) {chosenCard in EnlargeECardView(chosenCard: chosenCard, cardsForDisplay: cardsForDisplay, whichBoxVal: whichBoxVal)}
             .navigationTitle("Your Cards")
             .navigationBarItems(leading:Button {showStartMenu.toggle()} label: {Image(systemName: "chevron.left").foregroundColor(.blue); Text("Back")})
         }
@@ -114,7 +114,6 @@ struct GridofCards: View {
                 }
             }
             .contextMenu {contextMenuButtons(card: gridCard)}
-            .fullScreenCover(item: $chosenGridCard) { chosenCard in EnlargeECardView(chosenCard: chosenCard, cardsForDisplay: cardsForDisplay, whichBoxVal: whichBoxVal)}
             .padding().overlay(RoundedRectangle(cornerRadius: 6).stroke(.blue, lineWidth: 2))
                 .font(.headline).padding(.horizontal).frame(maxHeight: 600)
                 
@@ -140,7 +139,7 @@ extension GridofCards {
             Button("Create New Share") {showCloudShareController = true; createNewShare(coreCard: card)}
                 .disabled(shareStatus(card: card).0)
         }
-        Button("Manage Participation \(card.cardName)") { manageParticipation(coreCard: card)}
+        Button("Manage Participation") { manageParticipation(coreCard: card)}
         Button {chosenGridCard = card; segueToEnlarge = true} label: {Text("Enlarge eCard"); Image(systemName: "plus.magnifyingglass")}
         Button {deleteCoreCard(coreCard: card)} label: {Text("Delete eCard"); Image(systemName: "trash").foregroundColor(.red)}
         Button {showDeliveryScheduler = true} label: {Text("Schedule eCard Delivery")}

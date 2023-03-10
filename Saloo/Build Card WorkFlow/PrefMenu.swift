@@ -46,7 +46,7 @@ struct PrefMenu: View {
 
     init() {
         if defaults.object(forKey: "MusicSubType") != nil {_currentSubSelection = State(initialValue: (defaults.object(forKey: "MusicSubType") as? String)!)}
-        else {_currentSubSelection = State(initialValue: "None")}
+        else {_currentSubSelection = State(initialValue: "Neither")}
     }
     
     
@@ -78,7 +78,7 @@ struct PrefMenu: View {
         }
         .onAppear {
             if defaults.object(forKey: "MusicSubType") != nil {currentSubSelection = (defaults.object(forKey: "MusicSubType") as? String)!}
-            else {currentSubSelection = "Neither"}
+            else {currentSubSelection = "Neither"; appDelegate.musicSub.type = .Neither; defaults.set("Neither", forKey: "MusicSubType")}
         }
         //.environmentObject(appDelegate)
         .alert("Spotify Authorization Failed. If you have a Spotify Subscription, please try authorizing again", isPresented: $showSpotAuthFailedAlert){Button("Ok"){showSpotAuthFailedAlert = false}}
@@ -95,10 +95,6 @@ extension PrefMenu {
         getAMUserToken()
         checkAMTokenError()
         getAMStoreFront()
-        
-        //appDelegate.musicSub.type = .Apple
-        //defaults.set("Apple Music", forKey: "MusicSubType")
-        //showStart = true
     }
     
     
@@ -112,7 +108,7 @@ extension PrefMenu {
                     print("^^")
                     print(error)
                     runCheckAMTokenErrorIfNeeded = true
-                    runGetAMToken = true
+                   // runGetAMToken = true
         })}}}}}
     
     func checkAMTokenError() {
@@ -136,6 +132,7 @@ extension PrefMenu {
                         amAPI.storeFrontID = response!.data[0].id
                         currentSubSelection = "Apple Music"
                         appDelegate.musicSub.type = .Apple
+                        defaults.set("Apple Music", forKey: "MusicSubType")
                     })}}}
             }
         }
@@ -160,7 +157,6 @@ extension PrefMenu {
                 requestSpotAuth()
                 runGetToken(authType: "code")
             }
-            runInstantiateAppRemote()
         }
         
     func requestSpotAuth() {

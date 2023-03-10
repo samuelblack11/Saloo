@@ -16,6 +16,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, ObservableObject {
     @State var musicSub = MusicSubscription()
     @State var startMenuAppeared = false
     @State var gotRecord = false
+    @Published var showGrid = false
+    
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil) -> Bool {
         print("didFinishLaunchingWithOptions")
         return true

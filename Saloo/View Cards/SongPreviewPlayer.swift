@@ -16,31 +16,6 @@ import AVFoundation
 import AVFAudio
 // https://santoshkumarjm.medium.com/how-to-design-a-custom-avplayer-to-play-audio-using-url-in-ios-swift-439f0dbf2ff2
 
-
-
-
-class AudioURLPlayer: ObservableObject {
-   @Published var player: AVPlayer?
-    
-    func playPreview(song: String) {
-        if let url = URL(string: song) {
-            let audioSession = AVAudioSession.sharedInstance()
-            do {
-                try audioSession.setCategory(.playback)
-                try audioSession.overrideOutputAudioPort(AVAudioSession.PortOverride.none)
-                try audioSession.setActive(true)
-                let playerItem = AVPlayerItem(url: url)
-                self.player = AVPlayer.init(url: url)
-                self.player?.automaticallyWaitsToMinimizeStalling = false
-                self.player?.play()
-                print("Player Item Status....")
-            }
-            catch {print(error.localizedDescription)}
-        }
-    }
-    
-}
-
 struct SongPreviewPlayer: View {
     @State var songID: String?
     @State var songName: String?
@@ -55,20 +30,15 @@ struct SongPreviewPlayer: View {
     @EnvironmentObject var appDelegate: AppDelegate
     @State var songAddedUsing: String
     @State var color: Color?
-    @State var audioPlayer: AVPlayer!
-    //@StateObject private var audioURLPlayer = AudioURLPlayer()
-    @State private var player: AVPlayer?
-    
+    @State var player: AVPlayer?
+
     var body: some View {
-        NavigationStack {
-            PreviewPlayerView()
-        }
-        .onDisappear {
-            print("Called from bod...")
-            player?.replaceCurrentItem(with: nil)
-            player?.pause()
-            //player?.pause()
-        }
+        //NavigationView {
+        PreviewPlayerView()
+        //}
+            .navigationBarItems(leading:Button {player?.pause();player?.replaceCurrentItem(with: nil);
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {appDelegate.showGrid = true}
+            } label: {Image(systemName: "chevron.left").foregroundColor(.blue); Text("Back")})
         .environmentObject(appDelegate)
         
     }
@@ -150,21 +120,11 @@ struct SongPreviewPlayer: View {
             selectButtonPreview
         }
         .onAppear{
+            print("OnAppear Prev Player called")
             createPlayer()
             player?.play()
-            //audioURLPlayer.playPreview(song: songPreviewURL!)
             if songAddedUsing == "Spotify" {color = .green}
             else {color = .pink}
-        }
-        .onDisappear{
-            print("Called On Disapper...")
-            player?.replaceCurrentItem(with: nil)
-            player?.play()
-            //player?.replaceCurrentItem(with: nil)
-            //player?.pause()
-            //audioURLPlayer.player?.pause()
-            //audioURLPlayer.player?.replaceCurrentItem(with: nil)
-            //audioURLPlayer.player = nil
         }
     }
     

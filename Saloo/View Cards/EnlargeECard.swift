@@ -18,11 +18,10 @@ struct EnlargeECardView: View {
     @State var share: CKShare?
     @State private var counter = 1
     private let stack = PersistenceController.shared
-    @State private var showGrid = false
     @State var cardsForDisplay: [CoreCard]
     @State var whichBoxVal: InOut.SendReceive
     @EnvironmentObject var appDelegate: AppDelegate
-
+    @State var player: AVPlayer?
     
     
     
@@ -32,12 +31,12 @@ struct EnlargeECardView: View {
             VStack {
                 eCardView(eCardText: chosenCard.message, font: chosenCard.font, coverImage: chosenCard.coverImage!, collageImage: chosenCard.collage!, text1: chosenCard.an1, text2: chosenCard.an2, text2URL: URL(string: chosenCard.an2URL)!, text3: chosenCard.an3, text4: chosenCard.an4, songID: chosenCard.songID, spotID: chosenCard.spotID, songName: chosenCard.songName, songArtistName: chosenCard.songArtistName,songArtImageData: chosenCard.songArtImageData, songDuration: Double(chosenCard.songDuration!)!, songPreviewURL: chosenCard.songPreviewURL, inclMusic: chosenCard.inclMusic, spotImageData: chosenCard.spotImageData, spotSongDuration: Double(chosenCard.spotSongDuration!)!, spotPreviewURL: chosenCard.spotPreviewURL, songAddedUsing: chosenCard.songAddedUsing)
             }
-            .navigationBarItems(
-                leading:Button {showGrid = true}
-                label: {Image(systemName: "chevron.left").foregroundColor(.blue)
-                Text("Back")})
-            .onAppear{}
-            .fullScreenCover(isPresented: $showGrid) {GridofCards(cardsForDisplay: cardsForDisplay, whichBoxVal: whichBoxVal)}
+            //.navigationBarItems(
+            //    leading:Button {showGrid = true}
+            //    label: {Image(systemName: "chevron.left").foregroundColor(.blue)
+            //    Text("Back")})
+            //.onAppear{}
+            .fullScreenCover(isPresented: $appDelegate.showGrid) {GridofCards(cardsForDisplay: cardsForDisplay, whichBoxVal: whichBoxVal)}
             }
         }
     

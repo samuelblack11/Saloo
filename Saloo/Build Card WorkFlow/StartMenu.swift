@@ -74,7 +74,8 @@ struct StartMenu: View {
         .onAppear {
             print("Opened App...")
             appDelegate.startMenuAppeared = true
-            if (defaults.object(forKey: "MusicSubType") as? String) != nil && possibleSubscriptionValues.contains((defaults.object(forKey: "MusicSubType") as? String)!) {
+            print((defaults.object(forKey: "MusicSubType") as? String))
+            if (defaults.object(forKey: "MusicSubType") as? String) != nil  {
                 if (defaults.object(forKey: "MusicSubType") as? String)! == "Apple Music" {appDelegate.musicSub.type = .Apple}
                 if (defaults.object(forKey: "MusicSubType") as? String)! == "Spotify" {appDelegate.musicSub.type = .Spotify}
                 if (defaults.object(forKey: "MusicSubType") as? String)! == "Neither" {appDelegate.musicSub.type = .Neither}

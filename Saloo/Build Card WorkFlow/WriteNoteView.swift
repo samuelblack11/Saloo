@@ -87,7 +87,7 @@ struct WriteNoteView: View {
             cardName.value = cardName.value.components(separatedBy: CharacterSet.punctuationCharacters).joined()
             if appDelegate.musicSub.type == .Apple {addMusicPrompt = true}
             if appDelegate.musicSub.type == .Spotify {addMusicPrompt = true}
-            if appDelegate.musicSub.type == .Neither {skipMusicPrompt = true}
+            if appDelegate.musicSub.type == .Neither {showFinalize = true}
             }
         .alert("Please Enter Values for All Fields!", isPresented: $namesNotEntered) {Button("Ok", role: .cancel) {}}
         .alert("A Subscription to Spotify or Apple Music is Required to Add a Song. We'll skip that Step", isPresented: $skipMusicPrompt) {

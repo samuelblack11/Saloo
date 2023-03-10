@@ -9,7 +9,8 @@ import Foundation
 import SwiftUI
 import CoreData
 import CloudKit
-
+import AVFoundation
+import AVFAudio
 struct eCardView: View {
     
     @State var eCardText: String
@@ -22,7 +23,6 @@ struct eCardView: View {
     //@State var collage2: Data?
     //@State var collage3: Data?
     //@State var collage4: Data?
-    
     @State var text1: String
     @State var text2: String
     @State var text2URL: URL
@@ -44,7 +44,9 @@ struct eCardView: View {
     @EnvironmentObject var appDelegate: AppDelegate
     @State var songAddedUsing: String?
     var appRemote2: SPTAppRemote? = SPTAppRemote(configuration: SPTConfiguration(clientID: "d15f76f932ce4a7c94c2ecb0dfb69f4b", redirectURL: URL(string: "saloo://")!), logLevel: .debug)
-    
+    @State var player: AVPlayer?
+    @State var selectedPreviewURL: String?
+
     
     var body: some View {
         HStack {
@@ -119,10 +121,33 @@ struct eCardView: View {
             .fixedSize(horizontal: true, vertical: false)
         }
         .onAppear {
+            //if appDelegate.musicSub.type == .Neither {createPlayer()}
             if appDelegate.musicSub.type == .Spotify {appRemote2?.connectionParameters.accessToken = (defaults.object(forKey: "SpotifyAccessToken") as? String)!}
         }
+        .onDisappear{if player?.timeControlStatus.rawValue == 2 {player?.pause()}}
     }
     
     
+
+    
+    func createPlayer() {
+        if songAddedUsing! == "Apple" {self.selectedPreviewURL = songPreviewURL!}
+        if songAddedUsing! == "Spotify" {self.selectedPreviewURL = spotPreviewURL!}
+        let audioSession = AVAudioSession.sharedInstance()
+        do {
+            try audioSession.setCategory(.playback)
+            try audioSession.overrideOutputAudioPort(AVAudioSession.PortOverride.none)
+            try audioSession.setActive(true)
+            
+
+            let playerItem = AVPlayerItem(url: URL(string: self.selectedPreviewURL!)!)
+            self.player = AVPlayer.init(playerItem: playerItem)
+            player?.play()
+            print("---")
+            print(player)
+            print(player?.reasonForWaitingToPlay)
+        }
+        catch{print(error.localizedDescription)}
+    }
     
 }
