@@ -33,15 +33,9 @@ struct AMPlayerView: View {
     @EnvironmentObject var sceneDelegate: SceneDelegate
     
     var body: some View {
-        NavigationStack {
-            if appDelegate.musicSub.type == .Apple {AMPlayerView()}
-            }
-            .environmentObject(appDelegate)
-    }
-    
-    @ViewBuilder var selectButton: some View {
-        if confirmButton == true {Button {showFCV = true; musicPlayer.pause(); songProgress = 0.0} label: {Text("Select Song For Card").foregroundColor(.blue)}}
-        else {Text("")}
+            AMPlayerView()
+            .navigationBarItems(leading:Button {appDelegate.chosenGridCard = nil
+            } label: {Image(systemName: "chevron.left").foregroundColor(.blue); Text("Back")})
     }
     
     func AMPlayerView() -> some View {
@@ -101,6 +95,11 @@ struct AMPlayerView: View {
         }
         .onAppear{self.musicPlayer.setQueue(with: [songID!]); self.musicPlayer.play()}
         .onDisappear{self.musicPlayer.pause()}
+    }
+    
+    @ViewBuilder var selectButton: some View {
+        if confirmButton == true {Button {showFCV = true; musicPlayer.pause(); songProgress = 0.0} label: {Text("Select Song For Card").foregroundColor(.blue)}}
+        else {Text("")}
     }
     
     func convertToMinutes(seconds: Int) -> String {

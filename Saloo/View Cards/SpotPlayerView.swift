@@ -47,7 +47,14 @@ struct SpotPlayerView: View {
     let config = SPTConfiguration(clientID: "d15f76f932ce4a7c94c2ecb0dfb69f4b", redirectURL: URL(string: "saloo://")!)
     @State private var showWebView = false
 
-    var body: some View {NavigationStack {SpotPlayerView()}.environmentObject(appDelegate)}
+    var body: some View {
+        //NavigationStack {
+            SpotPlayerView()
+        //}
+        //.environmentObject(appDelegate)}
+            .navigationBarItems(leading:Button {appDelegate.chosenGridCard = nil
+            } label: {Image(systemName: "chevron.left").foregroundColor(.blue); Text("Back")})
+    }
     
     @ViewBuilder var selectButton: some View {
         if confirmButton == true {Button {appRemote2?.playerAPI?.pause();showFCV = true; spotifyAuth.songID = songID!} label: {Text("Select Song For Card").foregroundColor(.blue)}}
@@ -118,7 +125,6 @@ struct SpotPlayerView: View {
                 if accessedViaGrid {
                     if appDelegate.musicSub.type == .Spotify {
                         print("Run1")
-                        
                         if defaults.object(forKey: "SpotifyAuthCode") != nil && counter == 0 {
                             print("Run2")
                             refresh_token = (defaults.object(forKey: "SpotifyRefreshToken") as? String)!
@@ -129,9 +135,6 @@ struct SpotPlayerView: View {
                         else{print("Run3");requestSpotAuth(); runGetToken(authType: "code")}
                         runInstantiateAppRemote()
                     }
-                    
-                    
-                    
                 }
                 playSong()
             }

@@ -66,14 +66,18 @@ struct GridofCards: View {
                     }
                 }
             }
-            .fullScreenCover(item: $chosenGridCard) {chosenCard in EnlargeECardView(chosenCard: chosenCard, cardsForDisplay: cardsForDisplay, whichBoxVal: whichBoxVal)}
+            .fullScreenCover(item: $appDelegate.chosenGridCard, onDismiss: didDismiss) {chosenCard in EnlargeECardView(chosenCard: chosenCard, cardsForDisplay: cardsForDisplay, whichBoxVal: whichBoxVal)}
             .navigationTitle("Your Cards")
             .navigationBarItems(leading:Button {showStartMenu.toggle()} label: {Image(systemName: "chevron.left").foregroundColor(.blue); Text("Back")})
         }
         // "Search by \(sortByValue)"
-        .onAppear{print("Testing....");print(whichBoxVal)}
+        .onAppear{print("Testing....")}
         .searchable(text: $searchText, prompt: "Search by Card Name")
         .fullScreenCover(isPresented: $showStartMenu) {StartMenu()}
+    }
+    
+    func didDismiss() {
+        appDelegate.chosenGridCard = nil
     }
     
     private func cardView(for gridCard: CoreCard, shareable: Bool = true) -> some View {
@@ -140,7 +144,7 @@ extension GridofCards {
                 .disabled(shareStatus(card: card).0)
         }
         Button("Manage Participation") { manageParticipation(coreCard: card)}
-        Button {chosenGridCard = card; segueToEnlarge = true} label: {Text("Enlarge eCard"); Image(systemName: "plus.magnifyingglass")}
+        Button {appDelegate.chosenGridCard = card;print("<<<<\(appDelegate.chosenGridCard)"); segueToEnlarge = true} label: {Text("Enlarge eCard"); Image(systemName: "plus.magnifyingglass")}
         Button {deleteCoreCard(coreCard: card)} label: {Text("Delete eCard"); Image(systemName: "trash").foregroundColor(.red)}
         Button {showDeliveryScheduler = true} label: {Text("Schedule eCard Delivery")}
         }
@@ -172,6 +176,7 @@ extension GridofCards {
             for coreCard in coreCards {
                 getCurrentUserID()
                 print("Creator & Current User Record IDs....")
+                //print(chosenGridCard)
                 print(coreCard.creator!)
                 print(self.userID)
                 switch whichBoxVal {

@@ -36,10 +36,9 @@ struct SongPreviewPlayer: View {
         //NavigationView {
         PreviewPlayerView()
         //}
-            .navigationBarItems(leading:Button {player?.pause();player?.replaceCurrentItem(with: nil);
-                DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {appDelegate.showGrid = true}
+            .navigationBarItems(leading:Button {
+            player?.pause();player?.replaceCurrentItem(with: nil); appDelegate.chosenGridCard = nil
             } label: {Image(systemName: "chevron.left").foregroundColor(.blue); Text("Back")})
-        .environmentObject(appDelegate)
         
     }
         

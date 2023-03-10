@@ -17,6 +17,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, ObservableObject {
     @State var startMenuAppeared = false
     @State var gotRecord = false
     @Published var showGrid = false
+    @Published var chosenGridCard: CoreCard? = nil
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil) -> Bool {
         print("didFinishLaunchingWithOptions")
