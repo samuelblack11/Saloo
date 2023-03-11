@@ -40,8 +40,9 @@ struct PrefMenu: View {
     @State private var showSpotAuthFailedAlert = false
     @State private var showAMAuthFailedAlert = false
     @State private var runGetAMToken = true
-
+    @State private var hideProgressView = true
     @State private var runCheckAMTokenErrorIfNeeded = false
+    @State private var musicColor: Color?
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     init() {
@@ -59,19 +60,31 @@ struct PrefMenu: View {
                 Text("Do you subscribe to either of these services?")
                 Text("This will help optimize your experience")
                 Text("Current Selection: \(currentSubSelection)")
-                List {
-                    Text("Apple Music")
-                        .onTapGesture {
-                            verifyAMSubscription()
-                        }
-                    Text("Spotify")
-                        .onTapGesture {
-                            if spotifyAuth.auth_code == "AuthFailed" {spotifyAuth.auth_code = ""}
-                            counter = 0; tokenCounter = 0; showWebView = false; refreshAccessToken = false; verifySpotSubscription()
-                            
-                        }
-                    Text("I don't subscribe to either")
-                        .onTapGesture {appDelegate.musicSub.type = .Neither; defaults.set("Neither", forKey: "MusicSubType"); showStart = true}
+                ZStack {
+                    List {
+                        Text("Apple Music")
+                            .onTapGesture {
+                                musicColor = .pink
+                                hideProgressView = false
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.3){verifyAMSubscription()}
+                            }
+                        Text("Spotify")
+                            .onTapGesture {
+                                musicColor = .green
+                                hideProgressView = false
+                                if spotifyAuth.auth_code == "AuthFailed" {spotifyAuth.auth_code = ""}
+                                counter = 0; tokenCounter = 0; showWebView = false; refreshAccessToken = false; verifySpotSubscription()
+                                
+                            }
+                        Text("I don't subscribe to either")
+                            .onTapGesture {appDelegate.musicSub.type = .Neither; defaults.set("Neither", forKey: "MusicSubType"); showStart = true}
+                    }
+
+                    ProgressView()
+                        .hidden(hideProgressView)
+                        .tint(musicColor)
+                        .scaleEffect(5)
+                        .progressViewStyle(CircularProgressViewStyle())
                 }
             }
             .navigationBarItems(leading:Button {showStart.toggle()} label: {Image(systemName: "chevron.left").foregroundColor(.blue); Text("Back")})
@@ -91,11 +104,21 @@ struct PrefMenu: View {
 extension PrefMenu {
     
     func verifyAMSubscription() {
-        // try to get token...if it fails, do what?
         getAMUserToken()
         checkAMTokenError()
         getAMStoreFront()
     }
+    
+    func progView() -> some View {
+        
+        return
+        ProgressView()
+            .foregroundColor(.pink)
+            .scaleEffect(5)
+            .progressViewStyle(CircularProgressViewStyle())
+    }
+    
+    
     
     
     func getAMUserToken() {
@@ -133,6 +156,8 @@ extension PrefMenu {
                         currentSubSelection = "Apple Music"
                         appDelegate.musicSub.type = .Apple
                         defaults.set("Apple Music", forKey: "MusicSubType")
+                        hideProgressView = true
+                        showStart = true
                     })}}}
             }
         }
@@ -187,6 +212,7 @@ extension PrefMenu {
                         print("---")
                         spotifyAuth.auth_code = "AuthFailed"
                         print(showSpotAuthFailedAlert)
+                        hideProgressView = true
                 }
             }
         }
@@ -206,7 +232,9 @@ extension PrefMenu {
                     appDelegate.musicSub.type = .Spotify
                     defaults.set("Spotify", forKey: "MusicSubType")
                     print("???")
+                    hideProgressView = true
                     showStart = true
+                    
                 }
             }
             if error != nil {
@@ -230,6 +258,7 @@ extension PrefMenu {
                     appDelegate.musicSub.type = .Spotify
                     defaults.set("Spotify", forKey: "MusicSubType")
                     print("!!!")
+                    hideProgressView = true
                     showStart = true
                 }
             }
@@ -264,5 +293,10 @@ extension PrefMenu {
             appRemote2 = SPTAppRemote(configuration: config, logLevel: .debug)
             appRemote2?.connectionParameters.accessToken = spotifyAuth.access_Token
         }
+    }
+}
+extension View {
+    func hidden(_ shouldHide: Bool) -> some View {
+        opacity(shouldHide ? 0 : 1)
     }
 }
