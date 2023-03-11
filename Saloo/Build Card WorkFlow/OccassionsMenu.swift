@@ -84,7 +84,7 @@ struct OccassionsMenu: View {
                         .frame(height:35)
                     Button {showUCV = true; chosenObject.frontCoverIsPersonalPhoto = 0
                         chosenOccassion.occassion = "None"
-                        chosenOccassion.collectionID = customSearch
+                        chosenOccassion.collectionID = (customSearch.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed))!
                     }
                     label: {Image(systemName: "magnifyingglass.circle.fill")}
                         .fullScreenCover(isPresented: $showUCV) {UnsplashCollectionView()}

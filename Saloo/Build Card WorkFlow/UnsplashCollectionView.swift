@@ -60,7 +60,7 @@ struct UnsplashCollectionView: View {
         }
         .fullScreenCover(isPresented: $showConfirmFrontCover) {ConfirmFrontCoverView()}
         .fullScreenCover(isPresented: $showOccassions) {OccassionsMenu()}
-        //.fullScreenCover(isPresented: $presentUCV2) {UnsplashCollectionView(viewTransitions: viewTransitions, chosenSmallURL: chosenSmallURL, frontCoverIsPersonalPhoto: $frontCoverIsPersonalPhoto, chosenCollection: chosenCollection, pageCount: $pageCount)}
+        .fullScreenCover(isPresented: $presentUCV2) {UnsplashCollectionView()}
     }
     
 }
@@ -135,6 +135,7 @@ extension UnsplashCollectionView {
     func getMorePhotos() {
         chosenObject.pageCount = chosenObject.pageCount + 1
         presentUCV2 = true
+        getUnsplashPhotos()
     }
 
 }
