@@ -22,9 +22,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
     var connectToScene = true
     var checkIfRecordAddedToStore = true
     var waitingToAcceptRecord = false
-    //@StateObject var appDelegate = AppDelegate()
+    //@StateObject var appDelegate3 = AppDelegate()
     @ObservedObject var appDelegate = AppDelegate()
-    
+    var showProgViewOnAcceptShare: Bool = false
     
  
     
@@ -46,6 +46,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
         //        waitingToAcceptRecord = false
         //    }
         //}
+        print("when is willConnectTo called...")
         if let windowScene = scene as? UIWindowScene {
             Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { timer in
                 if self.gotRecord && self.connectToScene {
@@ -87,10 +88,13 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
             else {
                 self.acceptedShare = cloudKitShareMetadata.share; print("Accepted Share..."); print(self.acceptedShare as Any)
                 waitingToAcceptRecord = true
+                //showProgViewOnAcceptShare = true
+                //self.appDelegate.showProgViewOnAcceptShare = showProgViewOnAcceptShare
+                //print("$$$")
+                //print(showProgViewOnAcceptShare)
+                //print(self.appDelegate.showProgViewOnAcceptShare)
                 //self.gotRecord = true
-                Task {
-                    await self.runGetRecord(shareMetaData: cloudKitShareMetadata)
-                }
+                Task {await self.runGetRecord(shareMetaData: cloudKitShareMetadata)}
             }
         }
     }

@@ -46,7 +46,7 @@ struct eCardView: View {
     var appRemote2: SPTAppRemote? = SPTAppRemote(configuration: SPTConfiguration(clientID: "d15f76f932ce4a7c94c2ecb0dfb69f4b", redirectURL: URL(string: "saloo://")!), logLevel: .debug)
     @State var player: AVPlayer?
     @State var selectedPreviewURL: String?
-
+    
     
     var body: some View {
         HStack {
@@ -128,7 +128,7 @@ struct eCardView: View {
     }
     
     
-
+    
     
     func createPlayer() {
         if songAddedUsing! == "Apple" {self.selectedPreviewURL = songPreviewURL!}
@@ -139,7 +139,7 @@ struct eCardView: View {
             try audioSession.overrideOutputAudioPort(AVAudioSession.PortOverride.none)
             try audioSession.setActive(true)
             
-
+            
             let playerItem = AVPlayerItem(url: URL(string: self.selectedPreviewURL!)!)
             self.player = AVPlayer.init(playerItem: playerItem)
             player?.play()
@@ -149,5 +149,103 @@ struct eCardView: View {
         }
         catch{print(error.localizedDescription)}
     }
+    
+    
+    
+    func CoverView() -> some View {
+        return Image(uiImage: UIImage(data: coverImage)!)
+            .interpolation(.none).resizable().scaledToFit()
+    }
+    
+    func NoteView() -> some View {
+        return Text(eCardText)
+            .font(Font.custom(font, size: 500)).minimumScaleFactor(0.01)
+    }
+    
+    func CollageAndAnnotationView() -> some View {
+        return VStack {
+            Image(uiImage: UIImage(data: collageImage)!)
+                .interpolation(.high).resizable().scaledToFit()
+                .frame(alignment: .bottom)
+                .padding([.bottom, .top], 5)
+            HStack(spacing: 0) {
+                Spacer()
+                VStack(spacing:0){
+                    Text(text1)
+                        .font(.system(size: 10)).frame(alignment: .center)
+                    Link(text2, destination: text2URL)
+                        .font(.system(size: 10)).frame(alignment: .center)
+                    HStack(spacing: 0) {
+                        Text(text3).font(.system(size: 4))
+                            .frame(alignment: .center)
+                        Link(text4, destination: URL(string: "https://unsplash.com")!)
+                            .font(.system(size: 12)).frame(alignment: .center)
+                    }
+                }
+                Spacer()
+                VStack(spacing:0) {
+                    Text("Greeting Card").font(.system(size: 10))
+                    Text("by").font(.system(size: 10))
+                    Text("Saloo").font(.system(size: 10)).padding(.bottom,10).padding(.leading, 5)
+                }
+                Spacer()
+            } .frame(alignment: .bottom)
+        }
+    }
+    
+    func GiftView() -> some View {
+      return Text("{Gift Card Will Go Here}")
+            .font(.system(size: 24)).frame(alignment: .center)
+            .multilineTextAlignment(.center)
+            .frame(maxHeight: .infinity)
+    }
+ 
+    
+    
+    func MusicView() -> some View {
+           return  HStack(alignment: .bottom){
+                if appDelegate.musicSub.type == .Apple {
+                    AMPlayerView(songID: songID, songName: songName, songArtistName: songArtistName, songArtImageData: songArtImageData, songDuration: songDuration, songPreviewURL: songPreviewURL, confirmButton: false, showFCV: $showFCV)
+                        .frame(maxHeight: .infinity, alignment: .bottom)
+                }
+            }
+            if appDelegate.musicSub.type == .Spotify {
+                HStack(alignment: .bottom){
+                    SpotPlayerView(songID: spotID, songName: songName, songArtistName: songArtistName, songArtImageData: spotImageData, songDuration: spotSongDuration, songPreviewURL: spotPreviewURL, confirmButton: false, showFCV: $showFCV, appRemote2: appRemote2)
+                        .frame(maxHeight: .infinity, alignment: .bottom)
+                }
+            }
+            if appDelegate.musicSub.type == .Neither {
+                HStack(alignment: .bottom){
+                    if songAddedUsing == "Apple" {
+                        SongPreviewPlayer(songID: songID, songName: songName, songArtistName: songArtistName, songArtImageData: songArtImageData, songDuration: songDuration, songPreviewURL: songPreviewURL, confirmButton: false, showFCV: $showFCV, songAddedUsing: "Apple")
+                            .frame(maxHeight: .infinity, alignment: .bottom)
+                    }
+                    if songAddedUsing == "Spotify" {
+                        SongPreviewPlayer(songID: spotID, songName: songName, songArtistName: songArtistName, songArtImageData: spotImageData, songDuration: spotSongDuration, songPreviewURL: spotPreviewURL,confirmButton: false, showFCV: $showFCV, songAddedUsing: "Spotify")
+                            .frame(maxHeight: .infinity, alignment: .bottom)
+                    }
+                }
+            }
+    }
+    
+    func MusicAndGiftView() -> some View {
+        
+    }
+    
+    func MusicNoGiftView() -> some View {
+        
+    }
+    func GiftNoMusicView() -> some View {
+        
+    }
+    func NoMusicNoGift() -> some View {
+        
+    }
+    
+    
+    
+    
+    
     
 }

@@ -59,6 +59,11 @@ struct StartMenu: View {
                 Text("Preferences 📱").onTapGesture {self.showPref = true}
                     .fullScreenCover(isPresented: $showPref) {PrefMenu()}
             }
+            ProgressView()
+                .hidden(appDelegate.showProgViewOnAcceptShare)
+                .tint(.blue)
+                .scaleEffect(5)
+                .progressViewStyle(CircularProgressViewStyle())
         }
         //.environmentObject(appDelegate)
         //.environmentObject(musicSub)
@@ -72,7 +77,17 @@ struct StartMenu: View {
         //    showEnlargeECard = true
         //}
         .onAppear {
+            
+            
+            
+            
             print("Opened App...")
+            print(appDelegate.showProgViewOnAcceptShare)
+            print(sceneDelegate.showProgViewOnAcceptShare)
+            
+            
+            
+            
             appDelegate.startMenuAppeared = true
             print((defaults.object(forKey: "MusicSubType") as? String))
             if (defaults.object(forKey: "MusicSubType") as? String) != nil  {

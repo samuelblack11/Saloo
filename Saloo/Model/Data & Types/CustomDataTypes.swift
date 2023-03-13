@@ -227,3 +227,17 @@ enum ActiveSheet: Identifiable, Equatable {
 
 }
 
+
+enum eCardType {
+    case musicAndGift
+    case musicNoGift
+    case giftNoMusic
+    case noMusicNoGift
+}
+
+
+
+
+
+
+

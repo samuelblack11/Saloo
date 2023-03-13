@@ -90,6 +90,7 @@ struct PrefMenu: View {
             .navigationBarItems(leading:Button {showStart.toggle()} label: {Image(systemName: "chevron.left").foregroundColor(.blue); Text("Back")})
         }
         .onAppear {
+            redirectToAppStore(musicvendor: "Spotify")
             if defaults.object(forKey: "MusicSubType") != nil {currentSubSelection = (defaults.object(forKey: "MusicSubType") as? String)!}
             else {currentSubSelection = "Neither"; appDelegate.musicSub.type = .Neither; defaults.set("Neither", forKey: "MusicSubType")}
         }
@@ -102,6 +103,18 @@ struct PrefMenu: View {
 }
 
 extension PrefMenu {
+    
+    //redirectToAppStore(musicVendor: currentSubSelection)
+    
+    func redirectToAppStore(musicvendor: String) {
+        print("called redirectToAppStore...")
+        
+        
+        print(UIApplication.shared.canOpenURL(URL(string: "spotify://")!))
+        UIApplication.shared.open(URL(string: "spotify://")!)
+        //if UIApplication.shared.canOpenURL(URL(string: "spotify://")!) {}
+        //else{print("Can't open Spotify because it's not installed")}
+    }
     
     func verifyAMSubscription() {
         getAMUserToken()

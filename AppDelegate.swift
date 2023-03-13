@@ -18,7 +18,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, ObservableObject {
     @State var gotRecord = false
     @Published var showGrid = false
     @Published var chosenGridCard: CoreCard? = nil
-    
+    @Published var showProgViewOnAcceptShare = false
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil) -> Bool {
         print("didFinishLaunchingWithOptions")
         return true

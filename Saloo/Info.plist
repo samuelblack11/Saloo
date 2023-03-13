@@ -58,6 +58,8 @@
 	<true/>
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
+		<string>spotify://</string>
+		<string>apple music</string>
 		<string>saloo</string>
 		<string>spotify</string>
 	</array>
