@@ -46,6 +46,12 @@ struct eCardView: View {
     var appRemote2: SPTAppRemote? = SPTAppRemote(configuration: SPTConfiguration(clientID: "d15f76f932ce4a7c94c2ecb0dfb69f4b", redirectURL: URL(string: "saloo://")!), logLevel: .debug)
     @State var player: AVPlayer?
     @State var selectedPreviewURL: String?
+    @State var eCardType: eCardType
+    
+    
+    
+    var body: some View {determineViewType()}
+    
     
     
     var body: some View {
@@ -127,9 +133,6 @@ struct eCardView: View {
         .onDisappear{if player?.timeControlStatus.rawValue == 2 {player?.pause()}}
     }
     
-    
-    
-    
     func createPlayer() {
         if songAddedUsing! == "Apple" {self.selectedPreviewURL = songPreviewURL!}
         if songAddedUsing! == "Spotify" {self.selectedPreviewURL = spotPreviewURL!}
@@ -151,6 +154,60 @@ struct eCardView: View {
     }
     
     
+    
+    func determineViewType() -> some View {
+        if eCardType == .musicAndGift {return MusicAndGiftView()}
+        if eCardType == .musicNoGift {return MusicNoGiftView()}
+        if eCardType == .giftNoMusic {return GiftNoMusicView()}
+        if eCardType == .noMusicNoGift {return NoMusicNoGift()}
+    }
+    
+    func MusicAndGiftView() -> some View {
+        HStack {
+            VStack {
+                CoverView()
+                NoteView()
+                CollageAndAnnotationView()
+            }
+            VStack {
+                GiftView()
+                MusicView()
+            }
+        }
+    }
+    
+    func MusicNoGiftView() -> some View {
+        HStack {
+            VStack {
+                CoverView()
+                CollageAndAnnotationView()
+            }
+            VStack {
+                NoteView()
+                MusicView()
+            }
+        }
+    }
+    
+    func GiftNoMusicView() -> some View {
+        HStack {
+            VStack {
+                CoverView()
+                CollageAndAnnotationView()
+            }
+            VStack {
+                NoteView()
+                GiftView()
+            }
+        }
+    }
+    
+    func NoMusicNoGift() -> some View {
+        VStack {
+            CoverView()
+            CollageAndAnnotationView()
+        }
+    }
     
     func CoverView() -> some View {
         return Image(uiImage: UIImage(data: coverImage)!)
@@ -228,24 +285,5 @@ struct eCardView: View {
                 }
             }
     }
-    
-    func MusicAndGiftView() -> some View {
-        
-    }
-    
-    func MusicNoGiftView() -> some View {
-        
-    }
-    func GiftNoMusicView() -> some View {
-        
-    }
-    func NoMusicNoGift() -> some View {
-        
-    }
-    
-    
-    
-    
-    
     
 }
