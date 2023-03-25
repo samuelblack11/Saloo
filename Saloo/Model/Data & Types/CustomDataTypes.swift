@@ -36,7 +36,7 @@ struct SelectedSong {
 }
 
 class GiftCard: ObservableObject {
-    @Published var id = String()
+    @Published var id = ""
     @Published var status = String()
     @Published var cardValue = Int()
     @Published var deliveryMethod = String()
@@ -46,7 +46,7 @@ class GiftCard: ObservableObject {
 
 
 class ChosenSong: ObservableObject {
-    @Published var id = String()
+    @Published var id = ""
     @Published var name = String()
     @Published var artistName = String()
     @Published var artwork = Data()

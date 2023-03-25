@@ -18,6 +18,7 @@ struct WriteNoteView: View {
     @EnvironmentObject var appDelegate: AppDelegate
     @StateObject var addMusic = AddMusic()
     @StateObject var chosenSong = ChosenSong()
+    @StateObject var giftCard = GiftCard()
 
     @StateObject var noteField = NoteField()
     @StateObject var annotation = Annotation()
@@ -53,6 +54,16 @@ struct WriteNoteView: View {
         }
     }
 
+    func determineCardType() -> String {
+        var cardType2 = String()
+        if chosenSong.id != "" && giftCard.id != ""  {cardType2 = "musicAndGift"}
+        else if chosenSong.id != "" && giftCard.id == ""  {cardType2 = "musicNoGift"}
+        else if chosenSong.id == "" && giftCard.id != ""  {cardType2 = "giftNoMusic"}
+        else{cardType2 = "noMusicNoGift"}
+        
+        return cardType2
+        
+    }
     
     var body: some View {
         NavigationView {
@@ -100,7 +111,7 @@ struct WriteNoteView: View {
         .alert("Your typed message will only appear in your eCard", isPresented: $handWrite2) {Button("Ok", role: .cancel) {}}
         .padding(.bottom, 30)
         .fullScreenCover(isPresented: $showMusic) {MusicSearchView().environmentObject(appDelegate)}
-        .fullScreenCover(isPresented: $showFinalize) {FinalizeCardView()}
+        .fullScreenCover(isPresented: $showFinalize) {FinalizeCardView(cardType: determineCardType())}
         .fullScreenCover(isPresented: $showCollageBuilder) {CollageBuilder(showImagePicker: false)}
         }
             .navigationBarItems(leading:Button {showCollageBuilder = true} label: {Image(systemName: "chevron.left").foregroundColor(.blue); Text("Back")})
@@ -110,6 +121,7 @@ struct WriteNoteView: View {
         .environmentObject(annotation)
         .environmentObject(addMusic)
         .environmentObject(chosenSong)
+        .environmentObject(giftCard)
 
 
     }

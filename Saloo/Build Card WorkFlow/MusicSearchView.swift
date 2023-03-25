@@ -22,6 +22,8 @@ struct MusicSearchView: View {
     @State private var storeFrontID = "us"
     @State private var userToken = ""
     @State private var searchResults: [SongForList] = []
+    @EnvironmentObject var giftCard: GiftCard
+
     //@State private var musicPlayer = MPMusicPlayerController.applicationMusicPlayer
     @State private var player: AVPlayer?
     @State var showFCV: Bool = false
@@ -48,6 +50,18 @@ struct MusicSearchView: View {
     @State private var ranAMStoreFront = false
     var amAPI = AppleMusicAPI()
     @State private var showSpotAuthFailedAlert = false
+    
+    
+    func determineCardType() -> String {
+        var cardType2 = String()
+        if chosenSong.id != "" && giftCard.id != ""  {cardType2 = "musicAndGift"}
+        else if chosenSong.id != "" && giftCard.id == ""  {cardType2 = "musicNoGift"}
+        else if chosenSong.id == "" && giftCard.id != ""  {cardType2 = "giftNoMusic"}
+        else{cardType2 = "noMusicNoGift"}
+        
+        return cardType2
+        
+    }
 
     var body: some View {
         NavigationStack {
@@ -112,11 +126,11 @@ struct MusicSearchView: View {
             .navigationBarItems(leading:Button {showWriteNote.toggle()} label: {Image(systemName: "chevron.left").foregroundColor(.blue); Text("Back")})
             .popover(isPresented: $showAPV) {AMPlayerView(songID: chosenSong.id, songName: chosenSong.name, songArtistName: chosenSong.artistName, songArtImageData: chosenSong.artwork, songDuration: chosenSong.durationInSeconds, songPreviewURL: chosenSong.songPreviewURL, confirmButton: true, showFCV: $showFCV)
                     .presentationDetents([.fraction(0.4)])
-                    .fullScreenCover(isPresented: $showFCV) {FinalizeCardView()}
+                    .fullScreenCover(isPresented: $showFCV) {FinalizeCardView(cardType: determineCardType())}
             }
             .popover(isPresented: $showSPV) {SpotPlayerView(songID: chosenSong.spotID, songName: chosenSong.name, songArtistName: chosenSong.artistName, songArtImageData: chosenSong.spotImageData, songDuration: chosenSong.spotSongDuration, songPreviewURL: chosenSong.spotPreviewURL, confirmButton: true, showFCV: $showFCV, appRemote2: appRemote2)
                     .presentationDetents([.fraction(0.4)])
-                    .fullScreenCover(isPresented: $showFCV) {FinalizeCardView(appRemote2: appRemote2)}
+                    .fullScreenCover(isPresented: $showFCV) {FinalizeCardView(cardType: determineCardType(), appRemote2: appRemote2)}
                     .fullScreenCover(isPresented: $showWriteNote) {WriteNoteView()}
             }
             .environmentObject(spotifyAuth)

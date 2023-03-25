@@ -55,6 +55,7 @@ extension CoreCard {
     @NSManaged public var collage2: Data?
     @NSManaged public var collage3: Data?
     @NSManaged public var collage4: Data?
+    @NSManaged public var cardType: String?
 
 }
 
@@ -92,6 +93,7 @@ struct Card: Identifiable, Hashable {
     let collage2: Data?
     let collage3: Data?
     let collage4: Data?
+    let cardType: String?
 }
 
 extension Card {
@@ -127,7 +129,8 @@ extension Card {
               let collage1 = record["collage1"] as? Data,
               let collage2 = record["collage2"] as? Data,
               let collage3 = record["collage3"] as? Data,
-              let collage4 = record["collage4"] as? Data else {
+              let collage4 = record["collage4"] as? Data,
+              let cardType = record["cardType"] as? String else {
             return nil
         }
         
@@ -164,6 +167,6 @@ extension Card {
         self.collage2 = collage2
         self.collage3 = collage3
         self.collage4 = collage4
-
+        self.cardType = cardType
     }
 }
