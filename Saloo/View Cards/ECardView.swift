@@ -57,33 +57,6 @@ struct eCardView: View {
         if cardType == "noMusicNoGift" {NoMusicNoGift()}
     }
     
-    
-    
-    //var body: some View {
-            //.frame(width: UIScreen.screenWidth/2.1)
-            //.fixedSize(horizontal: true, vertical: false)
-        //.onAppear {
-            //if appDelegate.musicSub.type == .Neither {createPlayer()}
-         //   if appDelegate.musicSub.type == .Spotify {appRemote2?.connectionParameters.accessToken = (defaults.object(forKey: "SpotifyAccessToken") as? String)!}
-        //}
-        //.onDisappear{if player?.timeControlStatus.rawValue == 2 {player?.pause()}}
-   // }
-    
-    func createPlayer() {
-        if songAddedUsing! == "Apple" {self.selectedPreviewURL = songPreviewURL!}
-        if songAddedUsing! == "Spotify" {self.selectedPreviewURL = spotPreviewURL!}
-        let audioSession = AVAudioSession.sharedInstance()
-        do {
-            try audioSession.setCategory(.playback)
-            try audioSession.overrideOutputAudioPort(AVAudioSession.PortOverride.none)
-            try audioSession.setActive(true)
-            let playerItem = AVPlayerItem(url: URL(string: self.selectedPreviewURL!)!)
-            self.player = AVPlayer.init(playerItem: playerItem)
-            player?.play()
-        }
-        catch{print(error.localizedDescription)}
-    }
-    
     func MusicAndGiftView() -> some View {
         HStack {
             VStack {
@@ -93,7 +66,7 @@ struct eCardView: View {
             }
             VStack {
                 GiftView()
-                MusicView()
+                MusicView
             }
         }
     }
@@ -106,7 +79,7 @@ struct eCardView: View {
             }
             VStack {
                 NoteView()
-                MusicView()
+                MusicView
             }
         }
     }
@@ -181,33 +154,41 @@ struct eCardView: View {
             .frame(maxHeight: .infinity)
     }
  
-    
-    
-    func MusicView() -> some View {
-           return  HStack(alignment: .bottom){
-                if appDelegate.musicSub.type == .Apple {
-                    AMPlayerView(songID: songID, songName: songName, songArtistName: songArtistName, songArtImageData: songArtImageData, songDuration: songDuration, songPreviewURL: songPreviewURL, confirmButton: false, showFCV: $showFCV)
-                        .frame(maxHeight: UIScreen.screenHeight/2.2)
-                }
+    var MusicView: some View {
+        VStack {
+            if appDelegate.musicSub.type == .Apple {
+                AMPlayerView(songID: songID, songName: songName, songArtistName: songArtistName, songArtImageData: songArtImageData, songDuration: songDuration, songPreviewURL: songPreviewURL, confirmButton: false, showFCV: $showFCV)
+                    .frame(maxHeight: UIScreen.screenHeight/2.2)
             }
             if appDelegate.musicSub.type == .Spotify {
-                HStack(alignment: .bottom){
-                    SpotPlayerView(songID: spotID, songName: songName, songArtistName: songArtistName, songArtImageData: spotImageData, songDuration: spotSongDuration, songPreviewURL: spotPreviewURL, confirmButton: false, showFCV: $showFCV, appRemote2: appRemote2)
-                        .frame(maxHeight: .infinity, alignment: .bottom)
-                }
+                SpotPlayerView(songID: spotID, songName: songName, songArtistName: songArtistName, songArtImageData: spotImageData, songDuration: spotSongDuration, songPreviewURL: spotPreviewURL, confirmButton: false, showFCV: $showFCV, appRemote2: appRemote2)
+                    .onAppear{appRemote2?.connectionParameters.accessToken = (defaults.object(forKey: "SpotifyAccessToken") as? String)!}
+                    .frame(maxHeight: .infinity, alignment: .bottom)
             }
             if appDelegate.musicSub.type == .Neither {
-                HStack(alignment: .bottom){
-                    if songAddedUsing == "Apple" {
-                        SongPreviewPlayer(songID: songID, songName: songName, songArtistName: songArtistName, songArtImageData: songArtImageData, songDuration: songDuration, songPreviewURL: songPreviewURL, confirmButton: false, showFCV: $showFCV, songAddedUsing: "Apple")
-                            .frame(maxHeight: .infinity, alignment: .bottom)
-                    }
-                    if songAddedUsing == "Spotify" {
-                        SongPreviewPlayer(songID: spotID, songName: songName, songArtistName: songArtistName, songArtImageData: spotImageData, songDuration: spotSongDuration, songPreviewURL: spotPreviewURL,confirmButton: false, showFCV: $showFCV, songAddedUsing: "Spotify")
-                            .frame(maxHeight: .infinity, alignment: .bottom)
-                    }
-                }
+                SongPreviewPlayer(songID: songID, songName: songName, songArtistName: songArtistName, songArtImageData: songArtImageData, songDuration: songDuration, songPreviewURL: songPreviewURL, confirmButton: false, showFCV: $showFCV, songAddedUsing: songAddedUsing!)
+                    .onAppear {createPlayer()}
+                    .onDisappear{if player?.timeControlStatus.rawValue == 2 {player?.pause()}}
+                    .frame(maxHeight: .infinity, alignment: .bottom)
             }
+        }
+    }
+    
+    
+    
+    func createPlayer() {
+        if songAddedUsing! == "Apple" {self.selectedPreviewURL = songPreviewURL!}
+        if songAddedUsing! == "Spotify" {self.selectedPreviewURL = spotPreviewURL!}
+        let audioSession = AVAudioSession.sharedInstance()
+        do {
+            try audioSession.setCategory(.playback)
+            try audioSession.overrideOutputAudioPort(AVAudioSession.PortOverride.none)
+            try audioSession.setActive(true)
+            let playerItem = AVPlayerItem(url: URL(string: self.selectedPreviewURL!)!)
+            self.player = AVPlayer.init(playerItem: playerItem)
+            player?.play()
+        }
+        catch{print(error.localizedDescription)}
     }
     
 }
