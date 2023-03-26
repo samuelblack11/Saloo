@@ -48,7 +48,7 @@ struct eCardView: View {
     @State var selectedPreviewURL: String?
     @State var eCardType: eCardType = .musicNoGift
     @State var cardType: String
-    @State var accessedViaGrid: Bool?
+    @State var accessedViaGrid = true
     
     var body: some View {
         if cardType == "musicAndGift" {MusicAndGiftView()}
@@ -161,7 +161,7 @@ struct eCardView: View {
                     .frame(maxHeight: UIScreen.screenHeight/2.2)
             }
             if appDelegate.musicSub.type == .Spotify {
-                SpotPlayerView(songID: spotID, songName: songName, songArtistName: songArtistName, songArtImageData: spotImageData, songDuration: spotSongDuration, songPreviewURL: spotPreviewURL, confirmButton: false, showFCV: $showFCV, appRemote2: appRemote2)
+                SpotPlayerView(songID: spotID, songName: songName, songArtistName: songArtistName, songArtImageData: spotImageData, songDuration: spotSongDuration, songPreviewURL: spotPreviewURL, confirmButton: false, showFCV: $showFCV, accessedViaGrid: accessedViaGrid, appRemote2: appRemote2)
                     .onAppear{appRemote2?.connectionParameters.accessToken = (defaults.object(forKey: "SpotifyAccessToken") as? String)!}
                     .frame(maxHeight: .infinity, alignment: .bottom)
             }

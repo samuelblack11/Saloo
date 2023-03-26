@@ -66,7 +66,9 @@ struct SpotPlayerView: View {
                         runInstantiateAppRemote()
                     }
                 }
-                playSong()
+                print("^^^\(songArtImageData)")
+                if songArtImageData != nil {playSong()}
+                //playSong()
             }
             .onDisappear{appRemote2?.playerAPI?.pause()}
             .navigationBarItems(leading:Button {appDelegate.chosenGridCard = nil
@@ -140,7 +142,7 @@ struct SpotPlayerView: View {
     }
     
     func getSongViaSpot() {
-         SpotifyAPI().searchSpotify(songName, authToken: spotifyAuth.access_Token,completionHandler: {(response, error) in
+         SpotifyAPI().searchSpotify("\(songName!) \(songArtistName!)", authToken: spotifyAuth.access_Token,completionHandler: {(response, error) in
              if response != nil {
                  DispatchQueue.main.async {
                      for song in response! {
@@ -153,6 +155,7 @@ struct SpotPlayerView: View {
                                  songArtImageData = artResponse!
                                  songDuration = Double(song.duration_ms)
                                  songPreviewURL = song.preview_url
+                                 playSong()
                              })}; break}}} else{debugPrint(error?.localizedDescription)}
          })
      }
@@ -229,6 +232,7 @@ struct SpotPlayerView: View {
     
     func getSpotTokenViaRefresh() {
         print("called....requestSpotTokenViaRefresh")
+        print(songArtImageData)
         tokenCounter = 1
         spotifyAuth.auth_code = authCode!
         refresh_token = (defaults.object(forKey: "SpotifyRefreshToken") as? String)!
