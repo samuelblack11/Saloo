@@ -31,17 +31,20 @@ struct AMPlayerView: View {
     @State private var musicPlayer = MPMusicPlayerController.applicationMusicPlayer
     @EnvironmentObject var appDelegate: AppDelegate
     @EnvironmentObject var sceneDelegate: SceneDelegate
-    
+    var amAPI = AppleMusicAPI()
+    @State private var ranAMStoreFront = false
+    let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
+
     var body: some View {
-            AMPlayerView()
+            AMPlayerView
+            .onAppear{if songArtImageData == nil{getAMUserToken(); getAMStoreFront()}}
             .navigationBarItems(leading:Button {appDelegate.chosenGridCard = nil
             } label: {Image(systemName: "chevron.left").foregroundColor(.blue); Text("Back")})
     }
     
-    func AMPlayerView() -> some View {
-        let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
-        return  VStack {
-            Image(uiImage: UIImage(data: songArtImageData!)!)
+    var AMPlayerView: some View {
+        VStack {
+            if songArtImageData != nil {Image(uiImage: UIImage(data: songArtImageData!)!)}
             Text(songName!)
                 .multilineTextAlignment(.center)
                 .font(.headline)
@@ -108,4 +111,67 @@ struct AMPlayerView: View {
         let completeTime = String("\(m):\(s)")
         return completeTime
     }
+}
+
+extension AMPlayerView {
+    
+    func getAMUserToken() {
+        Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { timer in
+            if amAPI.taskToken == nil {
+                SKCloudServiceController.requestAuthorization {(status) in if status == .authorized {amAPI.getUserToken(completionHandler: { ( response, error) in
+                    print("Checking Token")
+                    print(response)
+                    print("^^")
+                    print(error)
+        })}}}}}
+
+    func getAMStoreFront() {
+        Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { timer in
+            if amAPI.taskToken != nil && ranAMStoreFront == false {
+                ranAMStoreFront = true
+                SKCloudServiceController.requestAuthorization {(status) in if status == .authorized {
+                    amAPI.storeFrontID = amAPI.fetchUserStorefront(userToken: amAPI.taskToken!, completionHandler: { ( response, error) in
+                        amAPI.storeFrontID = response!.data[0].id
+                        searchWithAM()
+                    })}}}
+            }
+        }
+            
+    func searchWithAM() {
+        SKCloudServiceController.requestAuthorization {(status) in if status == .authorized {
+            AppleMusicAPI().searchAppleMusic("\(songName!) \(songArtistName!)", storeFrontID: amAPI.storeFrontID!, userToken: amAPI.taskToken!, completionHandler: { (response, error) in
+                if response != nil {
+                    DispatchQueue.main.async {
+                        for song in response! {
+                            if song.attributes.name == songName && song.attributes.artistName == songArtistName {
+                                let blankString: String? = ""
+                                var songPrev: String?
+                                if song.attributes.previews.count > 0 {print("it's not nil"); songPrev = song.attributes.previews[0].url}
+                                else {songPrev = blankString}
+                                let artURL = URL(string:song.attributes.artwork.url.replacingOccurrences(of: "{w}", with: "80").replacingOccurrences(of: "{h}", with: "80"))
+                                let _ = getURLData(url: artURL!, completionHandler: { (artResponse, error2) in
+                                    songID = song.attributes.playParams.id
+                                    songArtImageData = artResponse!
+                                    songDuration = Double(song.attributes.durationInMillis) * 0.001
+                                    songPreviewURL = songPrev!
+                                    self.musicPlayer.setQueue(with: [songID!]); self.musicPlayer.play()
+                                }); break}}}}
+                else {debugPrint(error?.localizedDescription)}
+        })}}}
+    
+
+
+    
+    
+    func getURLData(url: URL, completionHandler: @escaping (Data?,Error?) -> Void) {
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
+        request.setValue("v1", forHTTPHeaderField: "Accept-Version")
+        let dataTask = URLSession.shared.dataTask(with: request) { (data, response, error) in
+            guard error == nil else {return}
+            DispatchQueue.main.async {completionHandler(data, nil)}
+        }
+        dataTask.resume()
+    }
+    
 }

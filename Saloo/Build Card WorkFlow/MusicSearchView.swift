@@ -53,10 +53,12 @@ struct MusicSearchView: View {
     
     
     func determineCardType() -> String {
+        print("called determineCardType...")
+        print(chosenSong.id)
         var cardType2 = String()
-        if chosenSong.id != "" && giftCard.id != ""  {cardType2 = "musicAndGift"}
-        else if chosenSong.id != "" && giftCard.id == ""  {cardType2 = "musicNoGift"}
-        else if chosenSong.id == "" && giftCard.id != ""  {cardType2 = "giftNoMusic"}
+        if chosenSong.id != nil && giftCard.id != ""  {cardType2 = "musicAndGift"}
+        else if chosenSong.id != nil && giftCard.id == ""  {cardType2 = "musicNoGift"}
+        else if chosenSong.id == nil && giftCard.id != ""  {cardType2 = "giftNoMusic"}
         else{cardType2 = "noMusicNoGift"}
         
         return cardType2

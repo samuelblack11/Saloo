@@ -166,9 +166,6 @@ struct SpotPlayerView: View {
          })
      }
     
-    
-    
-    
     func playSong() {
         print("Playlsit & Song IDs....")
         print(songID)
