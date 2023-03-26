@@ -41,7 +41,7 @@ struct GridofCards: View {
         //else if sortByValue == "Card Name" {return privateCards.filter { $0.cardName.contains(searchText)}}
         //else if sortByValue == "Date" {return privateCards.filter { $0.cardName.contains(searchText)}}
         //else if sortByValue == "Occassion" {return privateCards.filter { $0.occassion!.contains(searchText)}}
-        else {return cardsForDisplay.filter { $0.cardName.contains(searchText)}}
+        else {return cardsForDisplay.filter {$0.cardName.contains(searchText)}}
     }
     @State var cardSelectionNumber: Int?
     @State var chosenGridCard: CoreCard? = nil

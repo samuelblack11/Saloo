@@ -48,7 +48,7 @@ struct eCardView: View {
     @State var selectedPreviewURL: String?
     @State var eCardType: eCardType = .musicNoGift
     @State var cardType: String
-    
+    @State var accessedViaGrid: Bool?
     
     var body: some View {
         if cardType == "musicAndGift" {MusicAndGiftView()}
@@ -167,28 +167,9 @@ struct eCardView: View {
             }
             if appDelegate.musicSub.type == .Neither {
                 SongPreviewPlayer(songID: songID, songName: songName, songArtistName: songArtistName, songArtImageData: songArtImageData, songDuration: songDuration, songPreviewURL: songPreviewURL, confirmButton: false, showFCV: $showFCV, songAddedUsing: songAddedUsing!)
-                    .onAppear {createPlayer()}
                     .onDisappear{if player?.timeControlStatus.rawValue == 2 {player?.pause()}}
                     .frame(maxHeight: .infinity, alignment: .bottom)
             }
         }
     }
-    
-    
-    
-    func createPlayer() {
-        if songAddedUsing! == "Apple" {self.selectedPreviewURL = songPreviewURL!}
-        if songAddedUsing! == "Spotify" {self.selectedPreviewURL = spotPreviewURL!}
-        let audioSession = AVAudioSession.sharedInstance()
-        do {
-            try audioSession.setCategory(.playback)
-            try audioSession.overrideOutputAudioPort(AVAudioSession.PortOverride.none)
-            try audioSession.setActive(true)
-            let playerItem = AVPlayerItem(url: URL(string: self.selectedPreviewURL!)!)
-            self.player = AVPlayer.init(playerItem: playerItem)
-            player?.play()
-        }
-        catch{print(error.localizedDescription)}
-    }
-    
 }

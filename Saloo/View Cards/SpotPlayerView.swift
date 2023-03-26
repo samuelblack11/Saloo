@@ -31,11 +31,11 @@ struct SpotPlayerView: View {
     @Binding var showFCV: Bool
     @EnvironmentObject var appDelegate: AppDelegate
     @EnvironmentObject var sceneDelegate: SceneDelegate
-    @EnvironmentObject var spotifyAuth: SpotifyAuth
+    @State var spotifyAuth = SpotifyAuth()
     @State private var addSongCounter = 0
     @State private var showProgressView = true
     let defaults = UserDefaults.standard
-    @State var accessedViaGrid = false
+    @State var accessedViaGrid = true
     @State var appRemote2: SPTAppRemote?
     @State private var refresh_token: String? = ""
     @State var counter = 0
@@ -46,12 +46,29 @@ struct SpotPlayerView: View {
     @State private var instantiateAppRemoteCounter = 0
     let config = SPTConfiguration(clientID: "d15f76f932ce4a7c94c2ecb0dfb69f4b", redirectURL: URL(string: "saloo://")!)
     @State private var showWebView = false
-
+    let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
     var body: some View {
-        //NavigationStack {
-            SpotPlayerView()
-        //}
-        //.environmentObject(appDelegate)}
+            SpotPlayerView2
+            .onAppear{
+                if accessedViaGrid {
+                    if appDelegate.musicSub.type == .Spotify {
+                        print("Run1")
+                        if defaults.object(forKey: "SpotifyAuthCode") != nil && counter == 0 {
+                            print("Run2")
+                            print(defaults.object(forKey: "SpotifyAuthCode") as? String)
+                            authCode = defaults.object(forKey: "SpotifyAuthCode") as? String
+                            refresh_token = (defaults.object(forKey: "SpotifyRefreshToken") as? String)!
+                            refreshAccessToken = true
+                            runGetToken(authType: "refresh_token")
+                            counter += 1
+                        }
+                        else{print("Run3");requestSpotAuth(); runGetToken(authType: "code")}
+                        runInstantiateAppRemote()
+                    }
+                }
+                playSong()
+            }
+            .onDisappear{appRemote2?.playerAPI?.pause()}
             .navigationBarItems(leading:Button {appDelegate.chosenGridCard = nil
             } label: {Image(systemName: "chevron.left").foregroundColor(.blue); Text("Back")})
     }
@@ -68,11 +85,10 @@ struct SpotPlayerView: View {
         return completeTime
     }
     
-    func SpotPlayerView() -> some View {
-        let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
-        return VStack {
+    var SpotPlayerView2: some View {
+        VStack {
                    //if showProgressView {ProgressView().progressViewStyle(.circular) .tint(.green)}
-                    Image(uiImage: UIImage(data: songArtImageData!)!)
+                if songArtImageData != nil {Image(uiImage: UIImage(data: songArtImageData!)!) }
                     Text(songName!)
                         .font(.headline)
                     Text(songArtistName!)
@@ -121,25 +137,28 @@ struct SpotPlayerView: View {
                     }
                 selectButton
                 }
-            .onAppear{
-                if accessedViaGrid {
-                    if appDelegate.musicSub.type == .Spotify {
-                        print("Run1")
-                        if defaults.object(forKey: "SpotifyAuthCode") != nil && counter == 0 {
-                            print("Run2")
-                            refresh_token = (defaults.object(forKey: "SpotifyRefreshToken") as? String)!
-                            refreshAccessToken = true
-                            runGetToken(authType: "refresh_token")
-                            counter += 1
-                        }
-                        else{print("Run3");requestSpotAuth(); runGetToken(authType: "code")}
-                        runInstantiateAppRemote()
-                    }
-                }
-                playSong()
-            }
-            .onDisappear{appRemote2?.playerAPI?.pause()}
     }
+    
+    func getSongViaSpot() {
+         SpotifyAPI().searchSpotify(songName, authToken: spotifyAuth.access_Token,completionHandler: {(response, error) in
+             if response != nil {
+                 DispatchQueue.main.async {
+                     for song in response! {
+                         if song.name == songName && song.artists[0].name == songArtistName {
+                             print("SSSSS")
+                             print(song)
+                             let artURL = URL(string:song.album.images[2].url)
+                             let _ = getURLData(url: artURL!, completionHandler: {(artResponse, error2) in
+                                 songID = song.id
+                                 songArtImageData = artResponse!
+                                 songDuration = Double(song.duration_ms)
+                                 songPreviewURL = song.preview_url
+                             })}; break}}} else{debugPrint(error?.localizedDescription)}
+         })
+     }
+    
+    
+    
     
     func playSong() {
         print("Playlsit & Song IDs....")
@@ -197,6 +216,7 @@ struct SpotPlayerView: View {
                     
                     defaults.set(response!.access_token, forKey: "SpotifyAccessToken")
                     defaults.set(response!.refresh_token, forKey: "SpotifyRefreshToken")
+                    getSongViaSpot()
                 }
             }
             if error != nil {
@@ -218,6 +238,7 @@ struct SpotPlayerView: View {
                     spotifyAuth.access_Token = response!.access_token
                     appRemote2?.connectionParameters.accessToken = spotifyAuth.access_Token
                     defaults.set(response!.access_token, forKey: "SpotifyAccessToken")
+                    getSongViaSpot()
                 }
             }
             if error != nil {
@@ -262,4 +283,18 @@ struct SpotPlayerView: View {
             appRemote2?.connectionParameters.accessToken = spotifyAuth.access_Token
         }
     }
+    
+    
+    func getURLData(url: URL, completionHandler: @escaping (Data?,Error?) -> Void) {
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
+        request.setValue("v1", forHTTPHeaderField: "Accept-Version")
+        let dataTask = URLSession.shared.dataTask(with: request) { (data, response, error) in
+            guard error == nil else {return}
+            DispatchQueue.main.async {completionHandler(data, nil)}
+        }
+        dataTask.resume()
+    }
+    
+    
 }

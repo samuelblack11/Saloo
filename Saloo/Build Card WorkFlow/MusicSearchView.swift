@@ -326,9 +326,6 @@ extension MusicSearchView {
                         else{debugPrint(error?.localizedDescription)}
         })
     }
-    
-    func getSongDetailsFromOtherService() {}
-        
     func getURLData(url: URL, completionHandler: @escaping (Data?,Error?) -> Void) {
         var request = URLRequest(url: url)
         request.httpMethod = "GET"
