@@ -67,7 +67,7 @@ struct SpotPlayerView: View {
                     }
                 }
                 print("^^^\(songArtImageData)")
-                if songArtImageData != nil {playSong()}
+                if (songArtImageData != nil) {playSong()}
                 //playSong()
             }
             .onDisappear{appRemote2?.playerAPI?.pause()}
@@ -145,7 +145,13 @@ struct SpotPlayerView: View {
          SpotifyAPI().searchSpotify("\(songName!) \(songArtistName!)", authToken: spotifyAuth.access_Token,completionHandler: {(response, error) in
              if response != nil {
                  DispatchQueue.main.async {
+                     print("%%%")
+                     print(response!)
                      for song in response! {
+                         print(",,,,,,,,,,,")
+                         print(song.name)
+                         print(song.artists[0].name)
+                         //song = response![0]
                          if song.name == songName && song.artists[0].name == songArtistName {
                              print("SSSSS")
                              print(song)
@@ -153,10 +159,10 @@ struct SpotPlayerView: View {
                              let _ = getURLData(url: artURL!, completionHandler: {(artResponse, error2) in
                                  songID = song.id
                                  songArtImageData = artResponse!
-                                 songDuration = Double(song.duration_ms)
+                                 songDuration = Double(song.duration_ms) * 0.001
                                  songPreviewURL = song.preview_url
                                  playSong()
-                             })}; break}}} else{debugPrint(error?.localizedDescription)}
+                             }); break}}}} else{debugPrint(error?.localizedDescription)}
          })
      }
     
