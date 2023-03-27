@@ -28,6 +28,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
     
  
     
+    func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
+        print("Opened URL....")
+    }
     
     
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
@@ -46,7 +49,15 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
         //        waitingToAcceptRecord = false
         //    }
         //}
+        
+        
+        
+        
+        
         print("when is willConnectTo called...")
+        print(connectionOptions.cloudKitShareMetadata?.rootRecord)
+        print(connectionOptions.handoffUserActivityType)
+        print(connectionOptions.userActivities)
         if let windowScene = scene as? UIWindowScene {
             Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { timer in
                 if self.gotRecord && self.connectToScene {
