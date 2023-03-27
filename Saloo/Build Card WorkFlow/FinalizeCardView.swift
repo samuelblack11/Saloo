@@ -94,18 +94,25 @@ struct FinalizeCardView: View {
         NavigationView {
         VStack(spacing: 0) {
             VStack{
-                eCardView(eCardText: noteField.noteText, font: noteField.font, coverImage: chosenObject.coverImage, collageImage: collageImage.collageImage, text1: annotation.text1, text2: annotation.text2, text2URL: annotation.text2URL, text3: annotation.text3, text4: annotation.text4, songID: chosenSong.id, spotID: chosenSong.spotID, songName: chosenSong.name, songArtistName: chosenSong.artistName, songArtImageData: chosenSong.artwork, songDuration: chosenSong.durationInSeconds, songPreviewURL: chosenSong.songPreviewURL, inclMusic: addMusic.addMusic, spotImageData: chosenSong.spotImageData, spotSongDuration: chosenSong.spotSongDuration, spotPreviewURL: chosenSong.spotPreviewURL, songAddedUsing: chosenSong.songAddedUsing, appRemote2: appRemote2, cardType: cardType,accessedViaGrid: false)
+                eCardView(eCardText: noteField.noteText, font: noteField.font, coverImage: chosenObject.coverImage, collageImage: collageImage.collageImage, text1: annotation.text1, text2: annotation.text2, text2URL: annotation.text2URL, text3: annotation.text3, text4: annotation.text4, songID: chosenSong.id, spotID: chosenSong.spotID, songName: chosenSong.name, songArtistName: chosenSong.artistName, songArtImageData: chosenSong.artwork, songDuration: chosenSong.durationInSeconds, songPreviewURL: chosenSong.songPreviewURL, inclMusic: addMusic.addMusic, spotImageData: chosenSong.spotImageData, spotSongDuration: chosenSong.spotSongDuration, spotPreviewURL: chosenSong.spotPreviewURL, songAddedUsing: chosenSong.songAddedUsing, appRemote2: appRemote2, cardType: cardType,accessedViaGrid: false, fromFinalize: true)
             }
             VStack{saveButton}
         }
-        .navigationBarItems(
-            leading:Button {showMusicSearch = true}
-            label: {Image(systemName: "chevron.left").foregroundColor(.blue)
-            Text("Back")},
-            trailing: Button {showStartMenu = true} label: {Image(systemName: "menucard.fill").foregroundColor(.blue)
-            Text("Menu")})
+        .toolbar {
+            ToolbarItemGroup(placement: .navigationBarLeading) {
+                if addMusic.addMusic == false {
+                    Button {if addMusic.addMusic{showMusicSearch = true} else {showWriteNote = true}}label: {Image(systemName: "chevron.left").foregroundColor(.blue)
+                    Text("Back")}
+                }
+            }
+            ToolbarItemGroup(placement: .navigationBarTrailing) {
+                Button {showStartMenu = true} label: {Image(systemName: "menucard.fill").foregroundColor(.blue)
+                    Text("Menu")}
+            }
+        }
         .fullScreenCover(isPresented: $showStartMenu) {StartMenu(appRemote2: appRemote2)}
         .fullScreenCover(isPresented: $showMusicSearch) {MusicSearchView()}
+        .fullScreenCover(isPresented: $showWriteNote) {WriteNoteView()}
         .fullScreenCover(isPresented: $showShareSheet, content: {if let share = share {}})
         .fullScreenCover(isPresented: $showActivityController) {ActivityView(activityItems: $activityItemsArray, applicationActivities: nil)}
         }

@@ -49,7 +49,7 @@ struct eCardView: View {
     @State var eCardType: eCardType = .musicNoGift
     @State var cardType: String
     @State var accessedViaGrid = true
-    
+    @State var fromFinalize = false
     var body: some View {
         if cardType == "musicAndGift" {MusicAndGiftView()}
         if cardType == "musicNoGift" {MusicNoGiftView()}
@@ -157,7 +157,7 @@ struct eCardView: View {
     var MusicView: some View {
         VStack {
             if appDelegate.musicSub.type == .Apple {
-                AMPlayerView(songID: songID, songName: songName, songArtistName: songArtistName, songArtImageData: songArtImageData, songDuration: songDuration, songPreviewURL: songPreviewURL, confirmButton: false, showFCV: $showFCV)
+                AMPlayerView(songID: songID, songName: songName, songArtistName: songArtistName, songArtImageData: songArtImageData, songDuration: songDuration, songPreviewURL: songPreviewURL, confirmButton: false, showFCV: $showFCV, fromFinalize: fromFinalize)
                     .frame(maxHeight: UIScreen.screenHeight/2.2)
             }
             if appDelegate.musicSub.type == .Spotify {

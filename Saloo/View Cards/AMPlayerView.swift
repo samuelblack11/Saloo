@@ -34,11 +34,16 @@ struct AMPlayerView: View {
     var amAPI = AppleMusicAPI()
     @State private var ranAMStoreFront = false
     let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
+    @State var fromFinalize = false
+    @State var showWriteNote = false
 
     var body: some View {
             AMPlayerView
+            .fullScreenCover(isPresented: $showWriteNote) {WriteNoteView()}
             .onAppear{if songArtImageData == nil{getAMUserToken(); getAMStoreFront()}}
-            .navigationBarItems(leading:Button {appDelegate.chosenGridCard = nil
+            .navigationBarItems(leading:Button {
+                if fromFinalize {musicPlayer.pause(); showWriteNote = true; }
+                appDelegate.chosenGridCard = nil
             } label: {Image(systemName: "chevron.left").foregroundColor(.blue); Text("Back")})
     }
     
