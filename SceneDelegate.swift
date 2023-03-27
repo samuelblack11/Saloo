@@ -105,9 +105,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
                 print("\(#function): Failed to accept share invitations: \(error)")
                 
                 // repeat same logic for accept share as participant, and use to open the specified record.
-                
-                
-                
+                self.acceptedShare = cloudKitShareMetadata.share; print("Accepted Share..."); print(self.acceptedShare as Any)
+                Task {await self.getRecordViaQueryAsOwner(shareMetaData: cloudKitShareMetadata)}
             }
             else {
                 self.acceptedShare = cloudKitShareMetadata.share; print("Accepted Share..."); print(self.acceptedShare as Any)
@@ -143,7 +142,27 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
     
     
     
+    func getRecordViaQueryAsOwner(shareMetaData: CKShare.Metadata) {
+        print("called getRecordViaQueryAsOwner....")
+        let ckContainer = PersistenceController.shared.cloudKitContainer
+        let pred = NSPredicate(value: true)
+        let query = CKQuery(recordType: "CD_CoreCard", predicate: pred)
+        let op3 = CKQueryOperation(query: query)
+        op3.zoneID = shareMetaData.share.recordID.zoneID//.zoneName
+        op3.recordMatchedBlock = {recordID, result in
+            self.checkIfRecordAddedToStore = false
+            ckContainer.privateCloudDatabase.fetch(withRecordID: recordID){ record, error in
+                self.parseRecord(record: record)
+            }
+        }
+
+        ckContainer.privateCloudDatabase.add(op3)
+    }
+    
+    
+    
     func getRecordViaQuery(shareMetaData: CKShare.Metadata) {
+        print("called getRecordViaQuery....")
         let ckContainer = PersistenceController.shared.cloudKitContainer
         let pred = NSPredicate(value: true)
         let query = CKQuery(recordType: "CD_CoreCard", predicate: pred)
@@ -160,6 +179,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
     }
     
     func parseRecord(record: CKRecord?) {
+        print("Parsing Record....")
         DispatchQueue.main.async() {
             self.coreCard.occassion = record?.object(forKey: "CD_occassion") as! String
             self.coreCard.recipient = record?.object(forKey: "CD_recipient") as! String
@@ -188,6 +208,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
             self.coreCard.creator = record?.object(forKey: "CD_creator") as? String
             self.coreCard.songAddedUsing = record?.object(forKey: "CD_songAddedUsing") as? String
             self.coreCard.cardName = record?.object(forKey: "CD_cardName") as! String
+            self.coreCard.cardName = record?.object(forKey: "CD_cardName") as! String
+            self.coreCard.cardType = record?.object(forKey: "CD_cardType") as! String
             if self.coreCard.creator! == self.userID { self.whichBoxForCKAccept = .outbox}
             else {self.whichBoxForCKAccept = .inbox}
             self.gotRecord = true
