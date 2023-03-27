@@ -19,6 +19,18 @@ class AppDelegate: UIResponder, UIApplicationDelegate, ObservableObject {
     @Published var showGrid = false
     @Published var chosenGridCard: CoreCard? = nil
     @Published var showProgViewOnAcceptShare = false
+    
+    
+    func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
+        print("Called Open from AppDelegate....")
+        print(url)
+        print("----")
+        print(options)
+        return true
+    }
+    
+    
+    
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil) -> Bool {
         print("didFinishLaunchingWithOptions")
         return true
@@ -32,7 +44,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, ObservableObject {
         return configuration
     }
     
-    
+    func application(_ application: UIApplication, userDidAcceptCloudKitShareWith cloudKitShareMetadata: CKShare.Metadata) {
+        print("Accepted ckShare via AppDelegate")
+        print(cloudKitShareMetadata)
+    }
     
     
 }

@@ -30,6 +30,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
     
     func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
         print("Opened URL....")
+        //if let urlContext = URLContexts.first
+        //print(urlContext)
     }
     
     
@@ -55,6 +57,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
         
         
         print("when is willConnectTo called...")
+        
+        
+        
         print(connectionOptions.cloudKitShareMetadata?.rootRecord)
         print(connectionOptions.handoffUserActivityType)
         print(connectionOptions.userActivities)
@@ -95,7 +100,15 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
         let sharedStore = persistenceController.sharedPersistentStore
         let container = persistenceController.persistentContainer
         container.acceptShareInvitations(from: [cloudKitShareMetadata], into: sharedStore) { [self] (_, error) in
-            if let error = error {print("\(#function): Failed to accept share invitations: \(error)")}
+            if let error = error {
+                
+                print("\(#function): Failed to accept share invitations: \(error)")
+                
+                // repeat same logic for accept share as participant, and use to open the specified record.
+                
+                
+                
+            }
             else {
                 self.acceptedShare = cloudKitShareMetadata.share; print("Accepted Share..."); print(self.acceptedShare as Any)
                 waitingToAcceptRecord = true
