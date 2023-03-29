@@ -52,7 +52,13 @@ struct eCardView: View {
     @State var fromFinalize = false
     var body: some View {
         if cardType == "musicAndGift" {MusicAndGiftView()}
-        if cardType == "musicNoGift" {MusicNoGiftView()}
+        if cardType == "musicNoGift" {
+            
+            MusicNoGiftView()
+                .onAppear{print("AppDel MusicSub Type...\(appDelegate.musicSub.type)")}
+            
+            
+        }
         if cardType == "giftNoMusic" {GiftNoMusicView()}
         if cardType == "noMusicNoGift" {NoMusicNoGift()}
     }

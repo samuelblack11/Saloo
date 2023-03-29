@@ -25,7 +25,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
     //@StateObject var appDelegate3 = AppDelegate()
     @ObservedObject var appDelegate = AppDelegate()
     var showProgViewOnAcceptShare: Bool = false
-    
+    let defaults = UserDefaults.standard
+
  
     
     func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
@@ -35,40 +36,30 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
     }
     
     
+    
+    func updateMusicSubType() {
+        if (defaults.object(forKey: "MusicSubType") as? String) != nil  {
+            if (defaults.object(forKey: "MusicSubType") as? String)! == "Apple Music" {appDelegate.musicSub.type = .Apple}
+            if (defaults.object(forKey: "MusicSubType") as? String)! == "Spotify" {appDelegate.musicSub.type = .Spotify}
+            if (defaults.object(forKey: "MusicSubType") as? String)! == "Neither" {appDelegate.musicSub.type = .Neither}
+        }
+    }
+    
+    
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
-        //self.scene(scene, openURLContexts: connectionOptions.urlContexts)
-        // Create the SwiftUI view that provides the window contents.
-        // Use a UIHostingController as window root view controller.
-        
-        //if waitingToAcceptRecord {
-       //     if let windowScene = scene as? UIWindowScene {
-       //         let window1 = UIWindow(windowScene: windowScene)
-       //         window1.rootViewController = UIHostingController(rootView: StartMenu())
-       //         window1.windowLevel = UIWindow.Level.alert + 1
-        //        let alertController = UIAlertController(title: "Your Card is Loading...", message: "Please Wait", preferredStyle: UIAlertController.Style.alert)
-        //        window1.makeKeyAndVisible()
-        //        window1.rootViewController?.present(alertController, animated: true)
-        //        waitingToAcceptRecord = false
-        //    }
-        //}
-        
-        
-        
-        
-        
         print("when is willConnectTo called...")
-        
-        
-        
-        print(connectionOptions.cloudKitShareMetadata?.rootRecord)
-        print(connectionOptions.handoffUserActivityType)
-        print(connectionOptions.userActivities)
         if let windowScene = scene as? UIWindowScene {
             Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { timer in
                 if self.gotRecord && self.connectToScene {
+                    print("Musicsub type...")
+                    print(self.appDelegate.musicSub.type)
+                    if self.appDelegate.musicSub.type == .Neither{self.updateMusicSubType()}
+                    print(self.appDelegate.musicSub.type)
+                    //self.appDelegate.musicSub.type = appDelegate.musicSub.type
                     let contentView = EnlargeECardView(chosenCard: self.coreCard, share: self.acceptedShare, cardsForDisplay: self.loadCoreCards(), whichBoxVal: self.whichBoxForCKAccept!).environmentObject(self.appDelegate)
                     //let contentView = GridofCards(cardsForDisplay: self.loadCoreCards(), whichBoxVal: .inbox)
                     print("called willConnectTo")
+                    
                     let window = UIWindow(windowScene: windowScene)
                     window.rootViewController = UIHostingController(rootView: contentView)
                     self.window = window
@@ -78,15 +69,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
                     UIWindow.transition(with: window, duration: duration, options: options, animations: {}, completion:  { completed in
                         window.makeKeyAndVisible()
                     })
-                    
-                    
-                    
-                    //UIView.transition(with: window, duration: duration, options: options, animations: {}, completion:  { completed in
-                    //    window.makeKeyAndVisible()
-                    //})
                     self.connectToScene = false
-                    //let url = connectionOptions.urlContexts.first?.url
-                    //self.scene(scene, openURLContexts: url)
                 }
             }
         }
@@ -101,22 +84,15 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
         let container = persistenceController.persistentContainer
         container.acceptShareInvitations(from: [cloudKitShareMetadata], into: sharedStore) { [self] (_, error) in
             if let error = error {
-                
                 print("\(#function): Failed to accept share invitations: \(error)")
-                
                 // repeat same logic for accept share as participant, and use to open the specified record.
                 self.acceptedShare = cloudKitShareMetadata.share; print("Accepted Share..."); print(self.acceptedShare as Any)
+                waitingToAcceptRecord = true
                 Task {await self.getRecordViaQueryAsOwner(shareMetaData: cloudKitShareMetadata)}
             }
             else {
                 self.acceptedShare = cloudKitShareMetadata.share; print("Accepted Share..."); print(self.acceptedShare as Any)
                 waitingToAcceptRecord = true
-                //showProgViewOnAcceptShare = true
-                //self.appDelegate.showProgViewOnAcceptShare = showProgViewOnAcceptShare
-                //print("$$$")
-                //print(showProgViewOnAcceptShare)
-                //print(self.appDelegate.showProgViewOnAcceptShare)
-                //self.gotRecord = true
                 Task {await self.runGetRecord(shareMetaData: cloudKitShareMetadata)}
             }
         }
@@ -124,23 +100,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
     
     func runGetRecord(shareMetaData: CKShare.Metadata) async {
         print("called getRecord")
-        //if shareMetaData.share.participants.count > 1 {
-            if self.checkIfRecordAddedToStore {
-                self.getRecordViaQuery(shareMetaData: shareMetaData)
-            }
-        //}
-        //else {
-        //    DispatchQueue.main.asyncAfter(deadline: .now() + 5.0) {
-        //        if self.checkIfRecordAddedToStore {
-        //            self.getRecordViaQuery(shareMetaData: shareMetaData)
-        //        }
-        //    }
-        //}
+        if self.checkIfRecordAddedToStore {
+            self.getRecordViaQuery(shareMetaData: shareMetaData)
+        }
     }
-    
-    
-    
-    
     
     func getRecordViaQueryAsOwner(shareMetaData: CKShare.Metadata) {
         print("called getRecordViaQueryAsOwner....")
