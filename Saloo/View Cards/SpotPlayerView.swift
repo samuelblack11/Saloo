@@ -167,8 +167,8 @@ struct SpotPlayerView: View {
         else {cleanSongName = songName! + " "}
         AMString = (cleanSongName + cleanSongArtistName + artistsInSongName).replacingOccurrences(of: "  ", with: " ")
         print("AMString....")
-        print(AMString)
-        return AMString
+        print(AMString.withoutPunc)
+        return AMString.withoutPunc
     }
     
     
@@ -191,38 +191,36 @@ struct SpotPlayerView: View {
         
         
         
-        var SPOTString = cleanSongName + spotSongArtist.replacingOccurrences(of: ",", with: "")
+        var SPOTString = cleanSongName + " " + spotSongArtist.replacingOccurrences(of: ",", with: "")
+        SPOTString = SPOTString.withoutPunc
+                        .replacingOccurrences(of: "   ", with: " ")
+                        .replacingOccurrences(of: "  ", with: " ")
+
         print("SPOTString....")
         print(SPOTString)
-        return SPOTString
+        return SPOTString.withoutPunc
     }
     
     
     
     func getSongViaSpot() {
                 
-         SpotifyAPI().searchSpotify(cleanAMSongForSPOTSearch(), authToken: spotifyAuth.access_Token,completionHandler: {(response, error) in
+        SpotifyAPI().searchSpotify(cleanAMSongForSPOTSearch(), authToken: spotifyAuth.access_Token,completionHandler: {(response, error) in
              print("You Searched \(cleanAMSongForSPOTSearch())")
+             let searchTerm = cleanAMSongForSPOTSearch()
              if response != nil {
                  DispatchQueue.main.async {
                      print("%%%")
+                     print(response!.count)
                      print(response!)
                      for song in response! {
                          print(",,,,,,,,,,,")
                          var allArtists = String()
                          if song.artists.count > 1 {
-                             for artist in song.artists {
-                                 print("More than 1 Artist For This Song..")
-                                 print(allArtists)
-                                 allArtists = allArtists + " " + artist.name
-                             }
+                             for artist in song.artists { allArtists = allArtists + " " + artist.name}
                          }
                         else {allArtists = song.artists[0].name}
-                         
-                         
-                         //song = response![0]
-                         //if song.name == songName && song.artists[0].name == songArtistName {
-                         if cleanAMSongForSPOTSearch() == cleanSPOTSongForAMComparison(spotSongName: song.name, spotSongArtist: allArtists) {
+                         if searchTerm == cleanSPOTSongForAMComparison(spotSongName: song.name, spotSongArtist: allArtists) {
                              print("SSSSS")
                              print(song)
                              let artURL = URL(string:song.album.images[2].url)
@@ -374,4 +372,10 @@ struct SpotPlayerView: View {
     }
     
     
+}
+
+extension String {
+    var withoutPunc: String {
+        return self.components(separatedBy: CharacterSet.punctuationCharacters).joined(separator: "")
+    }
 }
