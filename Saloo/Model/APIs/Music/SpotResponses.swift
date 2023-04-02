@@ -33,6 +33,7 @@ struct ArtistObject: Decodable {
 }
 
 struct AlbumData: Decodable {
+    let name: String
     let images: [AlbumImages]
 }
 

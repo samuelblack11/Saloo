@@ -11,7 +11,7 @@ import SwiftUI
 
 extension PersistenceController {
     
-    func addCoreCard(noteField: NoteField, chosenOccassion: Occassion, an1: String, an2: String, an2URL: String, an3: String, an4: String, chosenObject: ChosenCoverImageObject, collageImage: CollageImage, context: NSManagedObjectContext, songID: String?, spotID: String?, songName: String?, songArtistName: String?, songArtImageData: Data?, songPreviewURL: String?, songDuration: String?, inclMusic: Bool, spotImageData: Data?, spotSongDuration: String?, spotPreviewURL: String?, songAddedUsing: String?, cardType: String) {
+    func addCoreCard(noteField: NoteField, chosenOccassion: Occassion, an1: String, an2: String, an2URL: String, an3: String, an4: String, chosenObject: ChosenCoverImageObject, collageImage: CollageImage, context: NSManagedObjectContext, songID: String?, spotID: String?, songName: String?, songArtistName: String?, songAlbumName: String?, songArtImageData: Data?, songPreviewURL: String?, songDuration: String?, inclMusic: Bool, spotImageData: Data?, spotSongDuration: String?, spotPreviewURL: String?, songAddedUsing: String?, cardType: String) {
         context.perform {
             
             let recordZone = CKRecordZone(zoneName: "Cards")
@@ -37,6 +37,7 @@ extension PersistenceController {
             coreCard.songID = songID
             coreCard.songName = songName
             coreCard.songArtistName = songArtistName
+            coreCard.songAlbumName = songAlbumName
             coreCard.songArtImageData = songArtImageData
             coreCard.songPreviewURL = songPreviewURL
             coreCard.songDuration = songDuration
@@ -104,4 +105,68 @@ extension PersistenceController {
         }
         return results
     }
+    
+    func updateRecordWithSpotData(for record: CKRecord, in context: NSManagedObjectContext, with database: CKDatabase, spotID: String, spotImageData: Data, spotPreviewURL: String, spotSongDuration: String, completion: @escaping (Error?) -> Void) {
+        let recordID = record.recordID
+        //else {
+            // Object has not been synced to CloudKit yet
+        //    return
+        //}
+        
+        // Retrieve the existing record from CloudKit
+        database.fetch(withRecordID: recordID) { (record, error) in
+            if let error = error {
+                // Handle error
+                completion(error)
+                return
+            }
+            
+            guard let record = record else {
+                // Record not found
+                completion(nil)
+                return
+            }
+            
+            // Update the fields in the Core Data object
+            //coreCard.spotID = spotID
+            //coreCard.spotImageData = spotImageData
+            //coreCard.spotPreviewURL = spotPreviewURL
+            //coreCard.spotSongDuration = spotSongDuration
+            
+            // Update the fields in the CloudKit record
+            record.setValue(spotID, forKey: "CD_spotID")
+            record.setValue(spotImageData, forKey: "CD_spotImageData")
+            record.setValue(spotPreviewURL, forKey: "CD_spotPreviewURL")
+            record.setValue(spotSongDuration, forKey: "CD_spotSongDuration")
+
+            // Save changes to Core Data
+            do {
+                try context.save()
+            } catch {
+                // Handle error
+                completion(error)
+                return
+            }
+            
+            // Save changes to CloudKit
+            database.save(record) { (record, error) in
+                if let error = error {
+                    // Handle error
+                    completion(error)
+                    return
+                }
+                
+                completion(nil)
+            }
+        }
+    }
+
+    
+    
+    
+    
+    
+    
+    
+    
 }

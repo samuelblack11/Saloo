@@ -180,7 +180,7 @@ extension MusicSearchView {
                             
                             let artURL = URL(string:song.attributes.artwork.url.replacingOccurrences(of: "{w}", with: "80").replacingOccurrences(of: "{h}", with: "80"))
                             let _ = getURLData(url: artURL!, completionHandler: { (artResponse, error2) in
-                                let songForList = SongForList(id: song.attributes.playParams.id, name: song.attributes.name, artistName: song.attributes.artistName, artImageData: artResponse!, durationInMillis: song.attributes.durationInMillis, isPlaying: false, previewURL: songPrev!)
+                                let songForList = SongForList(id: song.attributes.playParams.id, name: song.attributes.name, artistName: song.attributes.artistName, albumName: song.attributes.albumName,artImageData: artResponse!, durationInMillis: song.attributes.durationInMillis, isPlaying: false, previewURL: songPrev!)
                                 searchResults.append(songForList)
                             })}}}; if response != nil {print("No Response!")}
                 else {debugPrint(error?.localizedDescription)}}
@@ -287,6 +287,7 @@ extension MusicSearchView {
     func createChosenSong(song: SongForList) {
         chosenSong.name = song.name
         chosenSong.artistName = song.artistName
+        chosenSong.songAlbumName = song.albumName
         songProgress = 0.0; isPlaying = true
         if appDelegate.musicSub.type == .Spotify {
             chosenSong.spotID = song.id
@@ -322,7 +323,7 @@ extension MusicSearchView {
                             if song.preview_url != nil {print("it's not nil"); songPrev = song.preview_url}
                             else {songPrev = blankString}
                             
-                            let songForList = SongForList(id: song.id, name: song.name, artistName: song.artists[0].name, artImageData: artResponse!, durationInMillis: song.duration_ms, isPlaying: false, previewURL: songPrev!)
+                            let songForList = SongForList(id: song.id, name: song.name, artistName: song.artists[0].name, albumName: song.album.name, artImageData: artResponse!, durationInMillis: song.duration_ms, isPlaying: false, previewURL: songPrev!)
                             searchResults.append(songForList)})
                     }}}; if response != nil {print("No Response!")}
                         else{debugPrint(error?.localizedDescription)}

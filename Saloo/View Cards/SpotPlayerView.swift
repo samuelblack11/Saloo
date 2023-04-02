@@ -22,6 +22,7 @@ struct SpotPlayerView: View {
     @State var songID: String?
     @State var songName: String?
     @State var songArtistName: String?
+    @State var songAlbumName: String?
     @State var songArtImageData: Data?
     @State var songDuration: Double?
     @State var songPreviewURL: String?
@@ -46,6 +47,7 @@ struct SpotPlayerView: View {
     @State private var instantiateAppRemoteCounter = 0
     let config = SPTConfiguration(clientID: "d15f76f932ce4a7c94c2ecb0dfb69f4b", redirectURL: URL(string: "saloo://")!)
     @State private var showWebView = false
+    @State var associatedRecord: CKRecord? 
     let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
     var body: some View {
             SpotPlayerView2
@@ -146,7 +148,7 @@ struct SpotPlayerView: View {
     
     
     
-    func cleanAMSongForSPOTSearch() -> String {
+    func cleanAMSongForSPOTComparison() -> String {
         var AMString = String()
         var cleanSongName = String()
         var cleanSongArtistName = songArtistName!
@@ -204,10 +206,13 @@ struct SpotPlayerView: View {
     
     
     func getSongViaSpot() {
-                
-        SpotifyAPI().searchSpotify(cleanAMSongForSPOTSearch(), authToken: spotifyAuth.access_Token,completionHandler: {(response, error) in
-             print("You Searched \(cleanAMSongForSPOTSearch())")
-             let searchTerm = cleanAMSongForSPOTSearch()
+        // Search album name, verbatim
+        // Compare clean song name + artist name for each track
+        // If within __ lev distance, it's a match
+        SpotifyAPI().searchSpotify(songAlbumName!, authToken: spotifyAuth.access_Token,completionHandler: {(response, error) in
+            let searchTerm = cleanAMSongForSPOTComparison()
+             print("You Searched \(songAlbumName!)")
+             print(searchTerm)
              if response != nil {
                  DispatchQueue.main.async {
                      print("%%%")
@@ -220,7 +225,8 @@ struct SpotPlayerView: View {
                              for artist in song.artists { allArtists = allArtists + " " + artist.name}
                          }
                         else {allArtists = song.artists[0].name}
-                         if searchTerm == cleanSPOTSongForAMComparison(spotSongName: song.name, spotSongArtist: allArtists) {
+                         //if searchTerm == cleanSPOTSongForAMComparison(spotSongName: song.name, spotSongArtist: allArtists) {
+                         if levenshteinDistance(s1: searchTerm, s2: cleanSPOTSongForAMComparison(spotSongName: song.name, spotSongArtist: allArtists)) < 10 {
                              print("SSSSS")
                              print(song)
                              let artURL = URL(string:song.album.images[2].url)
@@ -230,9 +236,26 @@ struct SpotPlayerView: View {
                                  songDuration = Double(song.duration_ms) * 0.001
                                  songPreviewURL = song.preview_url
                                  playSong()
+                                 updateRecordWithNewSPOTData(spotID: song.id, songArtImageData: artResponse!, songDuration: String(Double(song.duration_ms) * 0.001), songPreviewURL: song.preview_url!)
                              }); break}}}} else{debugPrint(error?.localizedDescription)}
          })
      }
+    
+    
+    func updateRecordWithNewSPOTData(spotID: String, songArtImageData: Data, songDuration: String, songPreviewURL: String) {
+        let controller = PersistenceController.shared
+        let taskContext = controller.persistentContainer.newTaskContext()
+        let ckContainer = PersistenceController.shared.cloudKitContainer
+        taskContext.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
+        controller.updateRecordWithSpotData(for: associatedRecord!, in: taskContext, with: ckContainer.sharedCloudDatabase, spotID: spotID, spotImageData: songArtImageData, spotPreviewURL: songPreviewURL, spotSongDuration: songDuration, completion: { (error) in
+            print("Updated Record...")
+            print(error)
+        } )
+    }
+    
+    
+    
+    
     
     func playSong() {
         print("Playlsit & Song IDs....")
@@ -370,6 +393,38 @@ struct SpotPlayerView: View {
         }
         dataTask.resume()
     }
+    
+    func levenshteinDistance(s1: String, s2: String) -> Int {
+        let s1Length = s1.count
+        let s2Length = s2.count
+        var distanceMatrix = [[Int]](repeating: [Int](repeating: 0, count: s2Length + 1), count: s1Length + 1)
+        
+        for i in 1...s1Length {
+            distanceMatrix[i][0] = i
+        }
+        
+        for j in 1...s2Length {
+            distanceMatrix[0][j] = j
+        }
+        
+        for i in 1...s1Length {
+            for j in 1...s2Length {
+                let cost = s1[s1.index(s1.startIndex, offsetBy: i - 1)] == s2[s2.index(s2.startIndex, offsetBy: j - 1)] ? 0 : 1
+                distanceMatrix[i][j] = min(
+                    distanceMatrix[i - 1][j] + 1,
+                    distanceMatrix[i][j - 1] + 1,
+                    distanceMatrix[i - 1][j - 1] + cost
+                )
+            }
+        }
+        
+        return distanceMatrix[s1Length][s2Length]
+    }
+    
+    
+    
+    
+    
     
     
 }

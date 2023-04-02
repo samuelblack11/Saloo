@@ -20,6 +20,7 @@ struct AMPlayerView: View {
     @State var songID: String?
     @State var songName: String?
     @State var songArtistName: String?
+    @State var songAlbumName: String?
     @State var songArtImageData: Data?
     @State var songDuration: Double?
     @State var songPreviewURL: String?
@@ -36,6 +37,7 @@ struct AMPlayerView: View {
     let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
     @State var fromFinalize = false
     @State var showWriteNote = false
+    @State var associatedRecord: CKRecord?
 
     var body: some View {
             AMPlayerView
@@ -159,6 +161,7 @@ extension AMPlayerView {
                                     songArtImageData = artResponse!
                                     songDuration = Double(song.attributes.durationInMillis) * 0.001
                                     songPreviewURL = songPrev!
+                                    songAlbumName = song.attributes.albumName
                                     self.musicPlayer.setQueue(with: [songID!]); self.musicPlayer.play()
                                 }); break}}}}
                 else {debugPrint(error?.localizedDescription)}

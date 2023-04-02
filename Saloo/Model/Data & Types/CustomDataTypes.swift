@@ -20,6 +20,7 @@ struct SongForList: Hashable {
      var id: String
      var name: String
      var artistName: String
+     var albumName: String
      var artImageData: Data
      var durationInMillis: Int
      var isPlaying: Bool
@@ -53,7 +54,7 @@ class ChosenSong: ObservableObject {
     @Published var isPlaying = Bool()
     @Published var durationInSeconds = Double()
     @Published var songPreviewURL = String()
-    
+    @Published var songAlbumName = String()
     @Published var spotID = String()
     @Published var spotImageData = Data()
     @Published var spotSongDuration = Double()

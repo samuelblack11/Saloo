@@ -28,6 +28,7 @@
         <attribute name="recipient" optional="YES" attributeType="String"/>
         <attribute name="sender" optional="YES" attributeType="String"/>
         <attribute name="songAddedUsing" optional="YES" attributeType="String"/>
+        <attribute name="songAlbumName" optional="YES" attributeType="String"/>
         <attribute name="songArtImageData" optional="YES" attributeType="Binary"/>
         <attribute name="songArtistName" optional="YES" attributeType="String"/>
         <attribute name="songDuration" optional="YES" attributeType="String"/>
