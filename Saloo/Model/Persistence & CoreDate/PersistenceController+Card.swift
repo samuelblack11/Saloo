@@ -51,6 +51,7 @@ extension PersistenceController {
             coreCard.collage2 = collageImage.image2
             coreCard.collage3 = collageImage.image3
             coreCard.collage4 = collageImage.image4
+            coreCard.recordID = UUID().uuidString
             coreCard.cardType = cardType
             PersistenceController.shared.cloudKitContainer.fetchUserRecordID { ckRecordID, error in
                 coreCard.creator = (ckRecordID?.recordName)!
@@ -106,48 +107,43 @@ extension PersistenceController {
         return results
     }
     
-    func updateRecordWithSpotData(for record: CKRecord, in context: NSManagedObjectContext, with database: CKDatabase, spotID: String, spotImageData: Data, spotPreviewURL: String, spotSongDuration: String, completion: @escaping (Error?) -> Void) {
-        let recordID = record.recordID
-        //else {
-            // Object has not been synced to CloudKit yet
-        //    return
-        //}
+
+    func updateRecordWithSpotData(for coreCard: CoreCard, in context: NSManagedObjectContext, with database: CKDatabase, spotID: String, spotImageData: Data, spotPreviewURL: String, spotSongDuration: String, completion: @escaping (Error?) -> Void) {
+        let controller = PersistenceController.shared
+        let taskContext = controller.persistentContainer.newTaskContext()
+        let ckContainer = PersistenceController.shared.cloudKitContainer
+        taskContext.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
+        let database = ckContainer.privateCloudDatabase
+
         
-        // Retrieve the existing record from CloudKit
-        database.fetch(withRecordID: recordID) { (record, error) in
-            if let error = error {
-                // Handle error
-                completion(error)
-                return
-            }
-            
-            guard let record = record else {
-                // Record not found
-                completion(nil)
-                return
-            }
-            
-            // Update the fields in the Core Data object
-            //coreCard.spotID = spotID
-            //coreCard.spotImageData = spotImageData
-            //coreCard.spotPreviewURL = spotPreviewURL
-            //coreCard.spotSongDuration = spotSongDuration
-            
-            // Update the fields in the CloudKit record
+        // Specify the field and value to search for
+        let fieldName = "CD_uniqueName"
+        let searchValue = coreCard.uniqueName
+
+        // Create the predicate to use in the query
+        let predicate = NSPredicate(format: "%K == %@", fieldName, searchValue)
+
+        // Create the query object with the desired record type and predicate
+        let query = CKQuery(recordType: "CD_CoreCard", predicate: predicate)
+
+        // Create the query operation with the query and desired results limit
+        let queryOperation = CKQueryOperation(query: query)
+        queryOperation.resultsLimit = 1 // Limit to only one result (optional)
+
+        // Set the block to be called when each record is fetched
+        queryOperation.recordFetchedBlock = { (record) in
+            // Process the fetched record
+            print("Fetched record with ID: \(record.recordID.recordName)")
             record.setValue(spotID, forKey: "CD_spotID")
             record.setValue(spotImageData, forKey: "CD_spotImageData")
             record.setValue(spotPreviewURL, forKey: "CD_spotPreviewURL")
             record.setValue(spotSongDuration, forKey: "CD_spotSongDuration")
-
             // Save changes to Core Data
-            do {
-                try context.save()
-            } catch {
-                // Handle error
+            do {try context.save()}
+            catch {
                 completion(error)
                 return
             }
-            
             // Save changes to CloudKit
             database.save(record) { (record, error) in
                 if let error = error {
@@ -155,18 +151,24 @@ extension PersistenceController {
                     completion(error)
                     return
                 }
-                
                 completion(nil)
             }
         }
-    }
 
-    
-    
-    
-    
-    
-    
-    
-    
-}
+        // Set the block to be called when the query is complete
+        queryOperation.queryCompletionBlock = { (cursor, error) in
+            guard error == nil else {
+                print("Error fetching records: \(error!.localizedDescription)")
+                return
+            }
+            // Optionally process any cursor information
+            if let cursor = cursor {
+                print("Query operation completed with cursor: \(cursor)")
+            }
+        }
+
+        // Add the query operation to the desired database
+        database.add(queryOperation)
+
+        }
+    }

@@ -26,6 +26,7 @@
         <attribute name="message" optional="YES" attributeType="String"/>
         <attribute name="occassion" optional="YES" attributeType="String"/>
         <attribute name="recipient" optional="YES" attributeType="String"/>
+        <attribute name="recordID" optional="YES" attributeType="String"/>
         <attribute name="sender" optional="YES" attributeType="String"/>
         <attribute name="songAddedUsing" optional="YES" attributeType="String"/>
         <attribute name="songAlbumName" optional="YES" attributeType="String"/>

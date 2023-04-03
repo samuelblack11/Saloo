@@ -38,6 +38,7 @@ struct AMPlayerView: View {
     @State var fromFinalize = false
     @State var showWriteNote = false
     @State var associatedRecord: CKRecord?
+    @State var coreCard: CoreCard?
 
     var body: some View {
             AMPlayerView

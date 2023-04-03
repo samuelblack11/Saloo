@@ -22,11 +22,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, ObservableObject {
     
     
     func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
-        print("Called Open from AppDelegate....")
-        print(url)
-        print("----")
-        print(options)
-        return true
+        let isOpened = openMyApp(from: url)
+        return isOpened
     }
     
     
@@ -48,6 +45,26 @@ class AppDelegate: UIResponder, UIApplicationDelegate, ObservableObject {
         print("Accepted ckShare via AppDelegate")
         print(cloudKitShareMetadata)
     }
+    
+    func openMyApp(from url: URL) -> Bool {
+        let scheme = "saloo" // Replace this with your app's custom URL scheme
+        
+        // Check if the URL contains your app's custom URL scheme
+        if url.scheme == scheme {
+            // Attempt to open the app
+            if let appURL = URL(string: "\(scheme)://") {
+                if UIApplication.shared.canOpenURL(appURL) {
+                    UIApplication.shared.open(appURL)
+                    return true
+                }
+            }
+        }
+        
+        // If the URL does not contain your app's custom URL scheme or the app cannot be opened, return false
+        return false
+    }
+    
+    
     
     
 }

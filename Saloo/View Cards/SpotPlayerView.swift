@@ -47,7 +47,8 @@ struct SpotPlayerView: View {
     @State private var instantiateAppRemoteCounter = 0
     let config = SPTConfiguration(clientID: "d15f76f932ce4a7c94c2ecb0dfb69f4b", redirectURL: URL(string: "saloo://")!)
     @State private var showWebView = false
-    @State var associatedRecord: CKRecord? 
+    @State var associatedRecord: CKRecord?
+    @State var coreCard: CoreCard?
     let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
     var body: some View {
             SpotPlayerView2
@@ -226,7 +227,7 @@ struct SpotPlayerView: View {
                          }
                         else {allArtists = song.artists[0].name}
                          //if searchTerm == cleanSPOTSongForAMComparison(spotSongName: song.name, spotSongArtist: allArtists) {
-                         if levenshteinDistance(s1: searchTerm, s2: cleanSPOTSongForAMComparison(spotSongName: song.name, spotSongArtist: allArtists)) < 10 {
+                         if levenshteinDistance(s1: searchTerm, s2: cleanSPOTSongForAMComparison(spotSongName: song.name, spotSongArtist: allArtists)) < 6 {
                              print("SSSSS")
                              print(song)
                              let artURL = URL(string:song.album.images[2].url)
@@ -247,7 +248,8 @@ struct SpotPlayerView: View {
         let taskContext = controller.persistentContainer.newTaskContext()
         let ckContainer = PersistenceController.shared.cloudKitContainer
         taskContext.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
-        controller.updateRecordWithSpotData(for: associatedRecord!, in: taskContext, with: ckContainer.sharedCloudDatabase, spotID: spotID, spotImageData: songArtImageData, spotPreviewURL: songPreviewURL, spotSongDuration: songDuration, completion: { (error) in
+        print("????")
+        controller.updateRecordWithSpotData(for: coreCard!, in: taskContext, with: ckContainer.privateCloudDatabase, spotID: spotID, spotImageData: songArtImageData, spotPreviewURL: songPreviewURL, spotSongDuration: songDuration, completion: { (error) in
             print("Updated Record...")
             print(error)
         } )

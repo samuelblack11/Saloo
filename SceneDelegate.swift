@@ -47,33 +47,65 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
     
     
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
+        guard let windowScene = (scene as? UIWindowScene) else { return }
+        print("+++---")
+        print(connectionOptions.urlContexts.first)
+        if let urlContext = connectionOptions.urlContexts.first {
+            let isOpened = openMyApp(from: urlContext.url)
+            if isOpened {
+                Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { timer in
+                    if self.gotRecord && self.connectToScene {
+                        if self.appDelegate.musicSub.type == .Neither{self.updateMusicSubType()}
+                        let contentView = EnlargeECardView(chosenCard: self.coreCard, share: self.acceptedShare, cardsForDisplay: self.loadCoreCards(), whichBoxVal: self.whichBoxForCKAccept!).environmentObject(self.appDelegate)
+                        let window = UIWindow(windowScene: windowScene)
+                        self.window = window
+                        let initialViewController = UIHostingController(rootView: contentView)
+                        let navigationController = UINavigationController(rootViewController: initialViewController)
+                        window.rootViewController = navigationController
+                        window.makeKeyAndVisible()
+                        // Customize the transition animation
+                        let transition = CATransition()
+                        transition.duration = 5.3
+                        transition.timingFunction = CAMediaTimingFunction(name: CAMediaTimingFunctionName.easeInEaseOut)
+                        transition.type = CATransitionType.fade
+                        navigationController.view.layer.add(transition, forKey: kCATransition)
+                        self.connectToScene = false
+                    }
+                }
+            }
+        }
+        
         print("when is willConnectTo called...")
         if let windowScene = scene as? UIWindowScene {
             Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { timer in
                 if self.gotRecord && self.connectToScene {
-                    print("Musicsub type...")
-                    print(self.appDelegate.musicSub.type)
                     if self.appDelegate.musicSub.type == .Neither{self.updateMusicSubType()}
-                    print(self.appDelegate.musicSub.type)
-                    //self.appDelegate.musicSub.type = appDelegate.musicSub.type
                     let contentView = EnlargeECardView(chosenCard: self.coreCard, share: self.acceptedShare, cardsForDisplay: self.loadCoreCards(), whichBoxVal: self.whichBoxForCKAccept!).environmentObject(self.appDelegate)
-                    //let contentView = GridofCards(cardsForDisplay: self.loadCoreCards(), whichBoxVal: .inbox)
-                    print("called willConnectTo")
-                    
                     let window = UIWindow(windowScene: windowScene)
-                    window.rootViewController = UIHostingController(rootView: contentView)
                     self.window = window
-                    
-                    let options: UIView.AnimationOptions = [.transitionCrossDissolve]
-                    let duration: TimeInterval = 0.3
-                    UIWindow.transition(with: window, duration: duration, options: options, animations: {}, completion:  { completed in
-                        window.makeKeyAndVisible()
-                    })
+                    let initialViewController = UIHostingController(rootView: contentView)
+                    let navigationController = UINavigationController(rootViewController: initialViewController)
+                    window.rootViewController = navigationController
+                    window.makeKeyAndVisible()
+                    // Customize the transition animation
+                    let transition = CATransition()
+                    transition.duration = 5.3
+                    transition.timingFunction = CAMediaTimingFunction(name: CAMediaTimingFunctionName.easeInEaseOut)
+                    transition.type = CATransitionType.fade
+                    navigationController.view.layer.add(transition, forKey: kCATransition)
                     self.connectToScene = false
                 }
             }
         }
     }
+    
+    
+    
+
+    
+    
+    
+    
 
     /**
      To be able to accept a share, add a CKSharingSupported entry in the Info.plist file and set it to true.
@@ -199,5 +231,24 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
         catch {print("Fetch failed")}
         return cardsFromCore
     }
+    
+    func openMyApp(from url: URL) -> Bool {
+        let scheme = "saloo" // Replace this with your app's custom URL scheme
+        
+        // Check if the URL contains your app's custom URL scheme
+        if url.scheme == scheme {
+            // Attempt to open the app
+            if let appURL = URL(string: "\(scheme)://") {
+                if UIApplication.shared.canOpenURL(appURL) {
+                    UIApplication.shared.open(appURL)
+                    return true
+                }
+            }
+        }
+        
+        // If the URL does not contain your app's custom URL scheme or the app cannot be opened, return false
+        return false
+    }
+    
     
 }
