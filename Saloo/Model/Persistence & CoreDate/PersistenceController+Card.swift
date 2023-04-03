@@ -115,7 +115,7 @@ extension PersistenceController {
         taskContext.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
         let database = ckContainer.privateCloudDatabase
 
-        
+        coreCard.creator
         // Specify the field and value to search for
         let fieldName = "CD_uniqueName"
         let searchValue = coreCard.uniqueName
@@ -168,7 +168,15 @@ extension PersistenceController {
         }
 
         // Add the query operation to the desired database
-        database.add(queryOperation)
+        
+        PersistenceController.shared.cloudKitContainer.fetchUserRecordID { ckRecordID, error in
+            if coreCard.creator == (ckRecordID?.recordName)! {ckContainer.privateCloudDatabase.add(queryOperation)}
+            else {ckContainer.sharedCloudDatabase.add(queryOperation)}
+        }
+        
+        
+        
+        //database.add(queryOperation)
 
         }
     }

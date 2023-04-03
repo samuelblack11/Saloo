@@ -49,6 +49,7 @@ struct SpotPlayerView: View {
     @State private var showWebView = false
     @State var associatedRecord: CKRecord?
     @State var coreCard: CoreCard?
+    @State var levDistances: [Int] = []
     let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
     var body: some View {
             SpotPlayerView2
@@ -190,57 +191,59 @@ struct SpotPlayerView: View {
             }
         }
         else {cleanSongName = spotSongName}
-        
-        
-        
-        
         var SPOTString = cleanSongName + " " + spotSongArtist.replacingOccurrences(of: ",", with: "")
         SPOTString = SPOTString.withoutPunc
                         .replacingOccurrences(of: "   ", with: " ")
                         .replacingOccurrences(of: "  ", with: " ")
-
-        print("SPOTString....")
-        print(SPOTString)
         return SPOTString.withoutPunc
     }
     
     
     
     func getSongViaSpot() {
-        // Search album name, verbatim
-        // Compare clean song name + artist name for each track
-        // If within __ lev distance, it's a match
         SpotifyAPI().searchSpotify(songAlbumName!, authToken: spotifyAuth.access_Token,completionHandler: {(response, error) in
             let searchTerm = cleanAMSongForSPOTComparison()
              print("You Searched \(songAlbumName!)")
-             print(searchTerm)
-             if response != nil {
-                 DispatchQueue.main.async {
-                     print("%%%")
-                     print(response!.count)
-                     print(response!)
-                     for song in response! {
-                         print(",,,,,,,,,,,")
-                         var allArtists = String()
-                         if song.artists.count > 1 {
-                             for artist in song.artists { allArtists = allArtists + " " + artist.name}
-                         }
+            if response != nil {
+                DispatchQueue.main.async {
+                    for song in response! {
+                        var allArtists = String()
+                        if song.artists.count > 1 {for artist in song.artists { allArtists = allArtists + " " + artist.name}}
                         else {allArtists = song.artists[0].name}
-                         //if searchTerm == cleanSPOTSongForAMComparison(spotSongName: song.name, spotSongArtist: allArtists) {
-                         if levenshteinDistance(s1: searchTerm, s2: cleanSPOTSongForAMComparison(spotSongName: song.name, spotSongArtist: allArtists)) < 6 {
-                             print("SSSSS")
-                             print(song)
-                             let artURL = URL(string:song.album.images[2].url)
-                             let _ = getURLData(url: artURL!, completionHandler: {(artResponse, error2) in
-                                 songID = song.id
-                                 songArtImageData = artResponse!
-                                 songDuration = Double(song.duration_ms) * 0.001
-                                 songPreviewURL = song.preview_url
-                                 playSong()
-                                 updateRecordWithNewSPOTData(spotID: song.id, songArtImageData: artResponse!, songDuration: String(Double(song.duration_ms) * 0.001), songPreviewURL: song.preview_url!)
-                             }); break}}}} else{debugPrint(error?.localizedDescription)}
-         })
-     }
+                        levDistances.append(levenshteinDistance(s1: searchTerm, s2: cleanSPOTSongForAMComparison(spotSongName: song.name, spotSongArtist: allArtists)))
+                    }
+                    
+                    if levDistances.min()! < 6 {
+                        let closestMatch = response![levDistances.firstIndex(of: levDistances.min()!)!]
+                        print("SSSSS")
+                        print(closestMatch)
+                        let artURL = URL(string:closestMatch.album.images[2].url)
+                        let _ = getURLData(url: artURL!, completionHandler: {(artResponse, error2) in
+                            songID = closestMatch.id
+                            songArtImageData = artResponse!
+                            songDuration = Double(closestMatch.duration_ms) * 0.001
+                            songPreviewURL = closestMatch.preview_url
+                            playSong()
+                            updateRecordWithNewSPOTData(spotID: closestMatch.id, songArtImageData: artResponse!, songDuration: String(Double(closestMatch.duration_ms) * 0.001), songPreviewURL: closestMatch.preview_url!)
+                        })}
+                    else if songPreviewURL != nil {
+                        // show preview player with AMpreview
+                        print("No matches within acceptable range, play preview instead")
+                    }
+                    else {
+                        // show alert that song has no preview and cannot be matched to reecipient's subscription.
+                    }}}
+            else{debugPrint(error?.localizedDescription)}
+        })
+    }
+    
+
+    
+    
+    
+    
+    
+    
     
     
     func updateRecordWithNewSPOTData(spotID: String, songArtImageData: Data, songDuration: String, songPreviewURL: String) {
