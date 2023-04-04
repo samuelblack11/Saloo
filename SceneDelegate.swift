@@ -53,10 +53,13 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
         if let urlContext = connectionOptions.urlContexts.first {
             let isOpened = openMyApp(from: urlContext.url)
             if isOpened {
-                Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { timer in
+                Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { [self] timer in
+                    print("Call1")
                     if self.gotRecord && self.connectToScene {
+                        print("Call2")
                         if self.appDelegate.musicSub.type == .Neither{self.updateMusicSubType()}
-                        let contentView = EnlargeECardView(chosenCard: self.coreCard, share: self.acceptedShare, cardsForDisplay: self.loadCoreCards(), whichBoxVal: self.whichBoxForCKAccept!).environmentObject(self.appDelegate)
+                        //let contentView = EnlargeECardView(chosenCard: self.coreCard, share: self.acceptedShare, cardsForDisplay: self.loadCoreCards(), whichBoxVal: self.whichBoxForCKAccept!).environmentObject(self.appDelegate)
+                        let contentView = GridofCards(cardsForDisplay: loadCoreCards(), whichBoxVal: self.whichBoxForCKAccept!, chosenGridCard: self.coreCard).environmentObject(self.appDelegate)
                         let window = UIWindow(windowScene: windowScene)
                         self.window = window
                         let initialViewController = UIHostingController(rootView: contentView)
@@ -78,9 +81,13 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
         print("when is willConnectTo called...")
         if let windowScene = scene as? UIWindowScene {
             Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { timer in
+                print("Call3")
                 if self.gotRecord && self.connectToScene {
+                    //self.connectToScene = false
+                    print("Call4")
                     if self.appDelegate.musicSub.type == .Neither{self.updateMusicSubType()}
-                    let contentView = EnlargeECardView(chosenCard: self.coreCard, share: self.acceptedShare, cardsForDisplay: self.loadCoreCards(), whichBoxVal: self.whichBoxForCKAccept!).environmentObject(self.appDelegate)
+                    //let contentView = EnlargeECardView(chosenCard: self.coreCard, share: self.acceptedShare, cardsForDisplay: self.loadCoreCards(), whichBoxVal: self.whichBoxForCKAccept!).environmentObject(self.appDelegate)
+                    let contentView = GridofCards(cardsForDisplay: self.loadCoreCards(), whichBoxVal: self.whichBoxForCKAccept!, chosenGridCard: self.coreCard).environmentObject(self.appDelegate)
                     let window = UIWindow(windowScene: windowScene)
                     self.window = window
                     let initialViewController = UIHostingController(rootView: contentView)
@@ -176,6 +183,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
     func parseRecord(record: CKRecord?) {
         print("Parsing Record....")
         DispatchQueue.main.async() {
+            self.getCurrentUserID()
             self.coreCard.occassion = record?.object(forKey: "CD_occassion") as! String
             self.coreCard.recipient = record?.object(forKey: "CD_recipient") as! String
             self.coreCard.sender = record?.object(forKey: "CD_sender") as? String
@@ -205,15 +213,47 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
             self.coreCard.cardName = record?.object(forKey: "CD_cardName") as! String
             self.coreCard.cardName = record?.object(forKey: "CD_cardName") as! String
             self.coreCard.cardType = record?.object(forKey: "CD_cardType") as! String
-            if self.coreCard.creator! == self.userID { self.whichBoxForCKAccept = .outbox}
-            else {self.whichBoxForCKAccept = .inbox}
+            self.appDelegate.chosenGridCard = self.coreCard
+            //if self.coreCard.creator! == self.userID { self.whichBoxForCKAccept = .outbox}
+            //else {self.whichBoxForCKAccept = .inbox}
+            self.determineWhichBox {print("Determined which box....\(self.whichBoxForCKAccept)")}
             self.gotRecord = true
             print("getRecord complete...")
+            print(self.whichBoxForCKAccept)
         }
     }
     
+    
+    func determineWhichBox(completion: @escaping () -> Void) {
+        //var box: InOut.SendReceive = .inbox
+        let controller = PersistenceController.shared
+        let taskContext = controller.persistentContainer.newTaskContext()
+        let ckContainer = PersistenceController.shared.cloudKitContainer
+        ckContainer.fetchUserRecordID { ckRecordID, error in
+            if self.coreCard.creator == (ckRecordID?.recordName)! {
+                print("Creator = recordname")
+                self.whichBoxForCKAccept = .outbox
+                print("Box1: \(self.whichBoxForCKAccept)")
+                completion()
+            }
+            else {
+                print("Creator != recordname")
+                self.whichBoxForCKAccept = .inbox
+                completion()
+            }
+        }
+        
+    }
+    
+    
+    
+    
+    
+    
     func getCurrentUserID() {
         PersistenceController.shared.cloudKitContainer.fetchUserRecordID { ckRecordID, error in
+            print("Current User ID...")
+            print(ckRecordID?.recordName)
             self.userID = (ckRecordID?.recordName)!
         }
         

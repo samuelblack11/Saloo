@@ -83,7 +83,6 @@ struct StartMenu: View {
             
             print("Opened App...")
             print(appDelegate.showProgViewOnAcceptShare)
-            print(sceneDelegate.showProgViewOnAcceptShare)
             
             
             

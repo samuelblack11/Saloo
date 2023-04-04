@@ -37,15 +37,27 @@ struct AMPlayerView: View {
     let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
     @State var fromFinalize = false
     @State var showWriteNote = false
+    @State var showGrid = false
     @State var associatedRecord: CKRecord?
     @State var coreCard: CoreCard?
+    @State var accessedViaGrid = true
+    //@State var whichBoxVal: InOut.SendReceive = .inbox
 
     var body: some View {
             AMPlayerView
             .fullScreenCover(isPresented: $showWriteNote) {WriteNoteView()}
+            //.fullScreenCover(isPresented: $showGrid) {GridofCards(cardsForDisplay: loadCoreCards(), whichBoxVal: whichBoxVal)}
             .onAppear{if songArtImageData == nil{getAMUserToken(); getAMStoreFront()}}
             .navigationBarItems(leading:Button {
-                if fromFinalize {musicPlayer.pause(); showWriteNote = true; }
+                if fromFinalize {musicPlayer.pause(); showWriteNote = true}
+                //if accessedViaGrid {
+                    //determineWhichBox {
+                        print("Calling completion...")
+                        //print(whichBoxVal)
+                        musicPlayer.pause()
+                        showGrid = true
+                 //   }
+               // }
                 appDelegate.chosenGridCard = nil
             } label: {Image(systemName: "chevron.left").foregroundColor(.blue); Text("Back")})
     }
@@ -126,7 +138,7 @@ extension AMPlayerView {
     func getAMUserToken() {
         Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { timer in
             if amAPI.taskToken == nil {
-                SKCloudServiceController.requestAuthorization {(status) in if status == .authorized {amAPI.getUserToken(completionHandler: { ( response, error) in
+                SKCloudServiceController.requestAuthorization {(status) in if status == .authorized {amAPI.getUserToken(completionHandler: { (response, error) in
                     print("Checking Token")
                     print(response)
                     print("^^")
@@ -183,4 +195,16 @@ extension AMPlayerView {
         dataTask.resume()
     }
     
+    func loadCoreCards() -> [CoreCard] {
+        let request = CoreCard.createFetchRequest()
+        let sort = NSSortDescriptor(key: "date", ascending: false)
+        request.sortDescriptors = [sort]
+        var cardsFromCore: [CoreCard] = []
+        do {
+            cardsFromCore = try PersistenceController.shared.persistentContainer.viewContext.fetch(request)
+            print("Got \(cardsFromCore.count) Cards From Core")
+        }
+        catch {print("Fetch failed")}
+        return cardsFromCore
+    }
 }

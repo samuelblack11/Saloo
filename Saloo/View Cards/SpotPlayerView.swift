@@ -318,7 +318,7 @@ struct SpotPlayerView: View {
                     
                     defaults.set(response!.access_token, forKey: "SpotifyAccessToken")
                     defaults.set(response!.refresh_token, forKey: "SpotifyRefreshToken")
-                    getSongViaSpot()
+                    if songID == nil {getSongViaSpot()}
                 }
             }
             if error != nil {
@@ -341,7 +341,7 @@ struct SpotPlayerView: View {
                     spotifyAuth.access_Token = response!.access_token
                     appRemote2?.connectionParameters.accessToken = spotifyAuth.access_Token
                     defaults.set(response!.access_token, forKey: "SpotifyAccessToken")
-                    getSongViaSpot()
+                    if songID == nil {getSongViaSpot()}
                 }
             }
             if error != nil {
