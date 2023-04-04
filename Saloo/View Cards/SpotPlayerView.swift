@@ -27,7 +27,7 @@ struct SpotPlayerView: View {
     @State var songDuration: Double?
     @State var songPreviewURL: String?
     @State private var songProgress = 0.0
-    @State private var isPlaying = true
+    @State private var isPlaying = false
     @State var confirmButton: Bool
     @Binding var showFCV: Bool
     @EnvironmentObject var appDelegate: AppDelegate
@@ -54,27 +54,27 @@ struct SpotPlayerView: View {
     var body: some View {
             SpotPlayerView2
             .onAppear{
-                if accessedViaGrid {
-                    if appDelegate.musicSub.type == .Spotify {
-                        print("Run1")
-                        if defaults.object(forKey: "SpotifyAuthCode") != nil && counter == 0 {
-                            print("Run2")
-                            print(defaults.object(forKey: "SpotifyAuthCode") as? String)
-                            authCode = defaults.object(forKey: "SpotifyAuthCode") as? String
-                            refresh_token = (defaults.object(forKey: "SpotifyRefreshToken") as? String)!
-                            refreshAccessToken = true
-                            runGetToken(authType: "refresh_token")
-                            counter += 1
-                        }
-                        else{print("Run3");requestSpotAuth(); runGetToken(authType: "code")}
-                        runInstantiateAppRemote()
+                if accessedViaGrid && appDelegate.musicSub.type == .Spotify {
+                    print("Run1")
+                    showProgressView = true
+                    if defaults.object(forKey: "SpotifyAuthCode") != nil && counter == 0 {
+                        print("Run2")
+                        print(defaults.object(forKey: "SpotifyAuthCode") as? String)
+                        authCode = defaults.object(forKey: "SpotifyAuthCode") as? String
+                        refresh_token = (defaults.object(forKey: "SpotifyRefreshToken") as? String)!
+                        refreshAccessToken = true
+                        runGetToken(authType: "refresh_token")
+                        counter += 1
                     }
+                    else{print("Run3");requestSpotAuth(); runGetToken(authType: "code")}
+                    runInstantiateAppRemote()
                 }
                 print("^^^\(songArtImageData)")
-                if (songArtImageData != nil) {playSong()}
-                //playSong()
             }
-            .onDisappear{appRemote2?.playerAPI?.pause()}
+            .onDisappear{
+                print("Did view disappear???")
+                appRemote2?.playerAPI?.pause()
+            }
             .navigationBarItems(leading:Button {appDelegate.chosenGridCard = nil
             } label: {Image(systemName: "chevron.left").foregroundColor(.blue); Text("Back")})
     }
@@ -92,63 +92,60 @@ struct SpotPlayerView: View {
     }
     
     var SpotPlayerView2: some View {
-        VStack {
-                   //if showProgressView {ProgressView().progressViewStyle(.circular) .tint(.green)}
+        ZStack {
+            if showProgressView {ProgressView().progressViewStyle(.circular) .tint(.green).frame(maxWidth: UIScreen.screenHeight/12, maxHeight: UIScreen.screenHeight/12)}
+            VStack {
                 if songArtImageData != nil {Image(uiImage: UIImage(data: songArtImageData!)!) }
-                    Text(songName!)
-                        .font(.headline)
-                    Text(songArtistName!)
-                    HStack {
-                        Button {
-                            songProgress = 0.0
-                            appRemote2?.playerAPI?.skip(toPrevious: defaultCallback)
-                            isPlaying = true
-                        } label: {
-                            ZStack {
-                                Circle()
-                                    .accentColor(.green)
-                                    .shadow(radius: 8)
-                                Image(systemName: "arrow.uturn.backward" )
-                                    .foregroundColor(.white)
-                                    .font(.system(.title))
-                            }
+                Text(songName!)
+                    .font(.headline)
+                Text(songArtistName!)
+                HStack {
+                    Button {
+                        songProgress = 0.0
+                        appRemote2?.playerAPI?.skip(toPrevious: defaultCallback)
+                        isPlaying = true
+                    } label: {
+                        ZStack {
+                            Circle()
+                                .accentColor(.green)
+                                .shadow(radius: 8)
+                            Image(systemName: "arrow.uturn.backward" )
+                                .foregroundColor(.white)
+                                .font(.system(.title))
                         }
-                        .frame(maxWidth: UIScreen.screenHeight/12, maxHeight: UIScreen.screenHeight/12)
-                        Button {
-                            if isPlaying {appRemote2?.playerAPI?.pause()}
-                            else {appRemote2?.playerAPI?.resume()}
-                            isPlaying.toggle()
-                        } label: {
-                            ZStack {
-                                Circle()
-                                    .accentColor(.green)
-                                    .shadow(radius: 8)
-                                Image(systemName: isPlaying ? "pause.fill" : "play.fill")
-                                    .foregroundColor(.white)
-                                    .font(.system(.title))
-                            }
-                        }
-                        .frame(maxWidth: UIScreen.screenHeight/12, maxHeight: UIScreen.screenHeight/12)
                     }
-                    ProgressView(value: songProgress, total: songDuration!)
-                        .onReceive(timer) {_ in
-                            if songProgress < songDuration! && isPlaying {songProgress += 1}
-                            if songProgress == songDuration{appRemote2?.playerAPI?.pause()}
+                    .frame(maxWidth: UIScreen.screenHeight/12, maxHeight: UIScreen.screenHeight/12)
+                    Button {
+                        if isPlaying {appRemote2?.playerAPI?.pause()}
+                        else {appRemote2?.playerAPI?.resume()}
+                        isPlaying.toggle()
+                    } label: {
+                        ZStack {
+                            Circle()
+                                .accentColor(.green)
+                                .shadow(radius: 8)
+                            Image(systemName: isPlaying ? "pause.fill" : "play.fill")
+                                .foregroundColor(.white)
+                                .font(.system(.title))
                         }
-                    HStack{
-                        Text(convertToMinutes(seconds:Int(songProgress)))
-                        Spacer()
-                        Text(convertToMinutes(seconds: Int(songDuration!)-Int(songProgress)))
-                            .padding(.trailing, 10)
                     }
-                selectButton
+                    .frame(maxWidth: UIScreen.screenHeight/12, maxHeight: UIScreen.screenHeight/12)
                 }
+                ProgressView(value: songProgress, total: songDuration!)
+                    .onReceive(timer) {_ in
+                        if songProgress < songDuration! && isPlaying {songProgress += 1}
+                        if songProgress == songDuration{appRemote2?.playerAPI?.pause()}
+                    }
+                HStack{
+                    Text(convertToMinutes(seconds:Int(songProgress)))
+                    Spacer()
+                    Text(convertToMinutes(seconds: Int(songDuration!)-Int(songProgress)))
+                        .padding(.trailing, 10)
+                }
+                selectButton
+            }
+        }
     }
-    
-    
-    // Apple Song ->
-    
-    
     
     func cleanAMSongForSPOTComparison() -> String {
         var AMString = String()
@@ -156,7 +153,6 @@ struct SpotPlayerView: View {
         var cleanSongArtistName = songArtistName!
                                             .replacingOccurrences(of: ",", with: "")
                                             .replacingOccurrences(of: "&", with: "")
-                                            
         var artistsInSongName = String()
         if songName!.contains("(feat.") {
             let songComponents = songName!.components(separatedBy: "(feat.")
@@ -203,7 +199,7 @@ struct SpotPlayerView: View {
     func getSongViaSpot() {
         SpotifyAPI().searchSpotify(songAlbumName!, authToken: spotifyAuth.access_Token,completionHandler: {(response, error) in
             let searchTerm = cleanAMSongForSPOTComparison()
-             print("You Searched \(songAlbumName!)")
+            print("You Searched \(songAlbumName!)")
             if response != nil {
                 DispatchQueue.main.async {
                     for song in response! {
@@ -212,7 +208,6 @@ struct SpotPlayerView: View {
                         else {allArtists = song.artists[0].name}
                         levDistances.append(levenshteinDistance(s1: searchTerm, s2: cleanSPOTSongForAMComparison(spotSongName: song.name, spotSongArtist: allArtists)))
                     }
-                    
                     if levDistances.min()! < 6 {
                         let closestMatch = response![levDistances.firstIndex(of: levDistances.min()!)!]
                         print("SSSSS")
@@ -263,19 +258,15 @@ struct SpotPlayerView: View {
     
     
     func playSong() {
-        print("Playlsit & Song IDs....")
-        print(songID)
-        print("$$$$$$")
-        print(appRemote2?.isConnected)
         if appRemote2?.isConnected == false {
             appRemote2?.authorizeAndPlayURI("spotify:track:\(songID!)")
             DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {appRemote2?.connect()}
         }
         appRemote2?.playerAPI?.pause(defaultCallback)
-        print(appRemote2?.isConnected)
         appRemote2?.playerAPI?.enqueueTrackUri("spotify:track:\(songID!)", callback: defaultCallback)
         appRemote2?.playerAPI?.play("spotify:track:\(songID!)", callback: defaultCallback)
         isPlaying = true
+        showProgressView = false
     }
 
         
@@ -298,8 +289,6 @@ struct SpotPlayerView: View {
         SpotifyAPI().requestAuth(completionHandler: {(response, error) in
             if response != nil {
                 DispatchQueue.main.async {
-                    print("ccccccc")
-                    print(response!)
                     if response!.contains("https://www.google.com/?code="){}
                     else{spotifyAuth.authForRedirect = response!; showWebView = true}
                     refreshAccessToken = true
@@ -315,7 +304,6 @@ struct SpotPlayerView: View {
                 DispatchQueue.main.async {
                     spotifyAuth.access_Token = response!.access_token
                     spotifyAuth.refresh_Token = response!.refresh_token
-                    
                     defaults.set(response!.access_token, forKey: "SpotifyAccessToken")
                     defaults.set(response!.refresh_token, forKey: "SpotifyRefreshToken")
                     if songID == nil {getSongViaSpot()}
@@ -384,6 +372,7 @@ struct SpotPlayerView: View {
         DispatchQueue.main.async {
             appRemote2 = SPTAppRemote(configuration: config, logLevel: .debug)
             appRemote2?.connectionParameters.accessToken = spotifyAuth.access_Token
+            playSong()
         }
     }
     
@@ -425,13 +414,6 @@ struct SpotPlayerView: View {
         
         return distanceMatrix[s1Length][s2Length]
     }
-    
-    
-    
-    
-    
-    
-    
 }
 
 extension String {

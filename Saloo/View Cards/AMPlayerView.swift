@@ -46,18 +46,12 @@ struct AMPlayerView: View {
     var body: some View {
             AMPlayerView
             .fullScreenCover(isPresented: $showWriteNote) {WriteNoteView()}
-            //.fullScreenCover(isPresented: $showGrid) {GridofCards(cardsForDisplay: loadCoreCards(), whichBoxVal: whichBoxVal)}
             .onAppear{if songArtImageData == nil{getAMUserToken(); getAMStoreFront()}}
             .navigationBarItems(leading:Button {
                 if fromFinalize {musicPlayer.pause(); showWriteNote = true}
-                //if accessedViaGrid {
-                    //determineWhichBox {
                         print("Calling completion...")
-                        //print(whichBoxVal)
                         musicPlayer.pause()
                         showGrid = true
-                 //   }
-               // }
                 appDelegate.chosenGridCard = nil
             } label: {Image(systemName: "chevron.left").foregroundColor(.blue); Text("Back")})
     }
@@ -179,10 +173,6 @@ extension AMPlayerView {
                                 }); break}}}}
                 else {debugPrint(error?.localizedDescription)}
         })}}}
-    
-
-
-    
     
     func getURLData(url: URL, completionHandler: @escaping (Data?,Error?) -> Void) {
         var request = URLRequest(url: url)

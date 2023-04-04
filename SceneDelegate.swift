@@ -15,27 +15,17 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
     var window: UIWindow?
     @State var userID = String()
     var acceptedShare: CKShare?
-    //taskContext.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
     let coreCard = CoreCard(context: PersistenceController.shared.persistentContainer.newTaskContext())
     var whichBoxForCKAccept: InOut.SendReceive?
     var gotRecord = false
     var connectToScene = true
     var checkIfRecordAddedToStore = true
     var waitingToAcceptRecord = false
-    //@StateObject var appDelegate3 = AppDelegate()
     @ObservedObject var appDelegate = AppDelegate()
     var showProgViewOnAcceptShare: Bool = false
     let defaults = UserDefaults.standard
 
- 
-    
-    func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
-        print("Opened URL....")
-        //if let urlContext = URLContexts.first
-        //print(urlContext)
-    }
-    
-    
+    func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {print("Opened URL....")}
     
     func updateMusicSubType() {
         if (defaults.object(forKey: "MusicSubType") as? String) != nil  {
@@ -45,20 +35,14 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
         }
     }
     
-    
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         guard let windowScene = (scene as? UIWindowScene) else { return }
-        print("+++---")
-        print(connectionOptions.urlContexts.first)
         if let urlContext = connectionOptions.urlContexts.first {
             let isOpened = openMyApp(from: urlContext.url)
             if isOpened {
                 Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { [self] timer in
-                    print("Call1")
                     if self.gotRecord && self.connectToScene {
-                        print("Call2")
                         if self.appDelegate.musicSub.type == .Neither{self.updateMusicSubType()}
-                        //let contentView = EnlargeECardView(chosenCard: self.coreCard, share: self.acceptedShare, cardsForDisplay: self.loadCoreCards(), whichBoxVal: self.whichBoxForCKAccept!).environmentObject(self.appDelegate)
                         let contentView = GridofCards(cardsForDisplay: loadCoreCards(), whichBoxVal: self.whichBoxForCKAccept!, chosenGridCard: self.coreCard).environmentObject(self.appDelegate)
                         let window = UIWindow(windowScene: windowScene)
                         self.window = window
@@ -72,21 +56,16 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
                         transition.timingFunction = CAMediaTimingFunction(name: CAMediaTimingFunctionName.easeInEaseOut)
                         transition.type = CATransitionType.fade
                         navigationController.view.layer.add(transition, forKey: kCATransition)
-                        self.connectToScene = false
+                        self.gotRecord = false
                     }
                 }
             }
         }
-        
         print("when is willConnectTo called...")
         if let windowScene = scene as? UIWindowScene {
             Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { timer in
-                print("Call3")
                 if self.gotRecord && self.connectToScene {
-                    //self.connectToScene = false
-                    print("Call4")
                     if self.appDelegate.musicSub.type == .Neither{self.updateMusicSubType()}
-                    //let contentView = EnlargeECardView(chosenCard: self.coreCard, share: self.acceptedShare, cardsForDisplay: self.loadCoreCards(), whichBoxVal: self.whichBoxForCKAccept!).environmentObject(self.appDelegate)
                     let contentView = GridofCards(cardsForDisplay: self.loadCoreCards(), whichBoxVal: self.whichBoxForCKAccept!, chosenGridCard: self.coreCard).environmentObject(self.appDelegate)
                     let window = UIWindow(windowScene: windowScene)
                     self.window = window
@@ -100,20 +79,12 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
                     transition.timingFunction = CAMediaTimingFunction(name: CAMediaTimingFunctionName.easeInEaseOut)
                     transition.type = CATransitionType.fade
                     navigationController.view.layer.add(transition, forKey: kCATransition)
-                    self.connectToScene = false
+                    self.gotRecord = false
                 }
             }
         }
     }
     
-    
-    
-
-    
-    
-    
-    
-
     /**
      To be able to accept a share, add a CKSharingSupported entry in the Info.plist file and set it to true.
      */
@@ -160,7 +131,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
 
         ckContainer.privateCloudDatabase.add(op3)
     }
-    
     
     
     func getRecordViaQuery(shareMetaData: CKShare.Metadata) {
@@ -214,20 +184,15 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
             self.coreCard.cardName = record?.object(forKey: "CD_cardName") as! String
             self.coreCard.cardType = record?.object(forKey: "CD_cardType") as! String
             self.appDelegate.chosenGridCard = self.coreCard
-            //if self.coreCard.creator! == self.userID { self.whichBoxForCKAccept = .outbox}
-            //else {self.whichBoxForCKAccept = .inbox}
-            self.determineWhichBox {print("Determined which box....\(self.whichBoxForCKAccept)")}
+            self.determineWhichBox {}
             self.gotRecord = true
             print("getRecord complete...")
-            print(self.whichBoxForCKAccept)
         }
     }
-    
     
     func determineWhichBox(completion: @escaping () -> Void) {
         //var box: InOut.SendReceive = .inbox
         let controller = PersistenceController.shared
-        let taskContext = controller.persistentContainer.newTaskContext()
         let ckContainer = PersistenceController.shared.cloudKitContainer
         ckContainer.fetchUserRecordID { ckRecordID, error in
             if self.coreCard.creator == (ckRecordID?.recordName)! {
@@ -245,18 +210,12 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
         
     }
     
-    
-    
-    
-    
-    
     func getCurrentUserID() {
         PersistenceController.shared.cloudKitContainer.fetchUserRecordID { ckRecordID, error in
             print("Current User ID...")
             print(ckRecordID?.recordName)
             self.userID = (ckRecordID?.recordName)!
         }
-        
     }
     
     func loadCoreCards() -> [CoreCard] {
@@ -274,7 +233,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
     
     func openMyApp(from url: URL) -> Bool {
         let scheme = "saloo" // Replace this with your app's custom URL scheme
-        
         // Check if the URL contains your app's custom URL scheme
         if url.scheme == scheme {
             // Attempt to open the app
@@ -285,10 +243,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
                 }
             }
         }
-        
         // If the URL does not contain your app's custom URL scheme or the app cannot be opened, return false
         return false
     }
-    
-    
 }

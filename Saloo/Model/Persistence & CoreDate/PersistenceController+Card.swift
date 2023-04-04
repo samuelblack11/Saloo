@@ -113,23 +113,23 @@ extension PersistenceController {
         let taskContext = controller.persistentContainer.newTaskContext()
         let ckContainer = PersistenceController.shared.cloudKitContainer
         taskContext.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
-        let database = ckContainer.privateCloudDatabase
-
-        coreCard.creator
+        var database: CKDatabase?
+        // Add the query operation to the desired database
+        PersistenceController.shared.cloudKitContainer.fetchUserRecordID { ckRecordID, error in
+            if coreCard.creator == (ckRecordID?.recordName)! {database = ckContainer.privateCloudDatabase}
+            else {database = ckContainer.sharedCloudDatabase}
+        }
+        
         // Specify the field and value to search for
         let fieldName = "CD_uniqueName"
         let searchValue = coreCard.uniqueName
-
         // Create the predicate to use in the query
         let predicate = NSPredicate(format: "%K == %@", fieldName, searchValue)
-
         // Create the query object with the desired record type and predicate
         let query = CKQuery(recordType: "CD_CoreCard", predicate: predicate)
-
         // Create the query operation with the query and desired results limit
         let queryOperation = CKQueryOperation(query: query)
         queryOperation.resultsLimit = 1 // Limit to only one result (optional)
-
         // Set the block to be called when each record is fetched
         queryOperation.recordFetchedBlock = { (record) in
             // Process the fetched record
@@ -145,7 +145,7 @@ extension PersistenceController {
                 return
             }
             // Save changes to CloudKit
-            database.save(record) { (record, error) in
+            database!.save(record) { (record, error) in
                 if let error = error {
                     // Handle error
                     completion(error)
@@ -167,16 +167,9 @@ extension PersistenceController {
             }
         }
 
-        // Add the query operation to the desired database
         
-        PersistenceController.shared.cloudKitContainer.fetchUserRecordID { ckRecordID, error in
-            if coreCard.creator == (ckRecordID?.recordName)! {ckContainer.privateCloudDatabase.add(queryOperation)}
-            else {ckContainer.sharedCloudDatabase.add(queryOperation)}
-        }
+        database!.add(queryOperation)
         
         
-        
-        //database.add(queryOperation)
-
         }
     }
