@@ -14,12 +14,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate, ObservableObject {
     @State var acceptedShare: CKShare?
     @State var coreCard: CoreCard?
     @State var musicSub = MusicSubscription()
+    @Published var deferToPreview = false
     @State var startMenuAppeared = false
     @State var gotRecord = false
     @Published var showGrid = false
     @Published var chosenGridCard: CoreCard? = nil
     @Published var showProgViewOnAcceptShare = false
-    
     
     func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
         let isOpened = openMyApp(from: url)

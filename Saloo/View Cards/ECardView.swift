@@ -53,15 +53,26 @@ struct eCardView: View {
     @State var coreCard: CoreCard?
     @State var accessedViaGrid = true
     @State var fromFinalize = false
+    
+    func previewToPass() -> String {
+        var previewToPass =  String()
+        print("Preview Function...")
+        print(spotPreviewURL)
+        print(songPreviewURL)
+        
+        
+        
+        if spotPreviewURL!.count == 0 || spotPreviewURL! == "LookupFailed" {previewToPass = songPreviewURL!}
+        else if songPreviewURL!.count == 0 || songPreviewURL! == "LookupFailed" {previewToPass = spotPreviewURL!}
+        print("Preview...")
+        print(previewToPass)
+        return previewToPass
+    }
+    
+    
     var body: some View {
         if cardType == "musicAndGift" {MusicAndGiftView()}
-        if cardType == "musicNoGift" {
-            
-            MusicNoGiftView()
-                .onAppear{print("AppDel MusicSub Type...\(appDelegate.musicSub.type)")}
-            
-            
-        }
+        if cardType == "musicNoGift" {MusicNoGiftView()}
         if cardType == "giftNoMusic" {GiftNoMusicView()}
         if cardType == "noMusicNoGift" {NoMusicNoGift()}
     }
@@ -165,17 +176,17 @@ struct eCardView: View {
  
     var MusicView: some View {
         VStack {
-            if appDelegate.musicSub.type == .Apple {
+            if (appDelegate.musicSub.type == .Apple) && (appDelegate.deferToPreview == false) && (songPreviewURL != "LookupFailed"){
                 AMPlayerView(songID: songID, songName: songName, songArtistName: songArtistName, songAlbumName: songAlbumName,   songArtImageData: songArtImageData, songDuration: songDuration, songPreviewURL: songPreviewURL, confirmButton: false, showFCV: $showFCV, fromFinalize: fromFinalize, coreCard: coreCard)
                     .frame(maxHeight: UIScreen.screenHeight/2.2)
             }
-            if appDelegate.musicSub.type == .Spotify {
-                SpotPlayerView(songID: spotID, songName: songName, songArtistName: songArtistName, songAlbumName: songAlbumName, songArtImageData: spotImageData, songDuration: spotSongDuration, songPreviewURL: spotPreviewURL, confirmButton: false, showFCV: $showFCV, accessedViaGrid: accessedViaGrid, appRemote2: appRemote2, coreCard: coreCard)
+            if (appDelegate.musicSub.type == .Spotify) && (appDelegate.deferToPreview == false) && (spotPreviewURL != "LookupFailed") {
+                SpotPlayerView(songID: spotID, songName: songName, songArtistName: songArtistName, songAlbumName: songAlbumName, songArtImageData: spotImageData, songDuration: spotSongDuration, songPreviewURL: previewToPass(), confirmButton: false, showFCV: $showFCV, accessedViaGrid: accessedViaGrid, appRemote2: appRemote2, coreCard: coreCard)
                     .onAppear{appRemote2?.connectionParameters.accessToken = (defaults.object(forKey: "SpotifyAccessToken") as? String)!}
                     .frame(maxHeight: .infinity, alignment: .bottom)
             }
-            if appDelegate.musicSub.type == .Neither {
-                SongPreviewPlayer(songID: songID, songName: songName, songArtistName: songArtistName, songArtImageData: songArtImageData, songDuration: songDuration, songPreviewURL: songPreviewURL, confirmButton: false, showFCV: $showFCV, songAddedUsing: songAddedUsing!)
+            if (appDelegate.musicSub.type == .Neither) || (appDelegate.deferToPreview == true) || spotPreviewURL == "LookupFailed" || songPreviewURL == "LookupFailed"{
+                SongPreviewPlayer(songID: songID, songName: songName, songArtistName: songArtistName, songArtImageData: songArtImageData, songDuration: songDuration, songPreviewURL: previewToPass(), confirmButton: false, showFCV: $showFCV, songAddedUsing: songAddedUsing!)
                     .onDisappear{if player?.timeControlStatus.rawValue == 2 {player?.pause()}}
                     .frame(maxHeight: .infinity, alignment: .bottom)
             }

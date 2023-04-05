@@ -69,6 +69,7 @@ struct SpotPlayerView: View {
                     else{print("Run3");requestSpotAuth(); runGetToken(authType: "code")}
                     runInstantiateAppRemote()
                 }
+                else{playSong()}
                 print("^^^\(songArtImageData)")
             }
             .onDisappear{
@@ -93,7 +94,7 @@ struct SpotPlayerView: View {
     
     var SpotPlayerView2: some View {
         ZStack {
-            if showProgressView {ProgressView().progressViewStyle(.circular) .tint(.green).frame(maxWidth: UIScreen.screenHeight/12, maxHeight: UIScreen.screenHeight/12)}
+            if showProgressView {ProgressView().progressViewStyle(.circular) .tint(.green).frame(maxWidth: UIScreen.screenHeight/9, maxHeight: UIScreen.screenHeight/9)}
             VStack {
                 if songArtImageData != nil {Image(uiImage: UIImage(data: songArtImageData!)!) }
                 Text(songName!)
@@ -208,7 +209,7 @@ struct SpotPlayerView: View {
                         else {allArtists = song.artists[0].name}
                         levDistances.append(levenshteinDistance(s1: searchTerm, s2: cleanSPOTSongForAMComparison(spotSongName: song.name, spotSongArtist: allArtists)))
                     }
-                    if levDistances.min()! < 6 {
+                    if levDistances.max()! < 6 {
                         let closestMatch = response![levDistances.firstIndex(of: levDistances.min()!)!]
                         print("SSSSS")
                         print(closestMatch)
@@ -223,7 +224,11 @@ struct SpotPlayerView: View {
                         })}
                     else if songPreviewURL != nil {
                         // show preview player with AMpreview
+                        appDelegate.deferToPreview = true
+                        updateRecordWithNewSPOTData(spotID: "LookupFailed", songArtImageData: Data(), songDuration: String(0), songPreviewURL: "LookupFailed")
                         print("No matches within acceptable range, play preview instead")
+                        print(appDelegate.deferToPreview)
+                        print(songPreviewURL)
                     }
                     else {
                         // show alert that song has no preview and cannot be matched to reecipient's subscription.
@@ -306,7 +311,7 @@ struct SpotPlayerView: View {
                     spotifyAuth.refresh_Token = response!.refresh_token
                     defaults.set(response!.access_token, forKey: "SpotifyAccessToken")
                     defaults.set(response!.refresh_token, forKey: "SpotifyRefreshToken")
-                    if songID == nil {getSongViaSpot()}
+                    if songID!.count == 0 {getSongViaSpot()}
                 }
             }
             if error != nil {
@@ -329,7 +334,7 @@ struct SpotPlayerView: View {
                     spotifyAuth.access_Token = response!.access_token
                     appRemote2?.connectionParameters.accessToken = spotifyAuth.access_Token
                     defaults.set(response!.access_token, forKey: "SpotifyAccessToken")
-                    if songID == nil {getSongViaSpot()}
+                    if songID!.count == 0 {getSongViaSpot()}
                 }
             }
             if error != nil {
