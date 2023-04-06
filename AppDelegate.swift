@@ -20,13 +20,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, ObservableObject {
     @Published var showGrid = false
     @Published var chosenGridCard: CoreCard? = nil
     @Published var showProgViewOnAcceptShare = false
-    
+
     func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
         let isOpened = openMyApp(from: url)
         return isOpened
     }
-    
-    
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil) -> Bool {
         print("didFinishLaunchingWithOptions")

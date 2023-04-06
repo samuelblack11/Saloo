@@ -144,7 +144,7 @@ extension GridofCards {
                 .disabled(shareStatus(card: card).0)
         }
         Button("Manage Participation") { manageParticipation(coreCard: card)}
-        Button {appDelegate.chosenGridCard = card;print("<<<<\(appDelegate.chosenGridCard)"); segueToEnlarge = true} label: {Text("Enlarge eCard"); Image(systemName: "plus.magnifyingglass")}
+        Button {appDelegate.chosenGridCard = card; segueToEnlarge = true} label: {Text("Enlarge eCard"); Image(systemName: "plus.magnifyingglass")}
         Button {deleteCoreCard(coreCard: card)} label: {Text("Delete eCard"); Image(systemName: "trash").foregroundColor(.red)}
         Button {showDeliveryScheduler = true} label: {Text("Schedule eCard Delivery")}
         }

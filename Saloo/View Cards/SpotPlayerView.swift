@@ -209,7 +209,7 @@ struct SpotPlayerView: View {
                         else {allArtists = song.artists[0].name}
                         levDistances.append(levenshteinDistance(s1: searchTerm, s2: cleanSPOTSongForAMComparison(spotSongName: song.name, spotSongArtist: allArtists)))
                     }
-                    if levDistances.max()! < 6 {
+                    if levDistances.min()! < 6 {
                         let closestMatch = response![levDistances.firstIndex(of: levDistances.min()!)!]
                         print("SSSSS")
                         print(closestMatch)
@@ -223,28 +223,13 @@ struct SpotPlayerView: View {
                             updateRecordWithNewSPOTData(spotID: closestMatch.id, songArtImageData: artResponse!, songDuration: String(Double(closestMatch.duration_ms) * 0.001), songPreviewURL: closestMatch.preview_url!)
                         })}
                     else if songPreviewURL != nil {
-                        // show preview player with AMpreview
                         appDelegate.deferToPreview = true
                         updateRecordWithNewSPOTData(spotID: "LookupFailed", songArtImageData: Data(), songDuration: String(0), songPreviewURL: "LookupFailed")
-                        print("No matches within acceptable range, play preview instead")
-                        print(appDelegate.deferToPreview)
-                        print(songPreviewURL)
                     }
-                    else {
-                        // show alert that song has no preview and cannot be matched to reecipient's subscription.
-                    }}}
+                    else { appDelegate.chosenGridCard?.cardType = "noMusicNoGift"}}}
             else{debugPrint(error?.localizedDescription)}
         })
     }
-    
-
-    
-    
-    
-    
-    
-    
-    
     
     func updateRecordWithNewSPOTData(spotID: String, songArtImageData: Data, songDuration: String, songPreviewURL: String) {
         let controller = PersistenceController.shared
