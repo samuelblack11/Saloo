@@ -108,7 +108,7 @@ extension PersistenceController {
     }
     
 
-    func updateRecordWithSpotData(for coreCard: CoreCard, in context: NSManagedObjectContext, with database: CKDatabase, spotID: String, spotImageData: Data, spotPreviewURL: String, spotSongDuration: String, completion: @escaping (Error?) -> Void) {
+    func updateRecordWithSpotData(for coreCard: CoreCard, in context: NSManagedObjectContext, with database: CKDatabase, spotID: String, spotImageData: Data, spotSongDuration: String, completion: @escaping (Error?) -> Void) {
         let controller = PersistenceController.shared
         let taskContext = controller.persistentContainer.newTaskContext()
         let ckContainer = PersistenceController.shared.cloudKitContainer
@@ -136,7 +136,6 @@ extension PersistenceController {
             print("Fetched record with ID: \(record.recordID.recordName)")
             record.setValue(spotID, forKey: "CD_spotID")
             record.setValue(spotImageData, forKey: "CD_spotImageData")
-            record.setValue(spotPreviewURL, forKey: "CD_spotPreviewURL")
             record.setValue(spotSongDuration, forKey: "CD_spotSongDuration")
             // Save changes to Core Data
             do {try context.save()}

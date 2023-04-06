@@ -209,6 +209,43 @@ struct SpotPlayerView: View {
                         else {allArtists = song.artists[0].name}
                         levDistances.append(levenshteinDistance(s1: searchTerm, s2: cleanSPOTSongForAMComparison(spotSongName: song.name, spotSongArtist: allArtists)))
                     }
+                    print("Min Lev Distance...")
+                    print(levDistances.min())
+                    
+                    if levDistances.min()! < 6 {
+                        let closestMatch = response![levDistances.firstIndex(of: levDistances.min()!)!]
+                        print("SSSSS")
+                        print(closestMatch)
+                        let artURL = URL(string:closestMatch.album.images[2].url)
+                        let _ = getURLData(url: artURL!, completionHandler: {(artResponse, error2) in
+                            songID = closestMatch.id
+                            songArtImageData = artResponse!
+                            songDuration = Double(closestMatch.duration_ms) * 0.001
+                            playSong()
+                            updateRecordWithNewSPOTData(spotID: closestMatch.id, songArtImageData: artResponse!, songDuration: String(Double(closestMatch.duration_ms) * 0.001))
+                        })}
+                    
+                    else{getSongAttempt2()}}}
+                    else{debugPrint(error?.localizedDescription)}
+        })
+    }
+    
+    func getSongAttempt2() {
+        SpotifyAPI().searchSpotify(songName!, authToken: spotifyAuth.access_Token,completionHandler: {(response, error) in
+            let searchTerm = cleanAMSongForSPOTComparison()
+            print("You Searched \(songAlbumName!)")
+            if response != nil {
+                levDistances = []
+                DispatchQueue.main.async {
+                    for song in response! {
+                        var allArtists = String()
+                        if song.artists.count > 1 {for artist in song.artists { allArtists = allArtists + " " + artist.name}}
+                        else {allArtists = song.artists[0].name}
+                        levDistances.append(levenshteinDistance(s1: searchTerm, s2: cleanSPOTSongForAMComparison(spotSongName: song.name, spotSongArtist: allArtists)))
+                    }
+                    print("Min Lev Distance...")
+                    print(levDistances.min())
+                    print(levDistances.firstIndex(of: levDistances.min()!))
                     if levDistances.min()! < 6 {
                         let closestMatch = response![levDistances.firstIndex(of: levDistances.min()!)!]
                         print("SSSSS")
@@ -220,24 +257,45 @@ struct SpotPlayerView: View {
                             songDuration = Double(closestMatch.duration_ms) * 0.001
                             songPreviewURL = closestMatch.preview_url
                             playSong()
-                            updateRecordWithNewSPOTData(spotID: closestMatch.id, songArtImageData: artResponse!, songDuration: String(Double(closestMatch.duration_ms) * 0.001), songPreviewURL: closestMatch.preview_url!)
+                            updateRecordWithNewSPOTData(spotID: closestMatch.id, songArtImageData: artResponse!, songDuration: String(Double(closestMatch.duration_ms) * 0.001))
                         })}
+
                     else if songPreviewURL != nil {
                         appDelegate.deferToPreview = true
-                        updateRecordWithNewSPOTData(spotID: "LookupFailed", songArtImageData: Data(), songDuration: String(0), songPreviewURL: "LookupFailed")
+                        updateRecordWithNewSPOTData(spotID: "LookupFailed", songArtImageData: Data(), songDuration: String(0))
                     }
                     else { appDelegate.chosenGridCard?.cardType = "noMusicNoGift"}}}
             else{debugPrint(error?.localizedDescription)}
         })
     }
     
-    func updateRecordWithNewSPOTData(spotID: String, songArtImageData: Data, songDuration: String, songPreviewURL: String) {
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    func updateRecordWithNewSPOTData(spotID: String, songArtImageData: Data, songDuration: String) {
         let controller = PersistenceController.shared
         let taskContext = controller.persistentContainer.newTaskContext()
         let ckContainer = PersistenceController.shared.cloudKitContainer
         taskContext.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
         print("????")
-        controller.updateRecordWithSpotData(for: coreCard!, in: taskContext, with: ckContainer.privateCloudDatabase, spotID: spotID, spotImageData: songArtImageData, spotPreviewURL: songPreviewURL, spotSongDuration: songDuration, completion: { (error) in
+        controller.updateRecordWithSpotData(for: coreCard!, in: taskContext, with: ckContainer.privateCloudDatabase, spotID: spotID, spotImageData: songArtImageData, spotSongDuration: songDuration, completion: { (error) in
             print("Updated Record...")
             print(error)
         } )
