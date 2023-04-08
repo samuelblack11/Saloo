@@ -94,7 +94,7 @@ struct SpotPlayerView: View {
     
     var SpotPlayerView2: some View {
         ZStack {
-            if showProgressView {ProgressView().progressViewStyle(.circular) .tint(.green).frame(maxWidth: UIScreen.screenHeight/9, maxHeight: UIScreen.screenHeight/9)}
+            //if showProgressView {ProgressView().progressViewStyle(.circular) .tint(.green).frame(maxWidth: UIScreen.screenHeight/9, maxHeight: UIScreen.screenHeight/9)}
             VStack {
                 if songArtImageData != nil {Image(uiImage: UIImage(data: songArtImageData!)!) }
                 Text(songName!)
@@ -166,7 +166,9 @@ struct SpotPlayerView: View {
             }
         }
         else {cleanSongName = songName! + " "}
+        //AMString = (cleanSongName + cleanSongArtistName + artistsInSongName).replacingOccurrences(of: "  ", with: " ")
         AMString = (cleanSongName + cleanSongArtistName + artistsInSongName).replacingOccurrences(of: "  ", with: " ")
+
         print("AMString....")
         print(AMString.withoutPunc)
         return AMString.withoutPunc
@@ -177,6 +179,7 @@ struct SpotPlayerView: View {
         var AMString = String()
         var cleanSongName = String()
         var artistsInSongName = String()
+        //var songAlbumName = String()
         if spotSongName.contains("(feat.") {
             let songComponents = spotSongName.components(separatedBy: "(feat.")
             cleanSongName = songComponents[0]
@@ -188,10 +191,19 @@ struct SpotPlayerView: View {
             }
         }
         else {cleanSongName = spotSongName}
+        
+        
+        
+        
+        
         var SPOTString = cleanSongName + " " + spotSongArtist.replacingOccurrences(of: ",", with: "")
         SPOTString = SPOTString.withoutPunc
                         .replacingOccurrences(of: "   ", with: " ")
                         .replacingOccurrences(of: "  ", with: " ")
+        
+        print("SPOTString....")
+        print(SPOTString.withoutPunc)
+        
         return SPOTString.withoutPunc
     }
     
@@ -211,8 +223,19 @@ struct SpotPlayerView: View {
                     }
                     print("Min Lev Distance...")
                     print(levDistances.min())
+
+                    var minValidDistance = Int()
                     
-                    if levDistances.min()! < 6 {
+                    if response![levDistances.firstIndex(of: levDistances.min()!)!].restrictions?.reason == nil {minValidDistance = levDistances.min()!}
+                    else {
+                        if let minIndex = levDistances.firstIndex(of: levDistances.min()!) {levDistances[minIndex] = 100}
+                        if response![levDistances.firstIndex(of: levDistances.min()!)!].restrictions?.reason == nil {minValidDistance = levDistances.min()!}
+                        else {
+                            if let minIndex = levDistances.firstIndex(of: levDistances.min()!) {levDistances[minIndex] = 100}
+                            if response![levDistances.firstIndex(of: levDistances.min()!)!].restrictions?.reason == nil {minValidDistance = levDistances.min()!}
+                        }
+                    }
+                    if minValidDistance < 6 {
                         let closestMatch = response![levDistances.firstIndex(of: levDistances.min()!)!]
                         print("SSSSS")
                         print(closestMatch)
@@ -225,7 +248,7 @@ struct SpotPlayerView: View {
                             updateRecordWithNewSPOTData(spotID: closestMatch.id, songArtImageData: artResponse!, songDuration: String(Double(closestMatch.duration_ms) * 0.001))
                         })}
                     
-                    else{getSongAttempt2()}}}
+                    else{print("Trying to get song in second way...."); getSongAttempt2()}}}
                     else{debugPrint(error?.localizedDescription)}
         })
     }
@@ -233,7 +256,7 @@ struct SpotPlayerView: View {
     func getSongAttempt2() {
         SpotifyAPI().searchSpotify(songName!, authToken: spotifyAuth.access_Token,completionHandler: {(response, error) in
             let searchTerm = cleanAMSongForSPOTComparison()
-            print("You Searched \(songAlbumName!)")
+            print("You Searched \(songName!)")
             if response != nil {
                 levDistances = []
                 DispatchQueue.main.async {
@@ -243,12 +266,34 @@ struct SpotPlayerView: View {
                         else {allArtists = song.artists[0].name}
                         levDistances.append(levenshteinDistance(s1: searchTerm, s2: cleanSPOTSongForAMComparison(spotSongName: song.name, spotSongArtist: allArtists)))
                     }
-                    print("Min Lev Distance...")
-                    print(levDistances.min())
-                    print(levDistances.firstIndex(of: levDistances.min()!))
-                    if levDistances.min()! < 6 {
+                    print("Min Lev Distance in Search 2...")
+                    var minValidDistance = Int()
+                    if response![levDistances.firstIndex(of: levDistances.min()!)!].restrictions?.reason == nil {
+                        print("First match has restrictions")
+                        minValidDistance = levDistances.min()!
+                        
+                    }
+                    else {
+                        if let minIndex = levDistances.firstIndex(of: levDistances.min()!) {levDistances[minIndex] = 100}
+                        if response![levDistances.firstIndex(of: levDistances.min()!)!].restrictions?.reason == nil {
+                            print("Second Match has restricitons")
+                            minValidDistance = levDistances.min()!
+                            
+                        }
+                        else {
+                            if let minIndex = levDistances.firstIndex(of: levDistances.min()!) {levDistances[minIndex] = 100}
+                            if response![levDistances.firstIndex(of: levDistances.min()!)!].restrictions?.reason == nil {minValidDistance = levDistances.min()!}
+                        }
+                    }
+                    
+                    
+                    
+                    
+                    
+                    
+                    if minValidDistance < 6 {
                         let closestMatch = response![levDistances.firstIndex(of: levDistances.min()!)!]
-                        print("SSSSS")
+                        print("LevDistance Under 6 in Match 2")
                         print(closestMatch)
                         let artURL = URL(string:closestMatch.album.images[2].url)
                         let _ = getURLData(url: artURL!, completionHandler: {(artResponse, error2) in

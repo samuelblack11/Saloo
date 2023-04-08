@@ -26,6 +26,12 @@ struct SpotItem: Decodable {
     //let previews: [PreviewURL]
     let preview_url: String?
     let duration_ms: Int
+    //let availableMarkets: [String]
+    let restrictions: RestrictionObj?
+}
+
+struct RestrictionObj: Decodable {
+    let reason: String
 }
 
 struct ArtistObject: Decodable {

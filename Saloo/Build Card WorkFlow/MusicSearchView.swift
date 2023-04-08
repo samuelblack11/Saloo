@@ -314,6 +314,7 @@ extension MusicSearchView {
                 DispatchQueue.main.async {
                     for song in response! {
                         print("BBBBB")
+                        print(song.restrictions)
                         print(song)
                         let artURL = URL(string:song.album.images[2].url)
                         let _ = getURLData(url: artURL!, completionHandler: {(artResponse, error2) in
@@ -324,7 +325,10 @@ extension MusicSearchView {
                             else {songPrev = blankString}
                             
                             let songForList = SongForList(id: song.id, name: song.name, artistName: song.artists[0].name, albumName: song.album.name, artImageData: artResponse!, durationInMillis: song.duration_ms, isPlaying: false, previewURL: songPrev!)
-                            searchResults.append(songForList)})
+                            
+                            if song.restrictions?.reason == nil {searchResults.append(songForList)}
+                            
+                        })
                     }}}; if response != nil {print("No Response!")}
                         else{debugPrint(error?.localizedDescription)}
         })
