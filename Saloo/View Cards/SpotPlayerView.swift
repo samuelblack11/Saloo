@@ -254,6 +254,7 @@ struct SpotPlayerView: View {
     }
     
     func getSongAttempt2() {
+        var foundMatch = false
         SpotifyAPI().searchSpotify(songName!, authToken: spotifyAuth.access_Token,completionHandler: {(response, error) in
             let searchTerm = cleanAMSongForSPOTComparison()
             print("You Searched \(songName!)")
@@ -264,52 +265,34 @@ struct SpotPlayerView: View {
                         var allArtists = String()
                         if song.artists.count > 1 {for artist in song.artists { allArtists = allArtists + " " + artist.name}}
                         else {allArtists = song.artists[0].name}
-                        levDistances.append(levenshteinDistance(s1: searchTerm, s2: cleanSPOTSongForAMComparison(spotSongName: song.name, spotSongArtist: allArtists)))
-                    }
-                    print("Min Lev Distance in Search 2...")
-                    var minValidDistance = Int()
-                    if response![levDistances.firstIndex(of: levDistances.min()!)!].restrictions?.reason == nil {
-                        print("First match has restrictions")
-                        minValidDistance = levDistances.min()!
+                        print("******")
+                        print(songName!)
+                        print(song.name)
+                        print(songArtistName!)
+                        print(allArtists)
                         
+                        
+                        if song.name.contains(songName!) && allArtists.contains(songArtistName!) {
+                            print("Found match with songname in song.name and artist in allArtists:")
+                            print(song)
+                            let artURL = URL(string:song.album.images[2].url)
+                            let _ = getURLData(url: artURL!, completionHandler: {(artResponse, error2) in
+                                songID = song.id
+                                songArtImageData = artResponse!
+                                songDuration = Double(song.duration_ms) * 0.001
+                                songPreviewURL = song.preview_url
+                                playSong()
+                                updateRecordWithNewSPOTData(spotID: song.id, songArtImageData: artResponse!, songDuration: String(Double(song.duration_ms) * 0.001))
+                            })
+                            foundMatch = true
+                        }; break
                     }
-                    else {
-                        if let minIndex = levDistances.firstIndex(of: levDistances.min()!) {levDistances[minIndex] = 100}
-                        if response![levDistances.firstIndex(of: levDistances.min()!)!].restrictions?.reason == nil {
-                            print("Second Match has restricitons")
-                            minValidDistance = levDistances.min()!
-                            
-                        }
-                        else {
-                            if let minIndex = levDistances.firstIndex(of: levDistances.min()!) {levDistances[minIndex] = 100}
-                            if response![levDistances.firstIndex(of: levDistances.min()!)!].restrictions?.reason == nil {minValidDistance = levDistances.min()!}
-                        }
-                    }
-                    
-                    
-                    
-                    
-                    
-                    
-                    if minValidDistance < 6 {
-                        let closestMatch = response![levDistances.firstIndex(of: levDistances.min()!)!]
-                        print("LevDistance Under 6 in Match 2")
-                        print(closestMatch)
-                        let artURL = URL(string:closestMatch.album.images[2].url)
-                        let _ = getURLData(url: artURL!, completionHandler: {(artResponse, error2) in
-                            songID = closestMatch.id
-                            songArtImageData = artResponse!
-                            songDuration = Double(closestMatch.duration_ms) * 0.001
-                            songPreviewURL = closestMatch.preview_url
-                            playSong()
-                            updateRecordWithNewSPOTData(spotID: closestMatch.id, songArtImageData: artResponse!, songDuration: String(Double(closestMatch.duration_ms) * 0.001))
-                        })}
-
-                    else if songPreviewURL != nil {
+                    if songPreviewURL != nil && foundMatch == false {
+                        print("Defer to preview")
                         appDelegate.deferToPreview = true
                         updateRecordWithNewSPOTData(spotID: "LookupFailed", songArtImageData: Data(), songDuration: String(0))
                     }
-                    else { appDelegate.chosenGridCard?.cardType = "noMusicNoGift"}}}
+                    else {appDelegate.chosenGridCard?.cardType = "noMusicNoGift"}}}
             else{debugPrint(error?.localizedDescription)}
         })
     }
@@ -514,3 +497,27 @@ extension String {
         return self.components(separatedBy: CharacterSet.punctuationCharacters).joined(separator: "")
     }
 }
+
+
+//print("Min Lev Distance in Search 2...")
+//print("First Match (may have market restrictions: \(response![levDistances.firstIndex(of: levDistances.min()!)!])")
+//var minValidDistance = Int()
+//if response![levDistances.firstIndex(of: levDistances.min()!)!].restrictions?.reason == nil {
+//
+ //   minValidDistance = levDistances.min()!
+//
+//}
+//else {
+//    print("First match has restrictions")
+//    if let minIndex = levDistances.firstIndex(of: levDistances.min()!) {levDistances[minIndex] = 100}
+//    if response![levDistances.firstIndex(of: levDistances.min()!)!].restrictions?.reason == nil {
+//        print("Second Match does not have restricitons")
+ //       print("Second match if first one has restrictions: \(response![levDistances.firstIndex(of: levDistances.min()!)!])")
+//        minValidDistance = levDistances.min()!
+        
+ //   }
+ //   else {
+ //       if let minIndex = levDistances.firstIndex(of: levDistances.min()!) {levDistances[minIndex] = 100}
+ //       if response![levDistances.firstIndex(of: levDistances.min()!)!].restrictions?.reason == nil {minValidDistance = levDistances.min()!}
+ //   }
+//}
