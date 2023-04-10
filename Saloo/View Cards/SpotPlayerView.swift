@@ -22,6 +22,8 @@ struct SpotPlayerView: View {
     @State var songID: String?
     @State var songName: String?
     @State var songArtistName: String?
+    @State var spotName: String?
+    @State var spotArtistName: String?
     @State var songAlbumName: String?
     @State var songArtImageData: Data?
     @State var songDuration: Double?
@@ -237,17 +239,20 @@ struct SpotPlayerView: View {
                             print(closestMatch)
                             let artURL = URL(string: spotImageURL!)
                             let _ = getURLData(url: artURL!, completionHandler: {(artResponse, error2) in
+                                var allArtists2 = String()
+                                for artist in closestMatch.artists { allArtists2 = allArtists2 + " " + artist.name}
+                                songArtistName = allArtists2
                                 songID = closestMatch.id
                                 songArtImageData = artResponse!
                                 songDuration = Double(closestMatch.duration_ms) * 0.001
                                 playSong()
-                                updateRecordWithNewSPOTData(spotID: closestMatch.id, songArtImageData: artResponse!, songDuration: String(Double(closestMatch.duration_ms) * 0.001))
+                                updateRecordWithNewSPOTData(spotName: closestMatch.name, spotArtistName: allArtists2, spotID: closestMatch.id, songArtImageData: artResponse!, songDuration: String(Double(closestMatch.duration_ms) * 0.001))
                             }); foundMatch = true}
                         
                         if songPreviewURL != nil && foundMatch == false {
                             print("Defer to preview")
                             appDelegate.deferToPreview = true
-                            updateRecordWithNewSPOTData(spotID: "LookupFailed", songArtImageData: Data(), songDuration: String(0))
+                            updateRecordWithNewSPOTData(spotName: "LookupFailed", spotArtistName: "LookupFailed", spotID: "LookupFailed", songArtImageData: Data(), songDuration: String(0))
                         }
                         else {appDelegate.chosenGridCard?.cardType = "noMusicNoGift"}
                         
@@ -286,13 +291,13 @@ struct SpotPlayerView: View {
     
     
     
-    func updateRecordWithNewSPOTData(spotID: String, songArtImageData: Data, songDuration: String) {
+    func updateRecordWithNewSPOTData(spotName: String, spotArtistName: String, spotID: String, songArtImageData: Data, songDuration: String) {
         let controller = PersistenceController.shared
         let taskContext = controller.persistentContainer.newTaskContext()
         let ckContainer = PersistenceController.shared.cloudKitContainer
         taskContext.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
         print("????")
-        controller.updateRecordWithSpotData(for: coreCard!, in: taskContext, with: ckContainer.privateCloudDatabase, spotID: spotID, spotImageData: songArtImageData, spotSongDuration: songDuration, completion: { (error) in
+        controller.updateRecordWithSpotData(for: coreCard!, in: taskContext, with: ckContainer.privateCloudDatabase, spotName: spotName, spotArtistName: spotArtistName,spotID: spotID, spotImageData: songArtImageData, spotSongDuration: songDuration, completion: { (error) in
             print("Updated Record...")
             print(error)
         } )

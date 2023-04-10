@@ -40,6 +40,8 @@ extension CoreCard {
     @NSManaged public var uniqueName: String
     @NSManaged public var songID: String?
     @NSManaged public var spotID: String?
+    @NSManaged public var spotName: String?
+    @NSManaged public var spotArtistName: String?
     @NSManaged public var songName: String?
     @NSManaged public var songArtistName: String?
     @NSManaged public var songArtImageData: Data?
@@ -79,6 +81,8 @@ struct Card: Identifiable, Hashable {
     let message: String?
     let songID: String?
     let spotID: String?
+    let spotName: String?
+    let spotArtistName: String?
     let songName: String?
     let songArtistName: String?
     let songArtImageData: Data?
@@ -119,6 +123,8 @@ extension Card {
               let message = record["message"] as? String,
               let songID = record["songID"] as? String,
               let spotID = record["spotID"] as? String,
+              let spotName = record["spotName"] as? String,
+              let spotArtistName = record["spotArtistName"] as? String,
               let songName = record["songName"] as? String,
               let songArtistName = record["songArtistName"] as? String,
               let songArtImageData = record["songArtImageData"] as? Data,
@@ -158,6 +164,8 @@ extension Card {
         self.message = message
         self.songID = songID
         self.spotID = spotID
+        self.spotName = spotName
+        self.spotArtistName = spotArtistName
         self.songName = songName
         self.songArtistName = songArtistName
         self.songArtImageData = songArtImageData

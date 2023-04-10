@@ -56,6 +56,8 @@ class ChosenSong: ObservableObject {
     @Published var songPreviewURL = String()
     @Published var songAlbumName = String()
     @Published var spotID = String()
+    @Published var spotName = String()
+    @Published var spotArtistName = String()
     @Published var spotImageData = Data()
     @Published var spotSongDuration = Double()
     @Published var spotPreviewURL = String()

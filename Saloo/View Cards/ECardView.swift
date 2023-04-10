@@ -29,6 +29,8 @@ struct eCardView: View {
     @State var text4: String
     @State var songID: String?
     @State var spotID: String?
+    @State var spotName: String?
+    @State var spotArtistName: String?
     @State var songName: String?
     @State var songArtistName: String?
     @State var songAlbumName: String?
@@ -181,14 +183,21 @@ struct eCardView: View {
                     .frame(maxHeight: UIScreen.screenHeight/2.2)
             }
             if (appDelegate.musicSub.type == .Spotify) && (appDelegate.deferToPreview == false) && (spotPreviewURL != "LookupFailed") {
-                SpotPlayerView(songID: spotID, songName: songName, songArtistName: songArtistName, songAlbumName: songAlbumName, songArtImageData: spotImageData, songDuration: spotSongDuration, songPreviewURL: previewToPass(), confirmButton: false, showFCV: $showFCV, accessedViaGrid: accessedViaGrid, appRemote2: appRemote2, coreCard: coreCard)
+                SpotPlayerView(songID: spotID, songName: songName, songArtistName: songArtistName, spotName: spotName, spotArtistName: spotArtistName, songAlbumName: songAlbumName, songArtImageData: spotImageData, songDuration: spotSongDuration, songPreviewURL: previewToPass(), confirmButton: false, showFCV: $showFCV, accessedViaGrid: accessedViaGrid, appRemote2: appRemote2, coreCard: coreCard)
                     .onAppear{appRemote2?.connectionParameters.accessToken = (defaults.object(forKey: "SpotifyAccessToken") as? String)!}
                     .frame(maxHeight: .infinity, alignment: .bottom)
             }
             if (appDelegate.musicSub.type == .Neither) || (appDelegate.deferToPreview == true) || spotPreviewURL == "LookupFailed" || songPreviewURL == "LookupFailed"{
-                SongPreviewPlayer(songID: songID, songName: songName, songArtistName: songArtistName, songArtImageData: songArtImageData, songDuration: songDuration, songPreviewURL: previewToPass(), confirmButton: false, showFCV: $showFCV, songAddedUsing: songAddedUsing!)
-                    .onDisappear{if player?.timeControlStatus.rawValue == 2 {player?.pause()}}
-                    .frame(maxHeight: .infinity, alignment: .bottom)
+                if songAddedUsing! == "Spotify"  {
+                    SongPreviewPlayer(songID: songID, songName: spotName, songArtistName: spotArtistName, songArtImageData: songArtImageData, songDuration: songDuration, songPreviewURL: previewToPass(), confirmButton: false, showFCV: $showFCV, songAddedUsing: songAddedUsing!)
+                        .onDisappear{if player?.timeControlStatus.rawValue == 2 {player?.pause()}}
+                        .frame(maxHeight: .infinity, alignment: .bottom)
+                }
+                else {
+                    SongPreviewPlayer(songID: songID, songName: songName, songArtistName: songArtistName, songArtImageData: songArtImageData, songDuration: songDuration, songPreviewURL: previewToPass(), confirmButton: false, showFCV: $showFCV, songAddedUsing: songAddedUsing!)
+                        .onDisappear{if player?.timeControlStatus.rawValue == 2 {player?.pause()}}
+                        .frame(maxHeight: .infinity, alignment: .bottom)
+                }
             }
         }
     }

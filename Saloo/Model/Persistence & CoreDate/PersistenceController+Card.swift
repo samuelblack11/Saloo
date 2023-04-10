@@ -11,7 +11,7 @@ import SwiftUI
 
 extension PersistenceController {
     
-    func addCoreCard(noteField: NoteField, chosenOccassion: Occassion, an1: String, an2: String, an2URL: String, an3: String, an4: String, chosenObject: ChosenCoverImageObject, collageImage: CollageImage, context: NSManagedObjectContext, songID: String?, spotID: String?, songName: String?, songArtistName: String?, songAlbumName: String?, songArtImageData: Data?, songPreviewURL: String?, songDuration: String?, inclMusic: Bool, spotImageData: Data?, spotSongDuration: String?, spotPreviewURL: String?, songAddedUsing: String?, cardType: String) {
+    func addCoreCard(noteField: NoteField, chosenOccassion: Occassion, an1: String, an2: String, an2URL: String, an3: String, an4: String, chosenObject: ChosenCoverImageObject, collageImage: CollageImage, context: NSManagedObjectContext, songID: String?, spotID: String?, spotName: String?, spotArtistName: String?, songName: String?, songArtistName: String?, songAlbumName: String?, songArtImageData: Data?, songPreviewURL: String?, songDuration: String?, inclMusic: Bool, spotImageData: Data?, spotSongDuration: String?, spotPreviewURL: String?, songAddedUsing: String?, cardType: String) {
         context.perform {
             
             let recordZone = CKRecordZone(zoneName: "Cards")
@@ -43,6 +43,8 @@ extension PersistenceController {
             coreCard.songDuration = songDuration
             coreCard.inclMusic = inclMusic
             coreCard.spotID = spotID
+            coreCard.spotName = spotName
+            coreCard.spotArtistName = spotName
             coreCard.spotImageData = spotImageData
             coreCard.spotSongDuration = spotSongDuration
             coreCard.spotPreviewURL = spotPreviewURL
@@ -108,7 +110,7 @@ extension PersistenceController {
     }
     
 
-    func updateRecordWithSpotData(for coreCard: CoreCard, in context: NSManagedObjectContext, with database: CKDatabase, spotID: String, spotImageData: Data, spotSongDuration: String, completion: @escaping (Error?) -> Void) {
+    func updateRecordWithSpotData(for coreCard: CoreCard, in context: NSManagedObjectContext, with database: CKDatabase, spotName: String, spotArtistName: String, spotID: String, spotImageData: Data, spotSongDuration: String, completion: @escaping (Error?) -> Void) {
         let controller = PersistenceController.shared
         let taskContext = controller.persistentContainer.newTaskContext()
         let ckContainer = PersistenceController.shared.cloudKitContainer
@@ -134,6 +136,8 @@ extension PersistenceController {
         queryOperation.recordFetchedBlock = { (record) in
             // Process the fetched record
             print("Fetched record with ID: \(record.recordID.recordName)")
+            record.setValue(spotName, forKey: "CD_spotName")
+            record.setValue(spotArtistName, forKey: "CD_spotArtistName")
             record.setValue(spotID, forKey: "CD_spotID")
             record.setValue(spotImageData, forKey: "CD_spotImageData")
             record.setValue(spotSongDuration, forKey: "CD_spotSongDuration")
