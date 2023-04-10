@@ -21,7 +21,7 @@ struct Tracks: Decodable {
 struct SpotItem: Decodable {
     let id: String
     let name: String
-    let album: AlbumData
+    let album: AlbumData?
     let artists: [ArtistObject]
     //let previews: [PreviewURL]
     let preview_url: String?
@@ -38,9 +38,29 @@ struct ArtistObject: Decodable {
     let name: String
 }
 
-struct AlbumData: Decodable {
+struct AlbumData: Decodable, Hashable {
     let name: String
+    let id: String
     let images: [AlbumImages]
+    
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
+        hasher.combine(name)
+    }
+    
+    static func ==(lhs: AlbumData, rhs: AlbumData) -> Bool {
+        return lhs.id == rhs.id && lhs.name == rhs.name
+    }
+    
+    
+}
+
+struct SearchResult {
+    let songName: String
+    let artistName: String
+    let albumName: String
+    let albumID: String
+    let trackID: String
 }
 
 struct AlbumImages: Decodable {

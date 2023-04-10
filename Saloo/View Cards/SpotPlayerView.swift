@@ -50,6 +50,8 @@ struct SpotPlayerView: View {
     @State var associatedRecord: CKRecord?
     @State var coreCard: CoreCard?
     @State var levDistances: [Int] = []
+    @State var spotAlbumID: String?
+    @State var spotImageURL: String?
     let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
     var body: some View {
             SpotPlayerView2
@@ -191,111 +193,78 @@ struct SpotPlayerView: View {
             }
         }
         else {cleanSongName = spotSongName}
-        
-        
-        
-        
-        
         var SPOTString = cleanSongName + " " + spotSongArtist.replacingOccurrences(of: ",", with: "")
         SPOTString = SPOTString.withoutPunc
                         .replacingOccurrences(of: "   ", with: " ")
                         .replacingOccurrences(of: "  ", with: " ")
-        
         print("SPOTString....")
         print(SPOTString.withoutPunc)
         
         return SPOTString.withoutPunc
     }
     
-    
-    
-    func getSongViaSpot() {
-        SpotifyAPI().searchSpotify(songAlbumName!, authToken: spotifyAuth.access_Token,completionHandler: {(response, error) in
-            let searchTerm = cleanAMSongForSPOTComparison()
-            print("You Searched \(songAlbumName!)")
-            if response != nil {
-                DispatchQueue.main.async {
-                    for song in response! {
-                        var allArtists = String()
-                        if song.artists.count > 1 {for artist in song.artists { allArtists = allArtists + " " + artist.name}}
-                        else {allArtists = song.artists[0].name}
-                        levDistances.append(levenshteinDistance(s1: searchTerm, s2: cleanSPOTSongForAMComparison(spotSongName: song.name, spotSongArtist: allArtists)))
-                    }
-                    print("Min Lev Distance...")
-                    print(levDistances.min())
-
-                    var minValidDistance = Int()
-                    
-                    if response![levDistances.firstIndex(of: levDistances.min()!)!].restrictions?.reason == nil {minValidDistance = levDistances.min()!}
-                    else {
-                        if let minIndex = levDistances.firstIndex(of: levDistances.min()!) {levDistances[minIndex] = 100}
+    func getSongViaAlbumSearch() {
+        var foundMatch = false
+        SpotifyAPI().getAlbumID(albumName: songAlbumName!, artistName: songArtistName!, authToken: spotifyAuth.access_Token, completion: { albumID in
+            spotAlbumID = albumID
+            SpotifyAPI().searchForAlbum(albumId: albumID!, authToken: spotifyAuth.access_Token) { result in
+                print(albumID!)
+                
+                levDistances = []
+                switch result {
+                case .success(let album):
+                    spotImageURL = album.images[2].url
+                    SpotifyAPI().getAlbumTracks(albumId: albumID!, authToken: spotifyAuth.access_Token, completion: { (response, error) in
+                        for song in response! {
+                            var allArtists = String()
+                            if song.artists.count > 1 {for artist in song.artists { allArtists = allArtists + " " + artist.name}}
+                            else {allArtists = song.artists[0].name}
+                            levDistances.append(levenshteinDistance(s1: songName!, s2: song.name))
+                        }
+                        var minValidDistance = Int()
                         if response![levDistances.firstIndex(of: levDistances.min()!)!].restrictions?.reason == nil {minValidDistance = levDistances.min()!}
                         else {
                             if let minIndex = levDistances.firstIndex(of: levDistances.min()!) {levDistances[minIndex] = 100}
                             if response![levDistances.firstIndex(of: levDistances.min()!)!].restrictions?.reason == nil {minValidDistance = levDistances.min()!}
+                            else {
+                                if let minIndex = levDistances.firstIndex(of: levDistances.min()!) {levDistances[minIndex] = 100}
+                                if response![levDistances.firstIndex(of: levDistances.min()!)!].restrictions?.reason == nil {minValidDistance = levDistances.min()!}
+                            }
                         }
+                        if minValidDistance < 6 {
+                            let closestMatch = response![levDistances.firstIndex(of: levDistances.min()!)!]
+                            print("SSSSS")
+                            print(closestMatch)
+                            let artURL = URL(string: spotImageURL!)
+                            let _ = getURLData(url: artURL!, completionHandler: {(artResponse, error2) in
+                                songID = closestMatch.id
+                                songArtImageData = artResponse!
+                                songDuration = Double(closestMatch.duration_ms) * 0.001
+                                playSong()
+                                updateRecordWithNewSPOTData(spotID: closestMatch.id, songArtImageData: artResponse!, songDuration: String(Double(closestMatch.duration_ms) * 0.001))
+                            }); foundMatch = true}
+                        
+                        if songPreviewURL != nil && foundMatch == false {
+                            print("Defer to preview")
+                            appDelegate.deferToPreview = true
+                            updateRecordWithNewSPOTData(spotID: "LookupFailed", songArtImageData: Data(), songDuration: String(0))
+                        }
+                        else {appDelegate.chosenGridCard?.cardType = "noMusicNoGift"}
+                        
                     }
-                    if minValidDistance < 6 {
-                        let closestMatch = response![levDistances.firstIndex(of: levDistances.min()!)!]
-                        print("SSSSS")
-                        print(closestMatch)
-                        let artURL = URL(string:closestMatch.album.images[2].url)
-                        let _ = getURLData(url: artURL!, completionHandler: {(artResponse, error2) in
-                            songID = closestMatch.id
-                            songArtImageData = artResponse!
-                            songDuration = Double(closestMatch.duration_ms) * 0.001
-                            playSong()
-                            updateRecordWithNewSPOTData(spotID: closestMatch.id, songArtImageData: artResponse!, songDuration: String(Double(closestMatch.duration_ms) * 0.001))
-                        })}
-                    
-                    else{print("Trying to get song in second way...."); getSongAttempt2()}}}
-                    else{debugPrint(error?.localizedDescription)}
+                    )
+                case .failure(let error):
+                    print("Error searching for album: \(error.localizedDescription)")
+                }
+            }
+            
+            
         })
     }
     
-    func getSongAttempt2() {
-        var foundMatch = false
-        SpotifyAPI().searchSpotify(songName!, authToken: spotifyAuth.access_Token,completionHandler: {(response, error) in
-            let searchTerm = cleanAMSongForSPOTComparison()
-            print("You Searched \(songName!)")
-            if response != nil {
-                levDistances = []
-                DispatchQueue.main.async {
-                    for song in response! {
-                        var allArtists = String()
-                        if song.artists.count > 1 {for artist in song.artists { allArtists = allArtists + " " + artist.name}}
-                        else {allArtists = song.artists[0].name}
-                        print("******")
-                        print(songName!)
-                        print(song.name)
-                        print(songArtistName!)
-                        print(allArtists)
-                        
-                        
-                        if song.name.contains(songName!) && allArtists.contains(songArtistName!) {
-                            print("Found match with songname in song.name and artist in allArtists:")
-                            print(song)
-                            let artURL = URL(string:song.album.images[2].url)
-                            let _ = getURLData(url: artURL!, completionHandler: {(artResponse, error2) in
-                                songID = song.id
-                                songArtImageData = artResponse!
-                                songDuration = Double(song.duration_ms) * 0.001
-                                songPreviewURL = song.preview_url
-                                playSong()
-                                updateRecordWithNewSPOTData(spotID: song.id, songArtImageData: artResponse!, songDuration: String(Double(song.duration_ms) * 0.001))
-                            })
-                            foundMatch = true
-                        }; break
-                    }
-                    if songPreviewURL != nil && foundMatch == false {
-                        print("Defer to preview")
-                        appDelegate.deferToPreview = true
-                        updateRecordWithNewSPOTData(spotID: "LookupFailed", songArtImageData: Data(), songDuration: String(0))
-                    }
-                    else {appDelegate.chosenGridCard?.cardType = "noMusicNoGift"}}}
-            else{debugPrint(error?.localizedDescription)}
-        })
-    }
+    
+    
+    
     
     
     
@@ -382,7 +351,7 @@ struct SpotPlayerView: View {
                     spotifyAuth.refresh_Token = response!.refresh_token
                     defaults.set(response!.access_token, forKey: "SpotifyAccessToken")
                     defaults.set(response!.refresh_token, forKey: "SpotifyRefreshToken")
-                    if songID!.count == 0 {getSongViaSpot()}
+                    if songID!.count == 0 {getSongViaAlbumSearch()}
                 }
             }
             if error != nil {
@@ -405,7 +374,7 @@ struct SpotPlayerView: View {
                     spotifyAuth.access_Token = response!.access_token
                     appRemote2?.connectionParameters.accessToken = spotifyAuth.access_Token
                     defaults.set(response!.access_token, forKey: "SpotifyAccessToken")
-                    if songID!.count == 0 {getSongViaSpot()}
+                    if songID!.count == 0 {getSongViaAlbumSearch()}
                 }
             }
             if error != nil {

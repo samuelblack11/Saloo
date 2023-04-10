@@ -316,7 +316,7 @@ extension MusicSearchView {
                         print("BBBBB")
                         print(song.restrictions)
                         print(song)
-                        let artURL = URL(string:song.album.images[2].url)
+                        let artURL = URL(string:song.album!.images[2].url)
                         let _ = getURLData(url: artURL!, completionHandler: {(artResponse, error2) in
                             let blankString: String? = ""
                             var songPrev: String?
@@ -324,7 +324,7 @@ extension MusicSearchView {
                             if song.preview_url != nil {print("it's not nil"); songPrev = song.preview_url}
                             else {songPrev = blankString}
                             
-                            let songForList = SongForList(id: song.id, name: song.name, artistName: song.artists[0].name, albumName: song.album.name, artImageData: artResponse!, durationInMillis: song.duration_ms, isPlaying: false, previewURL: songPrev!)
+                            let songForList = SongForList(id: song.id, name: song.name, artistName: song.artists[0].name, albumName: song.album!.name, artImageData: artResponse!, durationInMillis: song.duration_ms, isPlaying: false, previewURL: songPrev!)
                             
                             if song.restrictions?.reason == nil {searchResults.append(songForList)}
                             

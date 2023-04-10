@@ -161,7 +161,6 @@ class InOut: ObservableObject {
 class MusicSubscription: ObservableObject {
     @Published var timeToAddMusic = false
     @Published var type: MusicSubscriptionOptions = .Neither
-
 }
 
 enum MusicSubscriptionOptions {
