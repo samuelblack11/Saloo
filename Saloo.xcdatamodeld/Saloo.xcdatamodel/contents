@@ -10,6 +10,7 @@
         <attribute name="an2URL" optional="YES" attributeType="String"/>
         <attribute name="an3" optional="YES" attributeType="String"/>
         <attribute name="an4" optional="YES" attributeType="String"/>
+        <attribute name="appleAlbumArtist" optional="YES" attributeType="String"/>
         <attribute name="associatedRecord" optional="YES" attributeType="Transformable"/>
         <attribute name="cardName" optional="YES" attributeType="String"/>
         <attribute name="cardType" optional="YES" attributeType="String"/>
@@ -36,6 +37,7 @@
         <attribute name="songID" optional="YES" attributeType="String"/>
         <attribute name="songName" optional="YES" attributeType="String"/>
         <attribute name="songPreviewURL" optional="YES" attributeType="String"/>
+        <attribute name="spotAlbumArtist" optional="YES" attributeType="String"/>
         <attribute name="spotArtistName" optional="YES" attributeType="String"/>
         <attribute name="spotID" optional="YES" attributeType="String"/>
         <attribute name="spotImageData" optional="YES" attributeType="Binary"/>

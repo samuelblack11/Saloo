@@ -28,6 +28,8 @@ struct SpotPlayerView: View {
     @State var songArtImageData: Data?
     @State var songDuration: Double?
     @State var songPreviewURL: String?
+    @State var appleAlbumArtist: String?
+    @State var spotAlbumArtist: String?
     @State private var songProgress = 0.0
     @State private var isPlaying = false
     @State var confirmButton: Bool
@@ -101,9 +103,9 @@ struct SpotPlayerView: View {
             //if showProgressView {ProgressView().progressViewStyle(.circular) .tint(.green).frame(maxWidth: UIScreen.screenHeight/9, maxHeight: UIScreen.screenHeight/9)}
             VStack {
                 if songArtImageData != nil {Image(uiImage: UIImage(data: songArtImageData!)!) }
-                Text(songName!)
+                Text(spotName!)
                     .font(.headline)
-                Text(songArtistName!)
+                Text(spotArtistName!)
                 HStack {
                     Button {
                         songProgress = 0.0
@@ -221,7 +223,7 @@ struct SpotPlayerView: View {
                             var allArtists = String()
                             if song.artists.count > 1 {for artist in song.artists { allArtists = allArtists + " " + artist.name}}
                             else {allArtists = song.artists[0].name}
-                            levDistances.append(levenshteinDistance(s1: songName!, s2: song.name))
+                            levDistances.append(levenshteinDistance(s1: cleanAMSongForSPOTComparison(), s2: cleanSPOTSongForAMComparison(spotSongName: song.name, spotSongArtist: allArtists)))
                         }
                         var minValidDistance = Int()
                         if response![levDistances.firstIndex(of: levDistances.min()!)!].restrictions?.reason == nil {minValidDistance = levDistances.min()!}
@@ -241,7 +243,8 @@ struct SpotPlayerView: View {
                             let _ = getURLData(url: artURL!, completionHandler: {(artResponse, error2) in
                                 var allArtists2 = String()
                                 for artist in closestMatch.artists { allArtists2 = allArtists2 + " " + artist.name}
-                                songArtistName = allArtists2
+                                spotName = closestMatch.name
+                                spotArtistName = allArtists2
                                 songID = closestMatch.id
                                 songArtImageData = artResponse!
                                 songDuration = Double(closestMatch.duration_ms) * 0.001
@@ -254,7 +257,12 @@ struct SpotPlayerView: View {
                             appDelegate.deferToPreview = true
                             updateRecordWithNewSPOTData(spotName: "LookupFailed", spotArtistName: "LookupFailed", spotID: "LookupFailed", songArtImageData: Data(), songDuration: String(0))
                         }
-                        else {appDelegate.chosenGridCard?.cardType = "noMusicNoGift"}
+                        else {
+                            print("Else called to change card type...")
+                            //appDelegate.chosenGridCard?.cardType = "noMusicNoGift"
+                            
+                            
+                        }
                         
                     }
                     )
@@ -266,29 +274,6 @@ struct SpotPlayerView: View {
             
         })
     }
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
     
     
     func updateRecordWithNewSPOTData(spotName: String, spotArtistName: String, spotID: String, songArtImageData: Data, songDuration: String) {

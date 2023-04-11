@@ -11,7 +11,7 @@ import SwiftUI
 
 extension PersistenceController {
     
-    func addCoreCard(noteField: NoteField, chosenOccassion: Occassion, an1: String, an2: String, an2URL: String, an3: String, an4: String, chosenObject: ChosenCoverImageObject, collageImage: CollageImage, context: NSManagedObjectContext, songID: String?, spotID: String?, spotName: String?, spotArtistName: String?, songName: String?, songArtistName: String?, songAlbumName: String?, songArtImageData: Data?, songPreviewURL: String?, songDuration: String?, inclMusic: Bool, spotImageData: Data?, spotSongDuration: String?, spotPreviewURL: String?, songAddedUsing: String?, cardType: String) {
+    func addCoreCard(noteField: NoteField, chosenOccassion: Occassion, an1: String, an2: String, an2URL: String, an3: String, an4: String, chosenObject: ChosenCoverImageObject, collageImage: CollageImage, context: NSManagedObjectContext, songID: String?, spotID: String?, spotName: String?, spotArtistName: String?, songName: String?, songArtistName: String?, songAlbumName: String?, songArtImageData: Data?, songPreviewURL: String?, songDuration: String?, inclMusic: Bool, spotImageData: Data?, spotSongDuration: String?, spotPreviewURL: String?, songAddedUsing: String?, cardType: String, appleAlbumArtist: String?, spotAlbumArtist: String?) {
         context.perform {
             
             let recordZone = CKRecordZone(zoneName: "Cards")
@@ -54,6 +54,8 @@ extension PersistenceController {
             coreCard.collage3 = collageImage.image3
             coreCard.collage4 = collageImage.image4
             coreCard.recordID = UUID().uuidString
+            coreCard.appleAlbumArtist = appleAlbumArtist
+            coreCard.spotAlbumArtist = spotAlbumArtist
             coreCard.cardType = cardType
             PersistenceController.shared.cloudKitContainer.fetchUserRecordID { ckRecordID, error in
                 coreCard.creator = (ckRecordID?.recordName)!

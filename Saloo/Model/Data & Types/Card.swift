@@ -60,6 +60,10 @@ extension CoreCard {
     @NSManaged public var cardType: String?
     @NSManaged public var recordID: String?
     @NSManaged public var songAlbumName: String?
+    @NSManaged public var appleAlbumArtist: String?
+    @NSManaged public var spotAlbumArtist: String?
+
+    
 }
 
 struct Card: Identifiable, Hashable {
@@ -101,6 +105,8 @@ struct Card: Identifiable, Hashable {
     let cardType: String?
     let recordID: String?
     let songAlbumName: String?
+    let appleAlbumArtist: String?
+    let spotAlbumArtist: String?
 
 }
 
@@ -142,6 +148,8 @@ extension Card {
               let collage4 = record["collage4"] as? Data,
               let songAlbumName = record["songAlbumName"] as? String,
               let recordID = record["recordID"] as? String,
+              let appleAlbumArtist = record["appleAlbumArtist"] as? String,
+              let spotAlbumArtist = record["spotAlbumArtist"] as? String,
               let cardType = record["cardType"] as? String else {
             return nil
         }
@@ -183,6 +191,8 @@ extension Card {
         self.collage4 = collage4
         self.songAlbumName = songAlbumName
         self.recordID = recordID
+        self.appleAlbumArtist = appleAlbumArtist
+        self.spotAlbumArtist = spotAlbumArtist
         self.cardType = cardType
     }
 }
