@@ -180,7 +180,7 @@ struct eCardView: View {
     var MusicView: some View {
         VStack {
             if (appDelegate.musicSub.type == .Apple) && (appDelegate.deferToPreview == false) && (songPreviewURL != "LookupFailed"){
-                AMPlayerView(songID: songID, songName: songName, songArtistName: songArtistName, songAlbumName: songAlbumName,   songArtImageData: songArtImageData, songDuration: songDuration, songPreviewURL: songPreviewURL, confirmButton: false, showFCV: $showFCV, fromFinalize: fromFinalize, coreCard: coreCard, appleAlbumArtist: appleAlbumArtist, spotAlbumArtist: spotAlbumArtist)
+                AMPlayerView(songID: songID, songName: songName, songArtistName: songArtistName, spotName: spotName, spotArtistName: spotArtistName, songAlbumName: songAlbumName, songArtImageData: songArtImageData, songDuration: songDuration, songPreviewURL: songPreviewURL, confirmButton: false, showFCV: $showFCV, fromFinalize: fromFinalize, coreCard: coreCard, appleAlbumArtist: appleAlbumArtist, spotAlbumArtist: spotAlbumArtist)
                     .frame(maxHeight: UIScreen.screenHeight/2.2)
             }
             if (appDelegate.musicSub.type == .Spotify) && (appDelegate.deferToPreview == false) && (spotPreviewURL != "LookupFailed") {

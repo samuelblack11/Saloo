@@ -123,3 +123,46 @@ struct PlaylistArray: Decodable {
 struct SnapShotID: Decodable {
     let snapshot_id: String
 }
+
+
+struct SpotifyAlbumResponse: Codable {
+    let albums: SpotifyAlbums
+}
+
+struct SpotifyAlbums: Codable {
+    let items: [SpotifyAlbum]
+}
+
+struct SpotifyAlbum: Codable {
+    let id: String
+    let name: String
+    let artists: [SpotifyArtist]
+    //let images: [SpotifyImage]
+    //let tracks: SpotifyTracks
+
+    enum CodingKeys: String, CodingKey {
+        case id, name, artists
+    }
+}
+
+struct SpotifyArtist: Codable {
+    let name: String
+}
+
+struct SpotifyImage: Codable {
+    let url: String
+}
+
+struct SpotifyTracks: Codable {
+    let items: [SpotifyTrack]
+}
+
+struct SpotifyTrack: Codable {
+    let id: String
+    let name: String
+    let durationMs: Int
+
+    enum CodingKeys: String, CodingKey {
+        case id, name, durationMs = "duration_ms"
+    }
+}

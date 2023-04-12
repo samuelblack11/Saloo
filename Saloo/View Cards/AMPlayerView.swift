@@ -20,6 +20,8 @@ struct AMPlayerView: View {
     @State var songID: String?
     @State var songName: String?
     @State var songArtistName: String?
+    @State var spotName: String?
+    @State var spotArtistName: String?
     @State var songAlbumName: String?
     @State var songArtImageData: Data?
     @State var songDuration: Double?
@@ -49,6 +51,8 @@ struct AMPlayerView: View {
             AMPlayerView
             .fullScreenCover(isPresented: $showWriteNote) {WriteNoteView()}
             .onAppear{if songArtImageData == nil{getAMUserToken(); getAMStoreFront()}}
+            //.onAppear{if songName! == nil{getAMUserToken(); getAMStoreFront()}}
+
             .navigationBarItems(leading:Button {
                 if fromFinalize {musicPlayer.pause(); showWriteNote = true}
                         print("Calling completion...")
@@ -154,7 +158,21 @@ extension AMPlayerView {
                 SKCloudServiceController.requestAuthorization {(status) in if status == .authorized {
                     amAPI.storeFrontID = amAPI.fetchUserStorefront(userToken: amAPI.taskToken!, completionHandler: { ( response, error) in
                         amAPI.storeFrontID = response!.data[0].id
-                        searchWithAM()
+                        print("Song Name:....")
+                        print(songName)
+                        
+                        
+                        if songName! == "" {
+                            amAPI.searchForAlbumWithArtist(albumName: songAlbumName!, artistName: spotArtistName!, storeFrontID: response!.data[0].id, userToken: amAPI.taskToken!, completion: {(response, error) in
+                                
+                                print("Album Object from AM...")
+                                print(response)
+                                
+                                }
+                        )}
+                        
+                        
+                        else {searchWithAM()}
                     })}}}
             }
         }

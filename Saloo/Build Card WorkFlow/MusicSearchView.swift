@@ -130,7 +130,7 @@ struct MusicSearchView: View {
                     .presentationDetents([.fraction(0.4)])
                     .fullScreenCover(isPresented: $showFCV) {FinalizeCardView(cardType: determineCardType())}
             }
-            .popover(isPresented: $showSPV) {SpotPlayerView(songID: chosenSong.spotID, songName: chosenSong.name, songArtistName: chosenSong.artistName, songArtImageData: chosenSong.spotImageData, songDuration: chosenSong.spotSongDuration, songPreviewURL: chosenSong.spotPreviewURL, confirmButton: true, showFCV: $showFCV, accessedViaGrid: false, appRemote2: appRemote2)
+            .popover(isPresented: $showSPV) {SpotPlayerView(songID: chosenSong.spotID, spotName: chosenSong.spotName, spotArtistName: chosenSong.spotArtistName, songArtImageData: chosenSong.spotImageData, songDuration: chosenSong.spotSongDuration, songPreviewURL: chosenSong.spotPreviewURL, confirmButton: true, showFCV: $showFCV, accessedViaGrid: false, appRemote2: appRemote2)
                     .presentationDetents([.fraction(0.4)])
                     .fullScreenCover(isPresented: $showFCV) {FinalizeCardView(cardType: determineCardType(), appRemote2: appRemote2)}
                     .fullScreenCover(isPresented: $showWriteNote) {WriteNoteView()}
@@ -191,29 +191,80 @@ extension MusicSearchView {
     }
     
     func createChosenSong(song: SongForList) {
-        chosenSong.name = song.name
-        chosenSong.artistName = song.artistName
-        chosenSong.songAlbumName = song.albumName
+
         songProgress = 0.0; isPlaying = true
         if appDelegate.musicSub.type == .Spotify {
             chosenSong.spotID = song.id
+            chosenSong.spotName = song.name
+            chosenSong.artistName = song.artistName
+            chosenSong.songAlbumName = song.albumName
             chosenSong.spotImageData = song.artImageData
             chosenSong.spotSongDuration = Double(song.durationInMillis/1000)
             chosenSong.spotPreviewURL = song.previewURL
             chosenSong.songAddedUsing = "Spotify"
+            getSpotAlbum()
             showSPV = true
         }
         if appDelegate.musicSub.type == .Apple {
             chosenSong.id = song.id
+            chosenSong.name = song.name
+            chosenSong.artistName = song.artistName
+            chosenSong.songAlbumName = song.albumName
             chosenSong.songPreviewURL = song.previewURL
             chosenSong.artwork = song.artImageData
             chosenSong.durationInSeconds = Double(song.durationInMillis/1000)
             chosenSong.songAddedUsing = "Apple"
-            chosenSong.songAlbumName = song.albumName
             getAlbum(storeFront: amAPI.storeFrontID!, userToken: amAPI.taskToken!)
             showAPV = true
         }
     }
+    
+    
+    
+    func getSpotAlbum() {
+        SpotifyAPI().getAlbumIDUsingNameOnly(albumName: chosenSong.songAlbumName, authToken: spotifyAuth.access_Token, completion: { (response, error) in
+            if response != nil {
+                for album in response! {
+                    print("Got Album Named: ")
+                    print(album.name)
+                    SpotifyAPI().getAlbumTracks(albumId: album.id, authToken: spotifyAuth.access_Token, completion: {(response, error) in
+                        if let trackList = response {
+                            for track in trackList {
+                                if chosenSong.spotName == track.name {
+                                    print("Found Song Name Match on Album Named above...")
+                                    var allArtists = String()
+                                    if album.artists.count > 1 {for artist in album.artists { allArtists = allArtists + " " + artist.name}}
+                                    else {allArtists = album.artists[0].name}
+                                    chosenSong.spotAlbumArtist = allArtists
+                                    break
+                                }
+                            }
+                        }
+                        
+                        
+                        
+                        
+                    })
+                    
+                    
+                    
+                    
+                    
+        }}})}
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
     func getAlbum(storeFront: String, userToken: String) {
         SKCloudServiceController.requestAuthorization {(status) in if status == .authorized {
