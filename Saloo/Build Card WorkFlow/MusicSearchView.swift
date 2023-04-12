@@ -225,12 +225,21 @@ extension MusicSearchView {
                         for album in albumList {
                             print("Album Object: ")
                             print(album)
-                            for track in album.relationshiups.tracks.data {
-                                if chosenSong.name  == track.attributes.name {
-                                    chosenSong.appleAlbumArtist = album.attributes.artistName
-                                    break
+                            AppleMusicAPI().getAlbumTracks(albumId: album.id, storefrontId: storeFront, userToken: userToken, completion: { (response, error) in
+                                if response != nil {
+                                    if let trackList = response?.data {
+                                        for track in trackList {
+                                            if chosenSong.name == track.attributes.name {
+                                                print("Found Song on Album:")
+                                                print(track.attributes.name)
+                                                chosenSong.appleAlbumArtist = album.attributes.artistName
+                                                break
+                                            }
+                                            
+                                        }
+                                    }
                                 }
-                            }
+                            })
                         }
                     }
                 }
