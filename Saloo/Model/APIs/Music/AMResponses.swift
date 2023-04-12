@@ -77,3 +77,53 @@ struct AMStoreFrontResponse: Decodable {
 struct StoreFrontDataPoints: Decodable {
     let id: String
 }
+
+struct AlbumResponse: Decodable {
+    let results: AlbumResult
+}
+
+struct AlbumResult: Decodable {
+    let albums: AMAlbumData
+}
+
+struct AMAlbumData: Decodable {
+    let data: [EachAlbum]
+}
+
+
+struct EachAlbum: Decodable {
+    let id: String
+    let attributes: AMAlbumAttributes
+    let relationshiups: AlbumRelationships
+}
+
+struct AMAlbumAttributes: Decodable {
+    let name: String
+    let artistName: String
+    let artwork: Artwork
+    let url: String
+}
+
+struct AlbumRelationships: Codable {
+    let tracks: TrackResponse
+}
+
+struct TrackResponse: Codable {
+    let data: [Track]
+    let href: String?
+    let next: String?
+}
+
+struct Track: Codable {
+    let id: String
+    let type: String
+    let href: String
+    let attributes: TrackAttributes
+}
+
+struct TrackAttributes: Codable {
+    let artistName: String
+    let genreNames: [String]
+    let name: String
+    let trackNumber: Int
+}

@@ -99,6 +99,47 @@ class AppleMusicAPI {
         lock.wait()
         return songs
     }
+    
+    func searchForAlbum(albumName: String, storeFrontID: String,  userToken: String, completion: @escaping (AlbumResponse?, Error?) -> Void) {
+        // Set up the search query
+        let lock = DispatchSemaphore(value: 1)
+        let searchURL = "https://api.music.apple.com/v1/catalog/\(storeFrontID)/search"
+        //let searchTerm = albumName.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
+        let searchTerm = albumName   .replacingOccurrences(of: "&", with: "").replacingOccurrences(of: " ", with: "%20")
+        let searchType = "albums"
+        
+        // Set up the request
+        var request = URLRequest(url: URL(string: "\(searchURL)?term=\(searchTerm)&types=\(searchType)")!)
+        request.httpMethod = "GET"
+        request.addValue("Bearer \(devToken)", forHTTPHeaderField: "Authorization")
+        request.addValue(userToken, forHTTPHeaderField: "Music-User-Token")
+        //request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+        
+        // Send the request
+        URLSession.shared.dataTask(with: request) { (data, response, error) in
+            guard error == nil else {return}
+            if let jsonObj = try? JSONSerialization.jsonObject(with: data!, options: []) as? [String: Any] {
+                //print("&&&%%%")
+                //print(jsonObj["results"])
+            }
+            do {
+                let response = try JSONDecoder().decode(AlbumResponse.self, from: data!)
+                DispatchQueue.main.async {completion(response, nil)}
+            }
+             catch {
+                DispatchQueue.main.async {completion(nil, error)}
+            }
+            lock.signal()
+        }.resume()
+    }
+    
+    
+    
+    
+    
+    
+    
+    
 
 }
 

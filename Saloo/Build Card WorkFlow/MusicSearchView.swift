@@ -48,7 +48,7 @@ struct MusicSearchView: View {
     @State var counter = 0
     @State var refreshAccessToken = false
     @State private var ranAMStoreFront = false
-    var amAPI = AppleMusicAPI()
+    @State var amAPI = AppleMusicAPI()
     @State private var showSpotAuthFailedAlert = false
     
     
@@ -178,6 +178,9 @@ extension MusicSearchView {
                             if song.attributes.previews.count > 0 {print("it's not nil"); songPrev = song.attributes.previews[0].url}
                             else {songPrev = blankString}
                             
+                            
+                            print("Search With AM called...")
+                            
                             let artURL = URL(string:song.attributes.artwork.url.replacingOccurrences(of: "{w}", with: "80").replacingOccurrences(of: "{h}", with: "80"))
                             let _ = getURLData(url: artURL!, completionHandler: { (artResponse, error2) in
                                 let songForList = SongForList(id: song.attributes.playParams.id, name: song.attributes.name, artistName: song.attributes.artistName, albumName: song.attributes.albumName,artImageData: artResponse!, durationInMillis: song.attributes.durationInMillis, isPlaying: false, previewURL: songPrev!)
@@ -186,6 +189,58 @@ extension MusicSearchView {
                 else {debugPrint(error?.localizedDescription)}}
             )}}
     }
+    
+    func createChosenSong(song: SongForList) {
+        chosenSong.name = song.name
+        chosenSong.artistName = song.artistName
+        chosenSong.songAlbumName = song.albumName
+        songProgress = 0.0; isPlaying = true
+        if appDelegate.musicSub.type == .Spotify {
+            chosenSong.spotID = song.id
+            chosenSong.spotImageData = song.artImageData
+            chosenSong.spotSongDuration = Double(song.durationInMillis/1000)
+            chosenSong.spotPreviewURL = song.previewURL
+            chosenSong.songAddedUsing = "Spotify"
+            showSPV = true
+        }
+        if appDelegate.musicSub.type == .Apple {
+            chosenSong.id = song.id
+            chosenSong.songPreviewURL = song.previewURL
+            chosenSong.artwork = song.artImageData
+            chosenSong.durationInSeconds = Double(song.durationInMillis/1000)
+            chosenSong.songAddedUsing = "Apple"
+            chosenSong.songAlbumName = song.albumName
+            getAlbum(storeFront: amAPI.storeFrontID!, userToken: amAPI.taskToken!)
+            showAPV = true
+        }
+    }
+    
+    func getAlbum(storeFront: String, userToken: String) {
+        SKCloudServiceController.requestAuthorization {(status) in if status == .authorized {
+            AppleMusicAPI().searchForAlbum(albumName: chosenSong.songAlbumName, storeFrontID: storeFront,  userToken: userToken, completion: { (response, error) in
+                if response != nil {
+                    print("Album Search Response....")
+                    if let albumList = response?.results.albums.data {
+                        print("# of Albums in Response: \(albumList.count)")
+                        for album in albumList {
+                            print("Album Object: ")
+                            print(album)
+                            for track in album.relationshiups.tracks.data {
+                                if chosenSong.name  == track.attributes.name {
+                                    chosenSong.appleAlbumArtist = album.attributes.artistName
+                                    break
+                                }
+                            }
+                        }
+                    }
+                }
+                else {
+                    print("Error...")
+                    print(error?.localizedDescription)
+                }
+        })}}}
+    
+
     
     func requestSpotAuth() {
         print("called....requestSpotAuth")
@@ -264,9 +319,7 @@ extension MusicSearchView {
         }
     }
     
-    
  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
 
     func runInstantiateAppRemote() {
         Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { timer in
@@ -284,28 +337,7 @@ extension MusicSearchView {
         }
     }
     
-    func createChosenSong(song: SongForList) {
-        chosenSong.name = song.name
-        chosenSong.artistName = song.artistName
-        chosenSong.songAlbumName = song.albumName
-        songProgress = 0.0; isPlaying = true
-        if appDelegate.musicSub.type == .Spotify {
-            chosenSong.spotID = song.id
-            chosenSong.spotImageData = song.artImageData
-            chosenSong.spotSongDuration = Double(song.durationInMillis/1000)
-            chosenSong.spotPreviewURL = song.previewURL
-            chosenSong.songAddedUsing = "Spotify"
-            showSPV = true
-        }
-        if appDelegate.musicSub.type == .Apple {
-            chosenSong.id = song.id
-            chosenSong.songPreviewURL = song.previewURL
-            chosenSong.artwork = song.artImageData
-            chosenSong.durationInSeconds = Double(song.durationInMillis/1000)
-            chosenSong.songAddedUsing = "Apple"
-            showAPV = true
-        }
-    }
+
     
     func searchWithSpotify() {
         SpotifyAPI().searchSpotify(self.songSearch, authToken: spotifyAuth.access_Token, completionHandler: {(response, error) in

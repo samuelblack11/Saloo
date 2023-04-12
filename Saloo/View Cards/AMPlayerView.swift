@@ -117,7 +117,13 @@ struct AMPlayerView: View {
     }
     
     @ViewBuilder var selectButton: some View {
-        if confirmButton == true {Button {showFCV = true; musicPlayer.pause(); songProgress = 0.0} label: {Text("Select Song For Card").foregroundColor(.blue)}}
+        if confirmButton == true {Button {
+            showFCV = true
+            musicPlayer.pause()
+            songProgress = 0.0
+
+            
+        } label: {Text("Select Song For Card").foregroundColor(.blue)}}
         else {Text("")}
     }
     
@@ -198,43 +204,6 @@ extension AMPlayerView {
         }
         catch {print("Fetch failed")}
         return cardsFromCore
-    }
-    
-    
-    func searchForAlbum(albumName: String, completion: @escaping ([SKCloudServiceSetupAction]?, [AlbumData]?, Error?) -> Void) {
-        // Set up the search query
-        let searchURL = "https://api.music.apple.com/v1/catalog/us/search"
-        let searchTerm = albumName.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
-        let searchType = "albums"
-        
-        // Set up the request
-        var request = URLRequest(url: URL(string: "\(searchURL)?term=\(searchTerm)&types=\(searchType)")!)
-        request.httpMethod = "GET"
-        request.addValue("Bearer \(SKCloudServiceController().authorizationToken ?? "")", forHTTPHeaderField: "Authorization")
-        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
-        
-        // Send the request
-        URLSession.shared.dataTask(with: request) { (data, response, error) in
-            // Check for errors
-            if let error = error {
-                completion(nil, nil, error)
-                return
-            }
-            
-            // Parse the response
-            do {
-                guard let data = data else {
-                    completion(nil, nil, nil)
-                    return
-                }
-                let decoder = JSONDecoder()
-                decoder.keyDecodingStrategy = .convertFromSnakeCase
-                let response = try decoder.decode(AlbumResponse.self, from: data)
-                completion(response.results?.next?.setup, response.results?.albums?.data, nil)
-            } catch {
-                completion(nil, nil, error)
-            }
-        }.resume()
     }
     
 }
