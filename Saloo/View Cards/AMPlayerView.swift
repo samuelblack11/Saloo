@@ -46,7 +46,8 @@ struct AMPlayerView: View {
     //@State var whichBoxVal: InOut.SendReceive = .inbox
     @State var appleAlbumArtist: String?
     @State var spotAlbumArtist: String?
-    
+    @State var levDistances: [Int] = []
+
     var body: some View {
             AMPlayerView
             .fullScreenCover(isPresented: $showWriteNote) {WriteNoteView()}
@@ -141,6 +142,45 @@ struct AMPlayerView: View {
 
 extension AMPlayerView {
     
+    
+    func cleanAMSongForSPOTComparison(amSongName: String, amSongArtist: String) -> String {
+        var AMString = String()
+        var cleanSongName = String()
+        var cleanSongArtistName = amSongArtist
+                                            .replacingOccurrences(of: ",", with: "")
+                                            .replacingOccurrences(of: "&", with: "")
+        var artistsInSongName = String()
+        if amSongName.contains("(feat.") {
+            let songComponents = amSongName.components(separatedBy: "(feat.")
+            cleanSongName = songComponents[0]
+            artistsInSongName = songComponents[1].components(separatedBy: ")")[0]
+            artistsInSongName = artistsInSongName.replacingOccurrences(of: "&", with: "")
+            if songComponents[1].components(separatedBy: ")").count > 1 {
+                let cleanSongNamePt2 = songComponents[1].components(separatedBy: ")")[1]
+                cleanSongName = cleanSongName + " " + cleanSongNamePt2
+            }
+        }
+        else {cleanSongName = amSongName + " "}
+        //AMString = (cleanSongName + cleanSongArtistName + artistsInSongName).replacingOccurrences(of: "  ", with: " ")
+        AMString = (cleanSongName + cleanSongArtistName + artistsInSongName).replacingOccurrences(of: "  ", with: " ")
+
+        print("AMString....")
+        print(AMString.withoutPunc)
+        return AMString.withoutPunc
+    }
+    
+    
+    func cleanSPOTSongForAMComparison(spotSongName: String, spotSongArtist: String) -> String {
+        var SPOTString = spotSongName + " " + spotSongArtist.replacingOccurrences(of: ",", with: "")
+        SPOTString = SPOTString.withoutPunc
+                        .replacingOccurrences(of: "   ", with: " ")
+                        .replacingOccurrences(of: "  ", with: " ")
+        print("SPOTString....")
+        print(SPOTString.withoutPunc)
+        
+        return SPOTString.withoutPunc
+    }
+    
     func getAMUserToken() {
         Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { timer in
             if amAPI.taskToken == nil {
@@ -158,24 +198,114 @@ extension AMPlayerView {
                 SKCloudServiceController.requestAuthorization {(status) in if status == .authorized {
                     amAPI.storeFrontID = amAPI.fetchUserStorefront(userToken: amAPI.taskToken!, completionHandler: { ( response, error) in
                         amAPI.storeFrontID = response!.data[0].id
-                        print("Song Name:....")
-                        print(songName)
-                        
-                        
                         if songName! == "" {
-                            amAPI.searchForAlbumWithArtist(albumName: songAlbumName!, artistName: spotArtistName!, storeFrontID: response!.data[0].id, userToken: amAPI.taskToken!, completion: {(response, error) in
-                                
-                                print("Album Object from AM...")
-                                print(response)
-                                
+                            var foundMatch = false
+                            amAPI.searchForAlbum(albumName: songAlbumName!, storeFrontID: response!.data[0].id, userToken: amAPI.taskToken!, completion: {(albumResponse, error) in
+                                if let albumList = albumResponse?.results.albums.data {
+                                    for album in albumList {
+                                        print("Album Object from AM...")
+                                        print("----")
+                                        print(album.id)
+                                        AppleMusicAPI().getAlbumTracks(albumId: album.id, storefrontId: amAPI.storeFrontID!, userToken: amAPI.taskToken!, completion: { (trackResponse, error) in
+                                            if response != nil {
+                                                
+                                                if let trackList = trackResponse?.data {
+                                                    for track in trackList {
+                                                        levDistances.append(levenshteinDistance(s1: cleanAMSongForSPOTComparison(amSongName: track.attributes.name, amSongArtist: track.attributes.artistName), s2: cleanSPOTSongForAMComparison(spotSongName: spotName!, spotSongArtist: spotArtistName!)))
+                                                    }
+                                                    
+                                                    
+                                                    
+                                                    
+                                                    let closestMatch = trackList[levDistances.firstIndex(of: levDistances.min()!)!]
+                                                    print("SSSSS")
+                                                    print(closestMatch)
+                                                    let artURL = URL(string:album.attributes.artwork.url.replacingOccurrences(of: "{w}", with: "80").replacingOccurrences(of: "{h}", with: "80"))
+                                                    let _ = getURLData(url: artURL!, completionHandler: { (artResponse, error2) in
+                                                        songName = closestMatch.attributes.name
+                                                        songArtistName = closestMatch.attributes.artistName
+                                                        songID = closestMatch.id
+                                                        songArtImageData = artResponse!
+                                                        songDuration = Double(closestMatch.attributes.durationInMillis) * 0.001
+                                                        musicPlayer.setQueue(with: [songID!])
+                                                        musicPlayer.play()
+                                                        updateRecordWithNewAMData(songName: closestMatch.attributes.name, songArtistName: closestMatch.attributes.artistName, songID: closestMatch.id, songArtImageData: artResponse!, songDuration: String(Double(songDuration!) * 0.001))
+                                                    }); foundMatch = true
+                                                    
+                                                if songPreviewURL != nil && foundMatch == false {
+                                                    print("Defer to preview")
+                                                    appDelegate.deferToPreview = true
+                                                    updateRecordWithNewAMData(songName: "LookupFailed", songArtistName: "LookupFailed", songID: "LookupFailed", songArtImageData: Data(), songDuration: String(0))
+                                                }
+                                                else {
+                                                    print("Else called to change card type...")
+                                                    //appDelegate.chosenGridCard?.cardType = "noMusicNoGift"
+                                                }
+                                                    
+                                                    
+
+                                                }
+                                            }
+                                        })
+                                    }
                                 }
+                            }
                         )}
-                        
-                        
                         else {searchWithAM()}
                     })}}}
             }
         }
+    
+    
+    func updateRecordWithNewAMData(songName: String, songArtistName: String, songID: String, songArtImageData: Data, songDuration: String) {
+        let controller = PersistenceController.shared
+        let taskContext = controller.persistentContainer.newTaskContext()
+        let ckContainer = PersistenceController.shared.cloudKitContainer
+        taskContext.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
+        print("????")
+        controller.updateRecordWithAMData(for: coreCard!, in: taskContext, with: ckContainer.privateCloudDatabase, songName: songName, songArtistName: songArtistName,songID: songID, songImageData: songArtImageData, songSongDuration: songDuration, completion: { (error) in
+            print("Updated Record...")
+            print(error)
+        } )
+    }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    func levenshteinDistance(s1: String, s2: String) -> Int {
+        let s1Length = s1.count
+        let s2Length = s2.count
+        var distanceMatrix = [[Int]](repeating: [Int](repeating: 0, count: s2Length + 1), count: s1Length + 1)
+        
+        for i in 1...s1Length {
+            distanceMatrix[i][0] = i
+        }
+        
+        for j in 1...s2Length {
+            distanceMatrix[0][j] = j
+        }
+        
+        for i in 1...s1Length {
+            for j in 1...s2Length {
+                let cost = s1[s1.index(s1.startIndex, offsetBy: i - 1)] == s2[s2.index(s2.startIndex, offsetBy: j - 1)] ? 0 : 1
+                distanceMatrix[i][j] = min(
+                    distanceMatrix[i - 1][j] + 1,
+                    distanceMatrix[i][j - 1] + 1,
+                    distanceMatrix[i - 1][j - 1] + cost
+                )
+            }
+        }
+        
+        return distanceMatrix[s1Length][s2Length]
+    }
             
     func searchWithAM() {
         SKCloudServiceController.requestAuthorization {(status) in if status == .authorized {

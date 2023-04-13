@@ -260,8 +260,6 @@ struct SpotPlayerView: View {
                         else {
                             print("Else called to change card type...")
                             //appDelegate.chosenGridCard?.cardType = "noMusicNoGift"
-                            
-                            
                         }
                         
                     }

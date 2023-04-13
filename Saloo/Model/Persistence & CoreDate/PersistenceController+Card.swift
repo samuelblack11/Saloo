@@ -44,7 +44,7 @@ extension PersistenceController {
             coreCard.inclMusic = inclMusic
             coreCard.spotID = spotID
             coreCard.spotName = spotName
-            coreCard.spotArtistName = spotName
+            coreCard.spotArtistName = spotArtistName
             coreCard.spotImageData = spotImageData
             coreCard.spotSongDuration = spotSongDuration
             coreCard.spotPreviewURL = spotPreviewURL
@@ -171,10 +171,71 @@ extension PersistenceController {
                 print("Query operation completed with cursor: \(cursor)")
             }
         }
-
-        
         database!.add(queryOperation)
-        
-        
+        }
+    
+
+
+    func updateRecordWithAMData(for coreCard: CoreCard, in context: NSManagedObjectContext, with database: CKDatabase, songName: String, songArtistName: String, songID: String, songImageData: Data, songSongDuration: String, completion: @escaping (Error?) -> Void) {
+    let controller = PersistenceController.shared
+    let taskContext = controller.persistentContainer.newTaskContext()
+    let ckContainer = PersistenceController.shared.cloudKitContainer
+    taskContext.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
+    var database: CKDatabase?
+    // Add the query operation to the desired database
+    PersistenceController.shared.cloudKitContainer.fetchUserRecordID { ckRecordID, error in
+        if coreCard.creator == (ckRecordID?.recordName)! {database = ckContainer.privateCloudDatabase}
+        else {database = ckContainer.sharedCloudDatabase}
+    }
+    
+    // Specify the field and value to search for
+    let fieldName = "CD_uniqueName"
+    let searchValue = coreCard.uniqueName
+    // Create the predicate to use in the query
+    let predicate = NSPredicate(format: "%K == %@", fieldName, searchValue)
+    // Create the query object with the desired record type and predicate
+    let query = CKQuery(recordType: "CD_CoreCard", predicate: predicate)
+    // Create the query operation with the query and desired results limit
+    let queryOperation = CKQueryOperation(query: query)
+    queryOperation.resultsLimit = 1 // Limit to only one result (optional)
+    // Set the block to be called when each record is fetched
+    queryOperation.recordFetchedBlock = { (record) in
+        // Process the fetched record
+        print("Fetched record with ID: \(record.recordID.recordName)")
+        record.setValue(songName, forKey: "CD_songName")
+        record.setValue(songArtistName, forKey: "CD_songArtistName")
+        record.setValue(songID, forKey: "CD_songID")
+        record.setValue(songImageData, forKey: "CD_songImageData")
+        record.setValue(songSongDuration, forKey: "CD_songSongDuration")
+        // Save changes to Core Data
+        do {try context.save()}
+        catch {
+            completion(error)
+            return
+        }
+        // Save changes to CloudKit
+        database!.save(record) { (record, error) in
+            if let error = error {
+                // Handle error
+                completion(error)
+                return
+            }
+            completion(nil)
         }
     }
+
+    // Set the block to be called when the query is complete
+    queryOperation.queryCompletionBlock = { (cursor, error) in
+        guard error == nil else {
+            print("Error fetching records: \(error!.localizedDescription)")
+            return
+        }
+        // Optionally process any cursor information
+        if let cursor = cursor {
+            print("Query operation completed with cursor: \(cursor)")
+        }
+    }
+    database!.add(queryOperation)
+    }
+}
+

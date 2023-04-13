@@ -196,7 +196,7 @@ extension MusicSearchView {
         if appDelegate.musicSub.type == .Spotify {
             chosenSong.spotID = song.id
             chosenSong.spotName = song.name
-            chosenSong.artistName = song.artistName
+            chosenSong.spotArtistName = song.artistName
             chosenSong.songAlbumName = song.albumName
             chosenSong.spotImageData = song.artImageData
             chosenSong.spotSongDuration = Double(song.durationInMillis/1000)
@@ -238,33 +238,7 @@ extension MusicSearchView {
                                     chosenSong.spotAlbumArtist = allArtists
                                     break
                                 }
-                            }
-                        }
-                        
-                        
-                        
-                        
-                    })
-                    
-                    
-                    
-                    
-                    
-        }}})}
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+                }}})}}})}
     
     func getAlbum(storeFront: String, userToken: String) {
         SKCloudServiceController.requestAuthorization {(status) in if status == .authorized {
@@ -412,14 +386,10 @@ extension MusicSearchView {
                         let _ = getURLData(url: artURL!, completionHandler: {(artResponse, error2) in
                             let blankString: String? = ""
                             var songPrev: String?
-                            
                             if song.preview_url != nil {print("it's not nil"); songPrev = song.preview_url}
                             else {songPrev = blankString}
-                            
                             let songForList = SongForList(id: song.id, name: song.name, artistName: song.artists[0].name, albumName: song.album!.name, artImageData: artResponse!, durationInMillis: song.duration_ms, isPlaying: false, previewURL: songPrev!)
-                            
                             if song.restrictions?.reason == nil {searchResults.append(songForList)}
-                            
                         })
                     }}}; if response != nil {print("No Response!")}
                         else{debugPrint(error?.localizedDescription)}

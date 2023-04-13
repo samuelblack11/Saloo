@@ -87,11 +87,11 @@ struct AlbumResult: Decodable {
 }
 
 struct AMAlbumData: Decodable {
-    let data: [EachAlbum]
+    let data: [EachAMAlbum]
 }
 
 
-struct EachAlbum: Decodable {
+struct EachAMAlbum: Decodable {
     let id: String
     let attributes: AMAlbumAttributes
     //let relationshiups: AlbumRelationships
@@ -126,4 +126,5 @@ struct TrackAttributes: Codable {
     let genreNames: [String]
     let name: String
     let trackNumber: Int
+    let durationInMillis: Int
 }
