@@ -109,7 +109,9 @@ struct SpotPlayerView: View {
                 HStack {
                     Button {
                         songProgress = 0.0
+                        appRemote2?.playerAPI?.pause()
                         appRemote2?.playerAPI?.skip(toPrevious: defaultCallback)
+                        appRemote2?.playerAPI?.resume()
                         isPlaying = true
                     } label: {
                         ZStack {
@@ -182,8 +184,7 @@ struct SpotPlayerView: View {
     
     
     func cleanSPOTSongForAMComparison(spotSongName: String, spotSongArtist: String) -> String {
-        var cleanSongName = String()
-        var SPOTString = cleanSongName + " " + spotSongArtist.replacingOccurrences(of: ",", with: "").replacingOccurrences(of: " & ", with: " ")
+        var SPOTString = spotSongName + " " + spotSongArtist.replacingOccurrences(of: ",", with: "").replacingOccurrences(of: " & ", with: " ")
         SPOTString = SPOTString.withoutPunc
                         .replacingOccurrences(of: "   ", with: " ")
                         .replacingOccurrences(of: "  ", with: " ")
