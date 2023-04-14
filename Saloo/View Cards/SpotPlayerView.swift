@@ -158,8 +158,8 @@ struct SpotPlayerView: View {
         var AMString = String()
         var cleanSongName = String()
         var cleanSongArtistName = songArtistName!
-                                            .replacingOccurrences(of: ",", with: "")
-                                            .replacingOccurrences(of: "&", with: "")
+                                            .replacingOccurrences(of: ",", with: "" )
+                                            .replacingOccurrences(of: " & ", with: " ")
         var artistsInSongName = String()
         if songName!.contains("(feat.") {
             let songComponents = songName!.components(separatedBy: "(feat.")
@@ -182,22 +182,8 @@ struct SpotPlayerView: View {
     
     
     func cleanSPOTSongForAMComparison(spotSongName: String, spotSongArtist: String) -> String {
-        var AMString = String()
         var cleanSongName = String()
-        var artistsInSongName = String()
-        //var songAlbumName = String()
-        if spotSongName.contains("(feat.") {
-            let songComponents = spotSongName.components(separatedBy: "(feat.")
-            cleanSongName = songComponents[0]
-            artistsInSongName = songComponents[1].components(separatedBy: ")")[0]
-            artistsInSongName = artistsInSongName.replacingOccurrences(of: "&", with: "")
-            if songComponents[1].components(separatedBy: ")").count > 1 {
-                let cleanSongNamePt2 = songComponents[1].components(separatedBy: ")")[1]
-                cleanSongName = cleanSongName + " " + cleanSongNamePt2
-            }
-        }
-        else {cleanSongName = spotSongName}
-        var SPOTString = cleanSongName + " " + spotSongArtist.replacingOccurrences(of: ",", with: "")
+        var SPOTString = cleanSongName + " " + spotSongArtist.replacingOccurrences(of: ",", with: "").replacingOccurrences(of: " & ", with: " ")
         SPOTString = SPOTString.withoutPunc
                         .replacingOccurrences(of: "   ", with: " ")
                         .replacingOccurrences(of: "  ", with: " ")
@@ -209,19 +195,19 @@ struct SpotPlayerView: View {
     
     func getSongViaAlbumSearch() {
         var foundMatch = false
-        SpotifyAPI().getAlbumID(albumName: songAlbumName!, artistName: songArtistName!, authToken: spotifyAuth.access_Token, completion: { albumID in
+        SpotifyAPI().getAlbumID(albumName: songAlbumName!, artistName: appleAlbumArtist!, authToken: spotifyAuth.access_Token, completion: { albumID in
             spotAlbumID = albumID
-            SpotifyAPI().searchForAlbum(albumId: albumID!, authToken: spotifyAuth.access_Token) { result in
+            if albumID != nil {
+            SpotifyAPI().searchForAlbum(albumId: albumID!, authToken: spotifyAuth.access_Token) { (albumResponse, error) in
                 print(albumID!)
-                
                 levDistances = []
-                switch result {
-                case .success(let album):
+                if let album = albumResponse {
+                    //case .success(let album):
                     spotImageURL = album.images[2].url
                     SpotifyAPI().getAlbumTracks(albumId: albumID!, authToken: spotifyAuth.access_Token, completion: { (response, error) in
                         for song in response! {
                             var allArtists = String()
-                            if song.artists.count > 1 {for artist in song.artists { allArtists = allArtists + " " + artist.name}}
+                            if song.artists.count > 1 {for artist in song.artists {allArtists = allArtists + " & " + artist.name}}
                             else {allArtists = song.artists[0].name}
                             levDistances.append(levenshteinDistance(s1: cleanAMSongForSPOTComparison(), s2: cleanSPOTSongForAMComparison(spotSongName: song.name, spotSongArtist: allArtists)))
                         }
@@ -251,27 +237,24 @@ struct SpotPlayerView: View {
                                 playSong()
                                 updateRecordWithNewSPOTData(spotName: closestMatch.name, spotArtistName: allArtists2, spotID: closestMatch.id, songArtImageData: artResponse!, songDuration: String(Double(closestMatch.duration_ms) * 0.001))
                             }); foundMatch = true}
-                        
                         if songPreviewURL != nil && foundMatch == false {
                             print("Defer to preview")
                             appDelegate.deferToPreview = true
                             updateRecordWithNewSPOTData(spotName: "LookupFailed", spotArtistName: "LookupFailed", spotID: "LookupFailed", songArtImageData: Data(), songDuration: String(0))
                         }
-                        else {
-                            print("Else called to change card type...")
+                        else { print("Else called to change card type...")
                             //appDelegate.chosenGridCard?.cardType = "noMusicNoGift"
                         }
-                        
-                    }
-                    )
-                case .failure(let error):
-                    print("Error searching for album: \(error.localizedDescription)")
-                }
-            }
-            
-            
-        })
-    }
+                    })}}}
+                    else {
+                        if songPreviewURL != nil && foundMatch == false {
+                            print("Defer to preview")
+                            appDelegate.deferToPreview = true
+                            updateRecordWithNewSPOTData(spotName: "LookupFailed", spotArtistName: "LookupFailed", spotID: "LookupFailed", songArtImageData: Data(), songDuration: String(0))
+                        }
+                        else { print("Else called to change card type...")
+                            //appDelegate.chosenGridCard?.cardType = "noMusicNoGift"
+            }}})}
     
     
     func updateRecordWithNewSPOTData(spotName: String, spotArtistName: String, spotID: String, songArtImageData: Data, songDuration: String) {

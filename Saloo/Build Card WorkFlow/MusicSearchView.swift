@@ -388,7 +388,21 @@ extension MusicSearchView {
                             var songPrev: String?
                             if song.preview_url != nil {print("it's not nil"); songPrev = song.preview_url}
                             else {songPrev = blankString}
-                            let songForList = SongForList(id: song.id, name: song.name, artistName: song.artists[0].name, albumName: song.album!.name, artImageData: artResponse!, durationInMillis: song.duration_ms, isPlaying: false, previewURL: songPrev!)
+                            
+                            var allArtists = String()
+                            if song.artists.count > 1 {
+                                
+                                for (index, artist) in song.artists.enumerated() {
+                                    if index != 0 {allArtists = allArtists + " & " + artist.name}
+                                    else {allArtists = artist.name}
+                                }
+                                
+                            }
+                            else {allArtists = song.artists[0].name}
+                            
+                            
+                            
+                            let songForList = SongForList(id: song.id, name: song.name, artistName: allArtists, albumName: song.album!.name, artImageData: artResponse!, durationInMillis: song.duration_ms, isPlaying: false, previewURL: songPrev!)
                             if song.restrictions?.reason == nil {searchResults.append(songForList)}
                         })
                     }}}; if response != nil {print("No Response!")}

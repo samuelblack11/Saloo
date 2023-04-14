@@ -171,7 +171,7 @@ extension AMPlayerView {
     
     
     func cleanSPOTSongForAMComparison(spotSongName: String, spotSongArtist: String) -> String {
-        var SPOTString = spotSongName + " " + spotSongArtist.replacingOccurrences(of: ",", with: "")
+        var SPOTString = spotSongName + " " + spotSongArtist.replacingOccurrences(of: ",", with: "").replacingOccurrences(of: " & ", with: " ")
         SPOTString = SPOTString.withoutPunc
                         .replacingOccurrences(of: "   ", with: " ")
                         .replacingOccurrences(of: "  ", with: " ")
@@ -202,6 +202,7 @@ extension AMPlayerView {
                             var foundMatch = false
                             amAPI.searchForAlbum(albumName: songAlbumName!, storeFrontID: response!.data[0].id, userToken: amAPI.taskToken!, completion: {(albumResponse, error) in
                                 if let albumList = albumResponse?.results.albums.data {
+                                    levDistances = []
                                     for album in albumList {
                                         print("Album Object from AM...")
                                         print("----")
@@ -211,27 +212,28 @@ extension AMPlayerView {
                                                 
                                                 if let trackList = trackResponse?.data {
                                                     for track in trackList {
+                                                        print("Track....")
+                                                        print(track)
+                                                        print(levenshteinDistance(s1: cleanAMSongForSPOTComparison(amSongName: track.attributes.name, amSongArtist: track.attributes.artistName), s2: cleanSPOTSongForAMComparison(spotSongName: spotName!, spotSongArtist: spotArtistName!)))
                                                         levDistances.append(levenshteinDistance(s1: cleanAMSongForSPOTComparison(amSongName: track.attributes.name, amSongArtist: track.attributes.artistName), s2: cleanSPOTSongForAMComparison(spotSongName: spotName!, spotSongArtist: spotArtistName!)))
                                                     }
-                                                    
-                                                    
-                                                    
-                                                    
-                                                    let closestMatch = trackList[levDistances.firstIndex(of: levDistances.min()!)!]
-                                                    print("SSSSS")
-                                                    print(closestMatch)
-                                                    let artURL = URL(string:album.attributes.artwork.url.replacingOccurrences(of: "{w}", with: "80").replacingOccurrences(of: "{h}", with: "80"))
-                                                    let _ = getURLData(url: artURL!, completionHandler: { (artResponse, error2) in
-                                                        songName = closestMatch.attributes.name
-                                                        songArtistName = closestMatch.attributes.artistName
-                                                        songID = closestMatch.id
-                                                        songArtImageData = artResponse!
-                                                        songDuration = Double(closestMatch.attributes.durationInMillis) * 0.001
-                                                        musicPlayer.setQueue(with: [songID!])
-                                                        musicPlayer.play()
-                                                        updateRecordWithNewAMData(songName: closestMatch.attributes.name, songArtistName: closestMatch.attributes.artistName, songID: closestMatch.id, songArtImageData: artResponse!, songDuration: String(Double(songDuration!) * 0.001))
-                                                    }); foundMatch = true
-                                                    
+                                                    if levDistances.min()! < 4 {
+                                                        let closestMatch = trackList[levDistances.firstIndex(of: levDistances.min()!)!]
+                                                        print("SSSSS")
+                                                        print(closestMatch)
+                                                        let artURL = URL(string:album.attributes.artwork.url.replacingOccurrences(of: "{w}", with: "80").replacingOccurrences(of: "{h}", with: "80"))
+                                                        let _ = getURLData(url: artURL!, completionHandler: { (artResponse, error2) in
+                                                            songName = closestMatch.attributes.name
+                                                            songArtistName = closestMatch.attributes.artistName
+                                                            songID = closestMatch.id
+                                                            songArtImageData = artResponse!
+                                                            songDuration = Double(closestMatch.attributes.durationInMillis) * 0.001
+                                                            musicPlayer.setQueue(with: [songID!])
+                                                            musicPlayer.play()
+                                                            updateRecordWithNewAMData(songName: closestMatch.attributes.name, songArtistName: closestMatch.attributes.artistName, songID: closestMatch.id, songArtImageData: artResponse!, songDuration: String(Double(songDuration!) * 0.001))
+                                                        }); foundMatch = true
+                                                        
+                                                    }
                                                 if songPreviewURL != nil && foundMatch == false {
                                                     print("Defer to preview")
                                                     appDelegate.deferToPreview = true
@@ -241,9 +243,6 @@ extension AMPlayerView {
                                                     print("Else called to change card type...")
                                                     //appDelegate.chosenGridCard?.cardType = "noMusicNoGift"
                                                 }
-                                                    
-                                                    
-
                                                 }
                                             }
                                         })
