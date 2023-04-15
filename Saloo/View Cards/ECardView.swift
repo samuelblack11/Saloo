@@ -98,6 +98,7 @@ struct eCardView: View {
         HStack {
             VStack {
                 CoverView()
+                Spacer()
                 CollageAndAnnotationView()
             }
             VStack {
@@ -190,7 +191,7 @@ struct eCardView: View {
             }
             if (appDelegate.musicSub.type == .Neither) || (appDelegate.deferToPreview == true) || spotName == "LookupFailed" || songName == "LookupFailed"        {
                 if songAddedUsing! == "Spotify"  {
-                    SongPreviewPlayer(songID: songID, songName: spotName, songArtistName: spotArtistName, songArtImageData: songArtImageData, songDuration: songDuration, songPreviewURL: previewToPass(), confirmButton: false, showFCV: $showFCV, songAddedUsing: songAddedUsing!)
+                    SongPreviewPlayer(songID: songID, songName: spotName, songArtistName: spotArtistName, songArtImageData: spotImageData, songDuration: spotSongDuration, songPreviewURL: previewToPass(), confirmButton: false, showFCV: $showFCV, songAddedUsing: songAddedUsing!)
                         .onDisappear{if player?.timeControlStatus.rawValue == 2 {player?.pause()}}
                         .frame(maxHeight: .infinity, alignment: .bottom)
                 }

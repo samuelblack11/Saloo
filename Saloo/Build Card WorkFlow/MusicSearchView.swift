@@ -50,6 +50,8 @@ struct MusicSearchView: View {
     @State private var ranAMStoreFront = false
     @State var amAPI = AppleMusicAPI()
     @State private var showSpotAuthFailedAlert = false
+    var songKeyWordsToFilterOut = ["(live","[live","live at","live in","live from"]
+    
     
     
     func determineCardType() -> String {
@@ -165,7 +167,18 @@ extension MusicSearchView {
                     })}}}
             }
         }
-            
+    func containsString(listOfSubStrings: [String], songName: String) -> Bool {
+        let lowercasedInString = songName.lowercased()
+        for item in listOfSubStrings {
+            if lowercasedInString.range(of: item.lowercased(), options: .caseInsensitive) != nil {
+                return true
+            }
+        }
+        return false
+    }
+    
+    
+    
     func searchWithAM() {
         SKCloudServiceController.requestAuthorization {(status) in if status == .authorized {
             self.searchResults = AppleMusicAPI().searchAppleMusic(self.songSearch, storeFrontID: amAPI.storeFrontID!, userToken: amAPI.taskToken!, completionHandler: { (response, error) in
@@ -184,7 +197,11 @@ extension MusicSearchView {
                             let artURL = URL(string:song.attributes.artwork.url.replacingOccurrences(of: "{w}", with: "80").replacingOccurrences(of: "{h}", with: "80"))
                             let _ = getURLData(url: artURL!, completionHandler: { (artResponse, error2) in
                                 let songForList = SongForList(id: song.attributes.playParams.id, name: song.attributes.name, artistName: song.attributes.artistName, albumName: song.attributes.albumName,artImageData: artResponse!, durationInMillis: song.attributes.durationInMillis, isPlaying: false, previewURL: songPrev!)
-                                searchResults.append(songForList)
+                                if containsString(listOfSubStrings: songKeyWordsToFilterOut, songName: songForList.name) {
+                                    print("Did Not Append....")
+                                    print(songForList.name)
+                                }
+                                else {searchResults.append(songForList)}
                             })}}}; if response != nil {print("No Response!")}
                 else {debugPrint(error?.localizedDescription)}}
             )}}
@@ -393,7 +410,10 @@ extension MusicSearchView {
                             if song.artists.count > 1 {
                                 
                                 for (index, artist) in song.artists.enumerated() {
-                                    if index != 0 {allArtists = allArtists + " & " + artist.name}
+                                    if index != 0 {
+                                        if song.name.lowercased().contains(artist.name.lowercased()) {}
+                                        else {allArtists = allArtists + " & " + artist.name}
+                                    }
                                     else {allArtists = artist.name}
                                 }
                                 
@@ -403,7 +423,12 @@ extension MusicSearchView {
                             
                             
                             let songForList = SongForList(id: song.id, name: song.name, artistName: allArtists, albumName: song.album!.name, artImageData: artResponse!, durationInMillis: song.duration_ms, isPlaying: false, previewURL: songPrev!)
-                            if song.restrictions?.reason == nil {searchResults.append(songForList)}
+                            if song.restrictions?.reason == nil {
+                                if containsString(listOfSubStrings: songKeyWordsToFilterOut, songName: songForList.name) {
+                                    print("Contains prohibited substring")
+                                }
+                                else{searchResults.append(songForList)}
+                            }
                         })
                     }}}; if response != nil {print("No Response!")}
                         else{debugPrint(error?.localizedDescription)}

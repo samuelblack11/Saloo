@@ -100,16 +100,103 @@ class AppleMusicAPI {
         return songs
     }
     
+    
+    func removeSpecialCharacters(from string: String) -> String {
+        let pattern = "[^a-zA-Z0-9]"
+        return string.replacingOccurrences(of: pattern, with: " ", options: .regularExpression, range: nil)
+    }
+    
+    
+    func removeAccents(from input: String) -> String {
+        let accentMap: [Character: Character] = [
+            "à": "a",
+            "á": "a",
+            "â": "a",
+            "ã": "a",
+            "ä": "a",
+            "å": "a",
+            //"æ": "ae",
+            "ç": "c",
+            "è": "e",
+            "é": "e",
+            "ê": "e",
+            "ë": "e",
+            "ì": "i",
+            "í": "i",
+            "î": "i",
+            "ï": "i",
+            "ð": "d",
+            "ñ": "n",
+            "ò": "o",
+            "ó": "o",
+            "ô": "o",
+            "õ": "o",
+            "ö": "o",
+            "ø": "o",
+            "ù": "u",
+            "ú": "u",
+            "û": "u",
+            "ü": "u",
+            "ý": "y",
+            //"þ": "th",
+            "ÿ": "y"
+        ]
+    
+        var output = ""
+        for character in input {
+            if let unaccented = accentMap[character] {
+                output.append(unaccented)
+            } else {
+                output.append(character)
+            }
+        }
+
+        return output
+    }
+    
+    func removeTextInParentheses(_ text: String) -> String {
+        var result = ""
+        var skip = false
+        for char in text {
+            if char == "(" || char == "[" {
+                skip = true
+            } else if char == ")" || char == "]" {
+                skip = false
+            } else if !skip {
+                result.append(char)
+            }
+        }
+        return result
+    }
+    
+    
     func searchForAlbum(albumName: String, storeFrontID: String,  userToken: String, completion: @escaping (AlbumResponse?, Error?) -> Void) {
         // Set up the search query
         let lock = DispatchSemaphore(value: 1)
         let searchURL = "https://api.music.apple.com/v1/catalog/\(storeFrontID)/search"
         //let searchTerm = albumName.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
-        let searchTerm = albumName   .replacingOccurrences(of: "&", with: "").replacingOccurrences(of: " ", with: "%20")
+        //let searchTerm = albumName.replacingOccurrences(of: "&", with: "").replacingOccurrences(of: "  ", with: " ").replacingOccurrences(of: " ", with: "%20")
+        print("PreAccents:")
+        print(albumName)
+        var searchTerm = removeTextInParentheses(albumName)
+        print("Removed Text in Parentheses...")
+        print(searchTerm)
+        searchTerm = removeAccents(from: searchTerm)
+        print("PostAccents:")
+        print(searchTerm)
+        searchTerm = removeSpecialCharacters(from: searchTerm).replacingOccurrences(of: "  ", with: " ").replacingOccurrences(of: " ", with: "%20")
+        print("Removed SpecChars....")
+        print(searchTerm)
+        
+        
         let searchType = "albums"
+        print("searchForAlbum SearchTerm....")
+        let fullURL = "\(searchURL)?term=\(searchTerm)&types=\(searchType)"
+        print(fullURL)
+        
         
         // Set up the request
-        var request = URLRequest(url: URL(string: "\(searchURL)?term=\(searchTerm)&types=\(searchType)")!)
+        var request = URLRequest(url: URL(string: fullURL)!)
         request.httpMethod = "GET"
         request.addValue("Bearer \(devToken)", forHTTPHeaderField: "Authorization")
         request.addValue(userToken, forHTTPHeaderField: "Music-User-Token")
@@ -119,7 +206,7 @@ class AppleMusicAPI {
         URLSession.shared.dataTask(with: request) { (data, response, error) in
             guard error == nil else {return}
             if let jsonObj = try? JSONSerialization.jsonObject(with: data!, options: []) as? [String: Any] {
-            print("&&&%%%")
+            print("AM SearchForAlbum JsonObj....")
             print(jsonObj)
             }
             do {
@@ -150,7 +237,7 @@ class AppleMusicAPI {
         let task = URLSession.shared.dataTask(with: request) { (data, response, error) in
             guard error == nil else {return}
             if let jsonObj = try? JSONSerialization.jsonObject(with: data!, options: []) as? [String: Any] {
-                print("&&&%%%")
+                print("AM GetAlbumTracks JSONObj....")
                 print(jsonObj)
             }
             do {
