@@ -49,7 +49,8 @@ struct AMPlayerView: View {
     @State var levDistances: [Int] = []
     @State var foundMatch = false
     @State var breakTrigger1 = false
-    
+    var songKeyWordsToFilterOut = ["(live","[live","live at","live in","live from"]
+
     var body: some View {
             AMPlayerView
             .fullScreenCover(isPresented: $showWriteNote) {WriteNoteView()}
@@ -69,8 +70,9 @@ struct AMPlayerView: View {
         VStack {
             if songArtImageData != nil {Image(uiImage: UIImage(data: songArtImageData!)!)}
             Text(songName!)
-                .multilineTextAlignment(.center)
                 .font(.headline)
+                .lineLimit(2)
+                .multilineTextAlignment(.center)
             Text(songArtistName!)
                 .multilineTextAlignment(.center)
             HStack {
@@ -145,9 +147,18 @@ struct AMPlayerView: View {
 extension AMPlayerView {
     
     
+    func removeSubstrings(from string: String, removeList: [String]) -> String {
+        var result = string
+        for substring in removeList {
+            result = result.replacingOccurrences(of: substring, with: "")
+        }
+        return result
+    }
+    
+    
     func cleanAMSongForSPOTComparison(amSongName: String, amSongArtist: String) -> String {
         var AMString = String()
-        var cleanSongName = String()
+        var cleanSongName = removeSubstrings(from: amSongName, removeList: songKeyWordsToFilterOut)
         var cleanSongArtistName = amSongArtist
                                             .replacingOccurrences(of: ",", with: "")
                                             .replacingOccurrences(of: "&", with: "")
@@ -162,7 +173,10 @@ extension AMPlayerView {
                 cleanSongName = cleanSongName + " " + cleanSongNamePt2
             }
         }
+        
         else {cleanSongName = amSongName + " "}
+        
+        
         //AMString = (cleanSongName + cleanSongArtistName + artistsInSongName).replacingOccurrences(of: "  ", with: " ")
         AMString = (cleanSongName + cleanSongArtistName + artistsInSongName).replacingOccurrences(of: "  ", with: " ")
 
@@ -242,18 +256,6 @@ extension AMPlayerView {
                                 }
                                 else {print("Else called to change card type...")//appDelegate.chosenGridCard?.cardType = "noMusicNoGift"
                 }}}})}}})}
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
 
     func getAMStoreFront() {
         Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { timer in

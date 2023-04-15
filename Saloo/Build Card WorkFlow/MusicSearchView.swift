@@ -92,10 +92,12 @@ struct MusicSearchView: View {
                                 Text(song.name)
                                     .font(.headline)
                                     .lineLimit(2)
+                                    .frame(maxWidth: .infinity, alignment: .leading)
                                 Text(song.artistName)
                                     .font(.caption)
                                     .foregroundColor(.secondary)
                                     .lineLimit(1)
+                                    .frame(maxWidth: .infinity, alignment: .leading)
                             }
                             Spacer()
                         }
@@ -177,8 +179,6 @@ extension MusicSearchView {
         return false
     }
     
-    
-    
     func searchWithAM() {
         SKCloudServiceController.requestAuthorization {(status) in if status == .authorized {
             self.searchResults = AppleMusicAPI().searchAppleMusic(self.songSearch, storeFrontID: amAPI.storeFrontID!, userToken: amAPI.taskToken!, completionHandler: { (response, error) in
@@ -196,12 +196,13 @@ extension MusicSearchView {
                             
                             let artURL = URL(string:song.attributes.artwork.url.replacingOccurrences(of: "{w}", with: "80").replacingOccurrences(of: "{h}", with: "80"))
                             let _ = getURLData(url: artURL!, completionHandler: { (artResponse, error2) in
-                                let songForList = SongForList(id: song.attributes.playParams.id, name: song.attributes.name, artistName: song.attributes.artistName, albumName: song.attributes.albumName,artImageData: artResponse!, durationInMillis: song.attributes.durationInMillis, isPlaying: false, previewURL: songPrev!)
-                                if containsString(listOfSubStrings: songKeyWordsToFilterOut, songName: songForList.name) {
-                                    print("Did Not Append....")
-                                    print(songForList.name)
-                                }
-                                else {searchResults.append(songForList)}
+                                
+                            let songForList = SongForList(id: song.attributes.playParams.id, name: song.attributes.name, artistName: song.attributes.artistName, albumName: song.attributes.albumName,artImageData: artResponse!, durationInMillis: song.attributes.durationInMillis, isPlaying: false, previewURL: songPrev!)
+                            if containsString(listOfSubStrings: songKeyWordsToFilterOut, songName: songForList.name) {
+                                print("Did Not Append....")
+                                print(songForList.name)
+                            }
+                            else {searchResults.append(songForList)}
                             })}}}; if response != nil {print("No Response!")}
                 else {debugPrint(error?.localizedDescription)}}
             )}}
@@ -388,8 +389,6 @@ extension MusicSearchView {
         }
     }
     
-
-    
     func searchWithSpotify() {
         SpotifyAPI().searchSpotify(self.songSearch, authToken: spotifyAuth.access_Token, completionHandler: {(response, error) in
             if response != nil {
@@ -408,7 +407,6 @@ extension MusicSearchView {
                             
                             var allArtists = String()
                             if song.artists.count > 1 {
-                                
                                 for (index, artist) in song.artists.enumerated() {
                                     if index != 0 {
                                         if song.name.lowercased().contains(artist.name.lowercased()) {}

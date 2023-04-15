@@ -105,6 +105,8 @@ struct SpotPlayerView: View {
                 if songArtImageData != nil {Image(uiImage: UIImage(data: songArtImageData!)!) }
                 Text(spotName!)
                     .font(.headline)
+                    .lineLimit(2)
+                    .multilineTextAlignment(.center)
                 Text(spotArtistName!)
                 HStack {
                     Button {
@@ -194,6 +196,11 @@ struct SpotPlayerView: View {
         return SPOTString.withoutPunc
     }
     
+    
+
+    
+    
+    
     func getSongViaAlbumSearch() {
         var foundMatch = false
         SpotifyAPI().getAlbumID(albumName: songAlbumName!, artistName: appleAlbumArtist!, authToken: spotifyAuth.access_Token, completion: { albumID in
@@ -208,7 +215,14 @@ struct SpotPlayerView: View {
                     SpotifyAPI().getAlbumTracks(albumId: albumID!, authToken: spotifyAuth.access_Token, completion: { (response, error) in
                         for song in response! {
                             var allArtists = String()
-                            if song.artists.count > 1 {for artist in song.artists {allArtists = allArtists + " & " + artist.name}}
+                            if song.artists.count > 1 {
+                                for (index, artist) in song.artists.enumerated() {
+                                    if index != 0 {
+                                        if song.name.lowercased().contains(artist.name.lowercased()) {}
+                                        else {allArtists = allArtists + " & " + artist.name}
+                                    }
+                                    else {allArtists = artist.name}
+                                }}
                             else {allArtists = song.artists[0].name}
                             levDistances.append(levenshteinDistance(s1: cleanAMSongForSPOTComparison(), s2: cleanSPOTSongForAMComparison(spotSongName: song.name, spotSongArtist: allArtists)))
                         }
@@ -229,7 +243,7 @@ struct SpotPlayerView: View {
                             let artURL = URL(string: spotImageURL!)
                             let _ = getURLData(url: artURL!, completionHandler: {(artResponse, error2) in
                                 var allArtists2 = String()
-                                for artist in closestMatch.artists { allArtists2 = allArtists2 + " " + artist.name}
+                                for artist in closestMatch.artists { allArtists2 = allArtists2 + ", " + artist.name}
                                 spotName = closestMatch.name
                                 spotArtistName = allArtists2
                                 songID = closestMatch.id
