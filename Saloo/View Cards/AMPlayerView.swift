@@ -207,6 +207,8 @@ extension AMPlayerView {
     
     func convertSong() {
         amAPI.searchForAlbum(albumName: removeSubstrings(from: songAlbumName!, removeList: songKeyWordsToFilterOut), storeFrontID: amAPI.storeFrontID!, userToken: amAPI.taskToken!, completion: {(albumResponse, error) in
+            print("Tried to Convert...\(removeSubstrings(from: songAlbumName!, removeList: songKeyWordsToFilterOut))")
+            
             if let albumList = albumResponse?.results.albums.data {
                 for album in albumList where foundMatch == false {
                     print("Album Object from AM...")

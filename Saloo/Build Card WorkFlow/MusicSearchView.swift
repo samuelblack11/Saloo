@@ -50,7 +50,7 @@ struct MusicSearchView: View {
     @State private var ranAMStoreFront = false
     @State var amAPI = AppleMusicAPI()
     @State private var showSpotAuthFailedAlert = false
-    var songKeyWordsToFilterOut = ["(live","[live","live at","live in","live from"]
+    var songKeyWordsToFilterOut = ["(live)","[live]","live at","live in","live from", "(mixed)","[mixed]", "- Single"]
     
     
     
@@ -122,17 +122,14 @@ struct MusicSearchView: View {
                     else{print("Run3");requestSpotAuth(); runGetToken(authType: "code")}
                     runInstantiateAppRemote()
                 }
-                if appDelegate.musicSub.type == .Apple {
-                    getAMUserToken()
-                    getAMStoreFront()
-                }
-                
-                
+                if appDelegate.musicSub.type == .Apple {getAMUserToken(); getAMStoreFront()}
             }
             .navigationBarItems(leading:Button {showWriteNote.toggle()} label: {Image(systemName: "chevron.left").foregroundColor(.blue); Text("Back")})
+            .fullScreenCover(isPresented: $showWriteNote){WriteNoteView()}
             .popover(isPresented: $showAPV) {AMPlayerView(songID: chosenSong.id, songName: chosenSong.name, songArtistName: chosenSong.artistName, songArtImageData: chosenSong.artwork, songDuration: chosenSong.durationInSeconds, songPreviewURL: chosenSong.songPreviewURL, confirmButton: true, showFCV: $showFCV)
                     .presentationDetents([.fraction(0.4)])
                     .fullScreenCover(isPresented: $showFCV) {FinalizeCardView(cardType: determineCardType())}
+                    .fullScreenCover(isPresented: $showWriteNote){WriteNoteView()}
             }
             .popover(isPresented: $showSPV) {SpotPlayerView(songID: chosenSong.spotID, spotName: chosenSong.spotName, spotArtistName: chosenSong.spotArtistName, songArtImageData: chosenSong.spotImageData, songDuration: chosenSong.spotSongDuration, songPreviewURL: chosenSong.spotPreviewURL, confirmButton: true, showFCV: $showFCV, accessedViaGrid: false, appRemote2: appRemote2)
                     .presentationDetents([.fraction(0.4)])
@@ -149,12 +146,9 @@ struct MusicSearchView: View {
 
 extension MusicSearchView {
     
-    //func removeSpecialCharacters(from string: String) -> String {
-    //    let pattern = "[^a-zA-Z0-9]"
-    //    return string.replacingOccurrences(of: pattern, with: "", options: .regularExpression, range: nil)
-    //}
-    
     func removeSpecialCharacters(from string: String) -> String {
+        //    let pattern = "[^a-zA-Z0-9]"
+        //    return string.replacingOccurrences(of: pattern, with: "", options: .regularExpression, range: nil)
         let allowedCharacters = CharacterSet.whitespacesAndNewlines.union(CharacterSet(charactersIn: "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"))
         let newString = string.components(separatedBy: allowedCharacters.inverted).joined(separator: "")
         return newString
@@ -164,10 +158,7 @@ extension MusicSearchView {
         Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { timer in
             if amAPI.taskToken == nil {
                 SKCloudServiceController.requestAuthorization {(status) in if status == .authorized {amAPI.getUserToken(completionHandler: { ( response, error) in
-                    print("Checking Token")
-                    print(response)
-                    print("^^")
-                    print(error)
+                    print("Checking Token"); print(response); print("^^");print(error)
         })}}}}}
 
     func getAMStoreFront() {
@@ -183,9 +174,7 @@ extension MusicSearchView {
     func containsString(listOfSubStrings: [String], songName: String) -> Bool {
         let lowercasedInString = songName.lowercased()
         for item in listOfSubStrings {
-            if lowercasedInString.range(of: item.lowercased(), options: .caseInsensitive) != nil {
-                return true
-            }
+            if lowercasedInString.range(of: item.lowercased(), options: .caseInsensitive) != nil {return true}
         }
         return false
     }
@@ -196,20 +185,15 @@ extension MusicSearchView {
                 if response != nil {
                     DispatchQueue.main.async {
                         for song in response! {
-                            
                             let blankString: String? = ""
                             var songPrev: String?
                             if song.attributes.previews.count > 0 {print("it's not nil"); songPrev = song.attributes.previews[0].url}
                             else {songPrev = blankString}
-                            
-                            
                             print("Search With AM called...")
-                            
                             let artURL = URL(string:song.attributes.artwork.url.replacingOccurrences(of: "{w}", with: "80").replacingOccurrences(of: "{h}", with: "80"))
                             let _ = getURLData(url: artURL!, completionHandler: { (artResponse, error2) in
-                                
                             let songForList = SongForList(id: song.attributes.playParams.id, name: song.attributes.name, artistName: song.attributes.artistName, albumName: song.attributes.albumName,artImageData: artResponse!, durationInMillis: song.attributes.durationInMillis, isPlaying: false, previewURL: songPrev!)
-                            if containsString(listOfSubStrings: songKeyWordsToFilterOut, songName: songForList.name) {
+                            if containsString(listOfSubStrings: songKeyWordsToFilterOut, songName: songForList.name) || containsString(listOfSubStrings: songKeyWordsToFilterOut, songName: songForList.albumName){
                                 print("Did Not Append....")
                                 print(songForList.name)
                             }
