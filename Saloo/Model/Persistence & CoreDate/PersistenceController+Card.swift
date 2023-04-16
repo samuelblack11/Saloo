@@ -176,7 +176,7 @@ extension PersistenceController {
     
 
 
-    func updateRecordWithAMData(for coreCard: CoreCard, in context: NSManagedObjectContext, with database: CKDatabase, songName: String, songArtistName: String, songID: String, songImageData: Data, songSongDuration: String, completion: @escaping (Error?) -> Void) {
+    func updateRecordWithAMData(for coreCard: CoreCard, in context: NSManagedObjectContext, with database: CKDatabase, songName: String, songArtistName: String, songID: String, songImageData: Data, songDuration: String, completion: @escaping (Error?) -> Void) {
     let controller = PersistenceController.shared
     let taskContext = controller.persistentContainer.newTaskContext()
     let ckContainer = PersistenceController.shared.cloudKitContainer
@@ -206,7 +206,7 @@ extension PersistenceController {
         record.setValue(songArtistName, forKey: "CD_songArtistName")
         record.setValue(songID, forKey: "CD_songID")
         record.setValue(songImageData, forKey: "CD_songImageData")
-        record.setValue(songSongDuration, forKey: "CD_songSongDuration")
+        record.setValue(songDuration, forKey: "CD_songDuration")
         // Save changes to Core Data
         do {try context.save()}
         catch {

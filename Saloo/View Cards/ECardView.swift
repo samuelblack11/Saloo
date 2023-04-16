@@ -189,13 +189,13 @@ struct eCardView: View {
                     .onAppear{appRemote2?.connectionParameters.accessToken = (defaults.object(forKey: "SpotifyAccessToken") as? String)!}
                     .frame(maxHeight: .infinity, alignment: .bottom)
             }
-            if (appDelegate.musicSub.type == .Neither) || (appDelegate.deferToPreview == true) || spotName == "LookupFailed" || songName == "LookupFailed"        {
-                if songAddedUsing! == "Spotify"  {
+            if (appDelegate.musicSub.type == .Neither) || (appDelegate.deferToPreview == true) {
+                if songAddedUsing! == "Spotify" || spotName == "LookupFailed" {
                     SongPreviewPlayer(songID: songID, songName: spotName, songArtistName: spotArtistName, songArtImageData: spotImageData, songDuration: spotSongDuration, songPreviewURL: previewToPass(), confirmButton: false, showFCV: $showFCV, songAddedUsing: songAddedUsing!)
                         .onDisappear{if player?.timeControlStatus.rawValue == 2 {player?.pause()}}
                         .frame(maxHeight: .infinity, alignment: .bottom)
                 }
-                else {
+                else if songAddedUsing! == "Apple"  || songName == "LookupFailed"{
                     SongPreviewPlayer(songID: songID, songName: songName, songArtistName: songArtistName, songArtImageData: songArtImageData, songDuration: songDuration, songPreviewURL: previewToPass(), confirmButton: false, showFCV: $showFCV, songAddedUsing: songAddedUsing!)
                         .onDisappear{if player?.timeControlStatus.rawValue == 2 {player?.pause()}}
                         .frame(maxHeight: .infinity, alignment: .bottom)

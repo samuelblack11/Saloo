@@ -57,6 +57,9 @@ struct SpotPlayerView: View {
     @State var spotAlbumID: String?
     @State var spotImageURL: String?
     let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
+    var songKeyWordsToFilterOut = ["(live","[live","live at","live in","live from", "- Single"]
+
+    
     var body: some View {
             SpotPlayerView2
             .onAppear{
@@ -65,7 +68,7 @@ struct SpotPlayerView: View {
                     showProgressView = true
                     if defaults.object(forKey: "SpotifyAuthCode") != nil && counter == 0 {
                         print("Run2")
-                        print(defaults.object(forKey: "SpotifyAuthCode") as? String)
+                        print(defaults.object(forKey: "SpotifyAuthCode") as? String as Any)
                         authCode = defaults.object(forKey: "SpotifyAuthCode") as? String
                         refresh_token = (defaults.object(forKey: "SpotifyRefreshToken") as? String)!
                         refreshAccessToken = true
@@ -76,7 +79,6 @@ struct SpotPlayerView: View {
                     runInstantiateAppRemote()
                 }
                 else{playSong()}
-                print("^^^\(songArtImageData)")
             }
             .onDisappear{
                 print("Did view disappear???")
@@ -161,7 +163,7 @@ struct SpotPlayerView: View {
     func cleanAMSongForSPOTComparison() -> String {
         var AMString = String()
         var cleanSongName = String()
-        var cleanSongArtistName = songArtistName!
+        let cleanSongArtistName = songArtistName!
                                             .replacingOccurrences(of: ",", with: "" )
                                             .replacingOccurrences(of: " & ", with: " ")
         var artistsInSongName = String()
@@ -176,9 +178,7 @@ struct SpotPlayerView: View {
             }
         }
         else {cleanSongName = songName! + " "}
-        //AMString = (cleanSongName + cleanSongArtistName + artistsInSongName).replacingOccurrences(of: "  ", with: " ")
         AMString = (cleanSongName + cleanSongArtistName + artistsInSongName).replacingOccurrences(of: "  ", with: " ")
-
         print("AMString....")
         print(AMString.withoutPunc)
         return AMString.withoutPunc
@@ -195,11 +195,6 @@ struct SpotPlayerView: View {
         
         return SPOTString.withoutPunc
     }
-    
-    
-
-    
-    
     
     func getSongViaAlbumSearch() {
         var foundMatch = false
@@ -224,7 +219,12 @@ struct SpotPlayerView: View {
                                     else {allArtists = artist.name}
                                 }}
                             else {allArtists = song.artists[0].name}
-                            levDistances.append(levenshteinDistance(s1: cleanAMSongForSPOTComparison(), s2: cleanSPOTSongForAMComparison(spotSongName: song.name, spotSongArtist: allArtists)))
+                            var stringDiff = Int()
+                            if containsSameWords(cleanAMSongForSPOTComparison(), cleanSPOTSongForAMComparison(spotSongName: song.name, spotSongArtist: allArtists)) {stringDiff = 0}
+                            else {
+                                stringDiff = levenshteinDistance(s1: cleanAMSongForSPOTComparison(), s2: cleanSPOTSongForAMComparison(spotSongName: song.name, spotSongArtist: allArtists))
+                            }
+                            levDistances.append(stringDiff)
                         }
                         var minValidDistance = Int()
                         if response![levDistances.firstIndex(of: levDistances.min()!)!].restrictions?.reason == nil {minValidDistance = levDistances.min()!}
@@ -252,14 +252,6 @@ struct SpotPlayerView: View {
                                 playSong()
                                 updateRecordWithNewSPOTData(spotName: closestMatch.name, spotArtistName: allArtists2, spotID: closestMatch.id, songArtImageData: artResponse!, songDuration: String(Double(closestMatch.duration_ms) * 0.001))
                             }); foundMatch = true}
-                        if songPreviewURL != nil && foundMatch == false {
-                            print("Defer to preview")
-                            appDelegate.deferToPreview = true
-                            updateRecordWithNewSPOTData(spotName: "LookupFailed", spotArtistName: "LookupFailed", spotID: "LookupFailed", songArtImageData: Data(), songDuration: String(0))
-                        }
-                        else { print("Else called to change card type...")
-                            //appDelegate.chosenGridCard?.cardType = "noMusicNoGift"
-                        }
                     })}}}
                     else {
                         if songPreviewURL != nil && foundMatch == false {
@@ -280,14 +272,10 @@ struct SpotPlayerView: View {
         print("????")
         controller.updateRecordWithSpotData(for: coreCard!, in: taskContext, with: ckContainer.privateCloudDatabase, spotName: spotName, spotArtistName: spotArtistName,spotID: spotID, spotImageData: songArtImageData, spotSongDuration: songDuration, completion: { (error) in
             print("Updated Record...")
-            print(error)
+            print(error as Any)
         } )
     }
-    
-    
-    
-    
-    
+
     func playSong() {
         if appRemote2?.isConnected == false {
             appRemote2?.authorizeAndPlayURI("spotify:track:\(songID!)")
@@ -300,19 +288,15 @@ struct SpotPlayerView: View {
         showProgressView = false
     }
 
-        
-    var defaultCallback: SPTAppRemoteCallback {
-        get {
-            return {[self] _, error in
-                print("defaultCallBack Running...")
-                showProgressView = false
-                if let error = error {
-                    print(error.localizedDescription)
-                }
-            }
-        }
-    }
+}
+
+extension SpotPlayerView {
     
+    //func getAuthCodeAndTokenIfExpired() {
+    //    Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { timer in
+    //        if invalidAuthCode {requestSpotAuth()}
+     //   }
+    //}
     
     func requestSpotAuth() {
         print("called....requestSpotAuth")
@@ -324,6 +308,15 @@ struct SpotPlayerView: View {
                     else{spotifyAuth.authForRedirect = response!; showWebView = true}
                     refreshAccessToken = true
                 }}})
+    }
+    
+    func runGetToken(authType: String) {
+        Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { timer in
+            if tokenCounter == 0 && refreshAccessToken {
+                if authType == "code" {if authCode != "" {getSpotToken()}}
+                if authType == "refresh_token" {if refresh_token! != ""{getSpotTokenViaRefresh()}}
+            }
+        }
     }
     
     func getSpotToken() {
@@ -341,7 +334,7 @@ struct SpotPlayerView: View {
                 }
             }
             if error != nil {
-                print("Error... \(error?.localizedDescription)!")
+                print("Error... \(String(describing: error?.localizedDescription))!")
                 invalidAuthCode = true
                 authCode = ""
             }
@@ -350,7 +343,6 @@ struct SpotPlayerView: View {
     
     func getSpotTokenViaRefresh() {
         print("called....requestSpotTokenViaRefresh")
-        print(songArtImageData)
         tokenCounter = 1
         spotifyAuth.auth_code = authCode!
         refresh_token = (defaults.object(forKey: "SpotifyRefreshToken") as? String)!
@@ -364,31 +356,24 @@ struct SpotPlayerView: View {
                 }
             }
             if error != nil {
-                print("Error... \(error?.localizedDescription)!")
+                print("Error... \(String(describing: error?.localizedDescription))!")
                 invalidAuthCode = true
                 authCode = ""
             }
         })
     }
     
-    func getAuthCodeAndTokenIfExpired() {
-        Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { timer in
-            if invalidAuthCode {requestSpotAuth()}
-        }
-    }
-
-    func runGetToken(authType: String) {
-        Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { timer in
-            if tokenCounter == 0 && refreshAccessToken {
-                if authType == "code" {if authCode != "" {getSpotToken()}}
-                if authType == "refresh_token" {if refresh_token! != ""{getSpotTokenViaRefresh()}}
+    var defaultCallback: SPTAppRemoteCallback {
+        get {
+            return {[self] _, error in
+                print("defaultCallBack Running...")
+                showProgressView = false
+                if let error = error {
+                    print(error.localizedDescription)
+                }
             }
         }
     }
-    
-    
- ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
 
     func runInstantiateAppRemote() {
         Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { timer in
@@ -407,7 +392,6 @@ struct SpotPlayerView: View {
         }
     }
     
-    
     func getURLData(url: URL, completionHandler: @escaping (Data?,Error?) -> Void) {
         var request = URLRequest(url: url)
         request.httpMethod = "GET"
@@ -419,19 +403,21 @@ struct SpotPlayerView: View {
         dataTask.resume()
     }
     
+    func containsSameWords(_ str1: String, _ str2: String) -> Bool {
+        // Split both strings into arrays of words
+        let words1 = str1.split(separator: " ").map { String($0) }
+        let words2 = str2.split(separator: " ").map { String($0) }
+        // Check if both arrays contain the same set of words
+        print("ContainsSameWords is \(Set(words1) == Set(words2))")
+        return Set(words1) == Set(words2)
+    }
+    
     func levenshteinDistance(s1: String, s2: String) -> Int {
         let s1Length = s1.count
         let s2Length = s2.count
         var distanceMatrix = [[Int]](repeating: [Int](repeating: 0, count: s2Length + 1), count: s1Length + 1)
-        
-        for i in 1...s1Length {
-            distanceMatrix[i][0] = i
-        }
-        
-        for j in 1...s2Length {
-            distanceMatrix[0][j] = j
-        }
-        
+        for i in 1...s1Length {distanceMatrix[i][0] = i}
+        for j in 1...s2Length {distanceMatrix[0][j] = j}
         for i in 1...s1Length {
             for j in 1...s2Length {
                 let cost = s1[s1.index(s1.startIndex, offsetBy: i - 1)] == s2[s2.index(s2.startIndex, offsetBy: j - 1)] ? 0 : 1
@@ -442,9 +428,9 @@ struct SpotPlayerView: View {
                 )
             }
         }
-        
         return distanceMatrix[s1Length][s2Length]
     }
+    
 }
 
 extension String {
@@ -452,27 +438,3 @@ extension String {
         return self.components(separatedBy: CharacterSet.punctuationCharacters).joined(separator: "")
     }
 }
-
-
-//print("Min Lev Distance in Search 2...")
-//print("First Match (may have market restrictions: \(response![levDistances.firstIndex(of: levDistances.min()!)!])")
-//var minValidDistance = Int()
-//if response![levDistances.firstIndex(of: levDistances.min()!)!].restrictions?.reason == nil {
-//
- //   minValidDistance = levDistances.min()!
-//
-//}
-//else {
-//    print("First match has restrictions")
-//    if let minIndex = levDistances.firstIndex(of: levDistances.min()!) {levDistances[minIndex] = 100}
-//    if response![levDistances.firstIndex(of: levDistances.min()!)!].restrictions?.reason == nil {
-//        print("Second Match does not have restricitons")
- //       print("Second match if first one has restrictions: \(response![levDistances.firstIndex(of: levDistances.min()!)!])")
-//        minValidDistance = levDistances.min()!
-        
- //   }
- //   else {
- //       if let minIndex = levDistances.firstIndex(of: levDistances.min()!) {levDistances[minIndex] = 100}
- //       if response![levDistances.firstIndex(of: levDistances.min()!)!].restrictions?.reason == nil {minValidDistance = levDistances.min()!}
- //   }
-//}

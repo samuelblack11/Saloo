@@ -191,7 +191,7 @@ class AppleMusicAPI {
         
         let searchType = "albums"
         print("searchForAlbum SearchTerm....")
-        let fullURL = "\(searchURL)?term=\(searchTerm)&types=\(searchType)"
+        let fullURL = "\(searchURL)?term=\(searchTerm)&types=\(searchType)&limit=25"
         print(fullURL)
         
         

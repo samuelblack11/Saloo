@@ -49,7 +49,7 @@ struct AMPlayerView: View {
     @State var levDistances: [Int] = []
     @State var foundMatch = false
     @State var breakTrigger1 = false
-    var songKeyWordsToFilterOut = ["(live","[live","live at","live in","live from"]
+    var songKeyWordsToFilterOut = ["(live)","[live]","live at","live in","live from", "- Single"]
 
     var body: some View {
             AMPlayerView
@@ -145,16 +145,28 @@ struct AMPlayerView: View {
 }
 
 extension AMPlayerView {
+        
+    func getAMUserToken() {
+        Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { timer in
+            if amAPI.taskToken == nil {
+                SKCloudServiceController.requestAuthorization {(status) in if status == .authorized {amAPI.getUserToken(completionHandler: { (response, error) in
+                    print("Checking Token")
+                    print(response as Any)
+                    print("^^")
+                    print(error as Any)
+        })}}}}}
     
-    
-    func removeSubstrings(from string: String, removeList: [String]) -> String {
-        var result = string
-        for substring in removeList {
-            result = result.replacingOccurrences(of: substring, with: "")
+    func getAMStoreFront() {
+        Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { timer in
+            if amAPI.taskToken != nil && ranAMStoreFront == false {
+                ranAMStoreFront = true
+                SKCloudServiceController.requestAuthorization {(status) in if status == .authorized {
+                    amAPI.storeFrontID = amAPI.fetchUserStorefront(userToken: amAPI.taskToken!, completionHandler: { ( response, error) in
+                        amAPI.storeFrontID = response!.data[0].id
+                        if songName! == "" {convertSong()}
+                    })}}}
+            }
         }
-        return result
-    }
-    
     
     func cleanAMSongForSPOTComparison(amSongName: String, amSongArtist: String) -> String {
         var AMString = String()
@@ -174,12 +186,8 @@ extension AMPlayerView {
             }
         }
         
-        else {cleanSongName = amSongName + " "}
-        
-        
-        //AMString = (cleanSongName + cleanSongArtistName + artistsInSongName).replacingOccurrences(of: "  ", with: " ")
+        else {cleanSongName = cleanSongName + " "}
         AMString = (cleanSongName + cleanSongArtistName + artistsInSongName).replacingOccurrences(of: "  ", with: " ")
-
         print("AMString....")
         print(AMString.withoutPunc)
         return AMString.withoutPunc
@@ -193,25 +201,12 @@ extension AMPlayerView {
                         .replacingOccurrences(of: "  ", with: " ")
         print("SPOTString....")
         print(SPOTString.withoutPunc)
-        
         return SPOTString.withoutPunc
     }
     
-    func getAMUserToken() {
-        Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { timer in
-            if amAPI.taskToken == nil {
-                SKCloudServiceController.requestAuthorization {(status) in if status == .authorized {amAPI.getUserToken(completionHandler: { (response, error) in
-                    print("Checking Token")
-                    print(response)
-                    print("^^")
-                    print(error)
-        })}}}}}
-    
-    
-    
     
     func convertSong() {
-        amAPI.searchForAlbum(albumName: songAlbumName!, storeFrontID: amAPI.storeFrontID!, userToken: amAPI.taskToken!, completion: {(albumResponse, error) in
+        amAPI.searchForAlbum(albumName: removeSubstrings(from: songAlbumName!, removeList: songKeyWordsToFilterOut), storeFrontID: amAPI.storeFrontID!, userToken: amAPI.taskToken!, completion: {(albumResponse, error) in
             if let albumList = albumResponse?.results.albums.data {
                 for album in albumList where foundMatch == false {
                     print("Album Object from AM...")
@@ -223,20 +218,22 @@ extension AMPlayerView {
                         if trackResponse != nil {
                             if let trackList = trackResponse?.data {
                                 for track in trackList {
-                                    print("Track....")
-                                    print(track)
-                                    print(levenshteinDistance(s1: cleanAMSongForSPOTComparison(amSongName: track.attributes.name, amSongArtist: track.attributes.artistName), s2: cleanSPOTSongForAMComparison(spotSongName: spotName!, spotSongArtist: spotArtistName!)))
-                                    levDistances.append(levenshteinDistance(s1: cleanAMSongForSPOTComparison(amSongName: track.attributes.name, amSongArtist: track.attributes.artistName), s2: cleanSPOTSongForAMComparison(spotSongName: spotName!, spotSongArtist: spotArtistName!)))
+                                    var stringDiff = Int()
+                                    if containsSameWords(cleanAMSongForSPOTComparison(amSongName: track.attributes.name, amSongArtist: track.attributes.artistName), cleanSPOTSongForAMComparison(spotSongName: spotName!, spotSongArtist: spotArtistName!)) {stringDiff = 0}
+                                    else {stringDiff = levenshteinDistance(s1: cleanAMSongForSPOTComparison(amSongName: track.attributes.name, amSongArtist: track.attributes.artistName), s2: cleanSPOTSongForAMComparison(spotSongName: spotName!, spotSongArtist: spotArtistName!))
+                                    }
+                                    levDistances.append(stringDiff)
                                 }
-                                print("The Min LevDistance Found was: \(levDistances.min())")
+                                print("The Min LevDistance Found was: \(String(describing: levDistances.min()))")
                                 print("TrackList is \(trackList.count) tracks long....")
                                 print("&&&")
                                 print(levDistances)
-                                print("The Index of the minimum levdistance is \(levDistances.firstIndex(of: levDistances.min()!))")
+                                print("The Index of the minimum levdistance is \(String(describing: levDistances.firstIndex(of: levDistances.min()!)))")
                                 if levDistances.min()! < 4 {
                                     let closestMatch = trackList[levDistances.firstIndex(of: levDistances.min()!)!]
                                     print("SSSSS")
                                     print(closestMatch)
+                                    print(Double(closestMatch.attributes.durationInMillis) * 0.001)
                                     let artURL = URL(string:album.attributes.artwork.url.replacingOccurrences(of: "{w}", with: "80").replacingOccurrences(of: "{h}", with: "80"))
                                     let _ = getURLData(url: artURL!, completionHandler: { (artResponse, error2) in
                                         songName = closestMatch.attributes.name
@@ -246,30 +243,18 @@ extension AMPlayerView {
                                         songDuration = Double(closestMatch.attributes.durationInMillis) * 0.001
                                         musicPlayer.setQueue(with: [songID!])
                                         musicPlayer.play()
-                                        updateRecordWithNewAMData(songName: closestMatch.attributes.name, songArtistName: closestMatch.attributes.artistName, songID: closestMatch.id, songArtImageData: artResponse!, songDuration: String(Double(songDuration!) * 0.001))
-                                    }); foundMatch = true
-                                }
-                                if songPreviewURL != nil && foundMatch == false {
-                                    print("Defer to preview")
-                                    appDelegate.deferToPreview = true
-                                    updateRecordWithNewAMData(songName: "LookupFailed", songArtistName: "LookupFailed", songID: "LookupFailed", songArtImageData: Data(), songDuration: String(0))
-                                }
-                                else {print("Else called to change card type...")//appDelegate.chosenGridCard?.cardType = "noMusicNoGift"
-                }}}})}}})}
-
-    func getAMStoreFront() {
-        Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { timer in
-            if amAPI.taskToken != nil && ranAMStoreFront == false {
-                ranAMStoreFront = true
-                SKCloudServiceController.requestAuthorization {(status) in if status == .authorized {
-                    amAPI.storeFrontID = amAPI.fetchUserStorefront(userToken: amAPI.taskToken!, completionHandler: { ( response, error) in
-                        amAPI.storeFrontID = response!.data[0].id
-                        if songName! == "" {convertSong()}
-                        else {searchWithAM()}
-                    })}}}
+                                        updateRecordWithNewAMData(songName: songName!, songArtistName: songArtistName!, songID: songID!, songArtImageData: artResponse!, songDuration: String(songDuration!))
+                                    });foundMatch = true}}}})}
+                
             }
-        }
-    
+            else {
+                if songPreviewURL != nil && foundMatch == false {
+                    print("Defer to preview")
+                    appDelegate.deferToPreview = true
+                    updateRecordWithNewAMData(songName: "LookupFailed", songArtistName: "LookupFailed", songID: "LookupFailed", songArtImageData: Data(), songDuration: String(0))
+            }
+                else {print("Else called to change card type...")//appDelegate.chosenGridCard?.cardType = "noMusicNoGift"
+        }}})}
     
     func updateRecordWithNewAMData(songName: String, songArtistName: String, songID: String, songArtImageData: Data, songDuration: String) {
         let controller = PersistenceController.shared
@@ -277,53 +262,12 @@ extension AMPlayerView {
         let ckContainer = PersistenceController.shared.cloudKitContainer
         taskContext.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
         print("????")
-        controller.updateRecordWithAMData(for: coreCard!, in: taskContext, with: ckContainer.privateCloudDatabase, songName: songName, songArtistName: songArtistName,songID: songID, songImageData: songArtImageData, songSongDuration: songDuration, completion: { (error) in
+        controller.updateRecordWithAMData(for: coreCard!, in: taskContext, with: ckContainer.privateCloudDatabase, songName: songName, songArtistName: songArtistName,songID: songID, songImageData: songArtImageData, songDuration: songDuration, completion: { (error) in
             print("Updated Record...")
-            print(error)
+            print(foundMatch)
+            print(error as Any)
         } )
     }
-    
-    func levenshteinDistance(s1: String, s2: String) -> Int {
-        let s1Length = s1.count
-        let s2Length = s2.count
-        var distanceMatrix = [[Int]](repeating: [Int](repeating: 0, count: s2Length + 1), count: s1Length + 1)
-        for i in 1...s1Length {distanceMatrix[i][0] = i}
-        for j in 1...s2Length {distanceMatrix[0][j] = j}
-        for i in 1...s1Length {
-            for j in 1...s2Length {
-                let cost = s1[s1.index(s1.startIndex, offsetBy: i - 1)] == s2[s2.index(s2.startIndex, offsetBy: j - 1)] ? 0 : 1
-                distanceMatrix[i][j] = min(
-                    distanceMatrix[i - 1][j] + 1,
-                    distanceMatrix[i][j - 1] + 1,
-                    distanceMatrix[i - 1][j - 1] + cost
-                )
-            }
-        }
-        return distanceMatrix[s1Length][s2Length]
-    }
-            
-    func searchWithAM() {
-        SKCloudServiceController.requestAuthorization {(status) in if status == .authorized {
-            AppleMusicAPI().searchAppleMusic("\(songName!) \(songArtistName!)", storeFrontID: amAPI.storeFrontID!, userToken: amAPI.taskToken!, completionHandler: { (response, error) in
-                if response != nil {
-                    DispatchQueue.main.async {
-                        for song in response! {
-                            if song.attributes.name == songName && song.attributes.artistName == songArtistName {
-                                let blankString: String? = ""
-                                var songPrev: String?
-                                if song.attributes.previews.count > 0 {print("it's not nil"); songPrev = song.attributes.previews[0].url}
-                                else {songPrev = blankString}
-                                let artURL = URL(string:song.attributes.artwork.url.replacingOccurrences(of: "{w}", with: "80").replacingOccurrences(of: "{h}", with: "80"))
-                                let _ = getURLData(url: artURL!, completionHandler: { (artResponse, error2) in
-                                    songID = song.attributes.playParams.id
-                                    songArtImageData = artResponse!
-                                    songDuration = Double(song.attributes.durationInMillis) * 0.001
-                                    songPreviewURL = songPrev!
-                                    songAlbumName = song.attributes.albumName
-                                    self.musicPlayer.setQueue(with: [songID!]); self.musicPlayer.play()
-                                }); break}}}}
-                else {debugPrint(error?.localizedDescription)}
-        })}}}
     
     func getURLData(url: URL, completionHandler: @escaping (Data?,Error?) -> Void) {
         var request = URLRequest(url: url)
@@ -348,5 +292,53 @@ extension AMPlayerView {
         catch {print("Fetch failed")}
         return cardsFromCore
     }
+    
+    
+    func removeSubstrings(from string: String, removeList: [String]) -> String {
+        var result = string
+        for substring in removeList {
+            result = result.lowercased().replacingOccurrences(of: substring, with: "")
+            result = result.capitalized
+        }
+        return result
+    }
+    
+    func containsSameWords(_ str1: String, _ str2: String) -> Bool {
+        // Split both strings into arrays of words
+        let words1 = str1.split(separator: " ").map { String($0) }
+        let words2 = str2.split(separator: " ").map { String($0) }
+        
+        // Check if both arrays contain the same set of words
+        print("ContainsSameWords is \(Set(words1) == Set(words2))")
+        return Set(words1) == Set(words2)
+    }
+    
+    func levenshteinDistance(s1: String, s2: String) -> Int {
+        let s1Length = s1.count
+        let s2Length = s2.count
+        var distanceMatrix = [[Int]](repeating: [Int](repeating: 0, count: s2Length + 1), count: s1Length + 1)
+        for i in 1...s1Length {distanceMatrix[i][0] = i}
+        for j in 1...s2Length {distanceMatrix[0][j] = j}
+        for i in 1...s1Length {
+            for j in 1...s2Length {
+                let cost = s1[s1.index(s1.startIndex, offsetBy: i - 1)] == s2[s2.index(s2.startIndex, offsetBy: j - 1)] ? 0 : 1
+                distanceMatrix[i][j] = min(
+                    distanceMatrix[i - 1][j] + 1,
+                    distanceMatrix[i][j - 1] + 1,
+                    distanceMatrix[i - 1][j - 1] + cost
+                )
+            }
+        }
+        return distanceMatrix[s1Length][s2Length]
+    }
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
 }

@@ -149,6 +149,17 @@ struct MusicSearchView: View {
 
 extension MusicSearchView {
     
+    //func removeSpecialCharacters(from string: String) -> String {
+    //    let pattern = "[^a-zA-Z0-9]"
+    //    return string.replacingOccurrences(of: pattern, with: "", options: .regularExpression, range: nil)
+    //}
+    
+    func removeSpecialCharacters(from string: String) -> String {
+        let allowedCharacters = CharacterSet.whitespacesAndNewlines.union(CharacterSet(charactersIn: "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"))
+        let newString = string.components(separatedBy: allowedCharacters.inverted).joined(separator: "")
+        return newString
+    }
+    
     func getAMUserToken() {
         Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { timer in
             if amAPI.taskToken == nil {
@@ -181,7 +192,7 @@ extension MusicSearchView {
     
     func searchWithAM() {
         SKCloudServiceController.requestAuthorization {(status) in if status == .authorized {
-            self.searchResults = AppleMusicAPI().searchAppleMusic(self.songSearch, storeFrontID: amAPI.storeFrontID!, userToken: amAPI.taskToken!, completionHandler: { (response, error) in
+            self.searchResults = AppleMusicAPI().searchAppleMusic(removeSpecialCharacters(from: self.songSearch), storeFrontID: amAPI.storeFrontID!, userToken: amAPI.taskToken!, completionHandler: { (response, error) in
                 if response != nil {
                     DispatchQueue.main.async {
                         for song in response! {
@@ -240,7 +251,7 @@ extension MusicSearchView {
     
     
     func getSpotAlbum() {
-        SpotifyAPI().getAlbumIDUsingNameOnly(albumName: chosenSong.songAlbumName, authToken: spotifyAuth.access_Token, completion: { (response, error) in
+        SpotifyAPI().getAlbumIDUsingNameOnly(albumName: removeSpecialCharacters(from: chosenSong.songAlbumName), authToken: spotifyAuth.access_Token, completion: { (response, error) in
             if response != nil {
                 for album in response! {
                     print("Got Album Named: ")
@@ -253,6 +264,7 @@ extension MusicSearchView {
                                     var allArtists = String()
                                     if album.artists.count > 1 {for artist in album.artists { allArtists = allArtists + " " + artist.name}}
                                     else {allArtists = album.artists[0].name}
+                                    print("Album Artists Are...\(allArtists)")
                                     chosenSong.spotAlbumArtist = allArtists
                                     break
                                 }
@@ -260,7 +272,11 @@ extension MusicSearchView {
     
     func getAlbum(storeFront: String, userToken: String) {
         SKCloudServiceController.requestAuthorization {(status) in if status == .authorized {
-            AppleMusicAPI().searchForAlbum(albumName: chosenSong.songAlbumName, storeFrontID: storeFront,  userToken: userToken, completion: { (response, error) in
+            AppleMusicAPI().searchForAlbum(albumName: removeSpecialCharacters(from: chosenSong.songAlbumName), storeFrontID: storeFront,  userToken: userToken, completion: { (response, error) in
+                
+                
+                
+                
                 if response != nil {
                     print("Album Search Response....")
                     if let albumList = response?.results.albums.data {
@@ -390,7 +406,7 @@ extension MusicSearchView {
     }
     
     func searchWithSpotify() {
-        SpotifyAPI().searchSpotify(self.songSearch, authToken: spotifyAuth.access_Token, completionHandler: {(response, error) in
+        SpotifyAPI().searchSpotify(removeSpecialCharacters(from: self.songSearch), authToken: spotifyAuth.access_Token, completionHandler: {(response, error) in
             if response != nil {
                 searchResults = []
                 DispatchQueue.main.async {
