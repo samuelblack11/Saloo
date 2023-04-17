@@ -185,8 +185,8 @@ extension AMPlayerView {
                 cleanSongName = cleanSongName + " " + cleanSongNamePt2
             }
         }
-        
-        AMString = (cleanSongName + " " + cleanSongArtistName + artistsInSongName).replacingOccurrences(of: "  ", with: " ")
+        AMString = (cleanSongName + " " + cleanSongArtistName + artistsInSongName)
+        AMString = convertMultipleSpacesToSingleSpace(AMString.withoutPunc)
         print("AMString....")
         print(AMString.withoutPunc.lowercased())
         return AMString.withoutPunc.lowercased()
@@ -211,10 +211,8 @@ extension AMPlayerView {
             }
         }
         
-        SPOTString = SPOTString.withoutPunc
-                        .replacingOccurrences(of: "   ", with: " ")
-                        .replacingOccurrences(of: "  ", with: " ")
         SPOTString = (cleanSongName + " " + cleanSongArtistName + artistsInSongName).replacingOccurrences(of: "  ", with: " ")
+        SPOTString = convertMultipleSpacesToSingleSpace(SPOTString.withoutPunc)
         print("SPOTString....")
         print(SPOTString.withoutPunc.lowercased())
         
@@ -314,6 +312,11 @@ extension AMPlayerView {
         return cardsFromCore
     }
     
+    func convertMultipleSpacesToSingleSpace(_ input: String) -> String {
+        let components = input.components(separatedBy: .whitespacesAndNewlines)
+        let filtered = components.filter { !$0.isEmpty }
+        return filtered.joined(separator: " ")
+    }
     
     func removeSubstrings(from string: String, removeList: [String]) -> String {
         var result = string

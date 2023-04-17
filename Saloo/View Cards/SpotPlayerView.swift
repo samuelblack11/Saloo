@@ -177,7 +177,9 @@ struct SpotPlayerView: View {
                 cleanSongName = cleanSongName + " " + cleanSongNamePt2
             }
         }
-        AMString = (cleanSongName + " " + cleanSongArtistName + artistsInSongName).replacingOccurrences(of: "  ", with: " ")
+        AMString = AMString.withoutPunc
+        AMString = (cleanSongName + " " + cleanSongArtistName + artistsInSongName)
+        AMString = convertMultipleSpacesToSingleSpace(AMString.withoutPunc)
         print("AMString....")
         print(AMString.withoutPunc.lowercased())
         return AMString.withoutPunc.lowercased()
@@ -203,9 +205,8 @@ struct SpotPlayerView: View {
         }
         
         SPOTString = SPOTString.withoutPunc
-                        .replacingOccurrences(of: "   ", with: " ")
-                        .replacingOccurrences(of: "  ", with: " ")
-        SPOTString = (cleanSongName + " " + cleanSongArtistName + artistsInSongName).replacingOccurrences(of: "  ", with: " ")
+        SPOTString = (cleanSongName + " " + cleanSongArtistName + artistsInSongName)
+        SPOTString = convertMultipleSpacesToSingleSpace(SPOTString.withoutPunc)
         print("SPOTString....")
         print(SPOTString.withoutPunc.lowercased())
         
@@ -417,6 +418,12 @@ extension SpotPlayerView {
             DispatchQueue.main.async {completionHandler(data, nil)}
         }
         dataTask.resume()
+    }
+    
+    func convertMultipleSpacesToSingleSpace(_ input: String) -> String {
+        let components = input.components(separatedBy: .whitespacesAndNewlines)
+        let filtered = components.filter { !$0.isEmpty }
+        return filtered.joined(separator: " ")
     }
     
     func containsSameWords(_ str1: String, _ str2: String) -> Bool {
