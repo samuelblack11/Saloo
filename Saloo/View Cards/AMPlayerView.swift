@@ -47,7 +47,7 @@ struct AMPlayerView: View {
     @State var appleAlbumArtist: String?
     @State var spotAlbumArtist: String?
     @State var levDistances: [Int] = []
-    @State var foundMatch = false
+    @State var foundMatch = "isSearching"
     @State var breakTrigger1 = false
     var songKeyWordsToFilterOut = ["(live)","[live]","live at","live in","live from", "- Single"]
 
@@ -186,22 +186,39 @@ extension AMPlayerView {
             }
         }
         
-        else {cleanSongName = cleanSongName + " "}
-        AMString = (cleanSongName + cleanSongArtistName + artistsInSongName).replacingOccurrences(of: "  ", with: " ")
+        AMString = (cleanSongName + " " + cleanSongArtistName + artistsInSongName).replacingOccurrences(of: "  ", with: " ")
         print("AMString....")
-        print(AMString.withoutPunc)
-        return AMString.withoutPunc
+        print(AMString.withoutPunc.lowercased())
+        return AMString.withoutPunc.lowercased()
     }
     
     
     func cleanSPOTSongForAMComparison(spotSongName: String, spotSongArtist: String) -> String {
-        var SPOTString = spotSongName + " " + spotSongArtist.replacingOccurrences(of: ",", with: "").replacingOccurrences(of: " & ", with: " ")
+        var SPOTString = String()
+        var cleanSongName = String()
+        let cleanSongArtistName = spotSongArtist
+                                            .replacingOccurrences(of: ",", with: "" )
+                                            .replacingOccurrences(of: " & ", with: " ")
+        var artistsInSongName = String()
+        if spotSongName.contains("(feat.") {
+            let songComponents = spotSongName.components(separatedBy: "(feat.")
+            cleanSongName = songComponents[0]
+            artistsInSongName = songComponents[1].components(separatedBy: ")")[0]
+            artistsInSongName = artistsInSongName.replacingOccurrences(of: "&", with: "")
+            if songComponents[1].components(separatedBy: ")").count > 1 {
+                let cleanSongNamePt2 = songComponents[1].components(separatedBy: ")")[1]
+                cleanSongName = cleanSongName + " " + cleanSongNamePt2
+            }
+        }
+        
         SPOTString = SPOTString.withoutPunc
                         .replacingOccurrences(of: "   ", with: " ")
                         .replacingOccurrences(of: "  ", with: " ")
+        SPOTString = (cleanSongName + " " + cleanSongArtistName + artistsInSongName).replacingOccurrences(of: "  ", with: " ")
         print("SPOTString....")
-        print(SPOTString.withoutPunc)
-        return SPOTString.withoutPunc
+        print(SPOTString.withoutPunc.lowercased())
+        
+        return SPOTString.withoutPunc.lowercased()
     }
     
     
@@ -210,7 +227,7 @@ extension AMPlayerView {
             print("Tried to Convert...\(removeSubstrings(from: songAlbumName!, removeList: songKeyWordsToFilterOut))")
             
             if let albumList = albumResponse?.results.albums.data {
-                for album in albumList where foundMatch == false {
+                for (index, album) in albumList.enumerated() {
                     print("Album Object from AM...")
                     print("----")
                     print(album.attributes.name)
@@ -226,12 +243,9 @@ extension AMPlayerView {
                                     }
                                     levDistances.append(stringDiff)
                                 }
-                                print("The Min LevDistance Found was: \(String(describing: levDistances.min()))")
-                                print("TrackList is \(trackList.count) tracks long....")
-                                print("&&&")
-                                print(levDistances)
-                                print("The Index of the minimum levdistance is \(String(describing: levDistances.firstIndex(of: levDistances.min()!)))")
+
                                 if levDistances.min()! < 4 {
+                                    foundMatch = "foundMatch"
                                     let closestMatch = trackList[levDistances.firstIndex(of: levDistances.min()!)!]
                                     print("SSSSS")
                                     print(closestMatch)
@@ -245,25 +259,30 @@ extension AMPlayerView {
                                         songDuration = Double(closestMatch.attributes.durationInMillis) * 0.001
                                         musicPlayer.setQueue(with: [songID!])
                                         musicPlayer.play()
-                                        updateRecordWithNewAMData(songName: songName!, songArtistName: songArtistName!, songID: songID!, songArtImageData: artResponse!, songDuration: String(songDuration!))
-                                    });foundMatch = true}}}})}
-                
-            }
-            else {
-                if songPreviewURL != nil && foundMatch == false {
+                                        print("Is playing from AM Player...")
+                                        DispatchQueue.main.async {
+                                            updateRecordWithNewAMData(songName: songName!, songArtistName: songArtistName!, songID: songID!, songArtImageData: artResponse!, songDuration: String(songDuration!))
+                                        }
+                                    })}
+                                if index == albumList.count - 1 {if foundMatch != "foundMatch" {foundMatch = "searchFailed" }}
+                            }}})
+                }}
+                    print("-------")
+                print("FoundMatch = \(foundMatch)")
+                if songPreviewURL != nil && foundMatch != "isSearching" && foundMatch != "foundMatch" {
                     print("Defer to preview")
                     appDelegate.deferToPreview = true
                     updateRecordWithNewAMData(songName: "LookupFailed", songArtistName: "LookupFailed", songID: "LookupFailed", songArtImageData: Data(), songDuration: String(0))
-            }
+                }
                 else {print("Else called to change card type...")//appDelegate.chosenGridCard?.cardType = "noMusicNoGift"
-        }}})}
+                }})}
     
     func updateRecordWithNewAMData(songName: String, songArtistName: String, songID: String, songArtImageData: Data, songDuration: String) {
         let controller = PersistenceController.shared
         let taskContext = controller.persistentContainer.newTaskContext()
         let ckContainer = PersistenceController.shared.cloudKitContainer
         taskContext.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
-        print("????")
+        print("About to run AM Data update on the CKRecord....")
         controller.updateRecordWithAMData(for: coreCard!, in: taskContext, with: ckContainer.privateCloudDatabase, songName: songName, songArtistName: songArtistName,songID: songID, songImageData: songArtImageData, songDuration: songDuration, completion: { (error) in
             print("Updated Record...")
             print(foundMatch)

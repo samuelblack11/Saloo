@@ -177,23 +177,39 @@ struct SpotPlayerView: View {
                 cleanSongName = cleanSongName + " " + cleanSongNamePt2
             }
         }
-        else {cleanSongName = songName! + " "}
-        AMString = (cleanSongName + cleanSongArtistName + artistsInSongName).replacingOccurrences(of: "  ", with: " ")
+        AMString = (cleanSongName + " " + cleanSongArtistName + artistsInSongName).replacingOccurrences(of: "  ", with: " ")
         print("AMString....")
-        print(AMString.withoutPunc)
-        return AMString.withoutPunc
+        print(AMString.withoutPunc.lowercased())
+        return AMString.withoutPunc.lowercased()
     }
     
     
     func cleanSPOTSongForAMComparison(spotSongName: String, spotSongArtist: String) -> String {
-        var SPOTString = spotSongName + " " + spotSongArtist.replacingOccurrences(of: ",", with: "").replacingOccurrences(of: " & ", with: " ")
+        var SPOTString = String()
+        var cleanSongName = String()
+        let cleanSongArtistName = spotSongArtist
+                                            .replacingOccurrences(of: ",", with: "" )
+                                            .replacingOccurrences(of: " & ", with: " ")
+        var artistsInSongName = String()
+        if spotSongName.contains("(feat.") {
+            let songComponents = spotSongName.components(separatedBy: "(feat.")
+            cleanSongName = songComponents[0]
+            artistsInSongName = songComponents[1].components(separatedBy: ")")[0]
+            artistsInSongName = artistsInSongName.replacingOccurrences(of: "&", with: "")
+            if songComponents[1].components(separatedBy: ")").count > 1 {
+                let cleanSongNamePt2 = songComponents[1].components(separatedBy: ")")[1]
+                cleanSongName = cleanSongName + " " + cleanSongNamePt2
+            }
+        }
+        
         SPOTString = SPOTString.withoutPunc
                         .replacingOccurrences(of: "   ", with: " ")
                         .replacingOccurrences(of: "  ", with: " ")
+        SPOTString = (cleanSongName + " " + cleanSongArtistName + artistsInSongName).replacingOccurrences(of: "  ", with: " ")
         print("SPOTString....")
-        print(SPOTString.withoutPunc)
+        print(SPOTString.withoutPunc.lowercased())
         
-        return SPOTString.withoutPunc
+        return SPOTString.withoutPunc.lowercased()
     }
     
     func getSongViaAlbumSearch() {
