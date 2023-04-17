@@ -49,7 +49,6 @@ struct AMPlayerView: View {
     @State var levDistances: [Int] = []
     @State var foundMatch = "isSearching"
     @State var breakTrigger1 = false
-    var songKeyWordsToFilterOut = ["(live)","[live]","live at","live in","live from", "- Single"]
 
     var body: some View {
             AMPlayerView
@@ -170,7 +169,7 @@ extension AMPlayerView {
     
     func cleanAMSongForSPOTComparison(amSongName: String, amSongArtist: String) -> String {
         var AMString = String()
-        var cleanSongName = removeSubstrings(from: amSongName, removeList: songKeyWordsToFilterOut)
+        var cleanSongName = removeSubstrings(from: amSongName, removeList: appDelegate.songKeyWordsToFilterOut)
         var cleanSongArtistName = amSongArtist
                                             .replacingOccurrences(of: ",", with: "")
                                             .replacingOccurrences(of: "&", with: "")
@@ -186,16 +185,17 @@ extension AMPlayerView {
             }
         }
         AMString = (cleanSongName + " " + cleanSongArtistName + artistsInSongName)
-        AMString = convertMultipleSpacesToSingleSpace(AMString.withoutPunc)
+        AMString = convertMultipleSpacesToSingleSpace(AMString.withoutPunc.lowercased())
         print("AMString....")
-        print(AMString.withoutPunc.lowercased())
-        return AMString.withoutPunc.lowercased()
+        print(AMString)
+        return AMString
     }
     
     
     func cleanSPOTSongForAMComparison(spotSongName: String, spotSongArtist: String) -> String {
         var SPOTString = String()
-        var cleanSongName = String()
+        var cleanSongName = removeSubstrings(from: spotSongName, removeList: appDelegate.songKeyWordsToFilterOut)
+
         let cleanSongArtistName = spotSongArtist
                                             .replacingOccurrences(of: ",", with: "" )
                                             .replacingOccurrences(of: " & ", with: " ")
@@ -211,62 +211,44 @@ extension AMPlayerView {
             }
         }
         
-        SPOTString = (cleanSongName + " " + cleanSongArtistName + artistsInSongName).replacingOccurrences(of: "  ", with: " ")
-        SPOTString = convertMultipleSpacesToSingleSpace(SPOTString.withoutPunc)
+        SPOTString = (cleanSongName + " " + cleanSongArtistName + artistsInSongName)
+        SPOTString = convertMultipleSpacesToSingleSpace(SPOTString.withoutPunc.lowercased())
         print("SPOTString....")
-        print(SPOTString.withoutPunc.lowercased())
-        
-        return SPOTString.withoutPunc.lowercased()
+        print(SPOTString)
+        return SPOTString
     }
     
     
     func convertSong() {
-        amAPI.searchForAlbum(albumName: removeSubstrings(from: songAlbumName!, removeList: songKeyWordsToFilterOut), storeFrontID: amAPI.storeFrontID!, userToken: amAPI.taskToken!, completion: {(albumResponse, error) in
-            print("Tried to Convert...\(removeSubstrings(from: songAlbumName!, removeList: songKeyWordsToFilterOut))")
-            
+        amAPI.searchForAlbum(albumName: removeSubstrings(from: songAlbumName!, removeList: appDelegate.songKeyWordsToFilterOut), storeFrontID: amAPI.storeFrontID!, userToken: amAPI.taskToken!, completion: {(albumResponse, error) in
+            print("Tried to Convert...\(removeSubstrings(from: songAlbumName!, removeList: appDelegate.songKeyWordsToFilterOut))")
+            let cleanSpotString = cleanSPOTSongForAMComparison(spotSongName: spotName!, spotSongArtist: spotArtistName!)
             if let albumList = albumResponse?.results.albums.data {
                 for (index, album) in albumList.enumerated() {
                     print("Album Object from AM...")
-                    print("----")
-                    print(album.attributes.name)
-                    print(album.id)
+                    print("----\(album.attributes.name)----\(album.id)")
                     AppleMusicAPI().getAlbumTracks(albumId: album.id, storefrontId: amAPI.storeFrontID!, userToken: amAPI.taskToken!, completion: { (trackResponse, error) in
-                        levDistances = []
                         if trackResponse != nil {
                             if let trackList = trackResponse?.data {
                                 for track in trackList {
-                                    var stringDiff = Int()
-                                    if containsSameWords(cleanAMSongForSPOTComparison(amSongName: track.attributes.name, amSongArtist: track.attributes.artistName), cleanSPOTSongForAMComparison(spotSongName: spotName!, spotSongArtist: spotArtistName!)) {stringDiff = 0}
-                                    else {stringDiff = levenshteinDistance(s1: cleanAMSongForSPOTComparison(amSongName: track.attributes.name, amSongArtist: track.attributes.artistName), s2: cleanSPOTSongForAMComparison(spotSongName: spotName!, spotSongArtist: spotArtistName!))
-                                    }
-                                    levDistances.append(stringDiff)
-                                }
-
-                                if levDistances.min()! < 4 {
-                                    foundMatch = "foundMatch"
-                                    let closestMatch = trackList[levDistances.firstIndex(of: levDistances.min()!)!]
-                                    print("SSSSS")
-                                    print(closestMatch)
-                                    print(Double(closestMatch.attributes.durationInMillis) * 0.001)
-                                    let artURL = URL(string:album.attributes.artwork.url.replacingOccurrences(of: "{w}", with: "80").replacingOccurrences(of: "{h}", with: "80"))
-                                    let _ = getURLData(url: artURL!, completionHandler: { (artResponse, error2) in
-                                        songName = closestMatch.attributes.name
-                                        songArtistName = closestMatch.attributes.artistName
-                                        songID = closestMatch.id
-                                        songArtImageData = artResponse!
-                                        songDuration = Double(closestMatch.attributes.durationInMillis) * 0.001
-                                        musicPlayer.setQueue(with: [songID!])
-                                        musicPlayer.play()
-                                        print("Is playing from AM Player...")
-                                        DispatchQueue.main.async {
-                                            updateRecordWithNewAMData(songName: songName!, songArtistName: songArtistName!, songID: songID!, songArtImageData: artResponse!, songDuration: String(songDuration!))
-                                        }
-                                    })}
-                                if index == albumList.count - 1 {if foundMatch != "foundMatch" {foundMatch = "searchFailed" }}
-                            }}})
-                }}
-                    print("-------")
-                print("FoundMatch = \(foundMatch)")
+                                    if containsSameWords(cleanAMSongForSPOTComparison(amSongName: track.attributes.name, amSongArtist: track.attributes.artistName), cleanSpotString) {
+                                        foundMatch = "foundMatch"
+                                        print("SSSSS")
+                                        print(track)
+                                        print(Double(track.attributes.durationInMillis) * 0.001)
+                                        let artURL = URL(string:album.attributes.artwork.url.replacingOccurrences(of: "{w}", with: "80").replacingOccurrences(of: "{h}", with: "80"))
+                                        let _ = getURLData(url: artURL!, completionHandler: { (artResponse, error2) in
+                                            songName = track.attributes.name
+                                            songArtistName = track.attributes.artistName
+                                            songID = track.id
+                                            songArtImageData = artResponse!
+                                            songDuration = Double(track.attributes.durationInMillis) * 0.001
+                                            musicPlayer.setQueue(with: [songID!])
+                                            musicPlayer.play()
+                                            DispatchQueue.main.async {updateRecordWithNewAMData(songName: songName!, songArtistName: songArtistName!, songID: songID!, songArtImageData: artResponse!, songDuration: String(songDuration!))}
+                            })}}}
+                        if index == albumList.count - 1 {if foundMatch != "foundMatch" {foundMatch = "searchFailed" }}
+                }})}}
                 if songPreviewURL != nil && foundMatch != "isSearching" && foundMatch != "foundMatch" {
                     print("Defer to preview")
                     appDelegate.deferToPreview = true

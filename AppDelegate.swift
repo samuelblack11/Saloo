@@ -20,7 +20,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, ObservableObject {
     @Published var showGrid = false
     @Published var chosenGridCard: CoreCard? = nil
     @Published var showProgViewOnAcceptShare = false
-    @Published var chosenGridCardType: String? 
+    @Published var chosenGridCardType: String?
+    var songKeyWordsToFilterOut = ["(live)","[live]","live at","live in","live from", "- Single", "(mixed)", "[mixed]"]
+
     func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
         let isOpened = openMyApp(from: url)
         return isOpened

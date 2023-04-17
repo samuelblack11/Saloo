@@ -57,9 +57,7 @@ struct SpotPlayerView: View {
     @State var spotAlbumID: String?
     @State var spotImageURL: String?
     let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
-    var songKeyWordsToFilterOut = ["(live","[live","live at","live in","live from", "- Single"]
 
-    
     var body: some View {
             SpotPlayerView2
             .onAppear{
@@ -162,7 +160,7 @@ struct SpotPlayerView: View {
     
     func cleanAMSongForSPOTComparison() -> String {
         var AMString = String()
-        var cleanSongName = String()
+        var cleanSongName = removeSubstrings(from: songName!, removeList: appDelegate.songKeyWordsToFilterOut)
         let cleanSongArtistName = songArtistName!
                                             .replacingOccurrences(of: ",", with: "" )
                                             .replacingOccurrences(of: " & ", with: " ")
@@ -177,18 +175,17 @@ struct SpotPlayerView: View {
                 cleanSongName = cleanSongName + " " + cleanSongNamePt2
             }
         }
-        AMString = AMString.withoutPunc
         AMString = (cleanSongName + " " + cleanSongArtistName + artistsInSongName)
-        AMString = convertMultipleSpacesToSingleSpace(AMString.withoutPunc)
+        AMString = convertMultipleSpacesToSingleSpace(AMString.withoutPunc.lowercased())
         print("AMString....")
-        print(AMString.withoutPunc.lowercased())
-        return AMString.withoutPunc.lowercased()
+        print(AMString)
+        return AMString
     }
     
     
     func cleanSPOTSongForAMComparison(spotSongName: String, spotSongArtist: String) -> String {
         var SPOTString = String()
-        var cleanSongName = String()
+        var cleanSongName = removeSubstrings(from: spotSongName, removeList: appDelegate.songKeyWordsToFilterOut)
         let cleanSongArtistName = spotSongArtist
                                             .replacingOccurrences(of: ",", with: "" )
                                             .replacingOccurrences(of: " & ", with: " ")
@@ -204,25 +201,22 @@ struct SpotPlayerView: View {
             }
         }
         
-        SPOTString = SPOTString.withoutPunc
         SPOTString = (cleanSongName + " " + cleanSongArtistName + artistsInSongName)
-        SPOTString = convertMultipleSpacesToSingleSpace(SPOTString.withoutPunc)
+        SPOTString = convertMultipleSpacesToSingleSpace(SPOTString.withoutPunc.lowercased())
         print("SPOTString....")
-        print(SPOTString.withoutPunc.lowercased())
+        print(SPOTString)
         
-        return SPOTString.withoutPunc.lowercased()
+        return SPOTString
     }
     
     func getSongViaAlbumSearch() {
         var foundMatch = false
+        let AMString = cleanAMSongForSPOTComparison()
         SpotifyAPI().getAlbumID(albumName: songAlbumName!, artistName: appleAlbumArtist!, authToken: spotifyAuth.access_Token, completion: { albumID in
             spotAlbumID = albumID
             if albumID != nil {
             SpotifyAPI().searchForAlbum(albumId: albumID!, authToken: spotifyAuth.access_Token) { (albumResponse, error) in
-                print(albumID!)
-                levDistances = []
                 if let album = albumResponse {
-                    //case .success(let album):
                     spotImageURL = album.images[2].url
                     SpotifyAPI().getAlbumTracks(albumId: albumID!, authToken: spotifyAuth.access_Token, completion: { (response, error) in
                         for song in response! {
@@ -236,49 +230,32 @@ struct SpotPlayerView: View {
                                     else {allArtists = artist.name}
                                 }}
                             else {allArtists = song.artists[0].name}
-                            var stringDiff = Int()
-                            if containsSameWords(cleanAMSongForSPOTComparison(), cleanSPOTSongForAMComparison(spotSongName: song.name, spotSongArtist: allArtists)) {stringDiff = 0}
-                            else {
-                                stringDiff = levenshteinDistance(s1: cleanAMSongForSPOTComparison(), s2: cleanSPOTSongForAMComparison(spotSongName: song.name, spotSongArtist: allArtists))
-                            }
-                            levDistances.append(stringDiff)
-                        }
-                        var minValidDistance = Int()
-                        if response![levDistances.firstIndex(of: levDistances.min()!)!].restrictions?.reason == nil {minValidDistance = levDistances.min()!}
-                        else {
-                            if let minIndex = levDistances.firstIndex(of: levDistances.min()!) {levDistances[minIndex] = 100}
-                            if response![levDistances.firstIndex(of: levDistances.min()!)!].restrictions?.reason == nil {minValidDistance = levDistances.min()!}
-                            else {
-                                if let minIndex = levDistances.firstIndex(of: levDistances.min()!) {levDistances[minIndex] = 100}
-                                if response![levDistances.firstIndex(of: levDistances.min()!)!].restrictions?.reason == nil {minValidDistance = levDistances.min()!}
-                            }
-                        }
-                        if minValidDistance < 6 {
-                            let closestMatch = response![levDistances.firstIndex(of: levDistances.min()!)!]
-                            print("SSSSS")
-                            print(closestMatch)
-                            let artURL = URL(string: spotImageURL!)
-                            let _ = getURLData(url: artURL!, completionHandler: {(artResponse, error2) in
-                                var allArtists2 = String()
-                                for artist in closestMatch.artists { allArtists2 = allArtists2 + ", " + artist.name}
-                                spotName = closestMatch.name
-                                spotArtistName = allArtists2
-                                songID = closestMatch.id
-                                songArtImageData = artResponse!
-                                songDuration = Double(closestMatch.duration_ms) * 0.001
-                                playSong()
-                                updateRecordWithNewSPOTData(spotName: closestMatch.name, spotArtistName: allArtists2, spotID: closestMatch.id, songArtImageData: artResponse!, songDuration: String(Double(closestMatch.duration_ms) * 0.001))
-                            }); foundMatch = true}
-                    })}}}
-                    else {
-                        if songPreviewURL != nil && foundMatch == false {
-                            print("Defer to preview")
-                            appDelegate.deferToPreview = true
-                            updateRecordWithNewSPOTData(spotName: "LookupFailed", spotArtistName: "LookupFailed", spotID: "LookupFailed", songArtImageData: Data(), songDuration: String(0))
-                        }
-                        else { print("Else called to change card type...")
-                            //appDelegate.chosenGridCard?.cardType = "noMusicNoGift"
-            }}})}
+                            
+                            if containsSameWords(AMString, cleanSPOTSongForAMComparison(spotSongName: song.name, spotSongArtist: allArtists)) {
+                                print("SSSSS")
+                                print(song)
+                                let artURL = URL(string: spotImageURL!)
+                                let _ = getURLData(url: artURL!, completionHandler: {(artResponse, error2) in
+                                    var allArtists2 = String()
+                                    for artist in song.artists {allArtists2 = allArtists2 + ", " + artist.name}
+                                    spotName = song.name
+                                    spotArtistName = allArtists2
+                                    songID = song.id
+                                    songArtImageData = artResponse!
+                                    songDuration = Double(song.duration_ms) * 0.001
+                                    playSong()
+                                    DispatchQueue.main.async {updateRecordWithNewSPOTData(spotName: song.name, spotArtistName: allArtists2, spotID: song.id, songArtImageData: artResponse!, songDuration: String(Double(song.duration_ms) * 0.001))}
+                                }); foundMatch = true}
+                }
+                if songPreviewURL != nil && foundMatch == false {
+                    print("Defer to preview")
+                    appDelegate.deferToPreview = true
+                    DispatchQueue.main.async {updateRecordWithNewSPOTData(spotName: "LookupFailed", spotArtistName: "LookupFailed", spotID: "LookupFailed", songArtImageData: Data(), songDuration: String(0))}
+                }
+                else { print("Else called to change card type...")
+                                //appDelegate.chosenGridCard?.cardType = "noMusicNoGift"
+                }
+               })}}}})}
     
     
     func updateRecordWithNewSPOTData(spotName: String, spotArtistName: String, spotID: String, songArtImageData: Data, songDuration: String) {
@@ -452,6 +429,15 @@ extension SpotPlayerView {
             }
         }
         return distanceMatrix[s1Length][s2Length]
+    }
+    
+    func removeSubstrings(from string: String, removeList: [String]) -> String {
+        var result = string
+        for substring in removeList {
+            result = result.lowercased().replacingOccurrences(of: substring, with: "")
+            result = result.capitalized
+        }
+        return result
     }
     
 }
