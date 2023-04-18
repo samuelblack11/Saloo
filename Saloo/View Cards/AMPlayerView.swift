@@ -222,6 +222,7 @@ extension AMPlayerView {
     func convertSong() {
         amAPI.searchForAlbum(albumName: removeSubstrings(from: songAlbumName!, removeList: appDelegate.songKeyWordsToFilterOut), storeFrontID: amAPI.storeFrontID!, userToken: amAPI.taskToken!, completion: {(albumResponse, error) in
             print("Tried to Convert...\(removeSubstrings(from: songAlbumName!, removeList: appDelegate.songKeyWordsToFilterOut))")
+            if error != nil {foundMatch = "searchFailed"}
             let cleanSpotString = cleanSPOTSongForAMComparison(spotSongName: spotName!, spotSongArtist: spotArtistName!)
             if let albumList = albumResponse?.results.albums.data {
                 for (index, album) in albumList.enumerated() {
@@ -234,6 +235,7 @@ extension AMPlayerView {
                                     if containsSameWords(cleanAMSongForSPOTComparison(amSongName: track.attributes.name, amSongArtist: track.attributes.artistName), cleanSpotString) {
                                         foundMatch = "foundMatch"
                                         print("SSSSS")
+                                        print(foundMatch)
                                         print(track)
                                         print(Double(track.attributes.durationInMillis) * 0.001)
                                         let artURL = URL(string:album.attributes.artwork.url.replacingOccurrences(of: "{w}", with: "80").replacingOccurrences(of: "{h}", with: "80"))
@@ -246,9 +248,17 @@ extension AMPlayerView {
                                             musicPlayer.setQueue(with: [songID!])
                                             musicPlayer.play()
                                             DispatchQueue.main.async {updateRecordWithNewAMData(songName: songName!, songArtistName: songArtistName!, songID: songID!, songArtImageData: artResponse!, songDuration: String(songDuration!))}
-                            })}}}
-                        if index == albumList.count - 1 {if foundMatch != "foundMatch" {foundMatch = "searchFailed" }}
-                }})}}
+                    })}}
+                                print(">>>")
+                                print(albumList.count)
+                                print(index)
+                                print(foundMatch)
+                                if index == albumList.count - 1 {if foundMatch != "foundMatch" {foundMatch = "searchFailed" }}
+                                
+                }}})}
+            }
+                print("Found Match....")
+                print(foundMatch)
                 if songPreviewURL != nil && foundMatch != "isSearching" && foundMatch != "foundMatch" {
                     print("Defer to preview")
                     appDelegate.deferToPreview = true
