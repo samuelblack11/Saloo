@@ -21,6 +21,7 @@ struct Saloo_App: App {
     var body: some Scene {
         WindowGroup {
             StartMenu()
+                //.background(appDelegate.appColor)
                 .environment(\.managedObjectContext, persistenceController.persistentContainer.viewContext)
                 .environmentObject(sceneDelegate)
                 .environmentObject(appDelegate)

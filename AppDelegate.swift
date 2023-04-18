@@ -22,7 +22,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, ObservableObject {
     @Published var showProgViewOnAcceptShare = false
     @Published var chosenGridCardType: String?
     var songKeyWordsToFilterOut = ["(live)","[live]","live at","live in","live from", "- Single", "(mixed)", "[mixed]"]
-
+    let appColor = Color("SalooTheme")
+    
+    
     func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
         let isOpened = openMyApp(from: url)
         return isOpened
@@ -67,4 +69,20 @@ class AppDelegate: UIResponder, UIApplicationDelegate, ObservableObject {
     
     
     
+}
+
+
+extension Color {
+    init(hex: String) {
+        let scanner = Scanner(string: hex)
+        var rgbValue: UInt64 = 0
+
+        scanner.scanHexInt64(&rgbValue)
+
+        let red = Double((rgbValue & 0xFF0000) >> 16) / 255.0
+        let green = Double((rgbValue & 0x00FF00) >> 8) / 255.0
+        let blue = Double(rgbValue & 0x0000FF) / 255.0
+
+        self.init(red: red, green: green, blue: blue)
+    }
 }

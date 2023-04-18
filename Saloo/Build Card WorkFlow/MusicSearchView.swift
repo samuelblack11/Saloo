@@ -19,6 +19,8 @@ struct MusicSearchView: View {
     @EnvironmentObject var appDelegate: AppDelegate
     @State var spotDeviceID: String = ""
     @State private var songSearch = ""
+    @State private var artistSearch = ""
+    @State private var albumSearch = ""
     @State private var storeFrontID = "us"
     @State private var userToken = ""
     @State private var searchResults: [SongForList] = []
@@ -51,8 +53,9 @@ struct MusicSearchView: View {
     @State var amAPI = AppleMusicAPI()
     @State private var showSpotAuthFailedAlert = false
     var songKeyWordsToFilterOut = ["(live)","[live]","live at","live in","live from", "(mixed)","[mixed]", "- Single"]
-    
-    
+    let sortOptions = ["Track", "Artist","Album"]
+    @State private var sortByValue = "Track"
+
     
     func determineCardType() -> String {
         print("called determineCardType...")
@@ -66,23 +69,39 @@ struct MusicSearchView: View {
         return cardType2
         
     }
+    
+    var sortResults: some View {
+        HStack {
+            Text("Sort By:").padding(.leading, 5).font(Font.custom(sortByValue, size: 12))
+            Picker("", selection: $sortByValue) {ForEach(sortOptions, id:\.self) {sortOption in Text(sortOption)}}
+            Spacer()
+        }
+    }
 
     var body: some View {
         NavigationStack {
-            TextField("Search Songs", text: $songSearch, onCommit: {
-                UIApplication.shared.resignFirstResponder()
-                if self.songSearch.isEmpty {
-                    self.searchResults = []
-                } else {
-                    switch appDelegate.musicSub.type {
-                    case .Apple:
-                        return searchWithAM()
-                    case .Neither:
-                        return searchWithAM()
-                    case .Spotify:
-                        return searchWithSpotify()
-                    }
-                }}).padding(.top, 15)
+            if appDelegate.musicSub.type == .Spotify {
+                //sortResults
+                TextField("Track", text: $songSearch)
+                TextField("Artist", text: $artistSearch)
+                Button("Search"){searchWithSpotify()}
+            }
+            else {
+                TextField("Search Songs", text: $songSearch, onCommit: {
+                    UIApplication.shared.resignFirstResponder()
+                    if self.songSearch.isEmpty {
+                        self.searchResults = []
+                    } else {
+                        switch appDelegate.musicSub.type {
+                        case .Apple:
+                            return searchWithAM()
+                        case .Neither:
+                            return searchWithAM()
+                        case .Spotify:
+                            return searchWithSpotify()
+                        }
+                    }}).padding(.top, 15)
+            }
             NavigationView {
                 List {
                     ForEach(searchResults, id: \.self) { song in
@@ -390,7 +409,7 @@ extension MusicSearchView {
     }
     
     func searchWithSpotify() {
-        SpotifyAPI().searchSpotify(removeSpecialCharacters(from: self.songSearch), authToken: spotifyAuth.access_Token, completionHandler: {(response, error) in
+        SpotifyAPI().searchSpotify(removeSpecialCharacters(from: self.songSearch), artistName: self.artistSearch, authToken: spotifyAuth.access_Token, completionHandler: {(response, error) in
             if response != nil {
                 searchResults = []
                 DispatchQueue.main.async {

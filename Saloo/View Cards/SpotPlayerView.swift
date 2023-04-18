@@ -108,6 +108,9 @@ struct SpotPlayerView: View {
                     .lineLimit(2)
                     .multilineTextAlignment(.center)
                 Text(spotArtistName!)
+                    .font(.headline)
+                    .lineLimit(2)
+                    .multilineTextAlignment(.center)
                 HStack {
                     Button {
                         songProgress = 0.0
@@ -165,14 +168,18 @@ struct SpotPlayerView: View {
                                             .replacingOccurrences(of: ",", with: "" )
                                             .replacingOccurrences(of: " & ", with: " ")
         var artistsInSongName = String()
-        if songName!.contains("(feat.") {
-            let songComponents = songName!.components(separatedBy: "(feat.")
-            cleanSongName = songComponents[0]
-            artistsInSongName = songComponents[1].components(separatedBy: ")")[0]
-            artistsInSongName = artistsInSongName.replacingOccurrences(of: "&", with: "")
-            if songComponents[1].components(separatedBy: ")").count > 1 {
-                let cleanSongNamePt2 = songComponents[1].components(separatedBy: ")")[1]
-                cleanSongName = cleanSongName + " " + cleanSongNamePt2
+        
+        var featStrings = ["(feat.", "[feat."]
+        for featString in featStrings {
+            if songName!.contains(featString) {
+                let songComponents = songName!.components(separatedBy: featString)
+                cleanSongName = songComponents[0]
+                artistsInSongName = songComponents[1].components(separatedBy: ")")[0]
+                artistsInSongName = artistsInSongName.replacingOccurrences(of: "&", with: "")
+                if songComponents[1].components(separatedBy: ")").count > 1 {
+                    let cleanSongNamePt2 = songComponents[1].components(separatedBy: ")")[1]
+                    cleanSongName = cleanSongName + " " + cleanSongNamePt2
+                }
             }
         }
         AMString = (cleanSongName + " " + cleanSongArtistName + artistsInSongName)
@@ -190,14 +197,17 @@ struct SpotPlayerView: View {
                                             .replacingOccurrences(of: ",", with: "" )
                                             .replacingOccurrences(of: " & ", with: " ")
         var artistsInSongName = String()
-        if spotSongName.contains("(feat.") {
-            let songComponents = spotSongName.components(separatedBy: "(feat.")
-            cleanSongName = songComponents[0]
-            artistsInSongName = songComponents[1].components(separatedBy: ")")[0]
-            artistsInSongName = artistsInSongName.replacingOccurrences(of: "&", with: "")
-            if songComponents[1].components(separatedBy: ")").count > 1 {
-                let cleanSongNamePt2 = songComponents[1].components(separatedBy: ")")[1]
-                cleanSongName = cleanSongName + " " + cleanSongNamePt2
+        var featStrings = ["(feat.", "[feat."]
+        for featString in featStrings {
+            if spotSongName.contains(featString) {
+                let songComponents = spotSongName.components(separatedBy: featString)
+                cleanSongName = songComponents[0]
+                artistsInSongName = songComponents[1].components(separatedBy: ")")[0]
+                artistsInSongName = artistsInSongName.replacingOccurrences(of: "&", with: "")
+                if songComponents[1].components(separatedBy: ")").count > 1 {
+                    let cleanSongNamePt2 = songComponents[1].components(separatedBy: ")")[1]
+                    cleanSongName = cleanSongName + " " + cleanSongNamePt2
+                }
             }
         }
         
@@ -212,51 +222,55 @@ struct SpotPlayerView: View {
     func getSongViaAlbumSearch() {
         var foundMatch = false
         let AMString = cleanAMSongForSPOTComparison()
-        SpotifyAPI().getAlbumID(albumName: songAlbumName!, artistName: appleAlbumArtist!, authToken: spotifyAuth.access_Token, completion: { albumID in
-            spotAlbumID = albumID
-            if albumID != nil {
-            SpotifyAPI().searchForAlbum(albumId: albumID!, authToken: spotifyAuth.access_Token) { (albumResponse, error) in
-                if let album = albumResponse {
-                    print("The Album.....\(album)")
-                    spotImageURL = album.images[2].url
-                    SpotifyAPI().getAlbumTracks(albumId: albumID!, authToken: spotifyAuth.access_Token, completion: { (response, error) in
-                        for song in response! {
-                            var allArtists = String()
-                            if song.artists.count > 1 {
-                                for (index, artist) in song.artists.enumerated() {
-                                    if index != 0 {
-                                        if song.name.lowercased().contains(artist.name.lowercased()) {}
-                                        else {allArtists = allArtists + " & " + artist.name}
-                                    }
-                                    else {allArtists = artist.name}
-                                }}
-                            else {allArtists = song.artists[0].name}
-                            
-                            if containsSameWords(AMString, cleanSPOTSongForAMComparison(spotSongName: song.name, spotSongArtist: allArtists)) {
-                                print("SSSSS")
-                                print(song)
-                                let artURL = URL(string: spotImageURL!)
-                                let _ = getURLData(url: artURL!, completionHandler: {(artResponse, error2) in
-                                    var allArtists2 = String()
-                                    for artist in song.artists {allArtists2 = allArtists2 + ", " + artist.name}
-                                    spotName = song.name
-                                    spotArtistName = allArtists2
-                                    songID = song.id
-                                    songArtImageData = artResponse!
-                                    songDuration = Double(song.duration_ms) * 0.001
-                                    playSong()
-                                    DispatchQueue.main.async {updateRecordWithNewSPOTData(spotName: song.name, spotArtistName: allArtists2, spotID: song.id, songArtImageData: artResponse!, songDuration: String(Double(song.duration_ms) * 0.001))}
-                                }); foundMatch = true}
-                }
-                if songPreviewURL != nil && foundMatch == false {
-                    print("Defer to preview")
-                    appDelegate.deferToPreview = true
-                    DispatchQueue.main.async {updateRecordWithNewSPOTData(spotName: "LookupFailed", spotArtistName: "LookupFailed", spotID: "LookupFailed", songArtImageData: Data(), songDuration: String(0))}
-                }
-                else { print("Else called to change card type...")
-                                //appDelegate.chosenGridCard?.cardType = "noMusicNoGift"
-                }
-               })}}}})}
+        SpotifyAPI().getAlbumID(albumName: songAlbumName!, artistName: appleAlbumArtist!, authToken: spotifyAuth.access_Token, completion: { (albums, error) in
+            for album in albums! {
+                spotAlbumID = album.id
+                if spotAlbumID != nil {
+                    SpotifyAPI().searchForAlbum(albumId: spotAlbumID!, authToken: spotifyAuth.access_Token) { (albumResponse, error) in
+                        if let album = albumResponse {
+                            print("The Album.....\(album)")
+                            spotImageURL = album.images[2].url
+                            SpotifyAPI().getAlbumTracks(albumId: spotAlbumID!, authToken: spotifyAuth.access_Token, completion: { (response, error) in
+                                for song in response! {
+                                    var allArtists = String()
+                                    if song.artists.count > 1 {
+                                        for (index, artist) in song.artists.enumerated() {
+                                            if index != 0 {
+                                                if song.name.lowercased().contains(artist.name.lowercased()) {}
+                                                else {allArtists = allArtists + " , " + artist.name}
+                                            }
+                                            else {allArtists = artist.name}
+                                        }}
+                                    else {allArtists = song.artists[0].name}
+                                    
+                                    if containsSameWords(AMString, cleanSPOTSongForAMComparison(spotSongName: song.name, spotSongArtist: allArtists)) {
+                                        print("SSSSS")
+                                        print(song)
+                                        let artURL = URL(string: spotImageURL!)
+                                        let _ = getURLData(url: artURL!, completionHandler: {(artResponse, error2) in
+                                            var allArtists2 = String()
+                                            //for artist in song.artists {
+                                            //    if song.artists.count == 1 {}
+                                            //    else {allArtists2 = allArtists2 + ", " + artist.name}
+                                            //}
+                                            spotName = song.name
+                                            spotArtistName = allArtists2
+                                            songID = song.id
+                                            songArtImageData = artResponse!
+                                            songDuration = Double(song.duration_ms) * 0.001
+                                            playSong()
+                                            DispatchQueue.main.async {updateRecordWithNewSPOTData(spotName: song.name, spotArtistName: allArtists2, spotID: song.id, songArtImageData: artResponse!, songDuration: String(Double(song.duration_ms) * 0.001))}
+                                        }); foundMatch = true}
+                                }
+                                if songPreviewURL != nil && foundMatch == false {
+                                    print("Defer to preview")
+                                    appDelegate.deferToPreview = true
+                                    DispatchQueue.main.async {updateRecordWithNewSPOTData(spotName: "LookupFailed", spotArtistName: "LookupFailed", spotID: "LookupFailed", songArtImageData: Data(), songDuration: String(0))}
+                                }
+                                else { print("Else called to change card type...")
+                                    //appDelegate.chosenGridCard?.cardType = "noMusicNoGift"
+                                }
+                            })}}}}})}
     
     
     func updateRecordWithNewSPOTData(spotName: String, spotArtistName: String, spotID: String, songArtImageData: Data, songDuration: String) {

@@ -174,14 +174,17 @@ extension AMPlayerView {
                                             .replacingOccurrences(of: ",", with: "")
                                             .replacingOccurrences(of: "&", with: "")
         var artistsInSongName = String()
-        if amSongName.contains("(feat.") {
-            let songComponents = amSongName.components(separatedBy: "(feat.")
-            cleanSongName = songComponents[0]
-            artistsInSongName = songComponents[1].components(separatedBy: ")")[0]
-            artistsInSongName = artistsInSongName.replacingOccurrences(of: "&", with: "")
-            if songComponents[1].components(separatedBy: ")").count > 1 {
-                let cleanSongNamePt2 = songComponents[1].components(separatedBy: ")")[1]
-                cleanSongName = cleanSongName + " " + cleanSongNamePt2
+        var featStrings = ["(feat.", "[feat."]
+        for featString in featStrings {
+            if amSongName.contains(featString) {
+                let songComponents = amSongName.components(separatedBy: featString)
+                cleanSongName = songComponents[0]
+                artistsInSongName = songComponents[1].components(separatedBy: ")")[0]
+                artistsInSongName = artistsInSongName.replacingOccurrences(of: "&", with: "")
+                if songComponents[1].components(separatedBy: ")").count > 1 {
+                    let cleanSongNamePt2 = songComponents[1].components(separatedBy: ")")[1]
+                    cleanSongName = cleanSongName + " " + cleanSongNamePt2
+                }
             }
         }
         AMString = (cleanSongName + " " + cleanSongArtistName + artistsInSongName)
@@ -200,14 +203,17 @@ extension AMPlayerView {
                                             .replacingOccurrences(of: ",", with: "" )
                                             .replacingOccurrences(of: " & ", with: " ")
         var artistsInSongName = String()
-        if spotSongName.contains("(feat.") {
-            let songComponents = spotSongName.components(separatedBy: "(feat.")
-            cleanSongName = songComponents[0]
-            artistsInSongName = songComponents[1].components(separatedBy: ")")[0]
-            artistsInSongName = artistsInSongName.replacingOccurrences(of: "&", with: "")
-            if songComponents[1].components(separatedBy: ")").count > 1 {
-                let cleanSongNamePt2 = songComponents[1].components(separatedBy: ")")[1]
-                cleanSongName = cleanSongName + " " + cleanSongNamePt2
+        var featStrings = ["(feat.", "[feat."]
+        for featString in featStrings {
+            if spotSongName.contains(featString) {
+                let songComponents = spotSongName.components(separatedBy: featString)
+                cleanSongName = songComponents[0]
+                artistsInSongName = songComponents[1].components(separatedBy: ")")[0]
+                artistsInSongName = artistsInSongName.replacingOccurrences(of: "&", with: "")
+                if songComponents[1].components(separatedBy: ")").count > 1 {
+                    let cleanSongNamePt2 = songComponents[1].components(separatedBy: ")")[1]
+                    cleanSongName = cleanSongName + " " + cleanSongNamePt2
+                }
             }
         }
         

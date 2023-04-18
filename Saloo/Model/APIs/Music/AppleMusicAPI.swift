@@ -170,6 +170,13 @@ class AppleMusicAPI {
     }
     
     
+    func convertMultipleSpacesToSingleSpace(_ input: String) -> String {
+        let components = input.components(separatedBy: .whitespacesAndNewlines)
+        let filtered = components.filter { !$0.isEmpty }
+        return filtered.joined(separator: " ")
+    }
+    
+    
     func searchForAlbum(albumName: String, storeFrontID: String,  userToken: String, completion: @escaping (AlbumResponse?, Error?) -> Void) {
         // Set up the search query
         let lock = DispatchSemaphore(value: 1)
@@ -182,9 +189,11 @@ class AppleMusicAPI {
         print("Removed Text in Parentheses...")
         //print(searchTerm)
         var searchTerm = removeAccents(from: albumName)
+        searchTerm = convertMultipleSpacesToSingleSpace(searchTerm)
+
         print("PostAccents:")
         print(searchTerm)
-        searchTerm = removeSpecialCharacters(from: searchTerm).replacingOccurrences(of: "  ", with: " ").replacingOccurrences(of: " ", with: "%20")
+        searchTerm = removeSpecialCharacters(from: searchTerm).replacingOccurrences(of: " ", with: "%20")
         print("Removed SpecChars....")
         print(searchTerm)
         

@@ -39,54 +39,46 @@ struct StartMenu: View {
         Choose a Cover Photo 📸
         Make your Collage 🤳
         Write your Message 📝
-        Add Music 🎶 (optional)
-        Add a gift card 🎁 (optional)
+        Add Music 🎶
         Finalize ✅
 """
     
     
     var body: some View {
         NavigationView {
-            List {
-                Text(buildCardWorkFlow).onTapGesture {self.showOccassions = true}
-                    .fullScreenCover(isPresented: $showOccassions){OccassionsMenu()}
-                Text("Inbox 📥").onTapGesture {self.showInbox = true}
-                    .fullScreenCover(isPresented: $showInbox) {GridofCards(cardsForDisplay: loadCoreCards(), whichBoxVal: .inbox)}
-                Text("Outbox 📥").onTapGesture {self.showOutbox = true}
-                    .fullScreenCover(isPresented: $showOutbox) {GridofCards(cardsForDisplay: loadCoreCards(), whichBoxVal: .outbox)}
-                Text("Calendar 🗓").onTapGesture {self.showCalendar = true}
-                    .fullScreenCover(isPresented: $showCalendar) {CalendarParent(calViewModel: calViewModel, showDetailView: showDetailView)}
-                Text("Preferences 📱").onTapGesture {self.showPref = true}
-                    .fullScreenCover(isPresented: $showPref) {PrefMenu()}
-            }
-            ProgressView()
-                .hidden(appDelegate.showProgViewOnAcceptShare)
-                .tint(.blue)
-                .scaleEffect(5)
-                .progressViewStyle(CircularProgressViewStyle())
+                List {
+                    Text(buildCardWorkFlow)
+                        //.listRowBackground(appDelegate.appColor)
+                        .onTapGesture {self.showOccassions = true}
+                        .fullScreenCover(isPresented: $showOccassions){OccassionsMenu()}
+                    Text("Inbox 📥")
+                        //.listRowBackground(appDelegate.appColor)
+                        .onTapGesture {self.showInbox = true}
+                        .fullScreenCover(isPresented: $showInbox) {GridofCards(cardsForDisplay: loadCoreCards(), whichBoxVal: .inbox)}
+                    Text("Outbox 📥")
+                        //.listRowBackground(appDelegate.appColor)
+                        .onTapGesture {self.showOutbox = true}
+                        .fullScreenCover(isPresented: $showOutbox) {GridofCards(cardsForDisplay: loadCoreCards(), whichBoxVal: .outbox)}
+                    Text("Calendar 🗓")
+                        //.listRowBackground(appDelegate.appColor)
+                        .onTapGesture {self.showCalendar = true}
+                        .fullScreenCover(isPresented: $showCalendar) {CalendarParent(calViewModel: calViewModel, showDetailView: showDetailView)}
+                    Text("Preferences 📱")
+                        //.listRowBackground(appDelegate.appColor)
+                        .onTapGesture {self.showPref = true}
+                        .fullScreenCover(isPresented: $showPref) {PrefMenu()}
+                }
+                //.listRowBackground(appDelegate.appColor)
+                ProgressView()
+                    .hidden(appDelegate.showProgViewOnAcceptShare)
+                    .tint(.blue)
+                    .scaleEffect(5)
+                    .progressViewStyle(CircularProgressViewStyle())
         }
-        //.environmentObject(appDelegate)
-        //.environmentObject(musicSub)
-        //.onChange(of: appDelegate.acceptedShare!){acceptedECard in showEnlargeECard = true}
-        //.onChange(of: sceneDelegate.gotRecord) {acceptedECard in
-            
-       //     if sceneDelegate.coreCard.creator! == self.userID { whichBoxForCKAccept = .outbox}
-       //     else {whichBoxForCKAccept = .inbox}
-       //     print("Calling...")
-        //    print(sceneDelegate.coreCard)
-        //    showEnlargeECard = true
-        //}
+        //.background(appDelegate.appColor)
         .onAppear {
-            
-            
-            
-            
             print("Opened App...")
             print(appDelegate.showProgViewOnAcceptShare)
-            
-            
-            
-            
             appDelegate.startMenuAppeared = true
             print((defaults.object(forKey: "MusicSubType") as? String))
             if (defaults.object(forKey: "MusicSubType") as? String) != nil  {
@@ -96,9 +88,10 @@ struct StartMenu: View {
             }
             else{showPrefMenu = true }
         }
-        //.fullScreenCover(isPresented: $showEnlargeECard){EnlargeECardView(chosenCard: sceneDelegate.coreCard!, share: appDelegate.acceptedShare, cardsForDisplay: loadCoreCards(), whichBoxVal: .inbox)}
         .fullScreenCover(isPresented: $showPrefMenu) {PrefMenu()}
-    }}
+    }
+    
+}
 
 extension StartMenu {
 

@@ -106,6 +106,15 @@ struct eCardView: View {
                 MusicView
             }
         }
+        .onAppear {
+            print("Card Params....")
+            print(appDelegate.musicSub.type)
+            print(songName)
+            print(spotName)
+            print(appDelegate.deferToPreview)
+            print(songAddedUsing)
+            
+        }
     }
     
     func GiftNoMusicView() -> some View {

@@ -34,7 +34,7 @@ struct OccassionsMenu: View {
     @State private var summerCollection: [CollectionPair] = []
     @State private var fallCollection: [CollectionPair] = []
     @State private var otherCollection: [CollectionPair] = []
-    
+    @EnvironmentObject var appDelegate: AppDelegate
     
     
     
@@ -58,7 +58,9 @@ struct OccassionsMenu: View {
         NavigationView {
         List {
             Section(header: Text("Personal & Search")) {
-                Text("Select from Photo Library ").onTapGesture {self.showCameraCapture = false; self.showImagePicker = true}
+                Text("Select from Photo Library ")
+                    //.listRowBackground(appDelegate.appColor)
+                    .onTapGesture {self.showCameraCapture = false; self.showImagePicker = true}
                     .fullScreenCover(isPresented: $showImagePicker){ImagePicker(image: $coverImageFromLibrary)}
                     .onChange(of: coverImageFromLibrary) { _ in loadImage(pic: coverImageFromLibrary!)
                         handlePersonalPhotoSelection()
@@ -66,7 +68,9 @@ struct OccassionsMenu: View {
                         chosenOccassion.occassion = "None"; chosenOccassion.collectionID = "None"
                         }
                     .fullScreenCover(isPresented: $showCollageMenu){CollageStyleMenu()}
-                Text("Take Photo with Camera 📸 ").onTapGesture {
+                Text("Take Photo with Camera 📸 ")
+                    //.listRowBackground(appDelegate.appColor)
+                    .onTapGesture {
                     self.showImagePicker = false
                     self.showCameraCapture = true
                 }
@@ -80,17 +84,21 @@ struct OccassionsMenu: View {
                 .fullScreenCover(isPresented: $showCollageMenu){CollageStyleMenu()}
                 HStack {
                     TextField("Custom Search", text: $customSearch)
+                        //.foregroundColor(appDelegate.appColor)
+                        //.listRowBackground(appDelegate.appColor)
                         .padding(.leading, 5)
                         .frame(height:35)
                     Button {showUCV = true; chosenObject.frontCoverIsPersonalPhoto = 0
                         chosenOccassion.occassion = "None"
                         chosenOccassion.collectionID = (customSearch.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed))!
                     }
-                    label: {Image(systemName: "magnifyingglass.circle.fill")}
+                    label: {Image(systemName: "magnifyingglass.circle.fill").background(appDelegate.appColor)}
                         .fullScreenCover(isPresented: $showUCV) {UnsplashCollectionView()}
                 }
             }
-            Section(header: Text("Year-Round Occassions")) {ForEach(yearRoundCollection) {menuSection(for: $0, shareable: false)}}
+            Section(header: Text("Year-Round Occassions")) {ForEach(yearRoundCollection) {menuSection(for: $0, shareable: false)                //.listRowBackground(appDelegate.appColor)
+                
+            }}
             Section(header: Text("Winter Holidays")) {ForEach(winterCollection) {menuSection(for: $0, shareable: false)}}
             Section(header: Text("Spring Holidays")) {ForEach(springCollection) {menuSection(for: $0, shareable: false)}}
             Section(header: Text("Summer Holidays")) {ForEach(summerCollection) {menuSection(for: $0, shareable: false)}}
