@@ -92,7 +92,7 @@ struct OccassionsMenu: View {
                         chosenOccassion.occassion = "None"
                         chosenOccassion.collectionID = (customSearch.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed))!
                     }
-                    label: {Image(systemName: "magnifyingglass.circle.fill").background(appDelegate.appColor)}
+                    label: {Image(systemName: "magnifyingglass.circle.fill")}
                         .fullScreenCover(isPresented: $showUCV) {UnsplashCollectionView()}
                 }
             }

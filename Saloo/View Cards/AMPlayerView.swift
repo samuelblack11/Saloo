@@ -253,6 +253,7 @@ extension AMPlayerView {
                                             songDuration = Double(track.attributes.durationInMillis) * 0.001
                                             musicPlayer.setQueue(with: [songID!])
                                             musicPlayer.play()
+                                            appDelegate.songJustConverted = true
                                             DispatchQueue.main.async {updateRecordWithNewAMData(songName: songName!, songArtistName: songArtistName!, songID: songID!, songArtImageData: artResponse!, songDuration: String(songDuration!))}
                     })}}
                                 print(">>>")

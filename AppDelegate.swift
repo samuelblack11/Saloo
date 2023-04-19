@@ -15,6 +15,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, ObservableObject {
     @State var coreCard: CoreCard?
     @State var musicSub = MusicSubscription()
     @Published var deferToPreview = false
+    @Published var songJustConverted = false
     @State var startMenuAppeared = false
     @State var gotRecord = false
     @Published var showGrid = false
