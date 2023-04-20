@@ -171,7 +171,11 @@ extension PersistenceController {
                 print("Query operation completed with cursor: \(cursor)")
             }
         }
-        database!.add(queryOperation)
+        
+        
+        
+        if database != nil {database!.add(queryOperation); print("Added data points to CKRecord...")}
+        else {print("Couldn't add data points to CKRecord....")}
         }
     
 

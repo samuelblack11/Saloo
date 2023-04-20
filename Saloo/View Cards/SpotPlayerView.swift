@@ -255,19 +255,8 @@ struct SpotPlayerView: View {
                                             songArtImageData = artResponse!
                                             songDuration = Double(song.duration_ms) * 0.001
                                             playSong()
-                                            
-                                            let ckContainer = PersistenceController.shared.cloudKitContainer
-                                            var database: CKDatabase?
-                                            // Add the query operation to the desired database
-                                            PersistenceController.shared.cloudKitContainer.fetchUserRecordID { ckRecordID, error in
-                                                if coreCard!.creator == (ckRecordID?.recordName)! {database = ckContainer.privateCloudDatabase}
-                                                else {database = ckContainer.sharedCloudDatabase}
-                                            }
-                                            
-                                            if database != nil {
-                                                print("Database not nil...")
-                                                DispatchQueue.main.async {updateRecordWithNewSPOTData(spotName: song.name, spotArtistName: allArtists2, spotID: song.id, songArtImageData: artResponse!, songDuration: String(Double(song.duration_ms) * 0.001))}
-                                            }
+                        
+                                            DispatchQueue.main.async {updateRecordWithNewSPOTData(spotName: song.name, spotArtistName: allArtists2, spotID: song.id, songArtImageData: artResponse!, songDuration: String(Double(song.duration_ms) * 0.001))}
                                         }); foundMatch = true}
                                 }
                                 if songPreviewURL != nil && foundMatch == false {
