@@ -49,8 +49,6 @@ struct AMPlayerView: View {
     @State var levDistances: [Int] = []
     //@State var foundMatch = "isSearching"
     @State var breakTrigger1 = false
-    @Binding var deferToPreview: Bool?
-    @Binding var chosenGridCard: CoreCard?
 
     var body: some View {
             AMPlayerView
@@ -63,7 +61,7 @@ struct AMPlayerView: View {
                         print("Calling completion...")
                         musicPlayer.pause()
                         showGrid = true
-                        chosenGridCard = nil
+                appDelegate.chosenGridCard = nil
             } label: {Image(systemName: "chevron.left").foregroundColor(.blue); Text("Back")})
     }
     
@@ -261,23 +259,23 @@ extension AMPlayerView {
                                                 updateRecordWithNewAMData(songName: songName!, songArtistName: songArtistName!, songID: songID!, songArtImageData: artResponse!, songDuration: String(songDuration!))
                                             }})}
                                     
-                                    if trackIndex == trackList.count - 1 && albumIndex == albumList.count - 1 && foundMatch != "foundMatch" {
-                                        print("search did fail...")
-                                        foundMatch = "searchFailed"
-                                        if songPreviewURL != nil {
-                                            print("Defer to preview")
-                                            DispatchQueue.main.async {
-                                                updateRecordWithNewAMData(songName: "LookupFailed", songArtistName: "LookupFailed", songID: "LookupFailed", songArtImageData: Data(), songDuration: String(0))
-                                            }
-                                            appDelegate.deferToPreview = true
-                                            deferToPreview = true
+                                    
+                                }
+                                if albumIndex == albumList.count - 1 && foundMatch != "foundMatch" {
+                                    print("search did fail...")
+                                    foundMatch = "searchFailed"
+                                    if songPreviewURL != nil {
+                                        print("Defer to preview")
+                                        appDelegate.deferToPreview = true
+                                        //deferToPreview = true
+                                        DispatchQueue.main.async {
+                                            updateRecordWithNewAMData(songName: "LookupFailed", songArtistName: "LookupFailed", songID: "LookupFailed", songArtImageData: Data(), songDuration: String(0))
                                         }
-                                        
                                     }
                                     
                                 }
                                 
-                            }}})
+                    }}})
                     //if foundMatch == "foundMatch" || albumIndex == albumList.count - 1 {
                     //    break // Exit the loop if a match is found or if this is the last album
                     //}

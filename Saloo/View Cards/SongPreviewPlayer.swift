@@ -31,7 +31,6 @@ struct SongPreviewPlayer: View {
     @State var songAddedUsing: String
     @State var color: Color?
     @State var player: AVPlayer?
-    @Binding var chosenGridCard: CoreCard?
 
     var body: some View {
         //NavigationView {
@@ -39,7 +38,8 @@ struct SongPreviewPlayer: View {
         //}
             .onAppear{print("PREVIEW PLAYER APPEARED....")}
             .navigationBarItems(leading:Button {
-            player?.pause();player?.replaceCurrentItem(with: nil); chosenGridCard = nil
+            player?.pause();player?.replaceCurrentItem(with: nil); appDelegate.chosenGridCard = nil
+                
             } label: {Image(systemName: "chevron.left").foregroundColor(.blue); Text("Back")})
         
     }

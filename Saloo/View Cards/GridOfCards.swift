@@ -67,7 +67,7 @@ struct GridofCards: View {
                     }
                 }
             }
-            .fullScreenCover(item: $chosenGridCard, onDismiss: didDismiss) {chosenCard in EnlargeECardView(chosenCard: chosenCard, cardsForDisplay: cardsForDisplay, whichBoxVal: whichBoxVal, chosenGridCard: $chosenGridCard, chosenGridCardType: $chosenGridCardType)}
+            .fullScreenCover(item: $appDelegate.chosenGridCard, onDismiss: didDismiss) {chosenCard in EnlargeECardView(chosenCard: chosenCard, cardsForDisplay: cardsForDisplay, whichBoxVal: whichBoxVal)}
             .navigationTitle("Your Cards")
             .navigationBarItems(leading:Button {showStartMenu.toggle()} label: {Image(systemName: "chevron.left").foregroundColor(.blue); Text("Back")})
         }
@@ -79,7 +79,7 @@ struct GridofCards: View {
     
     func didDismiss() {
         print("Did Dismiss.....")
-        chosenGridCard = nil
+        appDelegate.chosenGridCard = nil
     }
     
     private func cardView(for gridCard: CoreCard, shareable: Bool = true) -> some View {
@@ -146,7 +146,7 @@ extension GridofCards {
                 .disabled(shareStatus(card: card).0)
         }
         Button("Manage Participation") { manageParticipation(coreCard: card)}
-        Button {chosenGridCard = card; chosenGridCardType = card.cardType;segueToEnlarge = true} label: {Text("Enlarge eCard"); Image(systemName: "plus.magnifyingglass")}
+        Button {appDelegate.chosenGridCard = card; chosenGridCardType = card.cardType;segueToEnlarge = true} label: {Text("Enlarge eCard"); Image(systemName: "plus.magnifyingglass")}
         Button {deleteCoreCard(coreCard: card)} label: {Text("Delete eCard"); Image(systemName: "trash").foregroundColor(.red)}
         Button {showDeliveryScheduler = true} label: {Text("Schedule eCard Delivery")}
         }

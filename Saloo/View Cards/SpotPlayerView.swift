@@ -57,8 +57,6 @@ struct SpotPlayerView: View {
     @State var spotAlbumID: String?
     @State var spotImageURL: String?
     let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
-    @Binding var deferToPreview: Bool?
-    @Binding var chosenGridCard: CoreCard?
 
     var body: some View {
             SpotPlayerView2
@@ -85,7 +83,7 @@ struct SpotPlayerView: View {
                 print("Did view disappear???")
                 appRemote2?.playerAPI?.pause()
             }
-            .navigationBarItems(leading:Button {chosenGridCard = nil
+            .navigationBarItems(leading:Button {appDelegate.chosenGridCard = nil
             } label: {Image(systemName: "chevron.left").foregroundColor(.blue); Text("Back")})
     }
     
@@ -265,7 +263,7 @@ struct SpotPlayerView: View {
                                 if songPreviewURL != nil && foundMatch == false {
                                     print("Defer to preview")
                                     appDelegate.deferToPreview = true
-                                    deferToPreview = true
+                                    //deferToPreview = true
                                     DispatchQueue.main.async {updateRecordWithNewSPOTData(spotName: "LookupFailed", spotArtistName: "LookupFailed", spotID: "LookupFailed", songArtImageData: Data(), songDuration: String(0))}
                                 }
                                 else { print("Else called to change card type...")
