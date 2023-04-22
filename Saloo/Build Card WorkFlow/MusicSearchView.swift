@@ -441,7 +441,7 @@ extension MusicSearchView {
                             
                             let songForList = SongForList(id: song.id, name: song.name, artistName: allArtists, albumName: song.album!.name, artImageData: artResponse!, durationInMillis: song.duration_ms, isPlaying: false, previewURL: songPrev!)
                             if song.restrictions?.reason == nil {
-                                if containsString(listOfSubStrings: songKeyWordsToFilterOut, songName: songForList.name) {
+                                if containsString(listOfSubStrings: songKeyWordsToFilterOut, songName: songForList.name) || containsString(listOfSubStrings: songKeyWordsToFilterOut, songName: songForList.albumName) || song.album?.album_type == "single" {
                                     print("Contains prohibited substring")
                                 }
                                 else{searchResults.append(songForList)}

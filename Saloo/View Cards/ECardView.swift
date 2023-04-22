@@ -59,16 +59,8 @@ struct eCardView: View {
     
     func previewToPass() -> String {
         var previewToPass =  String()
-        print("Preview Function...")
-        print(spotPreviewURL)
-        print(songPreviewURL)
-        
-        
-        
         if spotPreviewURL!.count == 0 || spotPreviewURL! == "LookupFailed" {previewToPass = songPreviewURL!}
         else if songPreviewURL!.count == 0 || songPreviewURL! == "LookupFailed" {previewToPass = spotPreviewURL!}
-        print("Preview...")
-        print(previewToPass)
         return previewToPass
     }
     
@@ -186,6 +178,21 @@ struct eCardView: View {
             .multilineTextAlignment(.center)
             .frame(maxHeight: .infinity)
     }
+    
+    func previewVarsToPass() -> (String, String, String, Data, String, String) {
+        var id = String();var name = String();var artistName = String();var imageData = Data();var duration = String();var previewURL = String()
+        if songAddedUsing == "Spotify" {
+            
+            
+            
+        }
+        
+        
+        
+        return id, name, artistName, imageData, duration, previewURL
+    }
+    
+    
  
     var MusicView: some View {
         VStack {
@@ -200,7 +207,7 @@ struct eCardView: View {
             }
             if (appDelegate.musicSub.type == .Neither) || (appDelegate.deferToPreview == true) || spotName == "LookupFailed"  || songName == "LookupFailed" {
                 if songAddedUsing! == "Spotify"  {
-                    SongPreviewPlayer(songID: songID, songName: spotName, songArtistName: spotArtistName, songArtImageData: spotImageData, songDuration: spotSongDuration, songPreviewURL: previewToPass(), confirmButton: false, showFCV: $showFCV, songAddedUsing: songAddedUsing!)
+                    SongPreviewPlayer(songID: spotID, songName: spotName, songArtistName: spotArtistName, songArtImageData: spotImageData, songDuration: spotSongDuration, songPreviewURL: previewToPass(), confirmButton: false, showFCV: $showFCV, songAddedUsing: songAddedUsing!)
                         .onDisappear{if player?.timeControlStatus.rawValue == 2 {player?.pause()}}
                         .frame(maxHeight: .infinity, alignment: .bottom)
                 }

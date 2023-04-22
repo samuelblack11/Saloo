@@ -259,19 +259,21 @@ extension AMPlayerView {
                                 print(albumList.count)
                                 print(index)
                                 print(foundMatch)
-                                if index == albumList.count - 1 {if foundMatch != "foundMatch" {foundMatch = "searchFailed" }}
-                                
-                }}})}
-            }
-                print("Found Match....")
-                print(foundMatch)
-                if songPreviewURL != nil && foundMatch != "isSearching" && foundMatch != "foundMatch" {
-                    print("Defer to preview")
-                    appDelegate.deferToPreview = true
-                    updateRecordWithNewAMData(songName: "LookupFailed", songArtistName: "LookupFailed", songID: "LookupFailed", songArtImageData: Data(), songDuration: String(0))
-                }
-                else {print("Else called to change card type...")//appDelegate.chosenGridCard?.cardType = "noMusicNoGift"
-                }})}
+                                if index == albumList.count - 1 {
+                                    if foundMatch != "foundMatch" {
+                                        foundMatch = "searchFailed"
+                                        print("Found Match....")
+                                        print(foundMatch)
+                                        if songPreviewURL != nil {
+                                            print("Defer to preview")
+                                            appDelegate.deferToPreview = true
+                                            updateRecordWithNewAMData(songName: "LookupFailed", songArtistName: "LookupFailed", songID: "LookupFailed", songArtImageData: Data(), songDuration: String(0))
+                                        }
+                                        else {print("Else called to change card type...")//appDelegate.chosenGridCard?.cardType = "noMusicNoGift"
+                                        }
+                                    }
+                }}}})}
+            }})}
     
     func updateRecordWithNewAMData(songName: String, songArtistName: String, songID: String, songArtImageData: Data, songDuration: String) {
         let controller = PersistenceController.shared

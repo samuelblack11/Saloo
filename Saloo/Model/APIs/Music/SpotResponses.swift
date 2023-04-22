@@ -42,6 +42,7 @@ struct AlbumData: Decodable, Hashable {
     let name: String
     let id: String
     let images: [AlbumImages]
+    let album_type: String
     
     func hash(into hasher: inout Hasher) {
         hasher.combine(id)

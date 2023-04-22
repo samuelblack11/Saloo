@@ -181,13 +181,9 @@ class AppleMusicAPI {
         // Set up the search query
         let lock = DispatchSemaphore(value: 1)
         let searchURL = "https://api.music.apple.com/v1/catalog/\(storeFrontID)/search"
-        //let searchTerm = albumName.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
-        //let searchTerm = albumName.replacingOccurrences(of: "&", with: "").replacingOccurrences(of: "  ", with: " ").replacingOccurrences(of: " ", with: "%20")
         print("PreAccents:")
         print(albumName)
-        //var searchTerm = removeTextInParentheses(albumName)
         print("Removed Text in Parentheses...")
-        //print(searchTerm)
         var searchTerm = removeAccents(from: albumName)
         searchTerm = convertMultipleSpacesToSingleSpace(searchTerm)
 
@@ -197,19 +193,16 @@ class AppleMusicAPI {
         print("Removed SpecChars....")
         print(searchTerm)
         
-        
         let searchType = "albums"
         print("searchForAlbum SearchTerm....")
         let fullURL = "\(searchURL)?term=\(searchTerm)&types=\(searchType)&limit=25"
         print(fullURL)
-        
         
         // Set up the request
         var request = URLRequest(url: URL(string: fullURL)!)
         request.httpMethod = "GET"
         request.addValue("Bearer \(devToken)", forHTTPHeaderField: "Authorization")
         request.addValue(userToken, forHTTPHeaderField: "Music-User-Token")
-        //request.addValue("application/json", forHTTPHeaderField: "Content-Type")
         
         // Send the request
         URLSession.shared.dataTask(with: request) { (data, response, error) in
