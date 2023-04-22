@@ -23,6 +23,20 @@ struct ConfirmFrontCoverView: View {
     @State var frontCoverUserName: String!
     @State private var segueToCollageMenu = false
     @State private var presentPrior = false
+    
+    func getCoverSize() -> (CGSize, Double) {
+        var size = CGSize()
+        var widthToHeightRatio = Double()
+        if let image = UIImage(data: chosenObject.coverImage) {
+            let imageSize = image.size
+            size = imageSize
+        }
+        print("Image Size....")
+        widthToHeightRatio = size.width/size.height
+        print(size)
+        print(widthToHeightRatio)
+        return (size, widthToHeightRatio)
+    }
 
     var body: some View {
         NavigationView {
@@ -51,6 +65,7 @@ struct ConfirmFrontCoverView: View {
             }.padding(.bottom, 10).fullScreenCover(isPresented: $showCollageMenu) {CollageStyleMenu()}
             Text("(Attribution Will Be Included on Back Cover)").font(.system(size: 12)).padding(.bottom, 20)
             }
+        .onAppear{getCoverSize()}
         .navigationBarItems(leading:
             Button {
                 print("Back button tapped")

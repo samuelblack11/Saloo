@@ -13,6 +13,41 @@ import AVFoundation
 import AVFAudio
 struct eCardView: View {
     
+    func MusicAndGiftView() -> some View {
+        
+        HStack {
+            VStack {
+                CoverView()
+                NoteView()
+                CollageAndAnnotationView()
+            }
+            VStack {
+                GiftView()
+                MusicView
+            }
+        }
+    }
+    
+    func GiftNoMusicView() -> some View {
+        HStack {
+            VStack {
+                CoverView()
+                CollageAndAnnotationView()
+            }
+            VStack {
+                NoteView()
+                GiftView()
+            }
+        }
+    }
+    
+    func NoMusicNoGift() -> some View {
+        VStack {
+            CoverView()
+            CollageAndAnnotationView()
+        }
+    }
+    
     @State var eCardText: String
     @State var font: String
     @State var coverImage: Data
@@ -57,78 +92,123 @@ struct eCardView: View {
     @State var accessedViaGrid = true
     @State var fromFinalize = false
     @State private var deferToPreview: Bool?
+    
+        //.onAppear {
+        //    print("Card Params....")
+        //    getCoverSize()
+        //    print(UIScreen.screenHeight)
+        //    print(UIScreen.screenWidth)
+        //    print(appDelegate.musicSub.type)
+        //    print(songName)
+        //    print(spotName)
+        //    print(deferToPreview)
+        //    print(songAddedUsing)
+        //}
+    
+    
+    func getCoverSize() -> (CGSize, Double) {
+        var size = CGSize()
+        var widthToHeightRatio = Double()
+        if let image = UIImage(data: coverImage) {
+            let imageSize = image.size
+            size = imageSize
+        }
+        print("Image Size....")
+        widthToHeightRatio = size.width/size.height
+        print(size)
+        print(widthToHeightRatio)
+        return (size, widthToHeightRatio)
+    }
+    
+    func scaledFrame(for size: CGSize, scalingFactor: CGFloat) -> CGRect {
+        let maxWidth = size.width * scalingFactor
+        let maxHeight = size.height * scalingFactor
+        let aspectRatio = size.width / size.height
+
+        var width = maxWidth
+        var height = maxHeight
+
+        if aspectRatio > 1 {
+            // landscape image
+            height = maxWidth / aspectRatio
+        } else {
+            // portrait image
+            width = maxHeight * aspectRatio
+        }
+
+        let x = (maxWidth - width) / 2
+        let y = (maxHeight - height) / 2
+
+        return CGRect(x: x, y: y, width: width, height: height)
+    }
+
+    
+    
+    
+    
 
     var body: some View {
         //if cardType == "musicAndGift" {MusicAndGiftView()}
         //if cardType == "musicNoGift" {MusicNoGiftView()}
-        MusicNoGiftView()
+        MusicNoGiftView
         //if cardType == "giftNoMusic" {GiftNoMusicView()}
         //if cardType == "noMusicNoGift" {NoMusicNoGift()}
     }
     
-    func MusicAndGiftView() -> some View {
-        HStack {
-            VStack {
-                CoverView()
-                NoteView()
-                CollageAndAnnotationView()
-            }
-            VStack {
-                GiftView()
-                MusicView
-            }
-        }
-    }
     
-    func MusicNoGiftView() -> some View {
-        HStack {
-            VStack {
-                CoverView()
-                Spacer()
-                CollageAndAnnotationView()
-            }
-            VStack {
-                NoteView()
-                MusicView
-            }
-        }
-        .onAppear {
-            print("Card Params....")
-            print(appDelegate.musicSub.type)
-            print(songName)
-            print(spotName)
-            print(deferToPreview)
-            print(songAddedUsing)
-            
-        }
-    }
     
-    func GiftNoMusicView() -> some View {
-        HStack {
-            VStack {
-                CoverView()
-                CollageAndAnnotationView()
-            }
-            VStack {
-                NoteView()
-                GiftView()
-            }
-        }
-    }
-    
-    func NoMusicNoGift() -> some View {
+    var MusicNoGiftView: some View {
         VStack {
-            CoverView()
-            CollageAndAnnotationView()
+            if getCoverSize().1 < 1.3 {
+                HStack {
+                    VStack {CoverViewTall(); Spacer(); CollageAndAnnotationView()}
+                    VStack {NoteViewSquare(); MusicView}
+                }
+            }
+            else {
+                VStack {
+                    VStack {CoverViewWide(); NoteView()}
+                    HStack {CollageAndAnnotationView(); MusicView}
+                }
+            }
         }
     }
     
     func CoverView() -> some View {
         return Image(uiImage: UIImage(data: coverImage)!)
-            .interpolation(.none).resizable().scaledToFit()
+                //.interpolation(.none).resizable().scaledToFit()
     }
     
+    func CoverViewWide() -> some View {
+        return Image(uiImage: UIImage(data: coverImage)!)
+                .interpolation(.none).resizable()
+                .frame(maxWidth: UIScreen.main.bounds.width / 1.1, maxHeight: UIScreen.main.bounds.height / 3.7)
+                .scaledToFill()
+                //.resizable()
+                //.aspectRatio(contentMode: .fit)
+                
+    }
+    
+    func CoverViewTall() -> some View {
+        return Image(uiImage: UIImage(data: coverImage)!)
+            //.interpolation(.none).resizable().scaledToFit()
+            .resizable()
+            .aspectRatio(contentMode: .fit)
+            .frame(maxWidth: UIScreen.main.bounds.height / 2.2, maxHeight: UIScreen.main.bounds.height / 2.3)
+    }
+    
+    
+    
     func NoteView() -> some View {
+        return
+        Text(eCardText)
+            .font(Font.custom(font, size: 500)).minimumScaleFactor(0.01)
+            .frame(width: UIScreen.screenWidth/2.2, height: UIScreen.screenHeight/3.8)
+    }
+    
+    
+    
+    func NoteViewSquare() -> some View {
         return
         Text(eCardText)
             .font(Font.custom(font, size: 500)).minimumScaleFactor(0.01)
