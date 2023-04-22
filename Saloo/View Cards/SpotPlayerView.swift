@@ -57,10 +57,12 @@ struct SpotPlayerView: View {
     @State var spotAlbumID: String?
     @State var spotImageURL: String?
     let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
-
+    @Binding var deferToPreview: Bool?
+    
     var body: some View {
             SpotPlayerView2
             .onAppear{
+                print("SPOT PLAYER APPEARED....")
                 if accessedViaGrid && appDelegate.musicSub.type == .Spotify {
                     print("Run1")
                     showProgressView = true
@@ -262,6 +264,7 @@ struct SpotPlayerView: View {
                                 if songPreviewURL != nil && foundMatch == false {
                                     print("Defer to preview")
                                     appDelegate.deferToPreview = true
+                                    deferToPreview = true
                                     DispatchQueue.main.async {updateRecordWithNewSPOTData(spotName: "LookupFailed", spotArtistName: "LookupFailed", spotID: "LookupFailed", songArtImageData: Data(), songDuration: String(0))}
                                 }
                                 else { print("Else called to change card type...")

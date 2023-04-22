@@ -49,11 +49,12 @@ struct AMPlayerView: View {
     @State var levDistances: [Int] = []
     @State var foundMatch = "isSearching"
     @State var breakTrigger1 = false
+    @Binding var deferToPreview: Bool
 
     var body: some View {
             AMPlayerView
             .fullScreenCover(isPresented: $showWriteNote) {WriteNoteView()}
-            .onAppear{if songArtImageData == nil{getAMUserToken(); getAMStoreFront()}}
+            .onAppear{print("AM PLAYER APPEARED...."); if songArtImageData == nil{getAMUserToken(); getAMStoreFront()}}
             //.onAppear{if songName! == nil{getAMUserToken(); getAMStoreFront()}}
 
             .navigationBarItems(leading:Button {
@@ -228,11 +229,13 @@ extension AMPlayerView {
     func convertSong() {
         amAPI.searchForAlbum(albumName: removeSubstrings(from: songAlbumName!, removeList: appDelegate.songKeyWordsToFilterOut), storeFrontID: amAPI.storeFrontID!, userToken: amAPI.taskToken!, completion: {(albumResponse, error) in
             print("Tried to Convert...\(removeSubstrings(from: songAlbumName!, removeList: appDelegate.songKeyWordsToFilterOut))")
+            print(error?.localizedDescription)
             if error != nil {foundMatch = "searchFailed"}
             let cleanSpotString = cleanSPOTSongForAMComparison(spotSongName: spotName!, spotSongArtist: spotArtistName!)
             if let albumList = albumResponse?.results.albums.data {
                 for (index, album) in albumList.enumerated() {
                     print("Album Object from AM...")
+                    print(appDelegate.deferToPreview)
                     print("----\(album.attributes.name)----\(album.id)")
                     AppleMusicAPI().getAlbumTracks(albumId: album.id, storefrontId: amAPI.storeFrontID!, userToken: amAPI.taskToken!, completion: { (trackResponse, error) in
                         if trackResponse != nil {

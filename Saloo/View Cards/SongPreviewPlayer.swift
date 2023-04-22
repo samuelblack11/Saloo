@@ -36,6 +36,7 @@ struct SongPreviewPlayer: View {
         //NavigationView {
         PreviewPlayerView()
         //}
+            .onAppear{print("PREVIEW PLAYER APPEARED....")}
             .navigationBarItems(leading:Button {
             player?.pause();player?.replaceCurrentItem(with: nil); appDelegate.chosenGridCard = nil
             } label: {Image(systemName: "chevron.left").foregroundColor(.blue); Text("Back")})
@@ -119,7 +120,12 @@ struct SongPreviewPlayer: View {
             selectButtonPreview
         }
         .onAppear{
+            
             print("OnAppear Prev Player called")
+            print(appDelegate.musicSub.type)
+            print(appDelegate.deferToPreview )
+            print(songName)
+
             createPlayer()
             player?.play()
             if songAddedUsing == "Spotify" {color = .green}
