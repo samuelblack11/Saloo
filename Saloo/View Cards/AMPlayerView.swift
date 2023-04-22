@@ -47,9 +47,10 @@ struct AMPlayerView: View {
     @State var appleAlbumArtist: String?
     @State var spotAlbumArtist: String?
     @State var levDistances: [Int] = []
-    @State var foundMatch = "isSearching"
+    //@State var foundMatch = "isSearching"
     @State var breakTrigger1 = false
-    @Binding var deferToPreview: Bool
+    @Binding var deferToPreview: Bool?
+    @Binding var chosenGridCard: CoreCard?
 
     var body: some View {
             AMPlayerView
@@ -62,7 +63,7 @@ struct AMPlayerView: View {
                         print("Calling completion...")
                         musicPlayer.pause()
                         showGrid = true
-                appDelegate.chosenGridCard = nil
+                        chosenGridCard = nil
             } label: {Image(systemName: "chevron.left").foregroundColor(.blue); Text("Back")})
     }
     
@@ -227,25 +228,25 @@ extension AMPlayerView {
     
     
     func convertSong() {
+        var foundMatch = "isSearching" // Move this variable to the outer loop
         amAPI.searchForAlbum(albumName: removeSubstrings(from: songAlbumName!, removeList: appDelegate.songKeyWordsToFilterOut), storeFrontID: amAPI.storeFrontID!, userToken: amAPI.taskToken!, completion: {(albumResponse, error) in
             print("Tried to Convert...\(removeSubstrings(from: songAlbumName!, removeList: appDelegate.songKeyWordsToFilterOut))")
             print(error?.localizedDescription)
-            if error != nil {foundMatch = "searchFailed"}
+            //if error != nil {foundMatch = "searchFailed"}
             let cleanSpotString = cleanSPOTSongForAMComparison(spotSongName: spotName!, spotSongArtist: spotArtistName!)
             if let albumList = albumResponse?.results.albums.data {
-                for (index, album) in albumList.enumerated() {
+                for (albumIndex, album) in albumList.enumerated() {
+                    print("Album Index....\(albumIndex)")
                     print("Album Object from AM...")
-                    print(appDelegate.deferToPreview)
                     print("----\(album.attributes.name)----\(album.id)")
                     AppleMusicAPI().getAlbumTracks(albumId: album.id, storefrontId: amAPI.storeFrontID!, userToken: amAPI.taskToken!, completion: { (trackResponse, error) in
                         if trackResponse != nil {
                             if let trackList = trackResponse?.data {
-                                for track in trackList {
+                                for (trackIndex, track) in trackList.enumerated() {
+                                    print("Track Index....\(trackIndex)")
                                     if containsSameWords(cleanAMSongForSPOTComparison(amSongName: track.attributes.name, amSongArtist: track.attributes.artistName), cleanSpotString) {
                                         foundMatch = "foundMatch"
                                         print("SSSSS")
-                                        print(foundMatch)
-                                        print(track)
                                         print(Double(track.attributes.durationInMillis) * 0.001)
                                         let artURL = URL(string:album.attributes.artwork.url.replacingOccurrences(of: "{w}", with: "80").replacingOccurrences(of: "{h}", with: "80"))
                                         let _ = getURLData(url: artURL!, completionHandler: { (artResponse, error2) in
@@ -256,27 +257,43 @@ extension AMPlayerView {
                                             songDuration = Double(track.attributes.durationInMillis) * 0.001
                                             musicPlayer.setQueue(with: [songID!])
                                             musicPlayer.play()
-                                            DispatchQueue.main.async {updateRecordWithNewAMData(songName: songName!, songArtistName: songArtistName!, songID: songID!, songArtImageData: artResponse!, songDuration: String(songDuration!))}
-                    })}}
-                                print(">>>")
-                                print(albumList.count)
-                                print(index)
-                                print(foundMatch)
-                                if index == albumList.count - 1 {
-                                    if foundMatch != "foundMatch" {
+                                            DispatchQueue.main.async {
+                                                updateRecordWithNewAMData(songName: songName!, songArtistName: songArtistName!, songID: songID!, songArtImageData: artResponse!, songDuration: String(songDuration!))
+                                            }})}
+                                    
+                                    if trackIndex == trackList.count - 1 && albumIndex == albumList.count - 1 && foundMatch != "foundMatch" {
+                                        print("search did fail...")
                                         foundMatch = "searchFailed"
-                                        print("Found Match....")
-                                        print(foundMatch)
                                         if songPreviewURL != nil {
                                             print("Defer to preview")
+                                            DispatchQueue.main.async {
+                                                updateRecordWithNewAMData(songName: "LookupFailed", songArtistName: "LookupFailed", songID: "LookupFailed", songArtImageData: Data(), songDuration: String(0))
+                                            }
                                             appDelegate.deferToPreview = true
-                                            updateRecordWithNewAMData(songName: "LookupFailed", songArtistName: "LookupFailed", songID: "LookupFailed", songArtImageData: Data(), songDuration: String(0))
+                                            deferToPreview = true
                                         }
-                                        else {print("Else called to change card type...")//appDelegate.chosenGridCard?.cardType = "noMusicNoGift"
-                                        }
+                                        
                                     }
-                }}}})}
-            }})}
+                                    
+                                }
+                                
+                            }}})
+                    //if foundMatch == "foundMatch" || albumIndex == albumList.count - 1 {
+                    //    break // Exit the loop if a match is found or if this is the last album
+                    //}
+                }
+                //if foundMatch == "searchFailed" { // If no match was found
+                //    print("Found Match....")
+                //    print("searchFailed")
+                //    if songPreviewURL != nil {
+                //        print("Defer to preview")
+                //        appDelegate.deferToPreview = true
+                 //       deferToPreview = true
+                 //   }
+                //}
+            }
+        })}
+                       
     
     func updateRecordWithNewAMData(songName: String, songArtistName: String, songID: String, songArtImageData: Data, songDuration: String) {
         let controller = PersistenceController.shared
@@ -286,7 +303,6 @@ extension AMPlayerView {
         print("About to run AM Data update on the CKRecord....")
         controller.updateRecordWithAMData(for: coreCard!, in: taskContext, with: ckContainer.privateCloudDatabase, songName: songName, songArtistName: songArtistName,songID: songID, songImageData: songArtImageData, songDuration: songDuration, completion: { (error) in
             print("Updated Record...")
-            print(foundMatch)
             print(error as Any)
         } )
     }

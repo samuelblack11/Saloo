@@ -46,6 +46,7 @@ struct GridofCards: View {
     @State var cardSelectionNumber: Int?
     @State var chosenGridCard: CoreCard? = nil
     @EnvironmentObject var appDelegate: AppDelegate
+    @State var chosenGridCardType: String?
 
     var sortOptions = ["Date","Card Name","Occassion"]
     
@@ -66,7 +67,7 @@ struct GridofCards: View {
                     }
                 }
             }
-            .fullScreenCover(item: $appDelegate.chosenGridCard, onDismiss: didDismiss) {chosenCard in EnlargeECardView(chosenCard: chosenCard, cardsForDisplay: cardsForDisplay, whichBoxVal: whichBoxVal)}
+            .fullScreenCover(item: $chosenGridCard, onDismiss: didDismiss) {chosenCard in EnlargeECardView(chosenCard: chosenCard, cardsForDisplay: cardsForDisplay, whichBoxVal: whichBoxVal, chosenGridCard: $chosenGridCard, chosenGridCardType: $chosenGridCardType)}
             .navigationTitle("Your Cards")
             .navigationBarItems(leading:Button {showStartMenu.toggle()} label: {Image(systemName: "chevron.left").foregroundColor(.blue); Text("Back")})
         }
@@ -77,7 +78,8 @@ struct GridofCards: View {
     }
     
     func didDismiss() {
-        appDelegate.chosenGridCard = nil
+        print("Did Dismiss.....")
+        chosenGridCard = nil
     }
     
     private func cardView(for gridCard: CoreCard, shareable: Bool = true) -> some View {
@@ -144,7 +146,7 @@ extension GridofCards {
                 .disabled(shareStatus(card: card).0)
         }
         Button("Manage Participation") { manageParticipation(coreCard: card)}
-        Button {appDelegate.chosenGridCard = card; appDelegate.chosenGridCardType = card.cardType;segueToEnlarge = true} label: {Text("Enlarge eCard"); Image(systemName: "plus.magnifyingglass")}
+        Button {chosenGridCard = card; chosenGridCardType = card.cardType;segueToEnlarge = true} label: {Text("Enlarge eCard"); Image(systemName: "plus.magnifyingglass")}
         Button {deleteCoreCard(coreCard: card)} label: {Text("Delete eCard"); Image(systemName: "trash").foregroundColor(.red)}
         Button {showDeliveryScheduler = true} label: {Text("Schedule eCard Delivery")}
         }

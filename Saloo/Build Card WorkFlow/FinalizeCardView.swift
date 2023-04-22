@@ -48,6 +48,7 @@ struct FinalizeCardView: View {
     @State private var activeShare: CKShare?
     @State private var activeContainer: CKContainer?
     @State var cardType: String
+    @State var emptyCoreCard: CoreCard?
     var config = SPTConfiguration(clientID: "d15f76f932ce4a7c94c2ecb0dfb69f4b", redirectURL: URL(string: "saloo://")!)
     var appRemote2: SPTAppRemote?
     var defaultCallback: SPTAppRemoteCallback? {
@@ -93,7 +94,7 @@ struct FinalizeCardView: View {
         NavigationView {
         VStack(spacing: 0) {
             VStack{
-                eCardView(eCardText: noteField.noteText, font: noteField.font, coverImage: chosenObject.coverImage, collageImage: collageImage.collageImage, text1: annotation.text1, text2: annotation.text2, text2URL: annotation.text2URL, text3: annotation.text3, text4: annotation.text4, songID: chosenSong.id, spotID: chosenSong.spotID, spotName: chosenSong.spotName, spotArtistName: chosenSong.spotArtistName, songName: chosenSong.name, songArtistName: chosenSong.artistName, songArtImageData: chosenSong.artwork, songDuration: chosenSong.durationInSeconds, songPreviewURL: chosenSong.songPreviewURL, inclMusic: addMusic.addMusic, spotImageData: chosenSong.spotImageData, spotSongDuration: chosenSong.spotSongDuration, spotPreviewURL: chosenSong.spotPreviewURL, songAddedUsing: chosenSong.songAddedUsing, appRemote2: appRemote2, cardType: cardType,accessedViaGrid: false, fromFinalize: true)
+                eCardView(eCardText: noteField.noteText, font: noteField.font, coverImage: chosenObject.coverImage, collageImage: collageImage.collageImage, text1: annotation.text1, text2: annotation.text2, text2URL: annotation.text2URL, text3: annotation.text3, text4: annotation.text4, songID: chosenSong.id, spotID: chosenSong.spotID, spotName: chosenSong.spotName, spotArtistName: chosenSong.spotArtistName, songName: chosenSong.name, songArtistName: chosenSong.artistName, songArtImageData: chosenSong.artwork, songDuration: chosenSong.durationInSeconds, songPreviewURL: chosenSong.songPreviewURL, inclMusic: addMusic.addMusic, spotImageData: chosenSong.spotImageData, spotSongDuration: chosenSong.spotSongDuration, spotPreviewURL: chosenSong.spotPreviewURL, songAddedUsing: chosenSong.songAddedUsing, appRemote2: appRemote2, cardType: cardType,accessedViaGrid: false, fromFinalize: true, chosenGridCard: $emptyCoreCard)
             }
             VStack{saveButton}
         }

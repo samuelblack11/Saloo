@@ -58,7 +58,8 @@ struct SpotPlayerView: View {
     @State var spotImageURL: String?
     let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
     @Binding var deferToPreview: Bool?
-    
+    @Binding var chosenGridCard: CoreCard?
+
     var body: some View {
             SpotPlayerView2
             .onAppear{
@@ -84,7 +85,7 @@ struct SpotPlayerView: View {
                 print("Did view disappear???")
                 appRemote2?.playerAPI?.pause()
             }
-            .navigationBarItems(leading:Button {appDelegate.chosenGridCard = nil
+            .navigationBarItems(leading:Button {chosenGridCard = nil
             } label: {Image(systemName: "chevron.left").foregroundColor(.blue); Text("Back")})
     }
     
