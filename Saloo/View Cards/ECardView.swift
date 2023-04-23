@@ -13,41 +13,6 @@ import AVFoundation
 import AVFAudio
 struct eCardView: View {
     
-    func MusicAndGiftView() -> some View {
-        
-        HStack {
-            VStack {
-                CoverView()
-                NoteView()
-                CollageAndAnnotationView()
-            }
-            VStack {
-                GiftView()
-                MusicView
-            }
-        }
-    }
-    
-    func GiftNoMusicView() -> some View {
-        HStack {
-            VStack {
-                CoverView()
-                CollageAndAnnotationView()
-            }
-            VStack {
-                NoteView()
-                GiftView()
-            }
-        }
-    }
-    
-    func NoMusicNoGift() -> some View {
-        VStack {
-            CoverView()
-            CollageAndAnnotationView()
-        }
-    }
-    
     @State var eCardText: String
     @State var font: String
     @State var coverImage: Data
@@ -282,5 +247,58 @@ struct eCardView: View {
                         .frame(maxHeight: .infinity, alignment: .bottom)
                 }
             }
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+extension eCardView {
+    func MusicAndGiftView() -> some View {
+        
+        HStack {
+            VStack {
+                CoverView()
+                NoteView()
+                CollageAndAnnotationView()
+            }
+            VStack {
+                GiftView()
+                MusicView
+            }
+        }
+    }
+    
+    func GiftNoMusicView() -> some View {
+        HStack {
+            VStack {
+                CoverView()
+                CollageAndAnnotationView()
+            }
+            VStack {
+                NoteView()
+                GiftView()
+            }
+        }
+    }
+    
+    func NoMusicNoGift() -> some View {
+        VStack {
+            CoverView()
+            CollageAndAnnotationView()
+        }
     }
 }

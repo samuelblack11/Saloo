@@ -226,72 +226,82 @@ extension AMPlayerView {
     
     
     func convertSong() {
-        var foundMatch = "isSearching" // Move this variable to the outer loop
+        var soungCounter = 0
+        var foundMatch = "isSearching"
+        var triggerFoundMatchCheck = false
         amAPI.searchForAlbum(albumName: removeSubstrings(from: songAlbumName!, removeList: appDelegate.songKeyWordsToFilterOut), storeFrontID: amAPI.storeFrontID!, userToken: amAPI.taskToken!, completion: {(albumResponse, error) in
             print("Tried to Convert...\(removeSubstrings(from: songAlbumName!, removeList: appDelegate.songKeyWordsToFilterOut))")
-            print(error?.localizedDescription)
-            //if error != nil {foundMatch = "searchFailed"}
+            print(error?.localizedDescription as Any)
             let cleanSpotString = cleanSPOTSongForAMComparison(spotSongName: spotName!, spotSongArtist: spotArtistName!)
             if let albumList = albumResponse?.results.albums.data {
+                let group = DispatchGroup()
                 for (albumIndex, album) in albumList.enumerated() {
-                    print("Album Index....\(albumIndex)")
-                    print("Album Object from AM...")
-                    print("----\(album.attributes.name)----\(album.id)")
-                    AppleMusicAPI().getAlbumTracks(albumId: album.id, storefrontId: amAPI.storeFrontID!, userToken: amAPI.taskToken!, completion: { (trackResponse, error) in
-                        if trackResponse != nil {
-                            if let trackList = trackResponse?.data {
-                                for (trackIndex, track) in trackList.enumerated() {
-                                    print("Track Index....\(trackIndex)")
-                                    if containsSameWords(cleanAMSongForSPOTComparison(amSongName: track.attributes.name, amSongArtist: track.attributes.artistName), cleanSpotString) {
-                                        foundMatch = "foundMatch"
-                                        print("SSSSS")
-                                        print(Double(track.attributes.durationInMillis) * 0.001)
-                                        let artURL = URL(string:album.attributes.artwork.url.replacingOccurrences(of: "{w}", with: "80").replacingOccurrences(of: "{h}", with: "80"))
-                                        let _ = getURLData(url: artURL!, completionHandler: { (artResponse, error2) in
-                                            songName = track.attributes.name
-                                            songArtistName = track.attributes.artistName
-                                            songID = track.id
-                                            songArtImageData = artResponse!
-                                            songDuration = Double(track.attributes.durationInMillis) * 0.001
-                                            musicPlayer.setQueue(with: [songID!])
-                                            musicPlayer.play()
-                                            DispatchQueue.main.async {
-                                                updateRecordWithNewAMData(songName: songName!, songArtistName: songArtistName!, songID: songID!, songArtImageData: artResponse!, songDuration: String(songDuration!))
-                                            }})}
-                                    
-                                    
-                                }
-                                if albumIndex == albumList.count - 1 && foundMatch != "foundMatch" {
-                                    print("search did fail...")
-                                    foundMatch = "searchFailed"
-                                    if songPreviewURL != nil {
-                                        print("Defer to preview")
-                                        appDelegate.deferToPreview = true
-                                        //deferToPreview = true
-                                        DispatchQueue.main.async {
-                                            updateRecordWithNewAMData(songName: "LookupFailed", songArtistName: "LookupFailed", songID: "LookupFailed", songArtImageData: Data(), songDuration: String(0))
+                    //if let albumID = album.id {
+                        group.enter()
+                        print("Album Object from AM...")
+                        print("----\(album.attributes.name)----\(album.id)")
+                        AppleMusicAPI().getAlbumTracks(albumId: album.id, storefrontId: amAPI.storeFrontID!, userToken: amAPI.taskToken!, completion: { (trackResponse, error) in
+                            defer { group.leave() }
+                            if trackResponse != nil {
+                                if let trackList = trackResponse?.data {
+                                    for (trackIndex, track) in trackList.enumerated() {
+                                        print("Track Index....\(trackIndex) of \(trackList.count - 1)")
+                                        print("Album Index....\(albumIndex) of \(albumList.count - 1)")
+                                        //soungCounter += 1
+                                        if containsSameWords(cleanAMSongForSPOTComparison(amSongName: track.attributes.name, amSongArtist: track.attributes.artistName), cleanSpotString) {
+                                            foundMatch = "foundMatch"
+                                            print("SSSSS")
+                                            print(Double(track.attributes.durationInMillis) * 0.001)
+                                            let artURL = URL(string:album.attributes.artwork.url.replacingOccurrences(of: "{w}", with: "80").replacingOccurrences(of: "{h}", with: "80"))
+                                            let _ = getURLData(url: artURL!, completionHandler: { (artResponse, error2) in
+                                                songName = track.attributes.name
+                                                songArtistName = track.attributes.artistName
+                                                songID = track.id
+                                                songArtImageData = artResponse!
+                                                songDuration = Double(track.attributes.durationInMillis) * 0.001
+                                                musicPlayer.setQueue(with: [songID!])
+                                                musicPlayer.play()
+                                                DispatchQueue.main.async {
+                                                    updateRecordWithNewAMData(songName: songName!, songArtistName: songArtistName!, songID: songID!, songArtImageData: artResponse!, songDuration: String(songDuration!))
+                                                }
+                                            })
+                                        }
+                                        soungCounter += 1
+                                        if trackIndex == trackList.count - 1 && albumIndex == albumList.count - 1 {
+                                            print("Trigerred Found Match...")
+                                            triggerFoundMatchCheck = true
                                         }
                                     }
-                                    
                                 }
-                                
-                    }}})
-                    //if foundMatch == "foundMatch" || albumIndex == albumList.count - 1 {
-                    //    break // Exit the loop if a match is found or if this is the last album
+                            }
+                        })
                     //}
                 }
-                //if foundMatch == "searchFailed" { // If no match was found
-                //    print("Found Match....")
-                //    print("searchFailed")
-                //    if songPreviewURL != nil {
-                //        print("Defer to preview")
-                //        appDelegate.deferToPreview = true
-                 //       deferToPreview = true
-                 //   }
-                //}
-            }
-        })}
-                       
+                group.notify(queue: .main) {
+                    // This code is executed after all the requests have been completed
+                    if (triggerFoundMatchCheck && foundMatch != "foundMatch" && foundMatch != "isSearching") {
+                        print("search did fail...")
+                        foundMatch = "searchFailed"
+                        if songPreviewURL != nil {
+                            print("Defer to preview")
+                            appDelegate.deferToPreview = true
+                            //deferToPreview = true
+                            DispatchQueue.main.async {
+                                updateRecordWithNewAMData(songName: "LookupFailed", songArtistName: "LookupFailed", songID: "LookupFailed", songArtImageData: Data(), songDuration: String(0))
+                            }
+                        }
+                    } else if (foundMatch == "isSearching") {
+                        print("No matches found")
+                        print("Checked \(soungCounter) songs....")
+                        if songPreviewURL != nil {
+                            appDelegate.deferToPreview = true
+                            DispatchQueue.main.async {
+                                updateRecordWithNewAMData(songName: "LookupFailed", songArtistName: "LookupFailed", songID: "LookupFailed", songArtImageData: Data(), songDuration: String(0))
+                            }
+                        }
+                    }
+                }}})}
+
     
     func updateRecordWithNewAMData(songName: String, songArtistName: String, songID: String, songArtImageData: Data, songDuration: String) {
         let controller = PersistenceController.shared

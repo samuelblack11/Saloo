@@ -238,12 +238,12 @@ class AppleMusicAPI {
             guard error == nil else {return}
             if let jsonObj = try? JSONSerialization.jsonObject(with: data!, options: []) as? [String: Any] {
                 print("AM GetAlbumTracks JSONObj....")
-                print(jsonObj)
+                //print(jsonObj)
             }
             do {
                 let response = try JSONDecoder().decode(TrackResponse.self, from: data!)
                 print("!!!")
-                print(response)
+                //print(response)
                 DispatchQueue.main.async {completion(response, nil)}
             }
              catch {
