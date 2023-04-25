@@ -48,7 +48,7 @@ struct eCardView: View {
     @EnvironmentObject var appDelegate: AppDelegate
     @State var songAddedUsing: String?
     var appRemote2: SPTAppRemote? = SPTAppRemote(configuration: SPTConfiguration(clientID: "d15f76f932ce4a7c94c2ecb0dfb69f4b", redirectURL: URL(string: "saloo://")!), logLevel: .debug)
-    @State var player: AVPlayer?
+    //@State var player: AVPlayer?
     @State var selectedPreviewURL: String?
     @State var eCardType: eCardType = .musicNoGift
     @State var cardType: String
@@ -57,77 +57,25 @@ struct eCardView: View {
     @State var accessedViaGrid = true
     @State var fromFinalize = false
     @State private var deferToPreview: Bool?
-    
-        //.onAppear {
-        //    print("Card Params....")
-        //    getCoverSize()
-        //    print(UIScreen.screenHeight)
-        //    print(UIScreen.screenWidth)
-        //    print(appDelegate.musicSub.type)
-        //    print(songName)
-        //    print(spotName)
-        //    print(deferToPreview)
-        //    print(songAddedUsing)
-        //}
-    
-    
-    func getCoverSize() -> (CGSize, Double) {
-        var size = CGSize()
-        var widthToHeightRatio = Double()
-        if let image = UIImage(data: coverImage) {
-            let imageSize = image.size
-            size = imageSize
-        }
-        print("Image Size....")
-        widthToHeightRatio = size.width/size.height
-        print(size)
-        print(widthToHeightRatio)
-        return (size, widthToHeightRatio)
-    }
-    
-    func scaledFrame(for size: CGSize, scalingFactor: CGFloat) -> CGRect {
-        let maxWidth = size.width * scalingFactor
-        let maxHeight = size.height * scalingFactor
-        let aspectRatio = size.width / size.height
-
-        var width = maxWidth
-        var height = maxHeight
-
-        if aspectRatio > 1 {
-            // landscape image
-            height = maxWidth / aspectRatio
-        } else {
-            // portrait image
-            width = maxHeight * aspectRatio
-        }
-
-        let x = (maxWidth - width) / 2
-        let y = (maxHeight - height) / 2
-
-        return CGRect(x: x, y: y, width: width, height: height)
-    }
-
-    
-    
-    
-    
+    @Binding var chosenCard: CoreCard?
 
     var body: some View {
         //if cardType == "musicAndGift" {MusicAndGiftView()}
         //if cardType == "musicNoGift" {MusicNoGiftView()}
         MusicNoGiftView
-        //if cardType == "giftNoMusic" {GiftNoMusicView()}
-        //if cardType == "noMusicNoGift" {NoMusicNoGift()}
     }
     
     
     
     var MusicNoGiftView: some View {
-        VStack {
+        return VStack {
             if getCoverSize().1 < 1.3 {
                 HStack {
                     VStack {CoverViewTall(); Spacer(); CollageAndAnnotationView()}
-                    VStack {NoteViewSquare(); MusicView}
+                    VStack {
+                        NoteViewSquare()
+                        MusicView
+                    }
                 }
             }
             else {
@@ -135,6 +83,7 @@ struct eCardView: View {
                     VStack {CoverViewWide(); NoteView()}
                     HStack {CollageAndAnnotationView(); MusicView}
                 }
+                .onAppear{print("MusicNoGiftView Appeared...")}
             }
         }
     }
@@ -149,6 +98,7 @@ struct eCardView: View {
                 .interpolation(.none).resizable()
                 .frame(maxWidth: UIScreen.main.bounds.width / 1.1, maxHeight: UIScreen.main.bounds.height / 3.7)
                 .scaledToFill()
+                .onAppear{print("COVER View Wide Appeared...")}
                 //.resizable()
                 //.aspectRatio(contentMode: .fit)
                 
@@ -218,36 +168,70 @@ struct eCardView: View {
             .frame(maxHeight: .infinity)
     }
     
-    
-    
-    
-  
-    
     var MusicView: some View {
         VStack {
             if (appDelegate.deferToPreview == true || spotName == "LookupFailed"  || songName == "LookupFailed") {
                 if songAddedUsing! == "Spotify"  {
-                    SongPreviewPlayer(songID: spotID, songName: spotName, songArtistName: spotArtistName, songArtImageData: spotImageData, songDuration: spotSongDuration, songPreviewURL: spotPreviewURL, confirmButton: false, showFCV: $showFCV, songAddedUsing: songAddedUsing!)
+                    SongPreviewPlayer(songID: spotID, songName: spotName, songArtistName: spotArtistName, songArtImageData: spotImageData, songDuration: spotSongDuration, songPreviewURL: spotPreviewURL, confirmButton: false, showFCV: $showFCV, songAddedUsing: songAddedUsing!, chosenCard: $chosenCard)
                         //.onDisappear{if player?.timeControlStatus.rawValue == 2 {player?.pause()}}
                         .frame(maxHeight: .infinity, alignment: .bottom)
                 }
                 else if songAddedUsing! == "Apple"  {
-                    SongPreviewPlayer(songID: songID, songName: songName, songArtistName: songArtistName, songArtImageData: songArtImageData, songDuration: songDuration, songPreviewURL: songPreviewURL, confirmButton: false, showFCV: $showFCV, songAddedUsing: songAddedUsing!)
+                    SongPreviewPlayer(songID: songID, songName: songName, songArtistName: songArtistName, songArtImageData: songArtImageData, songDuration: songDuration, songPreviewURL: songPreviewURL, confirmButton: false, showFCV: $showFCV, songAddedUsing: songAddedUsing!, chosenCard: $chosenCard)
                         //.onDisappear{if player?.timeControlStatus.rawValue == 2 {player?.pause()}}
                         .frame(maxHeight: .infinity, alignment: .bottom)
-                }
+                 }
             }
-            else if (appDelegate.musicSub.type == .Apple) && (songName != "LookupFailed") {
-                AMPlayerView(songID: songID, songName: songName, songArtistName: songArtistName, spotName: spotName, spotArtistName: spotArtistName, songAlbumName: songAlbumName, songArtImageData: songArtImageData, songDuration: songDuration, songPreviewURL: songPreviewURL, confirmButton: false, showFCV: $showFCV, fromFinalize: fromFinalize, coreCard: coreCard, appleAlbumArtist: appleAlbumArtist, spotAlbumArtist: spotAlbumArtist)
+             
+            else if (appDelegate.musicSub.type == .Apple)  { // && (songName != "LookupFailed")
+                AMPlayerView(songID: songID, songName: songName, songArtistName: songArtistName, spotName: spotName, spotArtistName: spotArtistName, songAlbumName: songAlbumName, songArtImageData: songArtImageData, songDuration: songDuration, songPreviewURL: songPreviewURL, confirmButton: false, showFCV: $showFCV, fromFinalize: fromFinalize, coreCard: coreCard, appleAlbumArtist: appleAlbumArtist, spotAlbumArtist: spotAlbumArtist, chosenCard: $chosenCard)
                         .frame(maxHeight: UIScreen.screenHeight/2.2)
                 }
-            else if (appDelegate.musicSub.type == .Spotify) && (spotName != "LookupFailed") {
-                SpotPlayerView(songID: spotID, songName: songName, songArtistName: songArtistName, spotName: spotName, spotArtistName: spotArtistName, songAlbumName: songAlbumName, songArtImageData: spotImageData, songDuration: spotSongDuration, songPreviewURL: spotPreviewURL, appleAlbumArtist: appleAlbumArtist, spotAlbumArtist: spotAlbumArtist, confirmButton: false, showFCV: $showFCV, accessedViaGrid: accessedViaGrid, appRemote2: appRemote2, coreCard: coreCard)
+            else if (appDelegate.musicSub.type == .Spotify) { // && (spotName != "LookupFailed")
+                SpotPlayerView(songID: spotID, songName: songName, songArtistName: songArtistName, spotName: spotName, spotArtistName: spotArtistName, songAlbumName: songAlbumName, songArtImageData: spotImageData, songDuration: spotSongDuration, songPreviewURL: spotPreviewURL, appleAlbumArtist: appleAlbumArtist, spotAlbumArtist: spotAlbumArtist, confirmButton: false, showFCV: $showFCV, accessedViaGrid: accessedViaGrid, appRemote2: appRemote2, coreCard: coreCard, chosenCard: $chosenCard)
                         .onAppear{appRemote2?.connectionParameters.accessToken = (defaults.object(forKey: "SpotifyAccessToken") as? String)!}
                         .frame(maxHeight: .infinity, alignment: .bottom)
                 }
             }
     }
+    
+    
+    func getCoverSize() -> (CGSize, Double) {
+        var size = CGSize()
+        var widthToHeightRatio = Double()
+        if let image = UIImage(data: coverImage) {
+            let imageSize = image.size
+            size = imageSize
+        }
+        print("Image Size....")
+        widthToHeightRatio = size.width/size.height
+        print(size)
+        print(widthToHeightRatio)
+        return (size, widthToHeightRatio)
+    }
+    
+    func scaledFrame(for size: CGSize, scalingFactor: CGFloat) -> CGRect {
+        let maxWidth = size.width * scalingFactor
+        let maxHeight = size.height * scalingFactor
+        let aspectRatio = size.width / size.height
+
+        var width = maxWidth
+        var height = maxHeight
+
+        if aspectRatio > 1 {
+            // landscape image
+            height = maxWidth / aspectRatio
+        } else {
+            // portrait image
+            width = maxHeight * aspectRatio
+        }
+
+        let x = (maxWidth - width) / 2
+        let y = (maxHeight - height) / 2
+
+        return CGRect(x: x, y: y, width: width, height: height)
+    }
+    
 }
 
 

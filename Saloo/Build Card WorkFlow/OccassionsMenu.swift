@@ -125,7 +125,7 @@ extension OccassionsMenu {
         var cardsFromCore: [CoreCard] = []
         do {
             cardsFromCore = try PersistenceController.shared.persistentContainer.viewContext.fetch(request)
-            print("Got \(cardsFromCore.count) Cards From Core")
+            print("OCCASSIONS Got \(cardsFromCore.count) Cards From Core")
         }
         catch {print("Fetch failed")}
         return cardsFromCore

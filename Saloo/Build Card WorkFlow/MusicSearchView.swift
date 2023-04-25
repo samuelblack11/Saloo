@@ -56,7 +56,7 @@ struct MusicSearchView: View {
     let sortOptions = ["Track", "Artist","Album"]
     @State private var sortByValue = "Track"
     @State private var deferToPreview: Bool? = false
-    @State var emptyCoreCard: CoreCard?
+    @State var emptyCard: CoreCard? = CoreCard()
 
     func determineCardType() -> String {
         print("called determineCardType...")
@@ -146,12 +146,12 @@ struct MusicSearchView: View {
             }
             .navigationBarItems(leading:Button {showWriteNote.toggle()} label: {Image(systemName: "chevron.left").foregroundColor(.blue); Text("Back")})
             .fullScreenCover(isPresented: $showWriteNote){WriteNoteView()}
-            .popover(isPresented: $showAPV) {AMPlayerView(songID: chosenSong.id, songName: chosenSong.name, songArtistName: chosenSong.artistName, songArtImageData: chosenSong.artwork, songDuration: chosenSong.durationInSeconds, songPreviewURL: chosenSong.songPreviewURL, confirmButton: true, showFCV: $showFCV)
+            .popover(isPresented: $showAPV) {AMPlayerView(songID: chosenSong.id, songName: chosenSong.name, songArtistName: chosenSong.artistName, songArtImageData: chosenSong.artwork, songDuration: chosenSong.durationInSeconds, songPreviewURL: chosenSong.songPreviewURL, confirmButton: true, showFCV: $showFCV, chosenCard: $emptyCard)
                     .presentationDetents([.fraction(0.4)])
                     .fullScreenCover(isPresented: $showFCV) {FinalizeCardView(cardType: determineCardType())}
                     .fullScreenCover(isPresented: $showWriteNote){WriteNoteView()}
             }
-            .popover(isPresented: $showSPV) {SpotPlayerView(songID: chosenSong.spotID, spotName: chosenSong.spotName, spotArtistName: chosenSong.spotArtistName, songArtImageData: chosenSong.spotImageData, songDuration: chosenSong.spotSongDuration, songPreviewURL: chosenSong.spotPreviewURL, confirmButton: true, showFCV: $showFCV, accessedViaGrid: false, appRemote2: appRemote2)
+            .popover(isPresented: $showSPV) {SpotPlayerView(songID: chosenSong.spotID, spotName: chosenSong.spotName, spotArtistName: chosenSong.spotArtistName, songArtImageData: chosenSong.spotImageData, songDuration: chosenSong.spotSongDuration, songPreviewURL: chosenSong.spotPreviewURL, confirmButton: true, showFCV: $showFCV, accessedViaGrid: false, appRemote2: appRemote2, chosenCard: $emptyCard)
                     .presentationDetents([.fraction(0.4)])
                     .fullScreenCover(isPresented: $showFCV) {FinalizeCardView(cardType: determineCardType(), appRemote2: appRemote2)}
                     .fullScreenCover(isPresented: $showWriteNote) {WriteNoteView()}

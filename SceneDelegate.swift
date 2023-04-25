@@ -36,6 +36,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
     }
     
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
+        //scene.userActivity?.removeAllSavedStates()
+        
         guard let windowScene = (scene as? UIWindowScene) else { return }
         if let urlContext = connectionOptions.urlContexts.first {
             let isOpened = openMyApp(from: urlContext.url)
@@ -225,7 +227,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
         var cardsFromCore: [CoreCard] = []
         do {
             cardsFromCore = try PersistenceController.shared.persistentContainer.viewContext.fetch(request)
-            print("Got \(cardsFromCore.count) Cards From Core")
+            print("SCENE DEL Got \(cardsFromCore.count) Cards From Core")
         }
         catch {print("Fetch failed")}
         return cardsFromCore

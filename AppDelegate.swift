@@ -23,17 +23,29 @@ class AppDelegate: UIResponder, UIApplicationDelegate, ObservableObject {
     @Published var chosenGridCardType: String?
     var songKeyWordsToFilterOut = ["(live)","[live]","live at","live in","live from", "- Single", "(mixed)", "[mixed]"]
     let appColor = Color("SalooTheme")
-    
+    @Published var isLaunchingFromClosed = true
+    @Published var isPlayerCreated = false
     
     func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
         let isOpened = openMyApp(from: url)
         return isOpened
     }
     
-    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil) -> Bool {
-        print("didFinishLaunchingWithOptions")
-        return true
-    }
+    //func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil) -> Bool {
+     //   print("didFinishLaunchingWithOptions")
+    //    return true
+   // }
+    
+    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+           // Check if the app is launching from a terminated state
+           if let launchOptions = launchOptions, launchOptions[UIApplication.LaunchOptionsKey.annotation] == nil {
+               isLaunchingFromClosed = true
+           } else {
+               isLaunchingFromClosed = false
+           }
+           
+           return true
+       }
 
     func application(_ application: UIApplication, configurationForConnecting connectingSceneSession:   UISceneSession,
                      options: UIScene.ConnectionOptions) -> UISceneConfiguration {

@@ -51,6 +51,9 @@ struct FinalizeCardView: View {
     @State var emptyCoreCard: CoreCard?
     var config = SPTConfiguration(clientID: "d15f76f932ce4a7c94c2ecb0dfb69f4b", redirectURL: URL(string: "saloo://")!)
     var appRemote2: SPTAppRemote?
+    @State var emptyCard: CoreCard? = CoreCard()
+    //let emptyCard = CoreCard(id: "", cardName: "", occassion: "", recipient: "", sender: "", associatedRecord: CKRecord(recordType: ""), an1: "", an2: "", an2URL: "", an3: "", an4: "", collage: Data(), coverImage: Data(), date: Date(), font: "", message: "", uniqueName: "", songID: "", spotID: "", spotName: "", spotArtistName: "", songName: "", songArtistName: "", songArtImageData: Data(), songPreviewURL: "", songDuration: Int(), inclMusic: Bool, spotImageData: Data(), spotSongDuration: Int(), spotPreviewURL: "", creator: "", songAddedUsing: "", collage1: Data(), collage2: Data(), collage3: Data(), collage4: Data(), cardType: "", recordID: "", songAlbumName: "", appleAlbumArtist: "", spotAlbumArtist: "")
+
     var defaultCallback: SPTAppRemoteCallback? {
         get {
             return {[self] _, error in
@@ -94,7 +97,7 @@ struct FinalizeCardView: View {
         NavigationView {
         VStack(spacing: 0) {
             VStack{
-                eCardView(eCardText: noteField.noteText, font: noteField.font, coverImage: chosenObject.coverImage, collageImage: collageImage.collageImage, text1: annotation.text1, text2: annotation.text2, text2URL: annotation.text2URL, text3: annotation.text3, text4: annotation.text4, songID: chosenSong.id, spotID: chosenSong.spotID, spotName: chosenSong.spotName, spotArtistName: chosenSong.spotArtistName, songName: chosenSong.name, songArtistName: chosenSong.artistName, songArtImageData: chosenSong.artwork, songDuration: chosenSong.durationInSeconds, songPreviewURL: chosenSong.songPreviewURL, inclMusic: addMusic.addMusic, spotImageData: chosenSong.spotImageData, spotSongDuration: chosenSong.spotSongDuration, spotPreviewURL: chosenSong.spotPreviewURL, songAddedUsing: chosenSong.songAddedUsing, appRemote2: appRemote2, cardType: cardType,accessedViaGrid: false, fromFinalize: true)
+                eCardView(eCardText: noteField.noteText, font: noteField.font, coverImage: chosenObject.coverImage, collageImage: collageImage.collageImage, text1: annotation.text1, text2: annotation.text2, text2URL: annotation.text2URL, text3: annotation.text3, text4: annotation.text4, songID: chosenSong.id, spotID: chosenSong.spotID, spotName: chosenSong.spotName, spotArtistName: chosenSong.spotArtistName, songName: chosenSong.name, songArtistName: chosenSong.artistName, songArtImageData: chosenSong.artwork, songDuration: chosenSong.durationInSeconds, songPreviewURL: chosenSong.songPreviewURL, inclMusic: addMusic.addMusic, spotImageData: chosenSong.spotImageData, spotSongDuration: chosenSong.spotSongDuration, spotPreviewURL: chosenSong.spotPreviewURL, songAddedUsing: chosenSong.songAddedUsing, appRemote2: appRemote2, cardType: cardType,accessedViaGrid: false, fromFinalize: true, chosenCard: $emptyCard)
             }
             VStack{saveButton}
         }

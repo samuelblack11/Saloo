@@ -11,6 +11,17 @@ import Foundation
 import SwiftUI
 import CloudKit
 import CoreData
+import AVFoundation
+import AVFAudio
+
+
+
+
+
+
+
+
+
 
 struct GridofCards: View {
     @State private var toggleProgress: Bool = false
@@ -36,6 +47,11 @@ struct GridofCards: View {
     @State private var searchText = ""
     @State private var nameToDisplay: String?
     @State var userID = String()
+    @StateObject var audioManager = AudioSessionManager()
+    @StateObject var avPlayer = PlayerWrapper()
+    @State private var displayCard = false
+    @State var chosenCard: CoreCard?
+
     var cardsFilteredBySearch: [CoreCard] {
         if searchText.isEmpty { return cardsForDisplay}
         //else if sortByValue == "Card Name" {return privateCards.filter { $0.cardName.contains(searchText)}}
@@ -47,7 +63,7 @@ struct GridofCards: View {
     @State var chosenGridCard: CoreCard? = nil
     @EnvironmentObject var appDelegate: AppDelegate
     @State var chosenGridCardType: String?
-
+    
     var sortOptions = ["Date","Card Name","Occassion"]
     
     func determineDisplayName(coreCard: CoreCard) -> String {
@@ -67,19 +83,29 @@ struct GridofCards: View {
                     }
                 }
             }
-            .fullScreenCover(item: $appDelegate.chosenGridCard, onDismiss: didDismiss) {chosenCard in EnlargeECardView(chosenCard: chosenCard, cardsForDisplay: cardsForDisplay, whichBoxVal: whichBoxVal)}
+
+            .fullScreenCover(item: $chosenCard, onDismiss: didDismiss) {chosenCard in
+                
+                NavigationView {
+                    //VStack {
+                        //EnlargeECardView(chosenCard: $chosenCard, cardsForDisplay: cardsForDisplay, whichBoxVal: whichBoxVal)
+                        eCardView(eCardText: chosenCard.message, font: chosenCard.font, coverImage: chosenCard.coverImage!, collageImage: chosenCard.collage!, text1: chosenCard.an1, text2: chosenCard.an2, text2URL: URL(string: chosenCard.an2URL)!, text3: chosenCard.an3, text4: chosenCard.an4, songID: chosenCard.songID, spotID: chosenCard.spotID, spotName: chosenCard.spotName, spotArtistName: chosenCard.spotArtistName, songName: chosenCard.songName, songArtistName: chosenCard.songArtistName, songAlbumName: chosenCard.songAlbumName, appleAlbumArtist: chosenCard.appleAlbumArtist, spotAlbumArtist: chosenCard.spotAlbumArtist, songArtImageData: chosenCard.songArtImageData, songDuration: Double(chosenCard.songDuration!)!, songPreviewURL: chosenCard.songPreviewURL, inclMusic: chosenCard.inclMusic, spotImageData: chosenCard.spotImageData, spotSongDuration: Double(chosenCard.spotSongDuration!)!, spotPreviewURL: chosenCard.spotPreviewURL, songAddedUsing: chosenCard.songAddedUsing, cardType: chosenCard.cardType!, associatedRecord: chosenCard.associatedRecord, coreCard: chosenCard, chosenCard: $chosenCard)
+                    }
+            }
             .navigationTitle("Your Cards")
-            .navigationBarItems(leading:Button {showStartMenu.toggle()} label: {Image(systemName: "chevron.left").foregroundColor(.blue); Text("Back")})
+            .navigationBarItems(leading:Button {print("Back Button pressed to Start menu..."); showStartMenu.toggle()} label: {Image(systemName: "chevron.left").foregroundColor(.blue); Text("Back")})
         }
+        .environmentObject(audioManager)
+        .environmentObject(avPlayer)
         // "Search by \(sortByValue)"
-        .onAppear{print("Testing....")}
+        .onAppear{print("Grid Appeared....")}
         .searchable(text: $searchText, prompt: "Search by Card Name")
         .fullScreenCover(isPresented: $showStartMenu) {StartMenu()}
     }
     
     func didDismiss() {
         print("Did Dismiss.....")
-        appDelegate.chosenGridCard = nil
+        chosenCard = nil
     }
     
     private func cardView(for gridCard: CoreCard, shareable: Bool = true) -> some View {
@@ -146,7 +172,7 @@ extension GridofCards {
                 .disabled(shareStatus(card: card).0)
         }
         Button("Manage Participation") { manageParticipation(coreCard: card)}
-        Button {appDelegate.chosenGridCard = card; chosenGridCardType = card.cardType;segueToEnlarge = true} label: {Text("Enlarge eCard"); Image(systemName: "plus.magnifyingglass")}
+        Button {chosenCard = card; chosenGridCardType = card.cardType;segueToEnlarge = true; displayCard = true} label: {Text("Enlarge eCard"); Image(systemName: "plus.magnifyingglass")}
         Button {deleteCoreCard(coreCard: card)} label: {Text("Delete eCard"); Image(systemName: "trash").foregroundColor(.red)}
         Button {showDeliveryScheduler = true} label: {Text("Schedule eCard Delivery")}
         }

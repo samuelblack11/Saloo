@@ -14,14 +14,14 @@ import StoreKit
 import WebKit
 //https://www.appcoda.com/swiftui-confetti-animation/
 struct EnlargeECardView: View {
-    @State var chosenCard: CoreCard
+    @Binding var chosenCard: CoreCard?
     @State var share: CKShare?
     @State private var counter = 1
     private let stack = PersistenceController.shared
     @State var cardsForDisplay: [CoreCard]
     @State var whichBoxVal: InOut.SendReceive
     @EnvironmentObject var appDelegate: AppDelegate
-    @State var player: AVPlayer?
+    //@State var player: AVPlayer?
     @State var refreshAccessToken = false
     @State private var tokenCounter = 0
     @State private var instantiateAppRemoteCounter = 0
@@ -34,11 +34,12 @@ struct EnlargeECardView: View {
     @State var appRemote2: SPTAppRemote?
     let config = SPTConfiguration(clientID: "d15f76f932ce4a7c94c2ecb0dfb69f4b", redirectURL: URL(string: "saloo://")!)
     @State var spotCounter = 0
-    
+
     var body: some View {
         NavigationView {
             VStack {
-                eCardView(eCardText: chosenCard.message, font: chosenCard.font, coverImage: chosenCard.coverImage!, collageImage: chosenCard.collage!, text1: chosenCard.an1, text2: chosenCard.an2, text2URL: URL(string: chosenCard.an2URL)!, text3: chosenCard.an3, text4: chosenCard.an4, songID: chosenCard.songID, spotID: chosenCard.spotID, spotName: chosenCard.spotName, spotArtistName: chosenCard.spotArtistName, songName: chosenCard.songName, songArtistName: chosenCard.songArtistName, songAlbumName: chosenCard.songAlbumName, appleAlbumArtist: chosenCard.appleAlbumArtist, spotAlbumArtist: chosenCard.spotAlbumArtist, songArtImageData: chosenCard.songArtImageData, songDuration: Double(chosenCard.songDuration!)!, songPreviewURL: chosenCard.songPreviewURL, inclMusic: chosenCard.inclMusic, spotImageData: chosenCard.spotImageData, spotSongDuration: Double(chosenCard.spotSongDuration!)!, spotPreviewURL: chosenCard.spotPreviewURL, songAddedUsing: chosenCard.songAddedUsing, cardType: chosenCard.cardType!, associatedRecord: chosenCard.associatedRecord, coreCard: chosenCard)
+                Text("Hi")
+                //eCardView(eCardText: chosenCard.message, font: chosenCard?.font, coverImage: chosenCard?.coverImage!, collageImage: chosenCard?.collage!, text1: chosenCard?.an1, text2: chosenCard?.an2, text2URL: URL(string: chosenCard?.an2URL)!, text3: chosenCard?.an3, text4: chosenCard?.an4, songID: chosenCard?.songID, spotID: chosenCard?.spotID, spotName: chosenCard?.spotName, spotArtistName: chosenCard?.spotArtistName, songName: chosenCard?.songName, songArtistName: chosenCard?.songArtistName, songAlbumName: chosenCard?.songAlbumName, appleAlbumArtist: chosenCard?.appleAlbumArtist, spotAlbumArtist: chosenCard?.spotAlbumArtist, songArtImageData: chosenCard?.songArtImageData, songDuration: Double(chosenCard?.songDuration!)!, songPreviewURL: chosenCard?.songPreviewURL, inclMusic: chosenCard?.inclMusic!, spotImageData: chosenCard?.spotImageData, spotSongDuration: Double(chosenCard?.spotSongDuration!)!, spotPreviewURL: chosenCard?.spotPreviewURL, songAddedUsing: chosenCard?.songAddedUsing, cardType: chosenCard?.cardType!, associatedRecord: chosenCard?.associatedRecord, coreCard: chosenCard?, chosenCard: $chosenCard)
             }
             }
         }

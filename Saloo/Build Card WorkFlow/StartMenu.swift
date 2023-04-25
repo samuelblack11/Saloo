@@ -31,7 +31,7 @@ struct StartMenu: View {
     @State var appRemote2: SPTAppRemote?
     @State var whichBoxForCKAccept: InOut.SendReceive?
     @State var userID = String()
-    
+    //@StateObject var audioManager = AudioSessionManager()
     var possibleSubscriptionValues = ["Apple Music", "Spotify", "Neither"]
     let buildCardWorkFlow = """
     Build a Card
@@ -75,13 +75,14 @@ struct StartMenu: View {
                     .scaleEffect(5)
                     .progressViewStyle(CircularProgressViewStyle())
         }
+        //.environmentObject(audioManager)
         //.background(appDelegate.appColor)
         .onAppear {
-            print("Opened App...")
-            print(appDelegate.showProgViewOnAcceptShare)
+            print("Start Menu Opened...")
+            //print(appDelegate.showProgViewOnAcceptShare)
             appDelegate.startMenuAppeared = true
-            print((defaults.object(forKey: "MusicSubType") as? String))
-            if (defaults.object(forKey: "MusicSubType") as? String) != nil  {
+            //print((defaults.object(forKey: "MusicSubType") as? String))
+            if (defaults.object(forKey: "MusicSubType") as? String) != nil  && appDelegate.isLaunchingFromClosed {
                 if (defaults.object(forKey: "MusicSubType") as? String)! == "Apple Music" {appDelegate.musicSub.type = .Apple}
                 if (defaults.object(forKey: "MusicSubType") as? String)! == "Spotify" {appDelegate.musicSub.type = .Spotify}
                 if (defaults.object(forKey: "MusicSubType") as? String)! == "Neither" {appDelegate.musicSub.type = .Neither}
@@ -102,7 +103,7 @@ extension StartMenu {
         var cardsFromCore: [CoreCard] = []
         do {
             cardsFromCore = try PersistenceController.shared.persistentContainer.viewContext.fetch(request)
-            print("Got \(cardsFromCore.count) Cards From Core")
+            print("START MENU Got \(cardsFromCore.count) Cards From Core")
         }
         catch {print("Fetch failed")}
         return cardsFromCore
