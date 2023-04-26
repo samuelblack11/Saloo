@@ -50,6 +50,7 @@ struct AMPlayerView: View {
     //@State var foundMatch = "isSearching"
     @State var breakTrigger1 = false
     @Binding var chosenCard: CoreCard?
+    @Binding var deferToPreview: Bool
 
     var body: some View {
             AMPlayerView
@@ -279,8 +280,7 @@ extension AMPlayerView {
                             foundMatch = "searchFailed"
                             if songPreviewURL != nil {
                                 print("Defer to preview")
-                                appDelegate.deferToPreview = true
-                                //deferToPreview = true
+                                deferToPreview = true
                                 DispatchQueue.main.async {
                                     updateRecordWithNewAMData(songName: "LookupFailed", songArtistName: "LookupFailed", songID: "LookupFailed", songArtImageData: Data(), songDuration: String(0))
                         }}}

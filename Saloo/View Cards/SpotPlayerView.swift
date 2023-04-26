@@ -58,6 +58,7 @@ struct SpotPlayerView: View {
     @State var spotImageURL: String?
     let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
     @Binding var chosenCard: CoreCard?
+    @Binding var deferToPreview: Bool
 
     var body: some View {
             SpotPlayerView2
@@ -221,10 +222,46 @@ struct SpotPlayerView: View {
         return SPOTString
     }
     
+    func removeArtistsFromAlbumName() -> (String, String) {
+        var cleanAlbumName = String()
+        var artistInAlbumName = String()
+        var featStrings = ["(feat.", "[feat."]
+        for featString in featStrings {
+            if songAlbumName!.contains(featString) {
+                let albumComponents = songAlbumName!.components(separatedBy: featString)
+                cleanAlbumName = albumComponents[0]
+                artistInAlbumName = albumComponents[1].components(separatedBy: ")")[0]
+                artistInAlbumName = artistInAlbumName.replacingOccurrences(of: "&", with: "")
+                if albumComponents[1].components(separatedBy: ")").count > 1 {
+                    let cleanAlbumNamePt2 = albumComponents[1].components(separatedBy: ")")[1]
+                    cleanAlbumName = cleanAlbumName + " " + cleanAlbumNamePt2
+                }
+            }
+        }
+        return (cleanAlbumName, artistInAlbumName)
+    }
+    
+    func removeSpecialCharacters(from string: String) -> String {
+        //    let pattern = "[^a-zA-Z0-9]"
+        //    return string.replacingOccurrences(of: pattern, with: "", options: .regularExpression, range: nil)
+        let allowedCharacters = CharacterSet.whitespacesAndNewlines.union(CharacterSet(charactersIn: "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"))
+        let newString = string.components(separatedBy: allowedCharacters.inverted).joined(separator: "")
+        return newString
+    }
+    
     func getSongViaAlbumSearch() {
+        var cleanAlbumName = removeArtistsFromAlbumName().0
         var foundMatch = false
         let AMString = cleanAMSongForSPOTComparison()
-        SpotifyAPI().getAlbumID(albumName: songAlbumName!, artistName: appleAlbumArtist!, authToken: spotifyAuth.access_Token, completion: { (albums, error) in
+        print("AlbumSearch Criteria")
+        print(cleanAlbumName)
+        print(AMString)
+        print(removeSpecialCharacters(from: appleAlbumArtist!))
+        
+        SpotifyAPI().getAlbumID(albumName: cleanAlbumName, artistName: removeSpecialCharacters(from: appleAlbumArtist!) , authToken: spotifyAuth.access_Token, completion: { (albums, error) in
+            print("Got Albums....")
+            print(error?.localizedDescription)
+            print(albums)
             for album in albums! {
                 spotAlbumID = album.id
                 if spotAlbumID != nil {
@@ -245,6 +282,9 @@ struct SpotPlayerView: View {
                                         }}
                                     else {allArtists = song.artists[0].name}
                                     
+                                    print("Contains Same Words....")
+                                    print(AMString)                                    
+                                    
                                     if containsSameWords(AMString, cleanSPOTSongForAMComparison(spotSongName: song.name, spotSongArtist: allArtists)) {
                                         print("SSSSS")
                                         print(song)
@@ -263,14 +303,30 @@ struct SpotPlayerView: View {
                                 }
                                 if songPreviewURL != nil && foundMatch == false {
                                     print("Defer to preview")
-                                    appDelegate.deferToPreview = true
-                                    //deferToPreview = true
+                                    deferToPreview = true
+                                    print(deferToPreview)
                                     DispatchQueue.main.async {updateRecordWithNewSPOTData(spotName: "LookupFailed", spotArtistName: "LookupFailed", spotID: "LookupFailed", songArtImageData: Data(), songDuration: String(0))}
                                 }
                                 else { print("Else called to change card type...")
                                     //appDelegate.chosenGridCard?.cardType = "noMusicNoGift"
                                 }
-                            })}}}}})}
+                            })}}}
+                
+            }
+            if albums!.count < 1 {
+                if songPreviewURL != nil && foundMatch == false {
+                    print("Defer to preview")
+                    deferToPreview = true
+                    print(deferToPreview)
+                    DispatchQueue.main.async {updateRecordWithNewSPOTData(spotName: "LookupFailed", spotArtistName: "LookupFailed", spotID: "LookupFailed", songArtImageData: Data(), songDuration: String(0))}
+                }
+                else { print("Else called to change card type...")
+                    //appDelegate.chosenGridCard?.cardType = "noMusicNoGift"
+                }
+            }
+            
+            
+        })}
     
     
     func updateRecordWithNewSPOTData(spotName: String, spotArtistName: String, spotID: String, songArtImageData: Data, songDuration: String) {

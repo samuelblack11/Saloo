@@ -55,9 +55,9 @@ struct MusicSearchView: View {
     var songKeyWordsToFilterOut = ["(live)","[live]","live at","live in","live from", "(mixed)","[mixed]", "- Single"]
     let sortOptions = ["Track", "Artist","Album"]
     @State private var sortByValue = "Track"
-    @State private var deferToPreview: Bool? = false
     @State var emptyCard: CoreCard? = CoreCard()
-
+    @State var deferToPreview = false
+    
     func determineCardType() -> String {
         print("called determineCardType...")
         print(chosenSong.id)
@@ -146,12 +146,12 @@ struct MusicSearchView: View {
             }
             .navigationBarItems(leading:Button {showWriteNote.toggle()} label: {Image(systemName: "chevron.left").foregroundColor(.blue); Text("Back")})
             .fullScreenCover(isPresented: $showWriteNote){WriteNoteView()}
-            .popover(isPresented: $showAPV) {AMPlayerView(songID: chosenSong.id, songName: chosenSong.name, songArtistName: chosenSong.artistName, songArtImageData: chosenSong.artwork, songDuration: chosenSong.durationInSeconds, songPreviewURL: chosenSong.songPreviewURL, confirmButton: true, showFCV: $showFCV, chosenCard: $emptyCard)
+            .popover(isPresented: $showAPV) {AMPlayerView(songID: chosenSong.id, songName: chosenSong.name, songArtistName: chosenSong.artistName, songArtImageData: chosenSong.artwork, songDuration: chosenSong.durationInSeconds, songPreviewURL: chosenSong.songPreviewURL, confirmButton: true, showFCV: $showFCV, chosenCard: $emptyCard, deferToPreview: $deferToPreview)
                     .presentationDetents([.fraction(0.4)])
                     .fullScreenCover(isPresented: $showFCV) {FinalizeCardView(cardType: determineCardType())}
                     .fullScreenCover(isPresented: $showWriteNote){WriteNoteView()}
             }
-            .popover(isPresented: $showSPV) {SpotPlayerView(songID: chosenSong.spotID, spotName: chosenSong.spotName, spotArtistName: chosenSong.spotArtistName, songArtImageData: chosenSong.spotImageData, songDuration: chosenSong.spotSongDuration, songPreviewURL: chosenSong.spotPreviewURL, confirmButton: true, showFCV: $showFCV, accessedViaGrid: false, appRemote2: appRemote2, chosenCard: $emptyCard)
+            .popover(isPresented: $showSPV) {SpotPlayerView(songID: chosenSong.spotID, spotName: chosenSong.spotName, spotArtistName: chosenSong.spotArtistName, songArtImageData: chosenSong.spotImageData, songDuration: chosenSong.spotSongDuration, songPreviewURL: chosenSong.spotPreviewURL, confirmButton: true, showFCV: $showFCV, accessedViaGrid: false, appRemote2: appRemote2, chosenCard: $emptyCard, deferToPreview: $deferToPreview)
                     .presentationDetents([.fraction(0.4)])
                     .fullScreenCover(isPresented: $showFCV) {FinalizeCardView(cardType: determineCardType(), appRemote2: appRemote2)}
                     .fullScreenCover(isPresented: $showWriteNote) {WriteNoteView()}
@@ -252,10 +252,34 @@ extension MusicSearchView {
         }
     }
     
+    func removeArtistsFromAlbumName() -> (String, String) {
+        var cleanAlbumName = String()
+        var artistInAlbumName = String()
+        var featStrings = ["(feat.", "[feat."]
+        for featString in featStrings {
+            if chosenSong.songAlbumName.contains(featString) {
+                let albumComponents = chosenSong.songAlbumName.components(separatedBy: featString)
+                cleanAlbumName = albumComponents[0]
+                artistInAlbumName = albumComponents[1].components(separatedBy: ")")[0]
+                artistInAlbumName = artistInAlbumName.replacingOccurrences(of: "&", with: "")
+                if albumComponents[1].components(separatedBy: ")").count > 1 {
+                    let cleanAlbumNamePt2 = albumComponents[1].components(separatedBy: ")")[1]
+                    cleanAlbumName = cleanAlbumName + " " + cleanAlbumNamePt2
+                }
+            }
+        }
+        return (cleanAlbumName, artistInAlbumName)
+    }
+    
+    
     
     
     func getSpotAlbum() {
-        SpotifyAPI().getAlbumIDUsingNameOnly(albumName: removeSpecialCharacters(from: chosenSong.songAlbumName), authToken: spotifyAuth.access_Token, completion: { (response, error) in
+        var cleanAlbumName = String()
+        var artistsInAlbumName = String()
+        cleanAlbumName = removeArtistsFromAlbumName().0
+        artistsInAlbumName = removeArtistsFromAlbumName().1
+        SpotifyAPI().getAlbumIDUsingNameOnly(albumName: removeSpecialCharacters(from: cleanAlbumName), authToken: spotifyAuth.access_Token, completion: { (response, error) in
             if response != nil {
                 for album in response! {
                     print("Got Album Named: ")
@@ -270,17 +294,19 @@ extension MusicSearchView {
                                     else {allArtists = album.artists[0].name}
                                     print("Album Artists Are...\(allArtists)")
                                     chosenSong.spotAlbumArtist = allArtists
+                                    //if allArtists.contains(artistsInAlbumName) {chosenSong.spotAlbumArtist = allArtists}
+                                    //else {chosenSong.spotAlbumArtist = allArtists + artistsInAlbumName}
                                     break
                                 }
                 }}})}}})}
     
     func getAlbum(storeFront: String, userToken: String) {
+        var cleanAlbumName = String()
+        var artistsInAlbumName = String()
+        cleanAlbumName = removeArtistsFromAlbumName().0
+        artistsInAlbumName = removeArtistsFromAlbumName().1
         SKCloudServiceController.requestAuthorization {(status) in if status == .authorized {
-            AppleMusicAPI().searchForAlbum(albumName: removeSpecialCharacters(from: chosenSong.songAlbumName), storeFrontID: storeFront,  userToken: userToken, completion: { (response, error) in
-                
-                
-                
-                
+            AppleMusicAPI().searchForAlbum(albumName: removeSpecialCharacters(from: cleanAlbumName), storeFrontID: storeFront,  userToken: userToken, completion: { (response, error) in
                 if response != nil {
                     print("Album Search Response....")
                     if let albumList = response?.results.albums.data {
@@ -296,6 +322,8 @@ extension MusicSearchView {
                                                 print("Found Song on Album:")
                                                 print(track.attributes.name)
                                                 chosenSong.appleAlbumArtist = album.attributes.artistName
+                                                //if album.attributes.artistName.contains(artistsInAlbumName) {chosenSong.appleAlbumArtist = album.attributes.artistName}
+                                                //else {chosenSong.appleAlbumArtist = album.attributes.artistName + artistsInAlbumName}
                                                 break
                                             }
                                             

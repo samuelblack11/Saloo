@@ -56,9 +56,9 @@ struct eCardView: View {
     @State var coreCard: CoreCard?
     @State var accessedViaGrid = true
     @State var fromFinalize = false
-    @State private var deferToPreview: Bool?
+    //@State private var deferToPreview: Bool?
     @Binding var chosenCard: CoreCard?
-
+    @State var deferToPreview = false
     var body: some View {
         //if cardType == "musicAndGift" {MusicAndGiftView()}
         //if cardType == "musicNoGift" {MusicNoGiftView()}
@@ -170,7 +170,7 @@ struct eCardView: View {
     
     var MusicView: some View {
         VStack {
-            if (appDelegate.deferToPreview == true || spotName == "LookupFailed"  || songName == "LookupFailed") {
+            if (deferToPreview == true || spotName == "LookupFailed"  || songName == "LookupFailed") {
                 if songAddedUsing! == "Spotify"  {
                     SongPreviewPlayer(songID: spotID, songName: spotName, songArtistName: spotArtistName, songArtImageData: spotImageData, songDuration: spotSongDuration, songPreviewURL: spotPreviewURL, confirmButton: false, showFCV: $showFCV, songAddedUsing: songAddedUsing!, chosenCard: $chosenCard)
                         //.onDisappear{if player?.timeControlStatus.rawValue == 2 {player?.pause()}}
@@ -184,11 +184,11 @@ struct eCardView: View {
             }
              
             else if (appDelegate.musicSub.type == .Apple)  { // && (songName != "LookupFailed")
-                AMPlayerView(songID: songID, songName: songName, songArtistName: songArtistName, spotName: spotName, spotArtistName: spotArtistName, songAlbumName: songAlbumName, songArtImageData: songArtImageData, songDuration: songDuration, songPreviewURL: songPreviewURL, confirmButton: false, showFCV: $showFCV, fromFinalize: fromFinalize, coreCard: coreCard, appleAlbumArtist: appleAlbumArtist, spotAlbumArtist: spotAlbumArtist, chosenCard: $chosenCard)
+                AMPlayerView(songID: songID, songName: songName, songArtistName: songArtistName, spotName: spotName, spotArtistName: spotArtistName, songAlbumName: songAlbumName, songArtImageData: songArtImageData, songDuration: songDuration, songPreviewURL: songPreviewURL, confirmButton: false, showFCV: $showFCV, fromFinalize: fromFinalize, coreCard: coreCard, appleAlbumArtist: appleAlbumArtist, spotAlbumArtist: spotAlbumArtist, chosenCard: $chosenCard, deferToPreview: $deferToPreview)
                         .frame(maxHeight: UIScreen.screenHeight/2.2)
                 }
             else if (appDelegate.musicSub.type == .Spotify) { // && (spotName != "LookupFailed")
-                SpotPlayerView(songID: spotID, songName: songName, songArtistName: songArtistName, spotName: spotName, spotArtistName: spotArtistName, songAlbumName: songAlbumName, songArtImageData: spotImageData, songDuration: spotSongDuration, songPreviewURL: spotPreviewURL, appleAlbumArtist: appleAlbumArtist, spotAlbumArtist: spotAlbumArtist, confirmButton: false, showFCV: $showFCV, accessedViaGrid: accessedViaGrid, appRemote2: appRemote2, coreCard: coreCard, chosenCard: $chosenCard)
+                SpotPlayerView(songID: spotID, songName: songName, songArtistName: songArtistName, spotName: spotName, spotArtistName: spotArtistName, songAlbumName: songAlbumName, songArtImageData: spotImageData, songDuration: spotSongDuration, songPreviewURL: spotPreviewURL, appleAlbumArtist: appleAlbumArtist, spotAlbumArtist: spotAlbumArtist, confirmButton: false, showFCV: $showFCV, accessedViaGrid: accessedViaGrid, appRemote2: appRemote2, coreCard: coreCard, chosenCard: $chosenCard, deferToPreview: $deferToPreview)
                         .onAppear{appRemote2?.connectionParameters.accessToken = (defaults.object(forKey: "SpotifyAccessToken") as? String)!}
                         .frame(maxHeight: .infinity, alignment: .bottom)
                 }
@@ -285,4 +285,62 @@ extension eCardView {
             CollageAndAnnotationView()
         }
     }
+    
+    
+        
+        private func string(for permission: CKShare.ParticipantPermission) -> String {
+          switch permission {
+          case .unknown:
+            return "Unknown"
+          case .none:
+            return "None"
+          case .readOnly:
+            return "Read-Only"
+          case .readWrite:
+            return "Read-Write"
+          @unknown default:
+            fatalError("A new value added to CKShare.Participant.Permission")
+          }
+        }
+
+        private func string(for role: CKShare.ParticipantRole) -> String {
+          switch role {
+          case .owner:
+            return "Owner"
+          case .privateUser:
+            return "Private User"
+          case .publicUser:
+            return "Public User"
+          case .unknown:
+            return "Unknown"
+          @unknown default:
+            fatalError("A new value added to CKShare.Participant.Role")
+          }
+        }
+
+        private func string(for acceptanceStatus: CKShare.ParticipantAcceptanceStatus) -> String {
+          switch acceptanceStatus {
+          case .accepted:
+            return "Accepted"
+          case .removed:
+            return "Removed"
+          case .pending:
+            return "Invited"
+          case .unknown:
+            return "Unknown"
+          @unknown default:
+            fatalError("A new value added to CKShare.Participant.AcceptanceStatus")
+          }
+        }
+        
+        func getURLData(url: URL, completionHandler: @escaping (Data?,Error?) -> Void) {
+            var request = URLRequest(url: url)
+            request.httpMethod = "GET"
+            request.setValue("v1", forHTTPHeaderField: "Accept-Version")
+            let dataTask = URLSession.shared.dataTask(with: request) { (data, response, error) in
+                guard error == nil else {return}
+                DispatchQueue.main.async {completionHandler(data, nil)}
+            }
+            dataTask.resume()
+        }
 }
