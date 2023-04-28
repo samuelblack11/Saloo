@@ -59,10 +59,10 @@ struct StartMenu: View {
                         //.listRowBackground(appDelegate.appColor)
                         .onTapGesture {self.showOutbox = true}
                         .fullScreenCover(isPresented: $showOutbox) {GridofCards(cardsForDisplay: loadCoreCards(), whichBoxVal: .outbox)}
-                    Text("Calendar 🗓")
+                    //Text("Calendar 🗓")
                         //.listRowBackground(appDelegate.appColor)
-                        .onTapGesture {self.showCalendar = true}
-                        .fullScreenCover(isPresented: $showCalendar) {CalendarParent(calViewModel: calViewModel, showDetailView: showDetailView)}
+                        //.onTapGesture {self.showCalendar = true}
+                        //.fullScreenCover(isPresented: $showCalendar) {CalendarParent(calViewModel: calViewModel, showDetailView: showDetailView)}
                     Text("Preferences 📱")
                         //.listRowBackground(appDelegate.appColor)
                         .onTapGesture {self.showPref = true}

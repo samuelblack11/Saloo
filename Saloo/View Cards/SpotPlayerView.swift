@@ -59,9 +59,9 @@ struct SpotPlayerView: View {
     let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
     @Binding var chosenCard: CoreCard?
     @Binding var deferToPreview: Bool
-
+    
     var body: some View {
-            SpotPlayerView2
+        SpotPlayerView2
             .onAppear{
                 print("SPOT PLAYER APPEARED....")
                 if accessedViaGrid && appDelegate.musicSub.type == .Spotify {
@@ -93,7 +93,7 @@ struct SpotPlayerView: View {
         if confirmButton == true {Button {appRemote2?.playerAPI?.pause();showFCV = true; spotifyAuth.songID = songID!} label: {Text("Select Song For Card").foregroundColor(.blue)}}
         else {Text("")}
     }
-
+    
     func convertToMinutes(seconds: Int) -> String {
         let m = seconds / 60
         let s = String(format: "%02d", seconds % 60)
@@ -168,8 +168,8 @@ struct SpotPlayerView: View {
         var AMString = String()
         var cleanSongName = removeSubstrings(from: songName!, removeList: appDelegate.songKeyWordsToFilterOut)
         let cleanSongArtistName = songArtistName!
-                                            .replacingOccurrences(of: ",", with: "" )
-                                            .replacingOccurrences(of: " & ", with: " ")
+            .replacingOccurrences(of: ",", with: "" )
+            .replacingOccurrences(of: " & ", with: " ")
         var artistsInSongName = String()
         
         var featStrings = ["(feat.", "[feat."]
@@ -187,8 +187,7 @@ struct SpotPlayerView: View {
         }
         AMString = (cleanSongName + " " + cleanSongArtistName + artistsInSongName)
         AMString = convertMultipleSpacesToSingleSpace(AMString.withoutPunc.lowercased())
-        print("AMString....")
-        print(AMString)
+        print("AMString....\(AMString)")
         return AMString
     }
     
@@ -197,8 +196,8 @@ struct SpotPlayerView: View {
         var SPOTString = String()
         var cleanSongName = removeSubstrings(from: spotSongName, removeList: appDelegate.songKeyWordsToFilterOut)
         let cleanSongArtistName = spotSongArtist
-                                            .replacingOccurrences(of: ",", with: "" )
-                                            .replacingOccurrences(of: " & ", with: " ")
+            .replacingOccurrences(of: ",", with: "" )
+            .replacingOccurrences(of: " & ", with: " ")
         var artistsInSongName = String()
         var featStrings = ["(feat.", "[feat."]
         for featString in featStrings {
@@ -216,9 +215,7 @@ struct SpotPlayerView: View {
         
         SPOTString = (cleanSongName + " " + cleanSongArtistName + artistsInSongName)
         SPOTString = convertMultipleSpacesToSingleSpace(SPOTString.withoutPunc.lowercased())
-        print("SPOTString....")
-        print(SPOTString)
-        
+        print("SPOTString....\(SPOTString)")
         return SPOTString
     }
     
@@ -259,18 +256,17 @@ struct SpotPlayerView: View {
         print(removeSpecialCharacters(from: appleAlbumArtist!))
         
         SpotifyAPI().getAlbumID(albumName: cleanAlbumName, artistName: removeSpecialCharacters(from: appleAlbumArtist!) , authToken: spotifyAuth.access_Token, completion: { (albums, error) in
-            print("Got Albums....")
-            print(error?.localizedDescription)
-            print(albums)
+            let dispatchGroup = DispatchGroup()
             for album in albums! {
+                dispatchGroup.enter()
                 spotAlbumID = album.id
                 if spotAlbumID != nil {
                     SpotifyAPI().searchForAlbum(albumId: spotAlbumID!, authToken: spotifyAuth.access_Token) { (albumResponse, error) in
                         if let album = albumResponse {
-                            print("The Album.....\(album)")
                             spotImageURL = album.images[2].url
                             SpotifyAPI().getAlbumTracks(albumId: spotAlbumID!, authToken: spotifyAuth.access_Token, completion: { (response, error) in
                                 for song in response! {
+                                    // your code here
                                     var allArtists = String()
                                     if song.artists.count > 1 {
                                         for (index, artist) in song.artists.enumerated() {
@@ -281,10 +277,7 @@ struct SpotPlayerView: View {
                                             else {allArtists = artist.name}
                                         }}
                                     else {allArtists = song.artists[0].name}
-                                    
-                                    print("Contains Same Words....")
-                                    print(AMString)                                    
-                                    
+                                    print(AMString); print("Track Name...."); print(cleanSPOTSongForAMComparison(spotSongName: song.name, spotSongArtist: allArtists))
                                     if containsSameWords(AMString, cleanSPOTSongForAMComparison(spotSongName: song.name, spotSongArtist: allArtists)) {
                                         print("SSSSS")
                                         print(song)
@@ -297,36 +290,26 @@ struct SpotPlayerView: View {
                                             songArtImageData = artResponse!
                                             songDuration = Double(song.duration_ms) * 0.001
                                             playSong()
-                        
                                             DispatchQueue.main.async {updateRecordWithNewSPOTData(spotName: song.name, spotArtistName: allArtists2, spotID: song.id, songArtImageData: artResponse!, songDuration: String(Double(song.duration_ms) * 0.001))}
                                         }); foundMatch = true}
                                 }
-                                if songPreviewURL != nil && foundMatch == false {
-                                    print("Defer to preview")
-                                    deferToPreview = true
-                                    print(deferToPreview)
-                                    DispatchQueue.main.async {updateRecordWithNewSPOTData(spotName: "LookupFailed", spotArtistName: "LookupFailed", spotID: "LookupFailed", songArtImageData: Data(), songDuration: String(0))}
-                                }
-                                else { print("Else called to change card type...")
-                                    //appDelegate.chosenGridCard?.cardType = "noMusicNoGift"
-                                }
-                            })}}}
-                
+                                dispatchGroup.leave()})}
+                        else {dispatchGroup.leave()}}}
+                        else {dispatchGroup.leave()}
             }
-            if albums!.count < 1 {
-                if songPreviewURL != nil && foundMatch == false {
-                    print("Defer to preview")
-                    deferToPreview = true
-                    print(deferToPreview)
-                    DispatchQueue.main.async {updateRecordWithNewSPOTData(spotName: "LookupFailed", spotArtistName: "LookupFailed", spotID: "LookupFailed", songArtImageData: Data(), songDuration: String(0))}
-                }
-                else { print("Else called to change card type...")
-                    //appDelegate.chosenGridCard?.cardType = "noMusicNoGift"
-                }
-            }
-            
-            
-        })}
+            dispatchGroup.notify(queue: .main) {
+                // code to execute after all API calls have finished
+                if albums!.count < 1 {
+                    if songPreviewURL != nil && foundMatch == false {
+                        print("Defer to preview")
+                        deferToPreview = true
+                        print(deferToPreview)
+                        DispatchQueue.main.async {updateRecordWithNewSPOTData(spotName: "LookupFailed", spotArtistName: "LookupFailed", spotID: "LookupFailed", songArtImageData: Data(), songDuration: String(0))}
+                    }
+                    else { print("Else called to change card type...")
+                        //appDelegate.chosenGridCard?.cardType = "noMusicNoGift"
+        }}}})}
+    
     
     
     func updateRecordWithNewSPOTData(spotName: String, spotArtistName: String, spotID: String, songArtImageData: Data, songDuration: String) {

@@ -170,7 +170,7 @@ struct eCardView: View {
     
     var MusicView: some View {
         VStack {
-            if (deferToPreview == true || spotName == "LookupFailed"  || songName == "LookupFailed") {
+            if (deferToPreview == true || spotName == "LookupFailed"  || songName == "LookupFailed" || appDelegate.musicSub.type == .Neither) {
                 if songAddedUsing! == "Spotify"  {
                     SongPreviewPlayer(songID: spotID, songName: spotName, songArtistName: spotArtistName, songArtImageData: spotImageData, songDuration: spotSongDuration, songPreviewURL: spotPreviewURL, confirmButton: false, showFCV: $showFCV, songAddedUsing: songAddedUsing!, chosenCard: $chosenCard)
                         //.onDisappear{if player?.timeControlStatus.rawValue == 2 {player?.pause()}}

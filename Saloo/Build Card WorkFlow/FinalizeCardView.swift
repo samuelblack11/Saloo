@@ -95,9 +95,11 @@ struct FinalizeCardView: View {
     
     var body: some View {
         NavigationView {
-        //VStack(spacing: 0) {
-            VStack{
-                eCardView(eCardText: noteField.noteText, font: noteField.font, coverImage: chosenObject.coverImage, collageImage: collageImage.collageImage, text1: annotation.text1, text2: annotation.text2, text2URL: annotation.text2URL, text3: annotation.text3, text4: annotation.text4, songID: chosenSong.id, spotID: chosenSong.spotID, spotName: chosenSong.spotName, spotArtistName: chosenSong.spotArtistName, songName: chosenSong.name, songArtistName: chosenSong.artistName, songArtImageData: chosenSong.artwork, songDuration: chosenSong.durationInSeconds, songPreviewURL: chosenSong.songPreviewURL, inclMusic: addMusic.addMusic, spotImageData: chosenSong.spotImageData, spotSongDuration: chosenSong.spotSongDuration, spotPreviewURL: chosenSong.spotPreviewURL, songAddedUsing: chosenSong.songAddedUsing, appRemote2: appRemote2, cardType: cardType,accessedViaGrid: false, fromFinalize: true, chosenCard: $emptyCard)
+            VStack(spacing: 0){
+                eCardView(eCardText: noteField.noteText, font: noteField.font, coverImage: chosenObject.coverImage, collageImage: collageImage.collageImage, text1: annotation.text1, text2: annotation.text2, text2URL: annotation.text2URL, text3: annotation.text3, text4: annotation.text4, songID: chosenSong.id, spotID: chosenSong.spotID, spotName: chosenSong.spotName, spotArtistName: chosenSong.spotArtistName, songName: chosenSong.name, songArtistName: chosenSong.artistName, songArtImageData: chosenSong.artwork, songDuration: chosenSong.durationInSeconds, songPreviewURL: chosenSong.songPreviewURL, inclMusic: addMusic.addMusic, spotImageData: chosenSong.spotImageData, spotSongDuration: chosenSong.spotSongDuration, spotPreviewURL: chosenSong.spotPreviewURL, songAddedUsing: chosenSong.songAddedUsing, appRemote2: appRemote2, cardType: cardType,accessedViaGrid: false, fromFinalize: true, chosenCard: $emptyCard).frame(maxHeight: UIScreen.screenHeight/1.15)
+                Spacer()
+                saveButton
+            }
                     .toolbar {
                     ToolbarItemGroup(placement: .navigationBarLeading) {
                         if addMusic.addMusic == false {
@@ -111,8 +113,8 @@ struct FinalizeCardView: View {
                     }
                 }
             
-            VStack{saveButton}
-        }
+
+            
 
         .fullScreenCover(isPresented: $showStartMenu) {StartMenu(appRemote2: appRemote2)}
         .fullScreenCover(isPresented: $showMusicSearch) {MusicSearchView()}
