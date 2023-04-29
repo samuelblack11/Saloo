@@ -224,17 +224,27 @@ struct SpotPlayerView: View {
         var artistInAlbumName = String()
         var featStrings = ["(feat.", "[feat."]
         for featString in featStrings {
+            print("Contains feat string")
+            print(songAlbumName)
             if songAlbumName!.contains(featString) {
                 let albumComponents = songAlbumName!.components(separatedBy: featString)
                 cleanAlbumName = albumComponents[0]
                 artistInAlbumName = albumComponents[1].components(separatedBy: ")")[0]
                 artistInAlbumName = artistInAlbumName.replacingOccurrences(of: "&", with: "")
+                print(cleanAlbumName)
+                print(artistInAlbumName)
                 if albumComponents[1].components(separatedBy: ")").count > 1 {
                     let cleanAlbumNamePt2 = albumComponents[1].components(separatedBy: ")")[1]
                     cleanAlbumName = cleanAlbumName + " " + cleanAlbumNamePt2
+                    print(cleanAlbumName)
                 }
+                break
             }
+            else {cleanAlbumName = songAlbumName!}
         }
+        print("&&&")
+        print(cleanAlbumName)
+        print(artistInAlbumName)
         return (cleanAlbumName, artistInAlbumName)
     }
     
@@ -247,55 +257,53 @@ struct SpotPlayerView: View {
     }
     
     func getSongViaAlbumSearch() {
-        var cleanAlbumName = removeArtistsFromAlbumName().0
+        var cleanAlbumNameForURL = (removeArtistsFromAlbumName().0)
+        var appleAlbumArtistForURL = removeSpecialCharacters(from: appleAlbumArtist!)
         var foundMatch = false
         let AMString = cleanAMSongForSPOTComparison()
-        print("AlbumSearch Criteria")
-        print(cleanAlbumName)
-        print(AMString)
-        print(removeSpecialCharacters(from: appleAlbumArtist!))
-        
-        SpotifyAPI().getAlbumID(albumName: cleanAlbumName, artistName: removeSpecialCharacters(from: appleAlbumArtist!) , authToken: spotifyAuth.access_Token, completion: { (albums, error) in
+        SpotifyAPI().getAlbumID(albumName: cleanAlbumNameForURL, artistName: appleAlbumArtistForURL , authToken: spotifyAuth.access_Token, completion: { (albums, error) in
             let dispatchGroup = DispatchGroup()
             for album in albums! {
                 dispatchGroup.enter()
-                spotAlbumID = album.id
-                if spotAlbumID != nil {
-                    SpotifyAPI().searchForAlbum(albumId: spotAlbumID!, authToken: spotifyAuth.access_Token) { (albumResponse, error) in
-                        if let album = albumResponse {
-                            spotImageURL = album.images[2].url
-                            SpotifyAPI().getAlbumTracks(albumId: spotAlbumID!, authToken: spotifyAuth.access_Token, completion: { (response, error) in
-                                for song in response! {
-                                    // your code here
-                                    var allArtists = String()
-                                    if song.artists.count > 1 {
-                                        for (index, artist) in song.artists.enumerated() {
-                                            if index != 0 {
-                                                if song.name.lowercased().contains(artist.name.lowercased()) {}
-                                                else {allArtists = allArtists + " , " + artist.name}
-                                            }
-                                            else {allArtists = artist.name}
-                                        }}
-                                    else {allArtists = song.artists[0].name}
-                                    print(AMString); print("Track Name...."); print(cleanSPOTSongForAMComparison(spotSongName: song.name, spotSongArtist: allArtists))
-                                    if containsSameWords(AMString, cleanSPOTSongForAMComparison(spotSongName: song.name, spotSongArtist: allArtists)) {
-                                        print("SSSSS")
-                                        print(song)
-                                        let artURL = URL(string: spotImageURL!)
-                                        let _ = getURLData(url: artURL!, completionHandler: {(artResponse, error2) in
-                                            var allArtists2 = String()
-                                            spotName = song.name
-                                            spotArtistName = allArtists
-                                            songID = song.id
-                                            songArtImageData = artResponse!
-                                            songDuration = Double(song.duration_ms) * 0.001
-                                            playSong()
-                                            DispatchQueue.main.async {updateRecordWithNewSPOTData(spotName: song.name, spotArtistName: allArtists2, spotID: song.id, songArtImageData: artResponse!, songDuration: String(Double(song.duration_ms) * 0.001))}
-                                        }); foundMatch = true}
-                                }
-                                dispatchGroup.leave()})}
-                        else {dispatchGroup.leave()}}}
-                        else {dispatchGroup.leave()}
+                print("Got Album...\(album.name)")
+                let spotAlbumID = album.id // use the album ID from the current iteration
+                SpotifyAPI().searchForAlbum(albumId: spotAlbumID, authToken: spotifyAuth.access_Token) { (albumResponse, error) in
+                    if let album = albumResponse {
+                        spotImageURL = album.images[2].url
+                        SpotifyAPI().getAlbumTracks(albumId: spotAlbumID, authToken: spotifyAuth.access_Token, completion: { (response, error) in
+                            for song in response! {
+                                // your code here
+                                print("Got Track...\(song.name)")
+                                var allArtists = String()
+                                if song.artists.count > 1 {
+                                    for (index, artist) in song.artists.enumerated() {
+                                        if index != 0 {
+                                            if song.name.lowercased().contains(artist.name.lowercased()) {}
+                                            else {allArtists = allArtists + " , " + artist.name}
+                                        }
+                                        else {allArtists = artist.name}
+                                    }}
+                                else {allArtists = song.artists[0].name}
+                                print(AMString); print("Track Name...."); print(cleanSPOTSongForAMComparison(spotSongName: song.name, spotSongArtist: allArtists))
+                                if containsSameWords(AMString, cleanSPOTSongForAMComparison(spotSongName: song.name, spotSongArtist: allArtists)) {
+                                    print("SSSSS")
+                                    print(song)
+                                    let artURL = URL(string: spotImageURL!)
+                                    let _ = getURLData(url: artURL!, completionHandler: {(artResponse, error2) in
+                                        var allArtists2 = String()
+                                        spotName = song.name
+                                        spotArtistName = allArtists
+                                        songID = song.id
+                                        songArtImageData = artResponse!
+                                        songDuration = Double(song.duration_ms) * 0.001
+                                        playSong()
+                                        DispatchQueue.main.async {updateRecordWithNewSPOTData(spotName: song.name, spotArtistName: allArtists2, spotID: song.id, songArtImageData: artResponse!, songDuration: String(Double(song.duration_ms) * 0.001))}
+                                    }); foundMatch = true}
+                            }
+                            dispatchGroup.leave()
+                        })}
+                    else {dispatchGroup.leave()}
+                }
             }
             dispatchGroup.notify(queue: .main) {
                 // code to execute after all API calls have finished

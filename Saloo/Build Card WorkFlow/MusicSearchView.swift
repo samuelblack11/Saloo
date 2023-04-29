@@ -267,6 +267,7 @@ extension MusicSearchView {
                     cleanAlbumName = cleanAlbumName + " " + cleanAlbumNamePt2
                 }
             }
+            else {cleanAlbumName = chosenSong.songAlbumName}
         }
         return (cleanAlbumName, artistInAlbumName)
     }
@@ -305,6 +306,11 @@ extension MusicSearchView {
         var artistsInAlbumName = String()
         cleanAlbumName = removeArtistsFromAlbumName().0
         artistsInAlbumName = removeArtistsFromAlbumName().1
+        
+        
+        
+        
+        
         SKCloudServiceController.requestAuthorization {(status) in if status == .authorized {
             AppleMusicAPI().searchForAlbum(albumName: removeSpecialCharacters(from: cleanAlbumName), storeFrontID: storeFront,  userToken: userToken, completion: { (response, error) in
                 if response != nil {
