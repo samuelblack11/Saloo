@@ -52,7 +52,7 @@ struct MusicSearchView: View {
     @State private var ranAMStoreFront = false
     @State var amAPI = AppleMusicAPI()
     @State private var showSpotAuthFailedAlert = false
-    var songKeyWordsToFilterOut = ["(live)","[live]","live at","live in","live from", "(mixed)","[mixed]", "- Single"]
+    var songKeyWordsToFilterOut = ["(live)","[live]","live at","live in","live from", "(mixed)","[mixed]"]
     let sortOptions = ["Track", "Artist","Album"]
     @State private var sortByValue = "Track"
     @State var emptyCard: CoreCard? = CoreCard()
@@ -476,7 +476,8 @@ extension MusicSearchView {
                             
                             let songForList = SongForList(id: song.id, name: song.name, artistName: allArtists, albumName: song.album!.name, artImageData: artResponse!, durationInMillis: song.duration_ms, isPlaying: false, previewURL: songPrev!)
                             if song.restrictions?.reason == nil {
-                                if containsString(listOfSubStrings: songKeyWordsToFilterOut, songName: songForList.name) || containsString(listOfSubStrings: songKeyWordsToFilterOut, songName: songForList.albumName) || song.album?.album_type == "single" {
+                                //if containsString(listOfSubStrings: songKeyWordsToFilterOut, songName: songForList.name) || containsString(listOfSubStrings: songKeyWordsToFilterOut, songName: songForList.albumName) || song.album?.album_type == "single" {
+                                if containsString(listOfSubStrings: songKeyWordsToFilterOut, songName: songForList.name) || containsString(listOfSubStrings: songKeyWordsToFilterOut, songName: songForList.albumName) {
                                     print("Contains prohibited substring")
                                 }
                                 else{searchResults.append(songForList)}

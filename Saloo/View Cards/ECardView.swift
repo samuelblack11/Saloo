@@ -96,12 +96,8 @@ struct eCardView: View {
     func CoverViewWide() -> some View {
         return Image(uiImage: UIImage(data: coverImage)!)
                 .interpolation(.none).resizable()
-                .frame(maxWidth: UIScreen.main.bounds.width / 1.1, maxHeight: UIScreen.main.bounds.height / 3.7)
+                .frame(maxWidth: UIScreen.main.bounds.width / 1.1, maxHeight: UIScreen.main.bounds.height / 3.9)
                 .scaledToFill()
-                .onAppear{print("COVER View Wide Appeared...")}
-                //.resizable()
-                //.aspectRatio(contentMode: .fit)
-                
     }
     
     func CoverViewTall() -> some View {
@@ -173,12 +169,10 @@ struct eCardView: View {
             if (deferToPreview == true || spotName == "LookupFailed"  || songName == "LookupFailed" || appDelegate.musicSub.type == .Neither) {
                 if songAddedUsing! == "Spotify"  {
                     SongPreviewPlayer(songID: spotID, songName: spotName, songArtistName: spotArtistName, songArtImageData: spotImageData, songDuration: spotSongDuration, songPreviewURL: spotPreviewURL, confirmButton: false, showFCV: $showFCV, songAddedUsing: songAddedUsing!, chosenCard: $chosenCard)
-                        //.onDisappear{if player?.timeControlStatus.rawValue == 2 {player?.pause()}}
                         .frame(maxHeight: .infinity, alignment: .bottom)
                 }
                 else if songAddedUsing! == "Apple"  {
                     SongPreviewPlayer(songID: songID, songName: songName, songArtistName: songArtistName, songArtImageData: songArtImageData, songDuration: songDuration, songPreviewURL: songPreviewURL, confirmButton: false, showFCV: $showFCV, songAddedUsing: songAddedUsing!, chosenCard: $chosenCard)
-                        //.onDisappear{if player?.timeControlStatus.rawValue == 2 {player?.pause()}}
                         .frame(maxHeight: .infinity, alignment: .bottom)
                  }
             }
