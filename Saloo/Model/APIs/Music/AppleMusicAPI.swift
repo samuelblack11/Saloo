@@ -175,7 +175,7 @@ class AppleMusicAPI {
     }
     
     
-    func searchForAlbum(albumName: String, storeFrontID: String,  userToken: String, completion: @escaping (AlbumResponse?, Error?) -> Void) {
+    func searchForAlbum(albumName: String, storeFrontID: String, offset: Int?,  userToken: String, completion: @escaping (AlbumResponse?, Error?) -> Void) {
         // Set up the search query
         let lock = DispatchSemaphore(value: 1)
         let searchURL = "https://api.music.apple.com/v1/catalog/\(storeFrontID)/search"
@@ -193,7 +193,12 @@ class AppleMusicAPI {
         
         let searchType = "albums"
         print("searchForAlbum SearchTerm....")
-        let fullURL = "\(searchURL)?term=\(searchTerm)&types=\(searchType)&limit=25"
+        var fullURL = "\(searchURL)?term=\(searchTerm)&types=\(searchType)&limit=25"
+        if let offset = offset {
+            print("Adding offset")
+            fullURL += "&offset=\(offset)"
+        }
+
         print(fullURL)
         
         // Set up the request

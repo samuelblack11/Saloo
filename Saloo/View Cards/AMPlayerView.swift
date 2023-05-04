@@ -111,7 +111,8 @@ struct AMPlayerView: View {
             }
             ProgressView(value: songProgress, total: songDuration!)
                 .onReceive(timer) {_ in
-                    if songProgress < songDuration! && musicPlayer.playbackState.rawValue == 1 {songProgress += 1}
+                    //if songProgress < songDuration! && musicPlayer.playbackState.rawValue == 1 {songProgress += 1}
+                    songProgress = musicPlayer.currentPlaybackTime
                     if songProgress == songDuration {musicPlayer.pause()}
                 }
             HStack{
@@ -158,20 +159,23 @@ extension AMPlayerView {
         })}}}}}
     
     func getAMStoreFront() {
-        Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { timer in
-            if amAPI.taskToken != nil && ranAMStoreFront == false {
-                ranAMStoreFront = true
-                SKCloudServiceController.requestAuthorization {(status) in if status == .authorized {
-                    amAPI.storeFrontID = amAPI.fetchUserStorefront(userToken: amAPI.taskToken!, completionHandler: { ( response, error) in
-                        amAPI.storeFrontID = response!.data[0].id
-                        if songName! == "" {convertSong()}
-                    })}}}
+            Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { timer in
+                if amAPI.taskToken != nil && ranAMStoreFront == false {
+                    ranAMStoreFront = true
+                    SKCloudServiceController.requestAuthorization {(status) in if status == .authorized {
+                        amAPI.storeFrontID = amAPI.fetchUserStorefront(userToken: amAPI.taskToken!, completionHandler: { ( response, error) in
+                            amAPI.storeFrontID = response!.data[0].id
+                            if songName! == "" {
+                                convertSong(offset: nil)
+                            }
+                        })}}}
             }
-        }
+    }
     
+
     func cleanAMSongForSPOTComparison(amSongName: String, amSongArtist: String) -> String {
         var AMString = String()
-        var cleanSongName = removeSubstrings(from: amSongName, removeList: appDelegate.songKeyWordsToFilterOut)
+        var cleanSongName = removeSubstrings(from: amSongName, removeList: appDelegate.songFilterForMatch)
         var cleanSongArtistName = amSongArtist
                                             .replacingOccurrences(of: ",", with: "")
                                             .replacingOccurrences(of: "&", with: "")
@@ -199,7 +203,7 @@ extension AMPlayerView {
     
     func cleanSPOTSongForAMComparison(spotSongName: String, spotSongArtist: String) -> String {
         var SPOTString = String()
-        var cleanSongName = removeSubstrings(from: spotSongName, removeList: appDelegate.songKeyWordsToFilterOut)
+        var cleanSongName = removeSubstrings(from: spotSongName, removeList: appDelegate.songFilterForMatch)
 
         let cleanSongArtistName = spotSongArtist
                                             .replacingOccurrences(of: ",", with: "" )
@@ -227,11 +231,11 @@ extension AMPlayerView {
     }
     
     
-    func convertSong() {
-            var foundMatch = "isSearching" // Move this variable to the outer loop
-            var triggerFoundMatchCheck = false
-            amAPI.searchForAlbum(albumName: removeSubstrings(from: songAlbumName!, removeList: appDelegate.songKeyWordsToFilterOut), storeFrontID: amAPI.storeFrontID!, userToken: amAPI.taskToken!, completion: {(albumResponse, error) in
-                print("Tried to Convert...\(removeSubstrings(from: songAlbumName!, removeList: appDelegate.songKeyWordsToFilterOut))")
+    func convertSong(offset: Int?) {
+        var foundMatch = "isSearching" // Move this variable to the outer loop
+        var triggerFoundMatchCheck = false
+        amAPI.searchForAlbum(albumName: removeSubstrings(from: songAlbumName!, removeList: appDelegate.songFilterForMatch), storeFrontID: amAPI.storeFrontID!, offset: offset, userToken: amAPI.taskToken!, completion: {(albumResponse, error) in
+                print("Tried to Convert...\(removeSubstrings(from: songAlbumName!, removeList: appDelegate.songFilterForMatch))")
                 print(error?.localizedDescription as Any)
                 //if error != nil {foundMatch = "searchFailed"}
                 let cleanSpotString = cleanSPOTSongForAMComparison(spotSongName: spotName!, spotSongArtist: spotArtistName!)
@@ -266,7 +270,7 @@ extension AMPlayerView {
                                                 }})}
                                         
                                         if trackIndex == trackList.count - 1 && albumIndex == albumList.count - 1 {
-                                            print("Trigerred Found Match...")
+                                            print("Trigerred Found Match Check...")
                                             triggerFoundMatchCheck = true}
                                     }
                                     

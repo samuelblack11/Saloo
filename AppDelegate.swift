@@ -21,7 +21,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, ObservableObject {
     @Published var chosenGridCard: CoreCard? = nil
     @Published var showProgViewOnAcceptShare = false
     @Published var chosenGridCardType: String?
-    var songKeyWordsToFilterOut = ["(live)","[live]","live at","live in","live from", "- Single", "(mixed)", "[mixed]"]
+    var songFilterForSearch = ["(live)","[live]","live at","live in","live from", "(mixed)", "[mixed]"]
+    var songFilterForMatch = ["(live)","[live]","live at","live in","live from", "(mixed)", "[mixed]", "- single","(deluxe)","(deluxe edition)"]
+
     let appColor = Color("SalooTheme")
     @Published var isLaunchingFromClosed = true
     @Published var isPlayerCreated = false

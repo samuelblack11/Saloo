@@ -27,10 +27,10 @@ struct WriteNoteView: View {
     @State private var showFinalize = false
     @State private var showCollageBuilder = false
     
-    @ObservedObject var message = TextLimiter(limit: 225, value: "Write Your Note Here")
-    @ObservedObject var recipient = TextLimiter(limit: 20, value: "To:")
-    @ObservedObject var sender = TextLimiter(limit: 20, value: "From:")
-    @ObservedObject var cardName = TextLimiter(limit: 20, value: "Name Your Card")
+    @ObservedObject var message = MaximumText(limit: 225, value: "Write Your Note Here")
+    @ObservedObject var recipient = MaximumText(limit: 20, value: "To:")
+    @ObservedObject var sender = MaximumText(limit: 20, value: "From:")
+    @ObservedObject var cardName = MaximumText(limit: 20, value: "Name Your Card")
     @State private var tappedTextEditor = false
     @State private var namesNotEntered = false
     @State private var addMusicPrompt = false

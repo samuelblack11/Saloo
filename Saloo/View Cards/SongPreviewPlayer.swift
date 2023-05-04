@@ -187,9 +187,13 @@ struct SongPreviewPlayer: View {
                 }
                 .frame(maxWidth: UIScreen.screenHeight/12, maxHeight: UIScreen.screenHeight/12)
             }
-            ProgressView(value: songProgress, total: 30)
+            ProgressView(value: songProgress, total: Double(30))
                 .onReceive(timer) {_ in
-                    if songProgress < 30 && avPlayer.player!.timeControlStatus.rawValue == 2 {songProgress += 1}
+                    
+                    //if songProgress < 30 && avPlayer.player!.timeControlStatus.rawValue == 2 {songProgress += 1}
+                    songProgress = CMTimeGetSeconds(avPlayer.player!.currentItem?.currentTime() ?? .zero) + 1
+                    //if songProgress < 30 && avPlayer.player!.timeControlStatus.rawValue == 2 {songProgress = CMTimeGetSeconds(avPlayer.player!.currentItem?.currentTime() ?? .zero)}
+                    print("Song Progress: \(songProgress)")
                 }
             HStack{
                 Text(convertToMinutes(seconds:Int(songProgress)))
@@ -211,4 +215,12 @@ struct SongPreviewPlayer: View {
         let completeTime = String("\(m):\(s)")
         return completeTime
     }
+    
+    //func convertToMinutes(seconds: Int) -> String {
+    //    let m = seconds / 60
+    //    let s = seconds % 60
+    //    let completeTime = String(format: "%d:%02d", m, s)
+    //    return completeTime
+    //}
+
 }

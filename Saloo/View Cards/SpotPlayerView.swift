@@ -59,7 +59,7 @@ struct SpotPlayerView: View {
     let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
     @Binding var chosenCard: CoreCard?
     @Binding var deferToPreview: Bool
-    
+
     var body: some View {
         SpotPlayerView2
             .onAppear{
@@ -150,7 +150,27 @@ struct SpotPlayerView: View {
                 }
                 ProgressView(value: songProgress, total: songDuration!)
                     .onReceive(timer) {_ in
-                        if songProgress < songDuration! && isPlaying {songProgress += 1}
+                        //if songProgress < songDuration! && isPlaying {songProgress += 1}
+                        if let playerAPI = appRemote2?.playerAPI {
+                            playerAPI.getPlayerState { (result, error) -> Void in
+                                guard error == nil else {
+                                    print("Error getting player state: \(error!)")
+                                    return
+                                }
+                                guard let playbackPosition = (result as AnyObject).playbackPosition else {
+                                    print("Error: Could not retrieve playback position.")
+                                    return
+                                }
+                                // Use the unwrapped value of playbackPosition here
+                                songProgress = Double(playbackPosition / 1000)
+                            }
+                        } else {
+                            print("Error: Could not retrieve player API.")
+                        }
+
+
+
+                        
                         if songProgress == songDuration{appRemote2?.playerAPI?.pause()}
                     }
                 HStack{
@@ -164,9 +184,10 @@ struct SpotPlayerView: View {
         }
     }
     
+
     func cleanAMSongForSPOTComparison() -> String {
         var AMString = String()
-        var cleanSongName = removeSubstrings(from: songName!, removeList: appDelegate.songKeyWordsToFilterOut)
+        var cleanSongName = removeSubstrings(from: songName!, removeList: appDelegate.songFilterForMatch)
         let cleanSongArtistName = songArtistName!
             .replacingOccurrences(of: ",", with: "" )
             .replacingOccurrences(of: " & ", with: " ")
@@ -194,7 +215,7 @@ struct SpotPlayerView: View {
     
     func cleanSPOTSongForAMComparison(spotSongName: String, spotSongArtist: String) -> String {
         var SPOTString = String()
-        var cleanSongName = removeSubstrings(from: spotSongName, removeList: appDelegate.songKeyWordsToFilterOut)
+        var cleanSongName = removeSubstrings(from: spotSongName, removeList: appDelegate.songFilterForMatch)
         let cleanSongArtistName = spotSongArtist
             .replacingOccurrences(of: ",", with: "" )
             .replacingOccurrences(of: " & ", with: " ")
@@ -220,14 +241,16 @@ struct SpotPlayerView: View {
     }
     
     func removeArtistsFromAlbumName() -> (String, String) {
-        var cleanAlbumName = String()
+        print("Clean AlbumName....")
+        var cleanAlbumName = removeSubstrings(from: songAlbumName!, removeList: appDelegate.songFilterForMatch)
+        print(cleanAlbumName)
         var artistInAlbumName = String()
         var featStrings = ["(feat.", "[feat."]
         for featString in featStrings {
-            print("Contains feat string")
-            print(songAlbumName)
-            if songAlbumName!.contains(featString) {
-                let albumComponents = songAlbumName!.components(separatedBy: featString)
+            print("Contains feat string?")
+            print(cleanAlbumName)
+            if cleanAlbumName.contains(featString) {
+                let albumComponents = cleanAlbumName.components(separatedBy: featString)
                 cleanAlbumName = albumComponents[0]
                 artistInAlbumName = albumComponents[1].components(separatedBy: ")")[0]
                 artistInAlbumName = artistInAlbumName.replacingOccurrences(of: "&", with: "")
@@ -240,7 +263,6 @@ struct SpotPlayerView: View {
                 }
                 break
             }
-            else {cleanAlbumName = songAlbumName!}
         }
         print("&&&")
         print(cleanAlbumName)

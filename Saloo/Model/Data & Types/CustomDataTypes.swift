@@ -131,7 +131,7 @@ class AddMusic: ObservableObject {@Published var addMusic: Bool = false}
 
 // https://programmingwithswift.com/swiftui-textfield-character-limit/
 
-class TextLimiter: ObservableObject {
+class MaximumText: ObservableObject {
     // variable for character limit
     private let limit: Int
     init(limit: Int, value: String) {self.limit = limit; self.value = value}

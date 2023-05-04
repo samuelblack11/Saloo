@@ -43,7 +43,7 @@ struct UnsplashCollectionView: View {
                 LazyVGrid(columns: columns, spacing: 10) {
                     ForEach(imageObjects, id: \.self.id) {photoObj in
                         AsyncImage(url: photoObj.smallImageURL) { image in
-                            image.resizable()} placeholder: {Color.gray}
+                            image.resizable()} placeholder: {ZStack{Color.gray; ProgressView()}}
                             .frame(width: 125, height: 125)
                             .onTapGesture {Task {try? await handleTap(index: photoObj.index)}}
                     }
