@@ -167,11 +167,18 @@ struct SpotPlayerView: View {
                         } else {
                             print("Error: Could not retrieve player API.")
                         }
-
-
-
+                        print("-----")
+                        print(songProgress)
+                        print(convertToMinutes(seconds:Int(songProgress)))
+                        print(songDuration!)
+                        print(convertToMinutes(seconds: Int(songDuration!)-Int(songProgress)))
                         
-                        if songProgress == songDuration{appRemote2?.playerAPI?.pause()}
+                        if songDuration! - songProgress == 1 {
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.99) {
+                                appRemote2?.playerAPI?.pause()
+                                isPlaying = false
+                            }
+                        }
                     }
                 HStack{
                     Text(convertToMinutes(seconds:Int(songProgress)))

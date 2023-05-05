@@ -96,7 +96,7 @@ struct eCardView: View {
     func CoverViewWide() -> some View {
         return Image(uiImage: UIImage(data: coverImage)!)
                 .interpolation(.none).resizable()
-                .frame(maxWidth: UIScreen.main.bounds.width / 1.1, maxHeight: UIScreen.main.bounds.height / 3.9)
+                .frame(maxWidth: UIScreen.main.bounds.width / 1.1, maxHeight: UIScreen.main.bounds.height / 3.8)
                 .scaledToFill()
     }
     
