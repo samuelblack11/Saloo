@@ -234,61 +234,55 @@ extension AMPlayerView {
     func convertSong(offset: Int?) {
         var foundMatch = "isSearching" // Move this variable to the outer loop
         var triggerFoundMatchCheck = false
-        amAPI.searchForAlbum(albumName: removeSubstrings(from: songAlbumName!, removeList: appDelegate.songFilterForMatch), storeFrontID: amAPI.storeFrontID!, offset: offset, userToken: amAPI.taskToken!, completion: {(albumResponse, error) in
-                print("Tried to Convert...\(removeSubstrings(from: songAlbumName!, removeList: appDelegate.songFilterForMatch))")
-                print(error?.localizedDescription as Any)
-                //if error != nil {foundMatch = "searchFailed"}
-                let cleanSpotString = cleanSPOTSongForAMComparison(spotSongName: spotName!, spotSongArtist: spotArtistName!)
-                if let albumList = albumResponse?.results.albums.data {
-                    let group = DispatchGroup()
-                    for (albumIndex, album) in albumList.enumerated() {
-                        group.enter()
-                        print("Album Object from AM...")
-                        print("----\(album.attributes.name)----\(album.id)")
-                        AppleMusicAPI().getAlbumTracks(albumId: album.id, storefrontId: amAPI.storeFrontID!, userToken: amAPI.taskToken!, completion: { (trackResponse, error) in
-                            defer { group.leave() }
-                            if trackResponse != nil {
-                                if let trackList = trackResponse?.data {
-                                    for (trackIndex, track) in trackList.enumerated() {
-                                        print("Track Index....\(trackIndex) of \(trackList.count - 1)")
-                                        print("Album Index....\(albumIndex) of \(albumList.count - 1)")
-                                        if containsSameWords(cleanAMSongForSPOTComparison(amSongName: track.attributes.name, amSongArtist: track.attributes.artistName), cleanSpotString) {
-                                            foundMatch = "foundMatch"
-                                            print("SSSSS")
-                                            print(Double(track.attributes.durationInMillis) * 0.001)
-                                            let artURL = URL(string:album.attributes.artwork.url.replacingOccurrences(of: "{w}", with: "80").replacingOccurrences(of: "{h}", with: "80"))
-                                            let _ = getURLData(url: artURL!, completionHandler: { (artResponse, error2) in
-                                                songName = track.attributes.name
-                                                songArtistName = track.attributes.artistName
-                                                songID = track.id
-                                                songArtImageData = artResponse!
-                                                songDuration = Double(track.attributes.durationInMillis) * 0.001
-                                                musicPlayer.setQueue(with: [songID!])
-                                                musicPlayer.play()
-                                                DispatchQueue.main.async {
-                                                    updateRecordWithNewAMData(songName: songName!, songArtistName: songArtistName!, songID: songID!, songArtImageData: artResponse!, songDuration: String(songDuration!))
-                                                }})}
-                                        
-                                        if trackIndex == trackList.count - 1 && albumIndex == albumList.count - 1 {
-                                            print("Trigerred Found Match Check...")
-                                            triggerFoundMatchCheck = true}
-                                    }
-                                    
-                                }}
-                            
-                        })}
-                    group.notify(queue: .main) {
-                        // This code is executed after all the requests have been completed
-                        if (triggerFoundMatchCheck && foundMatch == "isSearching") {
-                            print("search did fail...")
-                            foundMatch = "searchFailed"
-                            if songPreviewURL != nil {
-                                print("Defer to preview")
-                                deferToPreview = true
-                                DispatchQueue.main.async {
-                                    updateRecordWithNewAMData(songName: "LookupFailed", songArtistName: "LookupFailed", songID: "LookupFailed", songArtImageData: Data(), songDuration: String(0))
-                        }}}
-                    }}})}
+        let offsetVals: [Int?] = [nil, 25, 50, 75]
+        //while foundMatch == "isSearching" {
+        let group = DispatchGroup()
+        outerLoop: for offsetVal in offsetVals {
+            print("Offsetval....\(offsetVal)")
+            group.enter()
+            amAPI.searchForAlbum(albumName: removeSubstrings(from: songAlbumName!, removeList: appDelegate.songFilterForMatch), storeFrontID: amAPI.storeFrontID!, offset: offsetVal, userToken: amAPI.taskToken!, completion: {(albumResponse, error) in
+                    print("Tried to Convert...\(removeSubstrings(from: songAlbumName!, removeList: appDelegate.songFilterForMatch))")
+                    print(error?.localizedDescription as Any)
+                    //if error != nil {foundMatch = "searchFailed"}
+                    let cleanSpotString = cleanSPOTSongForAMComparison(spotSongName: spotName!, spotSongArtist: spotArtistName!)
+                    if let albumList = albumResponse?.results.albums.data {
+                        let group2 = DispatchGroup()
+                    secondLoop: for (albumIndex, album) in albumList.enumerated() {
+                            group2.enter()
+                            print("Album Object from AM...")
+                            print("----\(album.attributes.name)----\(album.id)")
+                            amAPI.getAlbumTracks(albumId: album.id, storefrontId: amAPI.storeFrontID!, userToken: amAPI.taskToken!, completion: { (trackResponse, error) in
+                                defer { group2.leave() }
+                                if trackResponse != nil {
+                                    if let trackList = trackResponse?.data {
+                                    thirdLoop: for (trackIndex, track) in trackList.enumerated() {
+                                            print("Track Index....\(trackIndex) of \(trackList.count - 1)")
+                                            print("Album Index....\(albumIndex) of \(albumList.count - 1)")
+                                            if containsSameWords(cleanAMSongForSPOTComparison(amSongName: track.attributes.name, amSongArtist: track.attributes.artistName), cleanSpotString) {
+                                                foundMatch = "foundMatch"
+                                                print("SSSSS - current offsetVal... \(offsetVal)")
+                                                print(Double(track.attributes.durationInMillis) * 0.001)
+                                                let artURL = URL(string:album.attributes.artwork.url.replacingOccurrences(of: "{w}", with: "80").replacingOccurrences(of: "{h}", with: "80"))
+                                                let _ = getURLData(url: artURL!, completionHandler: { (artResponse, error2) in
+                                                    songName = track.attributes.name; songArtistName = track.attributes.artistName; songID = track.id; songArtImageData = artResponse!; songDuration = Double(track.attributes.durationInMillis) * 0.001
+                                                    musicPlayer.setQueue(with: [songID!]); musicPlayer.play()
+                                                    DispatchQueue.main.async {updateRecordWithNewAMData(songName: songName!, songArtistName: songArtistName!, songID: songID!, songArtImageData: artResponse!, songDuration: String(songDuration!))}
+                                                    group.leave()
+                                                })}
+                                            if trackIndex == trackList.count - 1 && albumIndex == albumList.count - 1 {print("Trigerred Found Match Check..."); triggerFoundMatchCheck = true}
+                }}}})}}})
+                group.notify(queue: .main) {
+                    // This code is executed after all the requests have been completed
+                    if (triggerFoundMatchCheck && foundMatch == "isSearching" && offsetVal == offsetVals.last) {
+                        print("search did fail...")
+                        foundMatch = "searchFailed"
+                        if songPreviewURL != nil {
+                            print("Defer to preview")
+                            deferToPreview = true
+                            DispatchQueue.main.async {
+                                updateRecordWithNewAMData(songName: "LookupFailed", songArtistName: "LookupFailed", songID: "LookupFailed", songArtImageData: Data(), songDuration: String(0))
+                }}}}
+            }}
 
     
     func updateRecordWithNewAMData(songName: String, songArtistName: String, songID: String, songArtImageData: Data, songDuration: String) {
@@ -370,14 +364,4 @@ extension AMPlayerView {
         }
         return distanceMatrix[s1Length][s2Length]
     }
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
 }

@@ -252,7 +252,7 @@ struct SpotPlayerView: View {
         var cleanAlbumName = removeSubstrings(from: songAlbumName!, removeList: appDelegate.songFilterForMatch)
         print(cleanAlbumName)
         var artistInAlbumName = String()
-        var featStrings = ["(feat.", "[feat."]
+        var featStrings = ["(feat.", "[feat.","[Feat.","(Feat."]
         for featString in featStrings {
             print("Contains feat string?")
             print(cleanAlbumName)
@@ -285,11 +285,23 @@ struct SpotPlayerView: View {
         return newString
     }
     
+    
+    
+    
+    
+    
+    
+    
     func getSongViaAlbumSearch() {
         var cleanAlbumNameForURL = (removeArtistsFromAlbumName().0)
         var appleAlbumArtistForURL = removeSpecialCharacters(from: appleAlbumArtist!)
         var foundMatch = false
         let AMString = cleanAMSongForSPOTComparison()
+        print("####")
+        print(cleanAlbumNameForURL)
+        print(appleAlbumArtistForURL)
+        
+        
         SpotifyAPI().getAlbumID(albumName: cleanAlbumNameForURL, artistName: appleAlbumArtistForURL , authToken: spotifyAuth.access_Token, completion: { (albums, error) in
             let dispatchGroup = DispatchGroup()
             for album in albums! {

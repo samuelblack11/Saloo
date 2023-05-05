@@ -254,7 +254,7 @@ extension MusicSearchView {
     func removeArtistsFromAlbumName() -> (String, String) {
         var cleanAlbumName = String()
         var artistInAlbumName = String()
-        var featStrings = ["(feat.", "[feat."]
+        var featStrings = ["(feat.", "[feat.","[Feat.","(Feat."]
         for featString in featStrings {
             if chosenSong.songAlbumName.contains(featString) {
                 let albumComponents = chosenSong.songAlbumName.components(separatedBy: featString)

@@ -193,7 +193,7 @@ struct SongPreviewPlayer: View {
                     //if songProgress < 30 && avPlayer.player!.timeControlStatus.rawValue == 2 {songProgress += 1}
                     songProgress = CMTimeGetSeconds(avPlayer.player!.currentItem?.currentTime() ?? .zero) + 1
                     //if songProgress < 30 && avPlayer.player!.timeControlStatus.rawValue == 2 {songProgress = CMTimeGetSeconds(avPlayer.player!.currentItem?.currentTime() ?? .zero)}
-                    print("Song Progress: \(songProgress)")
+                    //print("Song Progress: \(songProgress)")
                 }
             HStack{
                 Text(convertToMinutes(seconds:Int(songProgress)))
