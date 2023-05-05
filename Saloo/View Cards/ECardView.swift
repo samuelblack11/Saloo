@@ -59,10 +59,17 @@ struct eCardView: View {
     //@State private var deferToPreview: Bool?
     @Binding var chosenCard: CoreCard?
     @State var deferToPreview = false
+
     var body: some View {
-        //if cardType == "musicAndGift" {MusicAndGiftView()}
-        //if cardType == "musicNoGift" {MusicNoGiftView()}
-        MusicNoGiftView
+        if cardType == "musicNoGift" {MusicNoGiftView}
+        else{
+            if fromFinalize == false {
+                NoMusicNoGiftView
+                    .navigationBarItems(leading:Button {chosenCard = nil
+                    } label: {Image(systemName: "chevron.left").foregroundColor(.blue); Text("Back")})
+            }
+            else {NoMusicNoGiftView}
+        }
     }
     
     
@@ -88,6 +95,23 @@ struct eCardView: View {
         }
     }
     
+    var NoMusicNoGiftView: some View {
+        return GeometryReader { geometry in
+            VStack {
+                if getCoverSize().1 < 1.3 {
+                    let height = geometry.size.height / 2.5
+                    HStack{CoverViewTall();CollageAndAnnotationView()}.frame(height: height)
+                    NoteViewSquare()
+                }
+                else {
+                    CoverViewWide()
+                    NoteView()
+                    CollageAndAnnotationView()
+                }
+            }
+        }
+    }
+    
     func CoverView() -> some View {
         return Image(uiImage: UIImage(data: coverImage)!)
                 //.interpolation(.none).resizable().scaledToFit()
@@ -96,7 +120,7 @@ struct eCardView: View {
     func CoverViewWide() -> some View {
         return Image(uiImage: UIImage(data: coverImage)!)
                 .interpolation(.none).resizable()
-                .frame(maxWidth: UIScreen.main.bounds.width / 1.1, maxHeight: UIScreen.main.bounds.height / 3.8)
+                .frame(maxWidth: UIScreen.main.bounds.width / 1.1, maxHeight: UIScreen.main.bounds.height / 4.2)
                 .scaledToFill()
     }
     
@@ -108,16 +132,12 @@ struct eCardView: View {
             .frame(maxWidth: UIScreen.main.bounds.height / 2.2, maxHeight: UIScreen.main.bounds.height / 2.3)
     }
     
-    
-    
     func NoteView() -> some View {
         return
         Text(eCardText)
             .font(Font.custom(font, size: 500)).minimumScaleFactor(0.01)
-            .frame(width: UIScreen.screenWidth/2.2, height: UIScreen.screenHeight/3.8)
+            .frame(width: UIScreen.screenWidth/2.2, height: UIScreen.screenHeight/4.0)
     }
-    
-    
     
     func NoteViewSquare() -> some View {
         return
@@ -155,6 +175,7 @@ struct eCardView: View {
                 Spacer()
             } .frame(alignment: .bottom)
         }
+        .frame(maxWidth: UIScreen.main.bounds.height / 2.2, maxHeight: UIScreen.main.bounds.height / 2.3)
     }
     
     func GiftView() -> some View {
