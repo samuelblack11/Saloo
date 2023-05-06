@@ -168,11 +168,6 @@ struct SpotPlayerView: View {
                         } else {
                             print("Error: Could not retrieve player API.")
                         }
-                        print("-----")
-                        print(songProgress)
-                        print(convertToMinutes(seconds:Int(songProgress)))
-                        print(songDuration!)
-                        print(convertToMinutes(seconds: Int(songDuration!)-Int(songProgress)))
                         
                         if songDuration! - songProgress == 1 {
                             DispatchQueue.main.asyncAfter(deadline: .now() + 0.99) {
@@ -191,18 +186,13 @@ struct SpotPlayerView: View {
             }
         }
     }
-    
+    //func getSongViaAlbumSearch(completion: @escaping () -> Void) {
     func getSongViaAlbumSearch() {
-        var cleanAlbumNameForURL = cleanMusicData.compileMusicString(songOrAlbum: songAlbumName!, artist: nil, removeList: appDelegate.songFilterForMatch)
-        var appleAlbumArtistForURL = cleanMusicData.cleanMusicString(input: appleAlbumArtist!, removeList: appDelegate.songFilterForMatch)
-        let AMString = cleanMusicData.compileMusicString(songOrAlbum: songAlbumName!, artist: appleAlbumArtistForURL, removeList: appDelegate.songFilterForMatch)
+        let cleanAlbumNameForURL = cleanMusicData.compileMusicString(songOrAlbum: songAlbumName!, artist: nil, removeList: appDelegate.songFilterForMatch)
+        let appleAlbumArtistForURL = cleanMusicData.cleanMusicString(input: appleAlbumArtist!, removeList: appDelegate.songFilterForMatch)
+        let AMString = cleanMusicData.compileMusicString(songOrAlbum: songName!, artist: appleAlbumArtistForURL, removeList: appDelegate.songFilterForMatch)
         var foundMatch = false
-        print("####")
-        print(AMString)
-        print(cleanAlbumNameForURL)
-        print(appleAlbumArtistForURL)
-        
-        
+        print("####"); print(AMString); print(cleanAlbumNameForURL); print(appleAlbumArtistForURL)
         SpotifyAPI().getAlbumID(albumName: cleanAlbumNameForURL, artistName: appleAlbumArtistForURL , authToken: spotifyAuth.access_Token, completion: { (albums, error) in
             let dispatchGroup = DispatchGroup()
             for album in albums! {
@@ -226,26 +216,23 @@ struct SpotPlayerView: View {
                                         else {allArtists = artist.name}
                                     }}
                                 else {allArtists = song.artists[0].name}
-                                var SPOTString = cleanMusicData.compileMusicString(songOrAlbum: song.name, artist: allArtists, removeList: appDelegate.songFilterForMatch)
-                                
-                                
-                                
-                                
+                                let SPOTString = cleanMusicData.compileMusicString(songOrAlbum: song.name, artist: allArtists, removeList: appDelegate.songFilterForMatch)
                                 print("Track Name....AMString: \(AMString) && SPOTString: \(SPOTString)")
-                                if cleanMusicData.containsSameWords(AMString, SPOTString) {
+                                if cleanMusicData.containsSameWords(AMString, SPOTString) && foundMatch == false {
+                                    foundMatch = true
                                     print("SSSSS")
                                     print(song)
                                     let artURL = URL(string: spotImageURL!)
                                     let _ = getURLData(url: artURL!, completionHandler: {(artResponse, error2) in
-                                        var allArtists2 = String()
+                                        //var allArtists2 = String()
                                         spotName = song.name
                                         spotArtistName = allArtists
                                         songID = song.id
                                         songArtImageData = artResponse!
                                         songDuration = Double(song.duration_ms) * 0.001
                                         playSong()
-                                        DispatchQueue.main.async {updateRecordWithNewSPOTData(spotName: song.name, spotArtistName: allArtists2, spotID: song.id, songArtImageData: artResponse!, songDuration: String(Double(song.duration_ms) * 0.001))}
-                                    }); foundMatch = true}
+                                        DispatchQueue.main.async {updateRecordWithNewSPOTData(spotName: song.name, spotArtistName: allArtists, spotID: song.id, songArtImageData: artResponse!, songDuration: String(Double(song.duration_ms) * 0.001)); return}
+                                    })}
                             }
                             dispatchGroup.leave()
                         })}
@@ -254,11 +241,9 @@ struct SpotPlayerView: View {
             }
             dispatchGroup.notify(queue: .main) {
                 // code to execute after all API calls have finished
-                if albums!.count < 1 {
+                if albums!.count < 1 || foundMatch == false {
                     if songPreviewURL != nil && foundMatch == false {
-                        print("Defer to preview")
                         deferToPreview = true
-                        print(deferToPreview)
                         DispatchQueue.main.async {updateRecordWithNewSPOTData(spotName: "LookupFailed", spotArtistName: "LookupFailed", spotID: "LookupFailed", songArtImageData: Data(), songDuration: String(0))}
                     }
                     else { print("Else called to change card type...")

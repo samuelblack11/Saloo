@@ -193,7 +193,6 @@ extension AMPlayerView {
                 //secondLoop:
                     for (albumIndex, album) in albumList.enumerated() {
                         //group.enter()
-
                         group.enter()
                         print("Album Object from AM...")
                         print("----\(album.attributes.name)----\(album.id)")
@@ -205,7 +204,7 @@ extension AMPlayerView {
                                         print("Track Index....\(trackIndex) of \(trackList.count - 1)")
                                         print("Album Index....\(albumIndex) of \(albumList.count - 1)")
                                         let cleanAMString = cleanMusicData.compileMusicString(songOrAlbum: track.attributes.name, artist: track.attributes.artistName, removeList: appDelegate.songFilterForMatch)
-                                        if cleanMusicData.containsSameWords(cleanAMString, cleanSpotString) {
+                                        if cleanMusicData.containsSameWords(cleanAMString, cleanSpotString) && foundMatch != "foundMatch" {
                                             foundMatch = "foundMatch"
                                             print("SSSSS")
                                             print(Double(track.attributes.durationInMillis) * 0.001)
@@ -222,7 +221,6 @@ extension AMPlayerView {
                                                     updateRecordWithNewAMData(songName: songName!, songArtistName: songArtistName!, songID: songID!, songArtImageData: artResponse!, songDuration: String(songDuration!))
                                                 //group.leave()
                                                 }})}
-                                        
                                         if trackIndex == trackList.count - 1 && albumIndex == albumList.count - 1 {
                                             print("Trigerred Found Match Check...")
                                             triggerFoundMatchCheck = true}

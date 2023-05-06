@@ -17,9 +17,9 @@ class CleanMusicData {
         //Run Away feat Felix Raphael Single Ben Bhmer Tinlicker
         var cleanString = String()
         if artist != nil {
-            var songOrAlbumNameOnly = removeArtistsFromSongOrAlbum(songOrAlbum: songOrAlbum).0
-            var artistsInArtistField = removeArtistsFromSongOrAlbum(songOrAlbum: artist!).0
-            var artistsInSongOrAlbumName = removeArtistsFromSongOrAlbum(songOrAlbum: songOrAlbum).1
+            let songOrAlbumNameOnly = removeArtistsFromSongOrAlbum(songOrAlbum: songOrAlbum).0
+            let artistsInArtistField = removeArtistsFromSongOrAlbum(songOrAlbum: artist!).0
+            let artistsInSongOrAlbumName = removeArtistsFromSongOrAlbum(songOrAlbum: songOrAlbum).1
             cleanString = songOrAlbumNameOnly + " " + artistsInArtistField + " " + artistsInSongOrAlbumName
         }
         else {
@@ -54,16 +54,15 @@ class CleanMusicData {
         print("removeArtistsFromSongOrAlbum called...")
         print(songOrAlbum)
         print(songOrAlbum.lowercased())
-        var songOrAlbumString = String()
+        var songOrAlbumString = songOrAlbum.replacingOccurrences(of: "[", with: "(").replacingOccurrences(of: "]", with: ")")
         var artistsInSongOrAlbumName = String()
-        //let cleanSongArtistName = songArtist?
-                                            //.replacingOccurrences(of: ",", with: "" )
-                                            //.replacingOccurrences(of: " & ", with: " ")
-        var featStrings = ["(feat.", "[feat."]
+        
+
+        let featStrings = ["(feat."]
         for featString in featStrings {
             if songOrAlbum.lowercased().contains(featString) {
                 print("contains feat string")
-                let songComponents = songOrAlbum.components(separatedBy: featString)
+                let songComponents = songOrAlbum.lowercased().components(separatedBy: featString)
                 print(songComponents)
                 songOrAlbumString = songComponents[0]
                 artistsInSongOrAlbumName = songComponents[1].components(separatedBy: ")")[0]
@@ -76,7 +75,7 @@ class CleanMusicData {
                 }
                 break
             }
-            else {print("Else called...");songOrAlbumString = songOrAlbum}
+            //else {print("Else called...");songOrAlbumString = songOrAlbum}
         }
         
         //songOrAlbumString = (songOrAlbumString + " " + cleanSongArtistName + artistsInSongOrAlbumName)
