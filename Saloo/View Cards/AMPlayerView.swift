@@ -15,6 +15,7 @@ import CoreData
 import CloudKit
 import StoreKit
 import MediaPlayer
+//import CleanMusicData
 
 struct AMPlayerView: View {
     @State var songID: String?
@@ -51,7 +52,7 @@ struct AMPlayerView: View {
     @State var breakTrigger1 = false
     @Binding var chosenCard: CoreCard?
     @Binding var deferToPreview: Bool
-
+    let cleanMusicData = CleanMusicData()
     
     var body: some View {
             AMPlayerView
@@ -172,64 +173,7 @@ extension AMPlayerView {
                         })}}}
             }
     }
-    
 
-    func cleanAMSongForSPOTComparison(amSongName: String, amSongArtist: String) -> String {
-        var AMString = String()
-        var cleanSongName = removeSubstrings(from: amSongName, removeList: appDelegate.songFilterForMatch)
-        var cleanSongArtistName = amSongArtist
-                                            .replacingOccurrences(of: ",", with: "")
-                                            .replacingOccurrences(of: "&", with: "")
-        var artistsInSongName = String()
-        var featStrings = ["(feat.", "[feat."]
-        for featString in featStrings {
-            if amSongName.contains(featString) {
-                let songComponents = amSongName.components(separatedBy: featString)
-                cleanSongName = songComponents[0]
-                artistsInSongName = songComponents[1].components(separatedBy: ")")[0]
-                artistsInSongName = artistsInSongName.replacingOccurrences(of: "&", with: "")
-                if songComponents[1].components(separatedBy: ")").count > 1 {
-                    let cleanSongNamePt2 = songComponents[1].components(separatedBy: ")")[1]
-                    cleanSongName = cleanSongName + " " + cleanSongNamePt2
-                }
-            }
-        }
-        AMString = (cleanSongName + " " + cleanSongArtistName + artistsInSongName)
-        AMString = convertMultipleSpacesToSingleSpace(AMString.withoutPunc.lowercased())
-        print("AMString....\(AMString)")
-        return AMString
-    }
-    
-    
-    func cleanSPOTSongForAMComparison(spotSongName: String, spotSongArtist: String) -> String {
-        var SPOTString = String()
-        var cleanSongName = removeSubstrings(from: spotSongName, removeList: appDelegate.songFilterForMatch)
-
-        let cleanSongArtistName = spotSongArtist
-                                            .replacingOccurrences(of: ",", with: "" )
-                                            .replacingOccurrences(of: " & ", with: " ")
-        var artistsInSongName = String()
-        var featStrings = ["(feat.", "[feat."]
-        for featString in featStrings {
-            if spotSongName.contains(featString) {
-                let songComponents = spotSongName.components(separatedBy: featString)
-                cleanSongName = songComponents[0]
-                artistsInSongName = songComponents[1].components(separatedBy: ")")[0]
-                artistsInSongName = artistsInSongName.replacingOccurrences(of: "&", with: "")
-                if songComponents[1].components(separatedBy: ")").count > 1 {
-                    let cleanSongNamePt2 = songComponents[1].components(separatedBy: ")")[1]
-                    cleanSongName = cleanSongName + " " + cleanSongNamePt2
-                }
-            }
-        }
-        
-        SPOTString = (cleanSongName + " " + cleanSongArtistName + artistsInSongName)
-        SPOTString = convertMultipleSpacesToSingleSpace(SPOTString.withoutPunc.lowercased())
-        print("SPOTString....")
-        print(SPOTString)
-        return SPOTString
-    }
-    
     func convertSong(offset: Int?) {
         var foundMatch = "isSearching" // Move this variable to the outer loop
         var triggerFoundMatchCheck = false
@@ -238,11 +182,11 @@ extension AMPlayerView {
         //outerLoop: for offsetVal in offsetVals {
         //    print("Offsetval....\(offsetVal)")
         //    group.enter()
-        amAPI.searchForAlbum(albumAndArtist: removeSubstrings(from: "\(songAlbumName!) \(spotAlbumArtist!)", removeList: appDelegate.songFilterForMatch), storeFrontID: amAPI.storeFrontID!, offset: offset, userToken: amAPI.taskToken!, completion: {(albumResponse, error) in
-                print("Tried to Convert...\(removeSubstrings(from: songAlbumName!, removeList: appDelegate.songFilterForMatch))")
+        
+        amAPI.searchForAlbum(albumAndArtist:  "\(songAlbumName!) \(spotAlbumArtist!)", storeFrontID: amAPI.storeFrontID!, offset: offset, userToken: amAPI.taskToken!, completion: {(albumResponse, error) in
                 print(error?.localizedDescription as Any)
                 //if error != nil {foundMatch = "searchFailed"}
-                let cleanSpotString = cleanSPOTSongForAMComparison(spotSongName: spotName!, spotSongArtist: spotArtistName!)
+                let cleanSpotString =  cleanMusicData.compileMusicString(songOrAlbum: spotName!, artist: spotArtistName!, removeList: appDelegate.songFilterForMatch)
                 if let albumList = albumResponse?.results.albums.data {
                     let group = DispatchGroup()
                     //let group2 = DispatchGroup()
@@ -260,7 +204,8 @@ extension AMPlayerView {
                                     for (trackIndex, track) in trackList.enumerated() {
                                         print("Track Index....\(trackIndex) of \(trackList.count - 1)")
                                         print("Album Index....\(albumIndex) of \(albumList.count - 1)")
-                                        if containsSameWords(cleanAMSongForSPOTComparison(amSongName: track.attributes.name, amSongArtist: track.attributes.artistName), cleanSpotString) {
+                                        let cleanAMString = cleanMusicData.compileMusicString(songOrAlbum: track.attributes.name, artist: track.attributes.artistName, removeList: appDelegate.songFilterForMatch)
+                                        if cleanMusicData.containsSameWords(cleanAMString, cleanSpotString) {
                                             foundMatch = "foundMatch"
                                             print("SSSSS")
                                             print(Double(track.attributes.durationInMillis) * 0.001)
@@ -336,94 +281,5 @@ extension AMPlayerView {
         catch {print("Fetch failed")}
         return cardsFromCore
     }
-    
-    func convertMultipleSpacesToSingleSpace(_ input: String) -> String {
-        let components = input.components(separatedBy: .whitespacesAndNewlines)
-        let filtered = components.filter { !$0.isEmpty }
-        return filtered.joined(separator: " ")
-    }
-    
-    func removeSubstrings(from string: String, removeList: [String]) -> String {
-        var result = string
-        for substring in removeList {
-            result = result.lowercased().replacingOccurrences(of: substring, with: "")
-            result = result.capitalized
-        }
-        return result
-    }
-    
-    func containsSameWords(_ str1: String, _ str2: String) -> Bool {
-        // Split both strings into arrays of words
-        let words1 = str1.split(separator: " ").map { String($0) }
-        let words2 = str2.split(separator: " ").map { String($0) }
-        
-        // Check if both arrays contain the same set of words
-        print("ContainsSameWords is \(Set(words1) == Set(words2))")
-        return Set(words1) == Set(words2)
-    }
-    
-    func levenshteinDistance(s1: String, s2: String) -> Int {
-        let s1Length = s1.count
-        let s2Length = s2.count
-        var distanceMatrix = [[Int]](repeating: [Int](repeating: 0, count: s2Length + 1), count: s1Length + 1)
-        for i in 1...s1Length {distanceMatrix[i][0] = i}
-        for j in 1...s2Length {distanceMatrix[0][j] = j}
-        for i in 1...s1Length {
-            for j in 1...s2Length {
-                let cost = s1[s1.index(s1.startIndex, offsetBy: i - 1)] == s2[s2.index(s2.startIndex, offsetBy: j - 1)] ? 0 : 1
-                distanceMatrix[i][j] = min(
-                    distanceMatrix[i - 1][j] + 1,
-                    distanceMatrix[i][j - 1] + 1,
-                    distanceMatrix[i - 1][j - 1] + cost
-                )
-            }
-        }
-        return distanceMatrix[s1Length][s2Length]
-    }
-    func removeAccents(from input: String) -> String {
-        let accentMap: [Character: Character] = [
-            "à": "a",
-            "á": "a",
-            "â": "a",
-            "ã": "a",
-            "ä": "a",
-            "å": "a",
-            //"æ": "ae",
-            "ç": "c",
-            "è": "e",
-            "é": "e",
-            "ê": "e",
-            "ë": "e",
-            "ì": "i",
-            "í": "i",
-            "î": "i",
-            "ï": "i",
-            "ð": "d",
-            "ñ": "n",
-            "ò": "o",
-            "ó": "o",
-            "ô": "o",
-            "õ": "o",
-            "ö": "o",
-            "ø": "o",
-            "ù": "u",
-            "ú": "u",
-            "û": "u",
-            "ü": "u",
-            "ý": "y",
-            //"þ": "th",
-            "ÿ": "y"
-        ]
-    
-        var output = ""
-        for character in input {
-            if let unaccented = accentMap[character] {
-                output.append(unaccented)
-            } else {
-                output.append(character)
-            }
-        }
 
-        return output
-    }
 }

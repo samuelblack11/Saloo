@@ -15,7 +15,9 @@ class AppleMusicAPI {
     var tokenError: Bool = false
     var storeFrontID: String?
     let devToken = "eyJhbGciOiJFUzI1NiIsImtpZCI6Ik5KN0MzVzgzTFoiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJCU00zWVpGVVQyIiwiZXhwIjoxNjg5MjQzOTI3LCJpYXQiOjE2NzM0Nzk1Mjd9.28_a1GIJEEKWzvJgmdM9lAmvB4ilY5pFx6TF0Q4uhIIKu8FR0fOaXd2-3xVHPWANA8tqbLurVE5yE8wEZEqR8g"
-    
+    @EnvironmentObject var appDelegate: AppDelegate
+    let cleanMusicData = CleanMusicData()
+
     func fetchUserStorefront(userToken: String, completionHandler: @escaping (AMStoreFrontResponse?,Error?) -> Void) -> String{
         print("User Token...\(userToken)")
         let userStoreFront = String()
@@ -98,100 +100,18 @@ class AppleMusicAPI {
         return songs
     }
     
-    
-    func removeSpecialCharacters(from string: String) -> String {
-        let pattern = "[^a-zA-Z0-9]"
-        return string.replacingOccurrences(of: pattern, with: " ", options: .regularExpression, range: nil)
-    }
-    
-    
-    func removeAccents(from input: String) -> String {
-        let accentMap: [Character: Character] = [
-            "à": "a",
-            "á": "a",
-            "â": "a",
-            "ã": "a",
-            "ä": "a",
-            "å": "a",
-            //"æ": "ae",
-            "ç": "c",
-            "è": "e",
-            "é": "e",
-            "ê": "e",
-            "ë": "e",
-            "ì": "i",
-            "í": "i",
-            "î": "i",
-            "ï": "i",
-            "ð": "d",
-            "ñ": "n",
-            "ò": "o",
-            "ó": "o",
-            "ô": "o",
-            "õ": "o",
-            "ö": "o",
-            "ø": "o",
-            "ù": "u",
-            "ú": "u",
-            "û": "u",
-            "ü": "u",
-            "ý": "y",
-            //"þ": "th",
-            "ÿ": "y"
-        ]
-    
-        var output = ""
-        for character in input {
-            if let unaccented = accentMap[character] {
-                output.append(unaccented)
-            } else {
-                output.append(character)
-            }
-        }
 
-        return output
-    }
-    
-    func removeTextInParentheses(_ text: String) -> String {
-        var result = ""
-        var skip = false
-        for char in text {
-            if char == "(" || char == "[" {
-                skip = true
-            } else if char == ")" || char == "]" {
-                skip = false
-            } else if !skip {
-                result.append(char)
-            }
-        }
-        return result
-    }
-    
-    
-    func convertMultipleSpacesToSingleSpace(_ input: String) -> String {
-        let components = input.components(separatedBy: .whitespacesAndNewlines)
-        let filtered = components.filter { !$0.isEmpty }
-        return filtered.joined(separator: " ")
-    }
     
     
     func searchForAlbum(albumAndArtist: String, storeFrontID: String, offset: Int?,  userToken: String, completion: @escaping (AlbumResponse?, Error?) -> Void) {
         // Set up the search query
         let lock = DispatchSemaphore(value: 1)
         let searchURL = "https://api.music.apple.com/v1/catalog/\(storeFrontID)/search"
-        print("PreAccents:")
+        print("PreClean:")
         print(albumAndArtist)
-        print("Removed Text in Parentheses...")
-        var searchTerm = removeAccents(from: albumAndArtist)
-        searchTerm = convertMultipleSpacesToSingleSpace(searchTerm)
-
-        print("PostAccents:")
+        var searchTerm = cleanMusicData.compileMusicString(songOrAlbum: albumAndArtist, artist: nil, removeList: AppDelegate().songFilterForMatch).replacingOccurrences(of: " ", with: "%20")
+        print("PostClean:")
         print(searchTerm)
-        searchTerm = convertMultipleSpacesToSingleSpace(removeSpecialCharacters(from: searchTerm).replacingOccurrences(of: " ", with: "%20"))
-        
-        print("Removed SpecChars....")
-        print(searchTerm)
-        
         let searchType = "albums"
         print("searchForAlbum SearchTerm....")
         var fullURL = "\(searchURL)?term=\(searchTerm)&types=\(searchType)&limit=25"

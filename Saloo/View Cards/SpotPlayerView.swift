@@ -18,7 +18,8 @@ import StoreKit
 import MediaPlayer
 
 struct SpotPlayerView: View {
-    
+    let cleanMusicData = CleanMusicData()
+
     @State var songID: String?
     @State var songName: String?
     @State var songArtistName: String?
@@ -191,113 +192,13 @@ struct SpotPlayerView: View {
         }
     }
     
-
-    func cleanAMSongForSPOTComparison() -> String {
-        var AMString = String()
-        var cleanSongName = removeSubstrings(from: songName!, removeList: appDelegate.songFilterForMatch)
-        let cleanSongArtistName = songArtistName!
-            .replacingOccurrences(of: ",", with: "" )
-            .replacingOccurrences(of: " & ", with: " ")
-        var artistsInSongName = String()
-        
-        var featStrings = ["(feat.", "[feat."]
-        for featString in featStrings {
-            if songName!.contains(featString) {
-                let songComponents = songName!.components(separatedBy: featString)
-                cleanSongName = songComponents[0]
-                artistsInSongName = songComponents[1].components(separatedBy: ")")[0]
-                artistsInSongName = artistsInSongName.replacingOccurrences(of: "&", with: "")
-                if songComponents[1].components(separatedBy: ")").count > 1 {
-                    let cleanSongNamePt2 = songComponents[1].components(separatedBy: ")")[1]
-                    cleanSongName = cleanSongName + " " + cleanSongNamePt2
-                }
-            }
-        }
-        AMString = (cleanSongName + " " + cleanSongArtistName + artistsInSongName)
-        AMString = convertMultipleSpacesToSingleSpace(AMString.withoutPunc.lowercased())
-        print("AMString....\(AMString)")
-        return AMString
-    }
-    
-    
-    func cleanSPOTSongForAMComparison(spotSongName: String, spotSongArtist: String) -> String {
-        var SPOTString = String()
-        var cleanSongName = removeSubstrings(from: spotSongName, removeList: appDelegate.songFilterForMatch)
-        let cleanSongArtistName = spotSongArtist
-            .replacingOccurrences(of: ",", with: "" )
-            .replacingOccurrences(of: " & ", with: " ")
-        var artistsInSongName = String()
-        var featStrings = ["(feat.", "[feat.","[Feat.","(Feat."]
-        for featString in featStrings {
-            if spotSongName.contains(featString) {
-                let songComponents = spotSongName.components(separatedBy: featString)
-                cleanSongName = songComponents[0]
-                artistsInSongName = songComponents[1].components(separatedBy: ")")[0]
-                artistsInSongName = artistsInSongName.replacingOccurrences(of: "&", with: "")
-                if songComponents[1].components(separatedBy: ")").count > 1 {
-                    let cleanSongNamePt2 = songComponents[1].components(separatedBy: ")")[1]
-                    cleanSongName = cleanSongName + " " + cleanSongNamePt2
-                }
-            }
-        }
-        
-        SPOTString = (cleanSongName + " " + cleanSongArtistName + artistsInSongName)
-        SPOTString = convertMultipleSpacesToSingleSpace(SPOTString.withoutPunc.lowercased())
-        print("SPOTString....\(SPOTString)")
-        return SPOTString
-    }
-    
-    func removeArtistsFromAlbumName() -> (String, String) {
-        print("Clean AlbumName....")
-        var cleanAlbumName = removeSubstrings(from: removeAccents(from: songAlbumName!), removeList: appDelegate.songFilterForMatch)
-        print(cleanAlbumName)
-        var artistInAlbumName = String()
-        var featStrings = ["(feat.", "[feat.","[Feat.","(Feat."]
-        for featString in featStrings {
-            print("Contains feat string?")
-            print(cleanAlbumName)
-            if cleanAlbumName.contains(featString) {
-                let albumComponents = cleanAlbumName.components(separatedBy: featString)
-                cleanAlbumName = albumComponents[0]
-                artistInAlbumName = albumComponents[1].components(separatedBy: ")")[0]
-                artistInAlbumName = artistInAlbumName.replacingOccurrences(of: "&", with: "")
-                print(cleanAlbumName)
-                print(artistInAlbumName)
-                if albumComponents[1].components(separatedBy: ")").count > 1 {
-                    let cleanAlbumNamePt2 = albumComponents[1].components(separatedBy: ")")[1]
-                    cleanAlbumName = cleanAlbumName + " " + cleanAlbumNamePt2
-                    print(cleanAlbumName)
-                }
-                break
-            }
-        }
-        print("&&&")
-        print(cleanAlbumName)
-        print(artistInAlbumName)
-        return (cleanAlbumName, artistInAlbumName)
-    }
-    
-    func removeSpecialCharacters(from string: String) -> String {
-        //    let pattern = "[^a-zA-Z0-9]"
-        //    return string.replacingOccurrences(of: pattern, with: "", options: .regularExpression, range: nil)
-        let allowedCharacters = CharacterSet.whitespacesAndNewlines.union(CharacterSet(charactersIn: "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"))
-        let newString = string.components(separatedBy: allowedCharacters.inverted).joined(separator: "")
-        return newString
-    }
-    
-    
-    
-    
-    
-    
-    
-    
     func getSongViaAlbumSearch() {
-        var cleanAlbumNameForURL = (removeArtistsFromAlbumName().0)
-        var appleAlbumArtistForURL = removeSpecialCharacters(from: removeAccents(from: appleAlbumArtist!))
+        var cleanAlbumNameForURL = cleanMusicData.compileMusicString(songOrAlbum: songAlbumName!, artist: nil, removeList: appDelegate.songFilterForMatch)
+        var appleAlbumArtistForURL = cleanMusicData.cleanMusicString(input: appleAlbumArtist!, removeList: appDelegate.songFilterForMatch)
+        let AMString = cleanMusicData.compileMusicString(songOrAlbum: songAlbumName!, artist: appleAlbumArtistForURL, removeList: appDelegate.songFilterForMatch)
         var foundMatch = false
-        let AMString = cleanAMSongForSPOTComparison()
         print("####")
+        print(AMString)
         print(cleanAlbumNameForURL)
         print(appleAlbumArtistForURL)
         
@@ -325,8 +226,13 @@ struct SpotPlayerView: View {
                                         else {allArtists = artist.name}
                                     }}
                                 else {allArtists = song.artists[0].name}
-                                print(AMString); print("Track Name...."); print(cleanSPOTSongForAMComparison(spotSongName: song.name, spotSongArtist: allArtists))
-                                if containsSameWords(AMString, cleanSPOTSongForAMComparison(spotSongName: song.name, spotSongArtist: allArtists)) {
+                                var SPOTString = cleanMusicData.compileMusicString(songOrAlbum: song.name, artist: allArtists, removeList: appDelegate.songFilterForMatch)
+                                
+                                
+                                
+                                
+                                print("Track Name....AMString: \(AMString) && SPOTString: \(SPOTString)")
+                                if cleanMusicData.containsSameWords(AMString, SPOTString) {
                                     print("SSSSS")
                                     print(song)
                                     let artURL = URL(string: spotImageURL!)
@@ -498,96 +404,6 @@ extension SpotPlayerView {
             DispatchQueue.main.async {completionHandler(data, nil)}
         }
         dataTask.resume()
-    }
-    
-    func convertMultipleSpacesToSingleSpace(_ input: String) -> String {
-        let components = input.components(separatedBy: .whitespacesAndNewlines)
-        let filtered = components.filter { !$0.isEmpty }
-        return filtered.joined(separator: " ")
-    }
-    
-    func containsSameWords(_ str1: String, _ str2: String) -> Bool {
-        // Split both strings into arrays of words
-        let words1 = str1.split(separator: " ").map { String($0) }
-        let words2 = str2.split(separator: " ").map { String($0) }
-        // Check if both arrays contain the same set of words
-        print("ContainsSameWords is \(Set(words1) == Set(words2))")
-        return Set(words1) == Set(words2)
-    }
-    
-    func levenshteinDistance(s1: String, s2: String) -> Int {
-        let s1Length = s1.count
-        let s2Length = s2.count
-        var distanceMatrix = [[Int]](repeating: [Int](repeating: 0, count: s2Length + 1), count: s1Length + 1)
-        for i in 1...s1Length {distanceMatrix[i][0] = i}
-        for j in 1...s2Length {distanceMatrix[0][j] = j}
-        for i in 1...s1Length {
-            for j in 1...s2Length {
-                let cost = s1[s1.index(s1.startIndex, offsetBy: i - 1)] == s2[s2.index(s2.startIndex, offsetBy: j - 1)] ? 0 : 1
-                distanceMatrix[i][j] = min(
-                    distanceMatrix[i - 1][j] + 1,
-                    distanceMatrix[i][j - 1] + 1,
-                    distanceMatrix[i - 1][j - 1] + cost
-                )
-            }
-        }
-        return distanceMatrix[s1Length][s2Length]
-    }
-    
-    func removeSubstrings(from string: String, removeList: [String]) -> String {
-        var result = string
-        for substring in removeList {
-            result = result.lowercased().replacingOccurrences(of: substring, with: "")
-            result = result.capitalized
-        }
-        return result
-    }
-    
-    func removeAccents(from input: String) -> String {
-        let accentMap: [Character: Character] = [
-            "à": "a",
-            "á": "a",
-            "â": "a",
-            "ã": "a",
-            "ä": "a",
-            "å": "a",
-            //"æ": "ae",
-            "ç": "c",
-            "è": "e",
-            "é": "e",
-            "ê": "e",
-            "ë": "e",
-            "ì": "i",
-            "í": "i",
-            "î": "i",
-            "ï": "i",
-            "ð": "d",
-            "ñ": "n",
-            "ò": "o",
-            "ó": "o",
-            "ô": "o",
-            "õ": "o",
-            "ö": "o",
-            "ø": "o",
-            "ù": "u",
-            "ú": "u",
-            "û": "u",
-            "ü": "u",
-            "ý": "y",
-            //"þ": "th",
-            "ÿ": "y"
-        ]
-    
-        var output = ""
-        for character in input {
-            if let unaccented = accentMap[character] {
-                output.append(unaccented)
-            } else {
-                output.append(character)
-            }
-        }
-
-        return output
     }
     
 }

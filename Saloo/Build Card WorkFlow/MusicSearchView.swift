@@ -25,6 +25,7 @@ struct MusicSearchView: View {
     @State private var userToken = ""
     @State private var searchResults: [SongForList] = []
     @EnvironmentObject var giftCard: GiftCard
+    let cleanMusicData = CleanMusicData()
 
     //@State private var musicPlayer = MPMusicPlayerController.applicationMusicPlayer
     @State private var player: AVPlayer?
@@ -165,14 +166,6 @@ struct MusicSearchView: View {
 
 extension MusicSearchView {
     
-    func removeSpecialCharacters(from string: String) -> String {
-        //    let pattern = "[^a-zA-Z0-9]"
-        //    return string.replacingOccurrences(of: pattern, with: "", options: .regularExpression, range: nil)
-        let allowedCharacters = CharacterSet.whitespacesAndNewlines.union(CharacterSet(charactersIn: "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"))
-        let newString = string.components(separatedBy: allowedCharacters.inverted).joined(separator: "")
-        return newString
-    }
-    
     func getAMUserToken() {
         Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { timer in
             if amAPI.taskToken == nil {
@@ -190,17 +183,15 @@ extension MusicSearchView {
                     })}}}
             }
         }
-    func containsString(listOfSubStrings: [String], songName: String) -> Bool {
-        let lowercasedInString = songName.lowercased()
-        for item in listOfSubStrings {
-            if lowercasedInString.range(of: item.lowercased(), options: .caseInsensitive) != nil {return true}
-        }
-        return false
-    }
+
     
     func searchWithAM() {
         SKCloudServiceController.requestAuthorization {(status) in if status == .authorized {
-            self.searchResults = AppleMusicAPI().searchAppleMusic(removeSpecialCharacters(from: self.songSearch), storeFrontID: amAPI.storeFrontID!, userToken: amAPI.taskToken!, completionHandler: { (response, error) in
+            let amSearch = cleanMusicData.cleanMusicString(input: self.songSearch, removeList: appDelegate.songFilterForSearch)
+            
+            
+            
+            self.searchResults = AppleMusicAPI().searchAppleMusic(amSearch, storeFrontID: amAPI.storeFrontID!, userToken: amAPI.taskToken!, completionHandler: { (response, error) in
                 if response != nil {
                     DispatchQueue.main.async {
                         for song in response! {
@@ -212,7 +203,7 @@ extension MusicSearchView {
                             let artURL = URL(string:song.attributes.artwork.url.replacingOccurrences(of: "{w}", with: "80").replacingOccurrences(of: "{h}", with: "80"))
                             let _ = getURLData(url: artURL!, completionHandler: { (artResponse, error2) in
                             let songForList = SongForList(id: song.attributes.playParams.id, name: song.attributes.name, artistName: song.attributes.artistName, albumName: song.attributes.albumName,artImageData: artResponse!, durationInMillis: song.attributes.durationInMillis, isPlaying: false, previewURL: songPrev!)
-                                if containsString(listOfSubStrings: appDelegate.songFilterForSearch, songName: songForList.name) || containsString(listOfSubStrings: appDelegate.songFilterForSearch, songName: songForList.albumName){
+                                if cleanMusicData.containsString(listOfSubStrings: appDelegate.songFilterForSearch, songName: songForList.name) || cleanMusicData.containsString(listOfSubStrings: appDelegate.songFilterForSearch, songName: songForList.albumName){
                                 print("Did Not Append....")
                                 print(songForList.name)
                             }
@@ -251,25 +242,7 @@ extension MusicSearchView {
         }
     }
     
-    func removeArtistsFromAlbumName() -> (String, String) {
-        var cleanAlbumName = String()
-        var artistInAlbumName = String()
-        var featStrings = ["(feat.", "[feat.","[Feat.","(Feat."]
-        for featString in featStrings {
-            if chosenSong.songAlbumName.contains(featString) {
-                let albumComponents = chosenSong.songAlbumName.components(separatedBy: featString)
-                cleanAlbumName = albumComponents[0]
-                artistInAlbumName = albumComponents[1].components(separatedBy: ")")[0]
-                artistInAlbumName = artistInAlbumName.replacingOccurrences(of: "&", with: "")
-                if albumComponents[1].components(separatedBy: ")").count > 1 {
-                    let cleanAlbumNamePt2 = albumComponents[1].components(separatedBy: ")")[1]
-                    cleanAlbumName = cleanAlbumName + " " + cleanAlbumNamePt2
-                }
-            }
-            else {cleanAlbumName = chosenSong.songAlbumName}
-        }
-        return (cleanAlbumName, artistInAlbumName)
-    }
+
     
     
     
@@ -277,13 +250,12 @@ extension MusicSearchView {
     func getSpotAlbum() {
         var cleanAlbumName = String()
         var artistsInAlbumName = String()
-        cleanAlbumName = removeArtistsFromAlbumName().0
-        artistsInAlbumName = removeArtistsFromAlbumName().1
-        print("running getSpotAlbum....\(cleanAlbumName) && \(artistsInAlbumName)")
+        cleanAlbumName = cleanMusicData.compileMusicString(songOrAlbum: chosenSong.songAlbumName, artist: nil, removeList: appDelegate.songFilterForSearch)
+        //print("running getSpotAlbum....\(cleanAlbumName) && \(artistsInAlbumName)")
         var albumArtistList: [String] = []
         let group1 = DispatchGroup()
         let offsetVals: [Int?] = [0, 50, 100]
-    outerLoop: for offsetVal in offsetVals {
+        outerLoop: for offsetVal in offsetVals {
         group1.enter()
         SpotifyAPI().getAlbumIDUsingNameOnly(albumName: cleanAlbumName, offset: offsetVal, authToken: spotifyAuth.access_Token, completion: { (response, error) in
             if response != nil {
@@ -303,9 +275,7 @@ extension MusicSearchView {
                                     else {allArtists = album.artists[0].name}
                                     print("Album Artists Are...\(allArtists)")
                                     albumArtistList.append(allArtists)
-                                    //if allArtists.contains(artistsInAlbumName) {chosenSong.spotAlbumArtist = allArtists}
-                                    //else {chosenSong.spotAlbumArtist = allArtists + artistsInAlbumName}
-                                    //break
+
                 }}}})}
                 group2.notify(queue: .main) {
                     group1.leave()
@@ -315,19 +285,22 @@ extension MusicSearchView {
             }})}
             group1.notify(queue: .main) {
                 var foundMatch = false
+                let words = cleanMusicData.cleanMusicString(input: chosenSong.spotArtistName, removeList:appDelegate.songFilterForSearch).components(separatedBy: " ")
+                print("Words...\(words)")
                 for artistGroup in albumArtistList {
-                   print("Artist Check....")
-                   print(artistGroup)
-                   print(chosenSong.artistName)
-                    
-                    let words = chosenSong.artistName.components(separatedBy: " ")
+                   print("Artist Check....\(artistGroup)")
                     for word in words {
                         if artistGroup.contains(word) {
+                            print(word)
                             chosenSong.spotAlbumArtist = artistGroup
                             print("Determined Spot AlbumArtist is....\(chosenSong.spotAlbumArtist)")
                             foundMatch = true
                             break
-                }}}
+                    }
+                    if foundMatch == true{break}
+                }
+                    if foundMatch == true{break}
+                }
                 if foundMatch == false {
                     chosenSong.spotAlbumArtist = albumArtistList[0]
                     print("Determined Spot AlbumArtist is....\(chosenSong.spotAlbumArtist)")
@@ -336,13 +309,9 @@ extension MusicSearchView {
     
 
     func getAlbum(storeFront: String, userToken: String) {
-        var cleanAlbumName = String()
-        var artistsInAlbumName = String()
-        cleanAlbumName = removeArtistsFromAlbumName().0
-        artistsInAlbumName = removeArtistsFromAlbumName().1
-
+        var albumAndArtistForSearch = cleanMusicData.compileMusicString(songOrAlbum: chosenSong.songAlbumName, artist: chosenSong.artistName, removeList: appDelegate.songFilterForSearch)
         SKCloudServiceController.requestAuthorization {(status) in if status == .authorized {
-            AppleMusicAPI().searchForAlbum(albumAndArtist: removeSpecialCharacters(from: ("\(cleanAlbumName) \(chosenSong.artistName)")), storeFrontID: storeFront, offset: nil, userToken: userToken, completion: { (response, error) in
+            AppleMusicAPI().searchForAlbum(albumAndArtist: albumAndArtistForSearch, storeFrontID: storeFront, offset: nil, userToken: userToken, completion: { (response, error) in
                 if response != nil {
                     print("Album Search Response....")
                     if let albumList = response?.results.albums.data {
@@ -474,7 +443,13 @@ extension MusicSearchView {
     }
     
     func searchWithSpotify() {
-        SpotifyAPI().searchSpotify(removeSpecialCharacters(from: self.songSearch), artistName: self.artistSearch, authToken: spotifyAuth.access_Token, completionHandler: {(response, error) in
+        
+        
+        let songTerm = cleanMusicData.cleanMusicString(input: self.songSearch, removeList: appDelegate.songFilterForSearch)
+        let artistTerm = cleanMusicData.cleanMusicString(input: self.artistSearch, removeList: appDelegate.songFilterForSearch)
+
+        
+        SpotifyAPI().searchSpotify(songTerm, artistName: artistTerm, authToken: spotifyAuth.access_Token, completionHandler: {(response, error) in
             if response != nil {
                 searchResults = []
                 DispatchQueue.main.async {
@@ -507,7 +482,7 @@ extension MusicSearchView {
                             let songForList = SongForList(id: song.id, name: song.name, artistName: allArtists, albumName: song.album!.name, artImageData: artResponse!, durationInMillis: song.duration_ms, isPlaying: false, previewURL: songPrev!)
                             if song.restrictions?.reason == nil {
                                 //if containsString(listOfSubStrings: songKeyWordsToFilterOut, songName: songForList.name) || containsString(listOfSubStrings: songKeyWordsToFilterOut, songName: songForList.albumName) || song.album?.album_type == "single" {
-                                if containsString(listOfSubStrings: appDelegate.songFilterForSearch, songName: songForList.name) || containsString(listOfSubStrings: appDelegate.songFilterForSearch, songName: songForList.albumName) {
+                                if cleanMusicData.containsString(listOfSubStrings: appDelegate.songFilterForSearch, songName: songForList.name) || cleanMusicData.containsString(listOfSubStrings: appDelegate.songFilterForSearch, songName: songForList.albumName) {
                                     print("Contains prohibited substring")
                                 }
                                 else{searchResults.append(songForList)}
