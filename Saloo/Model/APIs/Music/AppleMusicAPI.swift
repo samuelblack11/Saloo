@@ -175,19 +175,20 @@ class AppleMusicAPI {
     }
     
     
-    func searchForAlbum(albumName: String, storeFrontID: String, offset: Int?,  userToken: String, completion: @escaping (AlbumResponse?, Error?) -> Void) {
+    func searchForAlbum(albumAndArtist: String, storeFrontID: String, offset: Int?,  userToken: String, completion: @escaping (AlbumResponse?, Error?) -> Void) {
         // Set up the search query
         let lock = DispatchSemaphore(value: 1)
         let searchURL = "https://api.music.apple.com/v1/catalog/\(storeFrontID)/search"
         print("PreAccents:")
-        print(albumName)
+        print(albumAndArtist)
         print("Removed Text in Parentheses...")
-        var searchTerm = removeAccents(from: albumName)
+        var searchTerm = removeAccents(from: albumAndArtist)
         searchTerm = convertMultipleSpacesToSingleSpace(searchTerm)
 
         print("PostAccents:")
         print(searchTerm)
-        searchTerm = removeSpecialCharacters(from: searchTerm).replacingOccurrences(of: " ", with: "%20")
+        searchTerm = convertMultipleSpacesToSingleSpace(removeSpecialCharacters(from: searchTerm).replacingOccurrences(of: " ", with: "%20"))
+        
         print("Removed SpecChars....")
         print(searchTerm)
         

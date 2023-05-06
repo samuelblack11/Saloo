@@ -227,7 +227,7 @@ struct SpotPlayerView: View {
             .replacingOccurrences(of: ",", with: "" )
             .replacingOccurrences(of: " & ", with: " ")
         var artistsInSongName = String()
-        var featStrings = ["(feat.", "[feat."]
+        var featStrings = ["(feat.", "[feat.","[Feat.","(Feat."]
         for featString in featStrings {
             if spotSongName.contains(featString) {
                 let songComponents = spotSongName.components(separatedBy: featString)
@@ -249,7 +249,7 @@ struct SpotPlayerView: View {
     
     func removeArtistsFromAlbumName() -> (String, String) {
         print("Clean AlbumName....")
-        var cleanAlbumName = removeSubstrings(from: songAlbumName!, removeList: appDelegate.songFilterForMatch)
+        var cleanAlbumName = removeSubstrings(from: removeAccents(from: songAlbumName!), removeList: appDelegate.songFilterForMatch)
         print(cleanAlbumName)
         var artistInAlbumName = String()
         var featStrings = ["(feat.", "[feat.","[Feat.","(Feat."]
@@ -294,7 +294,7 @@ struct SpotPlayerView: View {
     
     func getSongViaAlbumSearch() {
         var cleanAlbumNameForURL = (removeArtistsFromAlbumName().0)
-        var appleAlbumArtistForURL = removeSpecialCharacters(from: appleAlbumArtist!)
+        var appleAlbumArtistForURL = removeSpecialCharacters(from: removeAccents(from: appleAlbumArtist!))
         var foundMatch = false
         let AMString = cleanAMSongForSPOTComparison()
         print("####")
@@ -541,6 +541,53 @@ extension SpotPlayerView {
             result = result.capitalized
         }
         return result
+    }
+    
+    func removeAccents(from input: String) -> String {
+        let accentMap: [Character: Character] = [
+            "à": "a",
+            "á": "a",
+            "â": "a",
+            "ã": "a",
+            "ä": "a",
+            "å": "a",
+            //"æ": "ae",
+            "ç": "c",
+            "è": "e",
+            "é": "e",
+            "ê": "e",
+            "ë": "e",
+            "ì": "i",
+            "í": "i",
+            "î": "i",
+            "ï": "i",
+            "ð": "d",
+            "ñ": "n",
+            "ò": "o",
+            "ó": "o",
+            "ô": "o",
+            "õ": "o",
+            "ö": "o",
+            "ø": "o",
+            "ù": "u",
+            "ú": "u",
+            "û": "u",
+            "ü": "u",
+            "ý": "y",
+            //"þ": "th",
+            "ÿ": "y"
+        ]
+    
+        var output = ""
+        for character in input {
+            if let unaccented = accentMap[character] {
+                output.append(unaccented)
+            } else {
+                output.append(character)
+            }
+        }
+
+        return output
     }
     
 }

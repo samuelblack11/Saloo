@@ -279,39 +279,70 @@ extension MusicSearchView {
         var artistsInAlbumName = String()
         cleanAlbumName = removeArtistsFromAlbumName().0
         artistsInAlbumName = removeArtistsFromAlbumName().1
-        SpotifyAPI().getAlbumIDUsingNameOnly(albumName: removeSpecialCharacters(from: cleanAlbumName), authToken: spotifyAuth.access_Token, completion: { (response, error) in
+        print("running getSpotAlbum....\(cleanAlbumName) && \(artistsInAlbumName)")
+        var albumArtistList: [String] = []
+        let group1 = DispatchGroup()
+        let offsetVals: [Int?] = [0, 50, 100]
+    outerLoop: for offsetVal in offsetVals {
+        group1.enter()
+        SpotifyAPI().getAlbumIDUsingNameOnly(albumName: cleanAlbumName, offset: offsetVal, authToken: spotifyAuth.access_Token, completion: { (response, error) in
             if response != nil {
+                let group2 = DispatchGroup()
                 for album in response! {
-                    print("Got Album Named: ")
-                    print(album.name)
+                    group2.enter()
+                    print("Got Album by \(album.artists[0]) Named: \(album.name)")
                     SpotifyAPI().getAlbumTracks(albumId: album.id, authToken: spotifyAuth.access_Token, completion: {(response, error) in
+                        defer { group2.leave() }
                         if let trackList = response {
-                            for track in trackList {
+                            //for track in trackList {
+                            for (trackIndex, track) in trackList.enumerated() {
                                 if chosenSong.spotName == track.name {
                                     print("Found Song Name Match on Album Named above...")
                                     var allArtists = String()
                                     if album.artists.count > 1 {for artist in album.artists { allArtists = allArtists + " " + artist.name}}
                                     else {allArtists = album.artists[0].name}
                                     print("Album Artists Are...\(allArtists)")
-                                    chosenSong.spotAlbumArtist = allArtists
+                                    albumArtistList.append(allArtists)
                                     //if allArtists.contains(artistsInAlbumName) {chosenSong.spotAlbumArtist = allArtists}
                                     //else {chosenSong.spotAlbumArtist = allArtists + artistsInAlbumName}
-                                    break
-                                }
-                }}})}}})}
+                                    //break
+                }}}})}
+                group2.notify(queue: .main) {
+                    group1.leave()
+                }
+            } else {
+                group1.leave()
+            }})}
+            group1.notify(queue: .main) {
+                var foundMatch = false
+                for artistGroup in albumArtistList {
+                   print("Artist Check....")
+                   print(artistGroup)
+                   print(chosenSong.artistName)
+                    
+                    let words = chosenSong.artistName.components(separatedBy: " ")
+                    for word in words {
+                        if artistGroup.contains(word) {
+                            chosenSong.spotAlbumArtist = artistGroup
+                            print("Determined Spot AlbumArtist is....\(chosenSong.spotAlbumArtist)")
+                            foundMatch = true
+                            break
+                }}}
+                if foundMatch == false {
+                    chosenSong.spotAlbumArtist = albumArtistList[0]
+                    print("Determined Spot AlbumArtist is....\(chosenSong.spotAlbumArtist)")
+                }}}
     
+    
+
     func getAlbum(storeFront: String, userToken: String) {
         var cleanAlbumName = String()
         var artistsInAlbumName = String()
         cleanAlbumName = removeArtistsFromAlbumName().0
         artistsInAlbumName = removeArtistsFromAlbumName().1
-        
-        
-        
-        
-        
+
         SKCloudServiceController.requestAuthorization {(status) in if status == .authorized {
-            AppleMusicAPI().searchForAlbum(albumName: removeSpecialCharacters(from: cleanAlbumName), storeFrontID: storeFront, offset: nil, userToken: userToken, completion: { (response, error) in
+            AppleMusicAPI().searchForAlbum(albumAndArtist: removeSpecialCharacters(from: ("\(cleanAlbumName) \(chosenSong.artistName)")), storeFrontID: storeFront, offset: nil, userToken: userToken, completion: { (response, error) in
                 if response != nil {
                     print("Album Search Response....")
                     if let albumList = response?.results.albums.data {
