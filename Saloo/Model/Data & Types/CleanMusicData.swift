@@ -208,5 +208,14 @@ class CleanMusicData {
         return false
     }
     
-    
+    func generateIncrementList(A: Int, B: Int) -> [Int] {
+        var list: [Int] = []
+        let increment = A
+        var currentIncrement = A
+        while currentIncrement <= B {
+            list.append(currentIncrement)
+            currentIncrement += increment
+        }
+        return list
+    }
 }

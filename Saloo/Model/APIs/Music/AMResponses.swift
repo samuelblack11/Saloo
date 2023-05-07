@@ -56,6 +56,7 @@ struct SongAttributes: Decodable {
     let playParams: PlayParams
     let previews: [PreviewURL]
     let durationInMillis: Int
+    let discNumber: Int?
 }
 
 struct PlayParams: Decodable {
@@ -127,4 +128,5 @@ struct TrackAttributes: Codable {
     let name: String
     let trackNumber: Int
     let durationInMillis: Int
+    let discNumber: Int?
 }

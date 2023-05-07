@@ -203,7 +203,7 @@ struct SpotPlayerView: View {
                 SpotifyAPI().searchForAlbum(albumId: spotAlbumID, authToken: spotifyAuth.access_Token) { (albumResponse, error) in
                     if let album = albumResponse {
                         spotImageURL = album.images[2].url
-                        SpotifyAPI().getAlbumTracks(albumId: spotAlbumID, authToken: spotifyAuth.access_Token, completion: { (response, error) in
+                        SpotifyAPI().getAlbumTracks(albumId: spotAlbumID, discNumber: nil, authToken: spotifyAuth.access_Token, completion: { (response, error) in
                             for song in response! {
                                 // your code here
                                 print("Got Track...\(song.name)")

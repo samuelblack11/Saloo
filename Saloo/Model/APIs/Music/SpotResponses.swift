@@ -28,6 +28,7 @@ struct SpotItem: Decodable {
     let duration_ms: Int
     //let availableMarkets: [String]
     let restrictions: RestrictionObj?
+    let disc_number: Int?
 }
 
 struct RestrictionObj: Decodable {

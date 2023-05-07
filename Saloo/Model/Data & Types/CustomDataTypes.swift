@@ -25,6 +25,7 @@ struct SongForList: Hashable {
      var durationInMillis: Int
      var isPlaying: Bool
      var previewURL: String
+     var disc_number: Int?
 }
 
 struct SelectedSong {
@@ -64,6 +65,8 @@ class ChosenSong: ObservableObject {
     @Published var songAddedUsing = String()
     @Published var appleAlbumArtist = String()
     @Published var spotAlbumArtist = String()
+    @Published var discNumber = Int()
+
 }
 
 class ChosenCoverImageObject: ObservableObject {
