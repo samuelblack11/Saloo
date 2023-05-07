@@ -310,6 +310,7 @@ extension MusicSearchView {
 
     func getAlbum(storeFront: String, userToken: String) {
         var albumAndArtistForSearch = cleanMusicData.compileMusicString(songOrAlbum: chosenSong.songAlbumName, artist: chosenSong.artistName, removeList: appDelegate.songFilterForSearch)
+        var albumForSearch = cleanMusicData.compileMusicString(songOrAlbum: chosenSong.songAlbumName, artist: nil, removeList: appDelegate.songFilterForSearch)
         SKCloudServiceController.requestAuthorization {(status) in if status == .authorized {
             AppleMusicAPI().searchForAlbum(albumAndArtist: albumAndArtistForSearch, storeFrontID: storeFront, offset: nil, userToken: userToken, completion: { (response, error) in
                 if response != nil {
@@ -340,8 +341,26 @@ extension MusicSearchView {
                     }
                 }
                 else {
-                    print("Error...")
-                    print(error?.localizedDescription)
+                    print("Error when searching with Album + Artist..."); print(error?.localizedDescription)
+                    AppleMusicAPI().searchForAlbum(albumAndArtist: albumForSearch, storeFrontID: storeFront, offset: nil, userToken: userToken, completion: { (response, error) in
+                        if response != nil {
+                            print("Album Search Response....")
+                            if let albumList = response?.results.albums.data {
+                                print("# of Albums in Response: \(albumList.count)")
+                                for album in albumList {
+                                    print("Album Object: \(album)")
+                                    AppleMusicAPI().getAlbumTracks(albumId: album.id, storefrontId: storeFront, userToken: userToken, completion: { (response, error) in
+                                        if response != nil {
+                                            if let trackList = response?.data {
+                                                for track in trackList {
+                                                    if chosenSong.name == track.attributes.name {
+                                                        print("Found Song on Album:")
+                                                        print(track.attributes.name)
+                                                        chosenSong.appleAlbumArtist = album.attributes.artistName
+                                                        break
+                        }}}}})}}}
+                        else {print("Error When Searching with Just Album Name"); print(error?.localizedDescription)
+                    }})
                 }
         })}}}
     

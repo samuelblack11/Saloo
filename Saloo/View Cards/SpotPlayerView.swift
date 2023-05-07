@@ -190,7 +190,7 @@ struct SpotPlayerView: View {
     func getSongViaAlbumSearch() {
         let cleanAlbumNameForURL = cleanMusicData.compileMusicString(songOrAlbum: songAlbumName!, artist: nil, removeList: appDelegate.songFilterForMatch)
         let appleAlbumArtistForURL = cleanMusicData.cleanMusicString(input: appleAlbumArtist!, removeList: appDelegate.songFilterForMatch)
-        let AMString = cleanMusicData.compileMusicString(songOrAlbum: songName!, artist: appleAlbumArtistForURL, removeList: appDelegate.songFilterForMatch)
+        let AMString = cleanMusicData.compileMusicString(songOrAlbum: songName!, artist: songArtistName!, removeList: appDelegate.songFilterForMatch)
         var foundMatch = false
         print("####"); print(AMString); print(cleanAlbumNameForURL); print(appleAlbumArtistForURL)
         SpotifyAPI().getAlbumID(albumName: cleanAlbumNameForURL, artistName: appleAlbumArtistForURL , authToken: spotifyAuth.access_Token, completion: { (albums, error) in
@@ -241,7 +241,9 @@ struct SpotPlayerView: View {
             }
             dispatchGroup.notify(queue: .main) {
                 // code to execute after all API calls have finished
-                if albums!.count < 1 || foundMatch == false {
+                // if albums!.count < 1 || foundMatch == false {
+
+                if albums!.count < 1 {
                     if songPreviewURL != nil && foundMatch == false {
                         deferToPreview = true
                         DispatchQueue.main.async {updateRecordWithNewSPOTData(spotName: "LookupFailed", spotArtistName: "LookupFailed", spotID: "LookupFailed", songArtImageData: Data(), songDuration: String(0))}
