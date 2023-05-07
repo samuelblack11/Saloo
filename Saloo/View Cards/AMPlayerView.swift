@@ -118,15 +118,17 @@ struct AMPlayerView: View {
                     if songProgress == songDuration {musicPlayer.pause()}
                 }
             HStack{
-                Text(convertToMinutes(seconds:Int(songProgress)))
-                Spacer()
-                Text(convertToMinutes(seconds: Int(songDuration!)-Int(songProgress)))
-                    .padding(.trailing, 10)
+                //if songProgress > 0.0 {
+                    Text(convertToMinutes(seconds:Int(songProgress)))
+                    Spacer()
+                    Text(convertToMinutes(seconds: Int(songDuration!)-Int(songProgress)))
+                        .padding(.trailing, 10)
+                //}
             }
             selectButton
         }
-        .onAppear{self.musicPlayer.setQueue(with: [songID!]); self.musicPlayer.play()}
-        .onDisappear{self.musicPlayer.pause()}
+        .onAppear{songProgress = 0.0; self.musicPlayer.setQueue(with: [songID!]); self.musicPlayer.play()}
+        .onDisappear{self.musicPlayer.pause(); self.$musicPlayer.wrappedValue.currentPlaybackTime = 0}
     }
     
     @ViewBuilder var selectButton: some View {

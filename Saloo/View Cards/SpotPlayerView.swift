@@ -185,6 +185,7 @@ struct SpotPlayerView: View {
                 selectButton
             }
         }
+        .onDisappear{appRemote2?.playerAPI?.seek(toPosition: 0)}
     }
     //func getSongViaAlbumSearch(completion: @escaping () -> Void) {
     func getSongViaAlbumSearch() {
