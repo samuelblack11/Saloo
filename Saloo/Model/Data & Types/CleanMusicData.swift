@@ -38,11 +38,8 @@ class CleanMusicData {
         print("-----")
         print(input)
         var cleanString = removeAccents(from: input)
-        print(cleanString)
         cleanString = removeSubstrings(from: cleanString, removeList: removeList)
-        print(cleanString)
         cleanString = removeSpecialCharacters(from: cleanString)
-        print(cleanString)
         cleanString = convertMultipleSpacesToSingleSpace(cleanString)//.replacingOccurrences(of: " ", with: "%20")
         print(cleanString)
         return cleanString

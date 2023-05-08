@@ -200,7 +200,7 @@ extension MusicSearchView {
                         for song in response! {
                             let blankString: String? = ""
                             var songPrev: String?
-                            if song.attributes.previews.count > 0 {print("it's not nil"); songPrev = song.attributes.previews[0].url}
+                            if song.attributes.previews.count > 0 {songPrev = song.attributes.previews[0].url}
                             else {songPrev = blankString}
                             print("Search With AM called...")
                             let artURL = URL(string:song.attributes.artwork.url.replacingOccurrences(of: "{w}", with: "80").replacingOccurrences(of: "{h}", with: "80"))
@@ -252,27 +252,28 @@ extension MusicSearchView {
         }
     }
     
-
-    
-    
-    
-    
     func getSpotAlbum() {
         var cleanAlbumName = String()
         var artistsInAlbumName = String()
         cleanAlbumName = cleanMusicData.compileMusicString(songOrAlbum: chosenSong.songAlbumName, artist: nil, removeList: appDelegate.songFilterForSearch)
         var albumArtistList: [String] = []
-        let group = DispatchGroup()
+        // Currently: group is for each set of albums. group2 is for each album within that group
+        // Need: group1 for all album groups, group2 for each album, group3 for tracks within that album
         let offsetVals: [Int?] = [0, 50, 100]
+        let group1 = DispatchGroup()
+        // group1 coordinates the groups of 50 albums
         for offsetVal in offsetVals {
-            group.enter()
+            group1.enter()
             SpotifyAPI().getAlbumIDUsingNameOnly(albumName: cleanAlbumName, offset: offsetVal, authToken: spotifyAuth.access_Token) { response, error in
                 if let response = response {
-                    let group2 = DispatchGroup()
                     for album in response {
-                        group2.enter()
                         print("Got Album by \(album.artists[0]) Named: \(album.name)")
-                        SpotifyAPI().getAlbumTracks(albumId: album.id, discNumber: chosenSong.discNumber, authToken: spotifyAuth.access_Token) { response, error in
+                        let group2 = DispatchGroup()
+                        //group1.enter() // enter group1 for each getAlbumTracks call
+                        group2.enter()
+                        SpotifyAPI().getAlbumTracks(albumId: album.id, authToken: spotifyAuth.access_Token) { response, error in
+                            print("Error...\(error)")
+                            print("Response...\(response)")
                             if let trackList = response {
                                 for (trackIndex, track) in trackList.enumerated() {
                                     print("----")
@@ -282,27 +283,25 @@ extension MusicSearchView {
                                         var allArtists = String()
                                         if album.artists.count > 1 {
                                             for artist in album.artists { allArtists = allArtists + " " + artist.name}
-                                        } else {
-                                            allArtists = album.artists[0].name
-                                        }
+                                        } else {allArtists = album.artists[0].name}
                                         print("Album Artists Are...\(allArtists)")
                                         albumArtistList.append(allArtists)
                                     }
                                 }
+                                print("Looped through all tracks for \(album.name)")
                             }
                             
                         }
+                        print("Looped through album: \(album.name) in response")
                         group2.leave()
                     }
-                    group2.notify(queue: .main) {
-                        group.leave()
-                    }
-                } else {
-                    group.leave()
                 }
             }
+            print("Looped through set of 50 albums")
+            group1.leave()
         }
-        group.notify(queue: .main) {
+
+        group1.notify(queue: DispatchQueue.main) {
             var foundMatch = false
             let words = cleanMusicData.cleanMusicString(input: chosenSong.spotArtistName, removeList:appDelegate.songFilterForSearch).components(separatedBy: " ")
             print("Words...\(words)")
@@ -493,14 +492,11 @@ extension MusicSearchView {
                 searchResults = []
                 DispatchQueue.main.async {
                     for song in response! {
-                        print("BBBBB")
-                        print(song.restrictions)
-                        print(song)
                         let artURL = URL(string:song.album!.images[2].url)
                         let _ = getURLData(url: artURL!, completionHandler: {(artResponse, error2) in
                             let blankString: String? = ""
                             var songPrev: String?
-                            if song.preview_url != nil {print("it's not nil"); songPrev = song.preview_url}
+                            if song.preview_url != nil {songPrev = song.preview_url}
                             else {songPrev = blankString}
                             
                             var allArtists = String()
@@ -515,11 +511,6 @@ extension MusicSearchView {
                                 
                             }
                             else {allArtists = song.artists[0].name}
-                            print("Song Name is...\(song.name)")
-                            print("Disc Number is.... \(song.disc_number)")
-                            
-                            
-                            
                             let songForList = SongForList(id: song.id, name: song.name, artistName: allArtists, albumName: song.album!.name, artImageData: artResponse!, durationInMillis: song.duration_ms, isPlaying: false, previewURL: songPrev!, disc_number: song.disc_number)
                             if song.restrictions?.reason == nil {
                                 //if containsString(listOfSubStrings: songKeyWordsToFilterOut, songName: songForList.name) || containsString(listOfSubStrings: songKeyWordsToFilterOut, songName: songForList.albumName) || song.album?.album_type == "single" {
