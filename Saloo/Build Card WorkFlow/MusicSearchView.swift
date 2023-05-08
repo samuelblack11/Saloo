@@ -264,20 +264,18 @@ extension MusicSearchView {
         // group1 coordinates the groups of 50 albums
         for offsetVal in offsetVals {
             group1.enter()
-            SpotifyAPI().getAlbumIDUsingNameOnly(albumName: cleanAlbumName, offset: offsetVal, authToken: spotifyAuth.access_Token) { response, error in
-                if let response = response {
-                    for album in response {
+            SpotifyAPI().getAlbumIDUsingNameOnly(albumName: cleanAlbumName, offset: offsetVal, authToken: spotifyAuth.access_Token) { albumResponse, error in
+                if let albumResponse = albumResponse {
+                    for (albumIndex, album) in albumResponse.enumerated() {
                         print("Got Album by \(album.artists[0]) Named: \(album.name)")
                         let group2 = DispatchGroup()
-                        //group1.enter() // enter group1 for each getAlbumTracks call
                         group2.enter()
                         SpotifyAPI().getAlbumTracks(albumId: album.id, authToken: spotifyAuth.access_Token) { response, error in
-                            print("Error...\(error)")
-                            print("Response...\(response)")
+                            //print("Error...\(error)")
+                            //print("Response...\(response)")
                             if let trackList = response {
                                 for (trackIndex, track) in trackList.enumerated() {
-                                    print("----")
-                                    print("Track to Check....\(track.name)")
+                                    print("----Track to Check....\(track.name)")
                                     if chosenSong.spotName == track.name {
                                         print("Found Song Name Match on Album Named above...")
                                         var allArtists = String()
@@ -290,15 +288,18 @@ extension MusicSearchView {
                                 }
                                 print("Looped through all tracks for \(album.name)")
                             }
-                            
+                            //group2.leave()
+                            defer {group2.leave()}
+
+                            if albumIndex == albumResponse.count - 1 && !albumResponse.isEmpty {
+                                group1.leave()
+                            }
                         }
                         print("Looped through album: \(album.name) in response")
-                        group2.leave()
                     }
                 }
             }
             print("Looped through set of 50 albums")
-            group1.leave()
         }
 
         group1.notify(queue: DispatchQueue.main) {
