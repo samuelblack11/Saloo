@@ -271,12 +271,14 @@ extension MusicSearchView {
                         let group2 = DispatchGroup()
 
                         for album in albumResponse {
+                            print("Current Album...\(album.name)")
                             group2.enter()
 
                             DispatchQueue.global().async {
                                 SpotifyAPI().getAlbumTracks(albumId: album.id, authToken: spotifyAuth.access_Token) { response, error in
                                     if let trackList = response {
                                         for track in trackList {
+                                            print("----Track \(track.name)")
                                             if chosenSong.spotName == track.name {
                                                 var allArtists = String()
                                                 if album.artists.count > 1 {
