@@ -257,74 +257,82 @@ extension MusicSearchView {
         var artistsInAlbumName = String()
         cleanAlbumName = cleanMusicData.compileMusicString(songOrAlbum: chosenSong.songAlbumName, artist: nil, removeList: appDelegate.songFilterForSearch)
         var albumArtistList: [String] = []
-        // Currently: group is for each set of albums. group2 is for each album within that group
-        // Need: group1 for all album groups, group2 for each album, group3 for tracks within that album
-        let offsetVals: [Int?] = [0, 50, 100]
+        let pageSize = 50
+        let totalAlbums = 150
+        let totalOffsets = totalAlbums / pageSize
         let group1 = DispatchGroup()
-        // group1 coordinates the groups of 50 albums
-        for offsetVal in offsetVals {
-            group1.enter()
-            SpotifyAPI().getAlbumIDUsingNameOnly(albumName: cleanAlbumName, offset: offsetVal, authToken: spotifyAuth.access_Token) { albumResponse, error in
-                if let albumResponse = albumResponse {
-                    for (albumIndex, album) in albumResponse.enumerated() {
-                        print("Got Album by \(album.artists[0]) Named: \(album.name)")
-                        let group2 = DispatchGroup()
-                        group2.enter()
-                        SpotifyAPI().getAlbumTracks(albumId: album.id, authToken: spotifyAuth.access_Token) { response, error in
-                            //print("Error...\(error)")
-                            //print("Response...\(response)")
-                            if let trackList = response {
-                                for (trackIndex, track) in trackList.enumerated() {
-                                    print("----Track to Check....\(track.name)")
-                                    if chosenSong.spotName == track.name {
-                                        print("Found Song Name Match on Album Named above...")
-                                        var allArtists = String()
-                                        if album.artists.count > 1 {
-                                            for artist in album.artists { allArtists = allArtists + " " + artist.name}
-                                        } else {allArtists = album.artists[0].name}
-                                        print("Album Artists Are...\(allArtists)")
-                                        albumArtistList.append(allArtists)
-                                    }
-                                }
-                                print("Looped through all tracks for \(album.name)")
-                            }
-                            //group2.leave()
-                            defer {group2.leave()}
 
-                            if albumIndex == albumResponse.count - 1 && !albumResponse.isEmpty {
-                                group1.leave()
+        for offset in 0..<totalOffsets {
+            group1.enter()
+
+            DispatchQueue.global().async {
+                SpotifyAPI().getAlbumIDUsingNameOnly(albumName: cleanAlbumName, offset: offset * pageSize, authToken: spotifyAuth.access_Token) { albumResponse, error in
+                    if let albumResponse = albumResponse {
+                        let group2 = DispatchGroup()
+
+                        for album in albumResponse {
+                            group2.enter()
+
+                            DispatchQueue.global().async {
+                                SpotifyAPI().getAlbumTracks(albumId: album.id, authToken: spotifyAuth.access_Token) { response, error in
+                                    if let trackList = response {
+                                        for track in trackList {
+                                            if chosenSong.spotName == track.name {
+                                                var allArtists = String()
+                                                if album.artists.count > 1 {
+                                                    for artist in album.artists { allArtists = allArtists + " " + artist.name}
+                                                } else {
+                                                    allArtists = album.artists[0].name
+                                                }
+                                                print("Appended...\(allArtists)")
+                                                albumArtistList.append(allArtists)
+                                            }
+                                        }
+                                        print("All tracks in \(album) looped through")
+                                    }
+
+                                    // Release the semaphore when getAlbumTracks is finished
+
+                                    group2.leave()
+                                }
                             }
                         }
-                        print("Looped through album: \(album.name) in response")
+
+                        group2.notify(queue: DispatchQueue.global()) {
+                            group1.leave()
+                        }
+                    } else {
+                        group1.leave()
                     }
                 }
             }
-            print("Looped through set of 50 albums")
+            print("Album Group Complete of \(totalOffsets)")
         }
 
         group1.notify(queue: DispatchQueue.main) {
             var foundMatch = false
             let words = cleanMusicData.cleanMusicString(input: chosenSong.spotArtistName, removeList:appDelegate.songFilterForSearch).components(separatedBy: " ")
-            print("Words...\(words)")
+            print("notified")
             for artistGroup in albumArtistList {
-                print("Artist Check....\(artistGroup)")
                 for word in words {
                     if artistGroup.contains(word) {
-                        print(word)
+                        print("contains word called")
                         chosenSong.spotAlbumArtist = artistGroup
-                        print("Determined Spot AlbumArtist is....\(chosenSong.spotAlbumArtist)")
                         foundMatch = true
                         break
                     }
                 }
                 if foundMatch { break }
             }
+
             if !foundMatch {
+                print("called !foundMatch")
                 chosenSong.spotAlbumArtist = albumArtistList[0]
-                print("Determined Spot AlbumArtist is....\(chosenSong.spotAlbumArtist)")
+                chosenSong.spotAlbumArtist = albumArtistList.first ?? ""
             }
         }
     }
+
 
     
 
