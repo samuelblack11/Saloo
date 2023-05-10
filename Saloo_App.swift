@@ -15,6 +15,7 @@ struct Saloo_App: App {
     let persistenceController = PersistenceController.shared
     @StateObject var appDelegate = AppDelegate()
     @StateObject var sceneDelegate = SceneDelegate()
+    @StateObject var networkMonitor = NetworkMonitor()
     //@UIApplicationDelegateAdaptor var appDelegate2: AppDelegate
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate3
 
@@ -23,6 +24,7 @@ struct Saloo_App: App {
             StartMenu()
                 //.background(appDelegate.appColor)
                 .environment(\.managedObjectContext, persistenceController.persistentContainer.viewContext)
+                .environmentObject(networkMonitor)
                 .environmentObject(sceneDelegate)
                 .environmentObject(appDelegate)
                 .environmentObject(musicSub)

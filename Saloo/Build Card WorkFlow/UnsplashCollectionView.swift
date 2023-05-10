@@ -36,6 +36,8 @@ struct UnsplashCollectionView: View {
     @State private var presentUCV2 = false
     let timer = Timer.publish(every: 0.05, on: .main, in: .common).autoconnect()
     let columns = [GridItem(.fixed(150)),GridItem(.fixed(150))]
+    @EnvironmentObject var networkMonitor: NetworkMonitor
+    @State private var showFailedConnectionAlert = false
     
     var body: some View {
         NavigationView {
@@ -45,18 +47,33 @@ struct UnsplashCollectionView: View {
                         AsyncImage(url: photoObj.smallImageURL) { image in
                             image.resizable()} placeholder: {ZStack{Color.gray; ProgressView()}}
                             .frame(width: 125, height: 125)
-                            .onTapGesture {Task {try? await handleTap(index: photoObj.index)}}
+                            .onTapGesture {Task {
+                                if networkMonitor.isConnected{try? await handleTap(index: photoObj.index)}
+                                else{showFailedConnectionAlert = true}
+                            }}
                     }
                 }
                 .navigationTitle("Choose Front Cover")
                 .navigationBarItems(leading:Button {showOccassions.toggle()} label: {Image(systemName: "chevron.left").foregroundColor(.blue); Text("Back")})
-                Button("More...") {getMorePhotos(); print("page count: \(chosenObject.pageCount)")}.disabled(setButtonStatus(imageObjects: imageObjects))
+                Button("More...") {
+                    if networkMonitor.isConnected {
+                        getMorePhotos(); print("page count: \(chosenObject.pageCount)")
+                    }
+                    else {showFailedConnectionAlert = true}
+
+                }.disabled(setButtonStatus(imageObjects: imageObjects))
             }
         }
         .font(.headline).padding(.horizontal).frame(maxHeight: 600)
         .onAppear {
-            if chosenOccassion.occassion == "None" {getUnsplashPhotos()}
-            else {getPhotosFromCollection(collectionID: chosenOccassion.collectionID, page_num: chosenObject.pageCount)}
+            if chosenOccassion.occassion == "None" {
+                if networkMonitor.isConnected{getUnsplashPhotos()}
+                else{showFailedConnectionAlert = true}
+            }
+            else {
+                if networkMonitor.isConnected{getPhotosFromCollection(collectionID: chosenOccassion.collectionID, page_num: chosenObject.pageCount)}
+                else {showFailedConnectionAlert = true}
+            }
         }
         .fullScreenCover(isPresented: $showConfirmFrontCover) {ConfirmFrontCoverView()}
         .fullScreenCover(isPresented: $showOccassions) {OccassionsMenu()}

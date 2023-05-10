@@ -48,7 +48,8 @@ struct OccassionsMenu: View {
     @State private var customSearch: String = ""
     // Defines page number to be used when displaying photo results on UCV
     @State var loadedImagefromLibraryOrCamera: Bool?
-    
+    @EnvironmentObject var networkMonitor: NetworkMonitor
+    @State private var showFailedConnectionAlert = false
     
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -88,9 +89,14 @@ struct OccassionsMenu: View {
                         //.listRowBackground(appDelegate.appColor)
                         .padding(.leading, 5)
                         .frame(height:35)
-                    Button {showUCV = true; chosenObject.frontCoverIsPersonalPhoto = 0
-                        chosenOccassion.occassion = "None"
-                        chosenOccassion.collectionID = (customSearch.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed))!
+                    Button {
+                        if networkMonitor.isConnected {
+                            showUCV = true
+                            chosenObject.frontCoverIsPersonalPhoto = 0
+                            chosenOccassion.occassion = "None"
+                            chosenOccassion.collectionID = (customSearch.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed))!
+                        }
+                        else {showFailedConnectionAlert = true}
                     }
                     label: {Image(systemName: "magnifyingglass.circle.fill")}
                         .fullScreenCover(isPresented: $showUCV) {UnsplashCollectionView()}
@@ -104,6 +110,9 @@ struct OccassionsMenu: View {
             Section(header: Text("Summer Holidays")) {ForEach(summerCollection) {menuSection(for: $0, shareable: false)}}
             Section(header: Text("Fall Holidays")) {ForEach(fallCollection) {menuSection(for: $0, shareable: false)}}
             Section(header: Text("Other Collections")) {ForEach(otherCollection) {menuSection(for: $0, shareable: false)}}
+        }
+        .alert(isPresented: $showFailedConnectionAlert) {
+            Alert(title: Text("Error"), message: Text("Sorry, we weren't able to connect to the internet. Please reconnect and try again."), dismissButton: .default(Text("OK")))
         }
         .navigationBarItems(leading:Button {showStartMenu.toggle()} label: {Image(systemName: "chevron.left").foregroundColor(.blue); Text("Back")})
         .font(.headline)
@@ -133,10 +142,13 @@ extension OccassionsMenu {
     
     private func menuSection(for collection: CollectionPair, shareable: Bool = true) -> some View {
             Text(collection.title).onTapGesture {
-                frontCoverIsPersonalPhoto = 0
-                self.chosenOccassion.occassion = collection.title
-                self.chosenOccassion.collectionID = collection.id
-                showUCV.toggle()
+                if networkMonitor.isConnected {
+                    frontCoverIsPersonalPhoto = 0
+                    self.chosenOccassion.occassion = collection.title
+                    self.chosenOccassion.collectionID = collection.id
+                    showUCV.toggle()
+                }
+                else {showFailedConnectionAlert = true}
             }.fullScreenCover(isPresented: $showUCV) {UnsplashCollectionView()}
     }
     

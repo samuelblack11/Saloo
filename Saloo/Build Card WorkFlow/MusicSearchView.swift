@@ -25,6 +25,8 @@ struct MusicSearchView: View {
     @State private var userToken = ""
     @State private var searchResults: [SongForList] = []
     @EnvironmentObject var giftCard: GiftCard
+    @EnvironmentObject var networkMonitor: NetworkMonitor
+
     let cleanMusicData = CleanMusicData()
 
     //@State private var musicPlayer = MPMusicPlayerController.applicationMusicPlayer
@@ -57,6 +59,7 @@ struct MusicSearchView: View {
     @State private var sortByValue = "Track"
     @State var emptyCard: CoreCard? = CoreCard()
     @State var deferToPreview = false
+    @State private var showFailedConnectionAlert = false
     func determineCardType() -> String {
         print("called determineCardType...")
         print(chosenSong.id)
@@ -84,14 +87,18 @@ struct MusicSearchView: View {
                 //sortResults
                 TextField("Track", text: $songSearch)
                 TextField("Artist", text: $artistSearch)
-                Button("Search"){searchWithSpotify()}
+                Button("Search"){
+                    if networkMonitor.isConnected { searchWithSpotify() }
+                    else {showFailedConnectionAlert = true}
+                }
             }
             else {
                 TextField("Search Songs", text: $songSearch, onCommit: {
                     UIApplication.shared.resignFirstResponder()
                     if self.songSearch.isEmpty {
                         self.searchResults = []
-                    } else {
+                    } else if networkMonitor.isConnected  {
+                        print("Connection Available...")
                         switch appDelegate.musicSub.type {
                         case .Apple:
                             return searchWithAM()
@@ -100,7 +107,10 @@ struct MusicSearchView: View {
                         case .Spotify:
                             return searchWithSpotify()
                         }
-                    }}).padding(.top, 15)
+                    }
+                    else {showFailedConnectionAlert = true}
+                    
+                }).padding(.top, 15)
             }
             NavigationView {
                 List {
@@ -139,14 +149,19 @@ struct MusicSearchView: View {
                         print("Run2")
                         refresh_token = (defaults.object(forKey: "SpotifyRefreshToken") as? String)!
                         refreshAccessToken = true
-                        runGetToken(authType: "refresh_token")
+                        if networkMonitor.isConnected{runGetToken(authType: "refresh_token")}
                         counter += 1
                     }
-                    else{print("Run3");requestSpotAuth(); runGetToken(authType: "code")}
-                    runInstantiateAppRemote()
+                    else{print("Run3");if networkMonitor.isConnected{requestSpotAuth(); runGetToken(authType: "code")}}
+                    if networkMonitor.isConnected{runInstantiateAppRemote()}
                 }
-                if appDelegate.musicSub.type == .Apple {getAMUserToken(); getAMStoreFront()}
+                if appDelegate.musicSub.type == .Apple {if networkMonitor.isConnected{getAMUserToken(); getAMStoreFront()}}
             }
+            // Show an alert if showAlert is true
+            .alert(isPresented: $showFailedConnectionAlert) {
+                Alert(title: Text("Error"), message: Text("Sorry, we weren't able to connect to the internet. Please reconnect and try again."), dismissButton: .default(Text("OK")))
+            }
+        
             .navigationBarItems(leading:Button {showWriteNote.toggle()} label: {Image(systemName: "chevron.left").foregroundColor(.blue); Text("Back")})
             .fullScreenCover(isPresented: $showWriteNote){WriteNoteView()}
             .popover(isPresented: $showAPV) {AMPlayerView(songID: chosenSong.id, songName: chosenSong.name, songArtistName: chosenSong.artistName, songArtImageData: chosenSong.artwork, songDuration: chosenSong.durationInSeconds, songPreviewURL: chosenSong.songPreviewURL, confirmButton: true, showFCV: $showFCV, chosenCard: $emptyCard, deferToPreview: $deferToPreview)
@@ -191,9 +206,7 @@ extension MusicSearchView {
     func searchWithAM() {
         SKCloudServiceController.requestAuthorization {(status) in if status == .authorized {
             let amSearch = cleanMusicData.cleanMusicString(input: self.songSearch, removeList: appDelegate.songFilterForSearch)
-            
-            
-            
+
             self.searchResults = AppleMusicAPI().searchAppleMusic(amSearch, storeFrontID: amAPI.storeFrontID!, userToken: amAPI.taskToken!, completionHandler: { (response, error) in
                 if response != nil {
                     DispatchQueue.main.async {
@@ -235,7 +248,8 @@ extension MusicSearchView {
             chosenSong.spotPreviewURL = song.previewURL
             chosenSong.songAddedUsing = "Spotify"
             getSpotAlbum()
-            showSPV = true
+            if networkMonitor.isConnected{showSPV = true}
+            else{showFailedConnectionAlert = true}
         }
         if appDelegate.musicSub.type == .Apple {
             chosenSong.id = song.id
@@ -248,7 +262,8 @@ extension MusicSearchView {
             chosenSong.discNumber = song.disc_number!
             chosenSong.songAddedUsing = "Apple"
             getAlbum(storeFront: amAPI.storeFrontID!, userToken: amAPI.taskToken!)
-            showAPV = true
+            if networkMonitor.isConnected{showAPV = true}
+            else{showFailedConnectionAlert = true}
         }
     }
     
@@ -267,6 +282,12 @@ extension MusicSearchView {
 
             DispatchQueue.global().async {
                 SpotifyAPI().getAlbumIDUsingNameOnly(albumName: cleanAlbumName, offset: offset * pageSize, authToken: spotifyAuth.access_Token) { albumResponse, error in
+                    
+                    
+                    if let error = error as? URLError, error.code == .notConnectedToInternet {
+                        showFailedConnectionAlert = true
+                    }
+                    
                     if let albumResponse = albumResponse {
                         let group2 = DispatchGroup()
 
@@ -405,7 +426,7 @@ extension MusicSearchView {
                     print("ccccccc")
                     print(response!)
                     if response!.contains("https://www.google.com/?code="){}
-                    else{spotifyAuth.authForRedirect = response!; showWebView = true}
+                    else{spotifyAuth.authForRedirect = response!; if networkMonitor.isConnected{showWebView = true}}
                     refreshAccessToken = true
                 }}})
     }
@@ -499,6 +520,11 @@ extension MusicSearchView {
 
         
         SpotifyAPI().searchSpotify(songTerm, artistName: artistTerm, authToken: spotifyAuth.access_Token, completionHandler: {(response, error) in
+            
+            //if let error = error as? URLError, error.code == .notConnectedToInternet {
+            //    showFailedConnectionAlert = true
+            //}
+            
             if response != nil {
                 searchResults = []
                 DispatchQueue.main.async {

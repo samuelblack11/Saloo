@@ -53,11 +53,18 @@ struct AMPlayerView: View {
     @Binding var chosenCard: CoreCard?
     @Binding var deferToPreview: Bool
     let cleanMusicData = CleanMusicData()
+    @EnvironmentObject var networkMonitor: NetworkMonitor
+    @State private var showFailedConnectionAlert = false
     
     var body: some View {
             AMPlayerView
             .fullScreenCover(isPresented: $showWriteNote) {WriteNoteView()}
-            .onAppear{print("AM PLAYER APPEARED...."); if songArtImageData == nil{getAMUserToken(); getAMStoreFront()}}
+            .onAppear{print("AM PLAYER APPEARED...."); if songArtImageData == nil{
+                if networkMonitor.isConnected{getAMUserToken(); getAMStoreFront()}
+                else{showFailedConnectionAlert = true}
+            }
+                
+            }
             //.onAppear{if songName! == nil{getAMUserToken(); getAMStoreFront()}}
 
             .navigationBarItems(leading:Button {

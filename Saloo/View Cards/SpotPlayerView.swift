@@ -60,6 +60,8 @@ struct SpotPlayerView: View {
     let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
     @Binding var chosenCard: CoreCard?
     @Binding var deferToPreview: Bool
+    @EnvironmentObject var networkMonitor: NetworkMonitor
+    @State private var showFailedConnectionAlert = false
 
     var body: some View {
         SpotPlayerView2
@@ -74,13 +76,22 @@ struct SpotPlayerView: View {
                         authCode = defaults.object(forKey: "SpotifyAuthCode") as? String
                         refresh_token = (defaults.object(forKey: "SpotifyRefreshToken") as? String)!
                         refreshAccessToken = true
-                        runGetToken(authType: "refresh_token")
+                        if networkMonitor.isConnected{runGetToken(authType: "refresh_token")}
+                        else{showFailedConnectionAlert = true}
                         counter += 1
                     }
-                    else{print("Run3");requestSpotAuth(); runGetToken(authType: "code")}
-                    runInstantiateAppRemote()
+                    else{print("Run3")
+                        if networkMonitor.isConnected{requestSpotAuth(); runGetToken(authType: "code")}
+                        else {showFailedConnectionAlert = true}
+                    }
+                    if networkMonitor.isConnected{runInstantiateAppRemote()}
+                    else {showFailedConnectionAlert = true}
                 }
-                else{playSong()}
+                else{
+                    if networkMonitor.isConnected{playSong()}
+                    else {showFailedConnectionAlert = true}
+                    
+                }
             }
             .onDisappear{
                 print("Did view disappear???")
@@ -88,6 +99,10 @@ struct SpotPlayerView: View {
             }
             .navigationBarItems(leading:Button {chosenCard = nil
             } label: {Image(systemName: "chevron.left").foregroundColor(.blue); Text("Back")})
+            // Show an alert if showAlert is true
+            .alert(isPresented: $showFailedConnectionAlert) {
+            Alert(title: Text("Error"), message: Text("Sorry, we weren't able to connect to the internet. Please reconnect and try again."), dismissButton: .default(Text("OK")))
+        }
     }
     
     @ViewBuilder var selectButton: some View {

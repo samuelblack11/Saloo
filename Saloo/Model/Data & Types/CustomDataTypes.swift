@@ -9,12 +9,30 @@ import Foundation
 import UIKit
 import SwiftUI
 import CloudKit
+import Network
+
 //https://www.hackingwithswift.com/example-code/language/how-to-conform-to-the-hashable-protocol
 struct ChosenCollection {@State var occassion: String!; @State var collectionID: String!}
 class ChosenCoreCard: ObservableObject {@Published var chosenCard = CoreCard()}
 class Occassion: ObservableObject {@Published var occassion = String(); @Published var collectionID = String()}
 public class ShowDetailView: ObservableObject {@Published public var showDetailView: Bool = false}
 class TaskToken: ObservableObject {@Published var taskToken = String()}
+
+
+class NetworkMonitor: ObservableObject {
+    let monitor = NWPathMonitor()
+    let queue = DispatchQueue(label: "Monitor")
+    
+    @Published var isConnected = true
+    
+    init() {
+        monitor.pathUpdateHandler = { [weak self] path in
+            self?.isConnected = path.status == .satisfied
+        }
+        monitor.start(queue: queue)
+    }
+}
+
 
 struct SongForList: Hashable {
      var id: String
