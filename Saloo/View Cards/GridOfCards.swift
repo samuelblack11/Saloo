@@ -70,6 +70,7 @@ struct GridofCards: View {
         switch whichBoxVal {
         case .outbox: return coreCard.recipient
         case .inbox: return coreCard.sender!
+        case .draftbox: return coreCard.recipient
         }
     }
     
@@ -153,20 +154,13 @@ struct GridofCards: View {
 // MARK: Returns CKShare participant permission, methods and properties to share
 extension GridofCards {
     
-    func shareStatus(card: CoreCard) -> (Bool, Bool) {
-        var isCardShared: Bool?
-        var hasAnyShare: Bool?
-        isCardShared = (PersistenceController.shared.existingShare(coreCard: card) != nil)
-        hasAnyShare = PersistenceController.shared.shareTitles().isEmpty ? false : true
-        
-        return (isCardShared!, hasAnyShare!)
-    }
+
     
     @ViewBuilder func contextMenuButtons(card: CoreCard) -> some View {
 
         if PersistenceController.shared.privatePersistentStore.contains(manageObject: card) {
             Button("Create New Share") {showCloudShareController = true; createNewShare(coreCard: card)}
-                .disabled(shareStatus(card: card).0)
+                .disabled(CoreCardUtils.shareStatus(card: card).0)
         }
         Button("Manage Participation") { manageParticipation(coreCard: card)}
         Button {chosenCard = card; chosenGridCardType = card.cardType;segueToEnlarge = true; displayCard = true} label: {Text("Enlarge eCard"); Image(systemName: "plus.magnifyingglass")}
@@ -207,24 +201,18 @@ extension GridofCards {
                 switch whichBoxVal {
                 case .outbox:
                     filteredCoreCards = coreCards.filter{_ in (coreCard.creator!.contains(self.userID))}
+                    filteredCoreCards = filteredCoreCards.filter{CoreCardUtils.shareStatus(card: $0).0}
                     return filteredCoreCards
                 case .inbox:
                     filteredCoreCards = coreCards.filter{_ in (coreCard.creator!.contains(self.userID) == false)}
                     return filteredCoreCards
+                case .draftbox:
+                    filteredCoreCards = coreCards.filter{_ in (coreCard.creator!.contains(self.userID))}
+                    filteredCoreCards = filteredCoreCards.filter{!CoreCardUtils.shareStatus(card: $0).0}
+                    return filteredCoreCards
                 }
         }
         return filteredCoreCards
-    }
-    
-    func loadCoreCards() -> [CoreCard] {
-        let request = CoreCard.createFetchRequest()
-        let sort = NSSortDescriptor(key: "date", ascending: false)
-        request.sortDescriptors = [sort]
-        var cardsFromCore: [CoreCard] = []
-        do {cardsFromCore = try PersistenceController.shared.persistentContainer.viewContext.fetch(request)}
-        catch {print("Fetch failed")}
-        
-        return cardsFromCore
     }
     
     

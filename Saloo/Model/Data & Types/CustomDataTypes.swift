@@ -182,6 +182,7 @@ class InOut: ObservableObject {
     enum SendReceive {
         case inbox
         case outbox
+        case draftbox
     }
 }
 

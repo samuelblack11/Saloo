@@ -24,6 +24,8 @@ struct StartMenu: View {
     @State private var showOccassions = false
     @State private var showInbox = false
     @State private var showOutbox = false
+    @State private var showDraftBox = false
+
     @State private var showCalendar = false
     @State private var showPref = false
     @State private var showEnlargeECard = false
@@ -51,14 +53,18 @@ struct StartMenu: View {
                         //.listRowBackground(appDelegate.appColor)
                         .onTapGesture {self.showOccassions = true}
                         .fullScreenCover(isPresented: $showOccassions){OccassionsMenu()}
+                    Text("Drafts 📓")
+                        //.listRowBackground(appDelegate.appColor)
+                        .onTapGesture {self.showDraftBox = true}
+                        .fullScreenCover(isPresented: $showDraftBox) {GridofCards(cardsForDisplay: CoreCardUtils.loadCoreCards(), whichBoxVal: .draftbox)}
                     Text("Inbox 📥")
                         //.listRowBackground(appDelegate.appColor)
                         .onTapGesture {self.showInbox = true}
-                        .fullScreenCover(isPresented: $showInbox) {GridofCards(cardsForDisplay: loadCoreCards(), whichBoxVal: .inbox)}
+                        .fullScreenCover(isPresented: $showInbox) {GridofCards(cardsForDisplay: CoreCardUtils.loadCoreCards(), whichBoxVal: .inbox)}
                     Text("Outbox 📥")
                         //.listRowBackground(appDelegate.appColor)
                         .onTapGesture {self.showOutbox = true}
-                        .fullScreenCover(isPresented: $showOutbox) {GridofCards(cardsForDisplay: loadCoreCards(), whichBoxVal: .outbox)}
+                        .fullScreenCover(isPresented: $showOutbox) {GridofCards(cardsForDisplay: CoreCardUtils.loadCoreCards(), whichBoxVal: .outbox)}
                     //Text("Calendar 🗓")
                         //.listRowBackground(appDelegate.appColor)
                         //.onTapGesture {self.showCalendar = true}
@@ -96,18 +102,11 @@ struct StartMenu: View {
 
 extension StartMenu {
 
-    func loadCoreCards() -> [CoreCard] {
-        let request = CoreCard.createFetchRequest()
-        let sort = NSSortDescriptor(key: "date", ascending: false)
-        request.sortDescriptors = [sort]
-        var cardsFromCore: [CoreCard] = []
-        do {
-            cardsFromCore = try PersistenceController.shared.persistentContainer.viewContext.fetch(request)
-            print("START MENU Got \(cardsFromCore.count) Cards From Core")
-        }
-        catch {print("Fetch failed")}
-        return cardsFromCore
-    }
+
+    
+    
+    
+    
     
     
     func getCurrentUserID() {

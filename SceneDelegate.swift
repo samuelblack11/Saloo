@@ -45,7 +45,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
                 Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { [self] timer in
                     if self.gotRecord && self.connectToScene {
                         if self.appDelegate.musicSub.type == .Neither{self.updateMusicSubType()}
-                        let contentView = GridofCards(cardsForDisplay: loadCoreCards(), whichBoxVal: self.whichBoxForCKAccept!, chosenGridCard: self.coreCard).environmentObject(self.appDelegate)
+                        let contentView = GridofCards(cardsForDisplay: CoreCardUtils.loadCoreCards(), whichBoxVal: self.whichBoxForCKAccept!, chosenGridCard: self.coreCard).environmentObject(self.appDelegate)
                         let window = UIWindow(windowScene: windowScene)
                         self.window = window
                         let initialViewController = UIHostingController(rootView: contentView)
@@ -68,7 +68,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
             Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { timer in
                 if self.gotRecord && self.connectToScene {
                     if self.appDelegate.musicSub.type == .Neither{self.updateMusicSubType()}
-                    let contentView = GridofCards(cardsForDisplay: self.loadCoreCards(), whichBoxVal: self.whichBoxForCKAccept!, chosenGridCard: self.coreCard).environmentObject(self.appDelegate)
+                    let contentView = GridofCards(cardsForDisplay: CoreCardUtils.loadCoreCards(), whichBoxVal: self.whichBoxForCKAccept!, chosenGridCard: self.coreCard).environmentObject(self.appDelegate)
                     let window = UIWindow(windowScene: windowScene)
                     self.window = window
                     let initialViewController = UIHostingController(rootView: contentView)
@@ -220,19 +220,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
         }
     }
     
-    func loadCoreCards() -> [CoreCard] {
-        let request = CoreCard.createFetchRequest()
-        let sort = NSSortDescriptor(key: "date", ascending: false)
-        request.sortDescriptors = [sort]
-        var cardsFromCore: [CoreCard] = []
-        do {
-            cardsFromCore = try PersistenceController.shared.persistentContainer.viewContext.fetch(request)
-            print("SCENE DEL Got \(cardsFromCore.count) Cards From Core")
-        }
-        catch {print("Fetch failed")}
-        return cardsFromCore
-    }
-    
+
     func openMyApp(from url: URL) -> Bool {
         let scheme = "saloo" // Replace this with your app's custom URL scheme
         // Check if the URL contains your app's custom URL scheme

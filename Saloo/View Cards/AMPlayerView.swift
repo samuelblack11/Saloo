@@ -275,18 +275,5 @@ extension AMPlayerView {
         }
         dataTask.resume()
     }
-    
-    func loadCoreCards() -> [CoreCard] {
-        let request = CoreCard.createFetchRequest()
-        let sort = NSSortDescriptor(key: "date", ascending: false)
-        request.sortDescriptors = [sort]
-        var cardsFromCore: [CoreCard] = []
-        do {
-            cardsFromCore = try PersistenceController.shared.persistentContainer.viewContext.fetch(request)
-            print("AM PLAYER Got \(cardsFromCore.count) Cards From Core")
-        }
-        catch {print("Fetch failed")}
-        return cardsFromCore
-    }
 
 }

@@ -126,19 +126,7 @@ struct OccassionsMenu: View {
 }
 
 extension OccassionsMenu {
-                
-    func loadCoreCards() -> [CoreCard] {
-        let request = CoreCard.createFetchRequest()
-        let sort = NSSortDescriptor(key: "date", ascending: false)
-        request.sortDescriptors = [sort]
-        var cardsFromCore: [CoreCard] = []
-        do {
-            cardsFromCore = try PersistenceController.shared.persistentContainer.viewContext.fetch(request)
-            print("OCCASSIONS Got \(cardsFromCore.count) Cards From Core")
-        }
-        catch {print("Fetch failed")}
-        return cardsFromCore
-    }
+        
     
     private func menuSection(for collection: CollectionPair, shareable: Bool = true) -> some View {
             Text(collection.title).onTapGesture {
