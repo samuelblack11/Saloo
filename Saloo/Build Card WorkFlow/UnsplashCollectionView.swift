@@ -75,6 +75,9 @@ struct UnsplashCollectionView: View {
                 else {showFailedConnectionAlert = true}
             }
         }
+        .alert(isPresented: $showFailedConnectionAlert) {
+            Alert(title: Text("Error"), message: Text("Sorry, we weren't able to connect to the internet. Please reconnect and try again."), dismissButton: .default(Text("OK")))
+        }
         .fullScreenCover(isPresented: $showConfirmFrontCover) {ConfirmFrontCoverView()}
         .fullScreenCover(isPresented: $showOccassions) {OccassionsMenu()}
         .fullScreenCover(isPresented: $presentUCV2) {UnsplashCollectionView()}
