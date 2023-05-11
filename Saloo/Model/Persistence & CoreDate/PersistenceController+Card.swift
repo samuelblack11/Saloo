@@ -11,8 +11,9 @@ import SwiftUI
 
 extension PersistenceController {
     
-    func addCoreCard(noteField: NoteField, chosenOccassion: Occassion, an1: String, an2: String, an2URL: String, an3: String, an4: String, chosenObject: ChosenCoverImageObject, collageImage: CollageImage, context: NSManagedObjectContext, songID: String?, spotID: String?, spotName: String?, spotArtistName: String?, songName: String?, songArtistName: String?, songAlbumName: String?, songArtImageData: Data?, songPreviewURL: String?, songDuration: String?, inclMusic: Bool, spotImageData: Data?, spotSongDuration: String?, spotPreviewURL: String?, songAddedUsing: String?, cardType: String, appleAlbumArtist: String?, spotAlbumArtist: String?) {
-        context.perform {
+    func addCoreCard(noteField: NoteField, chosenOccassion: Occassion, an1: String, an2: String, an2URL: String, an3: String, an4: String, chosenObject: ChosenCoverImageObject, collageImage: CollageImage, context: NSManagedObjectContext, songID: String?, spotID: String?, spotName: String?, spotArtistName: String?, songName: String?, songArtistName: String?, songAlbumName: String?, songArtImageData: Data?, songPreviewURL: String?, songDuration: String?, inclMusic: Bool, spotImageData: Data?, spotSongDuration: String?, spotPreviewURL: String?, songAddedUsing: String?, cardType: String, appleAlbumArtist: String?, spotAlbumArtist: String?, completion: @escaping (CoreCard) -> Void) {
+        var createdCoreCard: CoreCard!
+        context.performAndWait {
             
             print("Apple Album Artist is....\(appleAlbumArtist)")
             
@@ -62,10 +63,15 @@ extension PersistenceController {
             PersistenceController.shared.cloudKitContainer.fetchUserRecordID { ckRecordID, error in
                 coreCard.creator = (ckRecordID?.recordName)!
             }
+            
             context.save(with: .addCoreCard)
+            createdCoreCard = coreCard
+            completion(createdCoreCard)
+            //return createdCoreCard
             print("Save Successful")
-            //self.createShare(coreCard: coreCard)
         }
+        //print("2nd Return Statement")
+        //return createdCoreCard
     }
     
     
