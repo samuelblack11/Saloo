@@ -87,13 +87,6 @@ struct GridofCards: View {
                     }
                 }
             }
-            .onAppear {
-                if shouldShareCard == true {
-                    print(cardQueuedForshare!)
-                    print(cardQueuedForshare?.songAddedUsing)
-                    shareCardFromFinalize(cardToShare: cardQueuedForshare!)
-                }
-            }
             .fullScreenCover(item: $chosenCard, onDismiss: didDismiss) {chosenCard in
                 NavigationView {
                         //EnlargeECardView(chosenCard: $chosenCard, cardsForDisplay: cardsForDisplay, whichBoxVal: whichBoxVal)
@@ -163,24 +156,6 @@ struct GridofCards: View {
 
 // MARK: Returns CKShare participant permission, methods and properties to share
 extension GridofCards {
-    
-    
-    func shareCardFromFinalize(cardToShare: CoreCard) {
-        for card in cardsFilteredBySearch {
-            if card.uniqueName == cardToShare.uniqueName {
-                print("Found Match...")
-                createNewShare(coreCard: card)
-            }
-            print("Did not find match...")
-        }
-    }
-    
-    
-    
-    
-    
-    
-
     
     @ViewBuilder func contextMenuButtons(card: CoreCard) -> some View {
 
