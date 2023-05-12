@@ -55,7 +55,7 @@ struct FinalizeCardView: View {
     var appRemote2: SPTAppRemote?
     @State var emptyCard: CoreCard? = CoreCard()
     @State private var sharingController: UICloudSharingController?
-    
+    @State private var enableShare = false
     
     
     
@@ -106,6 +106,7 @@ struct FinalizeCardView: View {
     
     var saveAndShareButton: some View {
         Button("Save & Share") {
+            enableShare = true
             Task {saveCard(noteField: noteField, chosenOccassion: chosenOccassion, an1: annotation.text1, an2: annotation.text2, an2URL: annotation.text2URL.absoluteString, an3: annotation.text3, an4: annotation.text4, chosenObject: chosenObject, collageImage: collageImage, songID: chosenSong.id, spotID: chosenSong.spotID, spotName: chosenSong.spotName, spotArtistName: chosenSong.spotArtistName, songName: chosenSong.name, songArtistName: chosenSong.artistName, songAlbumName: chosenSong.songAlbumName, songArtImageData: chosenSong.artwork, songPreviewURL: chosenSong.songPreviewURL, songDuration: String(chosenSong.durationInSeconds), inclMusic: addMusic.addMusic, spotImageData: chosenSong.spotImageData, spotSongDuration: String(chosenSong.spotSongDuration), spotPreviewURL: chosenSong.spotPreviewURL, songAddedUsing: chosenSong.songAddedUsing, cardType: cardType, appleAlbumArtist: chosenSong.appleAlbumArtist,spotAlbumArtist: chosenSong.spotAlbumArtist);
                 print("Save & Share CoreCard...")
             }
@@ -165,9 +166,14 @@ extension FinalizeCardView {
         controller.addCoreCard(noteField: noteField, chosenOccassion: chosenOccassion, an1: an1, an2: an2, an2URL: an2URL, an3: an3, an4: an4, chosenObject: chosenObject, collageImage: collageImage,context: taskContext, songID: songID, spotID: spotID, spotName: spotName, spotArtistName: spotArtistName, songName: songName, songArtistName: songArtistName, songAlbumName: songAlbumName, songArtImageData: songArtImageData, songPreviewURL: songPreviewURL, songDuration: songDuration, inclMusic: inclMusic, spotImageData: spotImageData, spotSongDuration: spotSongDuration, spotPreviewURL: spotPreviewURL, songAddedUsing: songAddedUsing, cardType: cardType, appleAlbumArtist: appleAlbumArtist,spotAlbumArtist: spotAlbumArtist, completion: ({
             
             savedCoreCard in
-            //DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) {
-            createNewShare(coreCard: savedCoreCard)
-            //}
+            if enableShare == true {
+                //DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) {
+                createNewShare(coreCard: savedCoreCard)
+                //}
+            }
+            else {
+                print("Do Not Share card right now")
+            }
         }))
             
     }

@@ -60,9 +60,8 @@ struct MusicSearchView: View {
     @State var emptyCard: CoreCard? = CoreCard()
     @State var deferToPreview = false
     @State private var showFailedConnectionAlert = false
+    
     func determineCardType() -> String {
-        print("called determineCardType...")
-        print(chosenSong.id)
         var cardType2 = String()
         if chosenSong.id != nil && giftCard.id != ""  {cardType2 = "musicAndGift"}
         else if chosenSong.id != nil && giftCard.id == ""  {cardType2 = "musicNoGift"}
@@ -359,36 +358,78 @@ extension MusicSearchView {
     }
 
 
-    
+    func checkForCommonWords(_ str1: String, _ str2: String) -> Bool {
+        let str1Words = Set(str1.split(separator: " ").map { String($0) })
+        let str2Words = Set(str2.split(separator: " ").map { String($0) })
+        return !str1Words.isDisjoint(with: str2Words)
+    }
+
 
     func getAlbum(storeFront: String, userToken: String) {
         var albumAndArtistForSearch = cleanMusicData.compileMusicString(songOrAlbum: chosenSong.songAlbumName, artist: chosenSong.artistName, removeList: appDelegate.songFilterForSearch)
         var albumForSearch = cleanMusicData.compileMusicString(songOrAlbum: chosenSong.songAlbumName, artist: nil, removeList: appDelegate.songFilterForSearch)
+        var songFound = false
+        var albumArtistList: [String] = []
         SKCloudServiceController.requestAuthorization {(status) in if status == .authorized {
+            print("{{{{")
+            print(albumAndArtistForSearch)
             AppleMusicAPI().searchForAlbum(albumAndArtist: albumAndArtistForSearch, storeFrontID: storeFront, offset: nil, userToken: userToken, completion: { (response, error) in
                 if response != nil {
                     print("Album Search Response....")
                     if let albumList = response?.results.albums.data {
                         print("# of Albums in Response: \(albumList.count)")
-                        for album in albumList {
+                outerLoop: for album in albumList {
                             print("Album Object: ")
                             print(album)
                             AppleMusicAPI().getAlbumTracks(albumId: album.id, storefrontId: storeFront, userToken: userToken, completion: { (response, error) in
                                 if response != nil {
+                                    
                                     if let trackList = response?.data {
                                         for track in trackList {
-                                            if chosenSong.name == track.attributes.name {
-                                                print("Found Song on Album:")
+                                            if chosenSong.name == track.attributes.name && songFound == false && checkForCommonWords(track.attributes.artistName, chosenSong.artistName) == true {
+                                                songFound = true
+                                                print("Strong Check - Found Song on Album:")
                                                 print(track.attributes.name)
+                                                print(album.attributes.artistName)
                                                 chosenSong.appleAlbumArtist = album.attributes.artistName
-                                                //if album.attributes.artistName.contains(artistsInAlbumName) {chosenSong.appleAlbumArtist = album.attributes.artistName}
-                                                //else {chosenSong.appleAlbumArtist = album.attributes.artistName + artistsInAlbumName}
-                                                break
+                                                return
                                             }
-                                            
+                                            else if chosenSong.name == track.attributes.name && songFound == false {
+                                                print("Weak Check - Found Song on Album:")
+                                                print(track.attributes.name)
+                                                print(album.attributes.artistName)
+                                                albumArtistList.append(album.attributes.artistName)
+                                            }
                                         }
                                     }
                                 }
+                                var foundMatch = false
+                                let words = cleanMusicData.cleanMusicString(input: chosenSong.spotArtistName, removeList:appDelegate.songFilterForSearch).components(separatedBy: " ")
+                                print("notified")
+                                for artistGroup in albumArtistList {
+                                    for word in words {
+                                        if artistGroup.contains(word) && songFound == false {
+                                            print("contains word called")
+                                            chosenSong.appleAlbumArtist = artistGroup
+                                            foundMatch = true
+                                            break
+                                        }
+                                    }
+                                    if foundMatch { break }
+                                }
+
+                                if !foundMatch {
+                                    print("called !foundMatch")
+                                    chosenSong.appleAlbumArtist = albumArtistList[0]
+                                    chosenSong.appleAlbumArtist = albumArtistList.first ?? ""
+                                }
+                                
+                                
+                                
+                                
+                                
+                                
+                                
                             })
                         }
                     }
