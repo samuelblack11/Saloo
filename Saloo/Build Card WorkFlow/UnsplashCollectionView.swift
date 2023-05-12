@@ -48,18 +48,19 @@ struct UnsplashCollectionView: View {
                             image.resizable()} placeholder: {ZStack{Color.gray; ProgressView()}}
                             .frame(width: 125, height: 125)
                             .onTapGesture {Task {
-                                if networkMonitor.isConnected{try? await handleTap(index: photoObj.index)}
-                                else{showFailedConnectionAlert = true}
+                                try? await handleTap(index: photoObj.index)
+                                //if networkMonitor.isConnected{try? await handleTap(index: photoObj.index)}
+                                //else{showFailedConnectionAlert = true}
                             }}
                     }
                 }
                 .navigationTitle("Choose Front Cover")
                 .navigationBarItems(leading:Button {showOccassions.toggle()} label: {Image(systemName: "chevron.left").foregroundColor(.blue); Text("Back")})
                 Button("More...") {
-                    if networkMonitor.isConnected {
+                    //if networkMonitor.isConnected {
                         getMorePhotos(); print("page count: \(chosenObject.pageCount)")
-                    }
-                    else {showFailedConnectionAlert = true}
+                    //}
+                    //else {showFailedConnectionAlert = true}
 
                 }.disabled(setButtonStatus(imageObjects: imageObjects))
             }
@@ -67,12 +68,14 @@ struct UnsplashCollectionView: View {
         .font(.headline).padding(.horizontal).frame(maxHeight: 600)
         .onAppear {
             if chosenOccassion.occassion == "None" {
-                if networkMonitor.isConnected{getUnsplashPhotos()}
-                else{showFailedConnectionAlert = true}
+                getUnsplashPhotos()
+                //if networkMonitor.isConnected{getUnsplashPhotos()}
+                //else{showFailedConnectionAlert = true}
             }
             else {
-                if networkMonitor.isConnected{getPhotosFromCollection(collectionID: chosenOccassion.collectionID, page_num: chosenObject.pageCount)}
-                else {showFailedConnectionAlert = true}
+                getPhotosFromCollection(collectionID: chosenOccassion.collectionID, page_num: chosenObject.pageCount)
+                //if networkMonitor.isConnected{getPhotosFromCollection(collectionID: chosenOccassion.collectionID, page_num: chosenObject.pageCount)}
+                //else {showFailedConnectionAlert = true}
             }
         }
         .alert(isPresented: $showFailedConnectionAlert) {

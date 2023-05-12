@@ -25,7 +25,6 @@ struct StartMenu: View {
     @State private var showInbox = false
     @State private var showOutbox = false
     @State private var showDraftBox = false
-
     @State private var showCalendar = false
     @State private var showPref = false
     @State private var showEnlargeECard = false
@@ -75,13 +74,19 @@ struct StartMenu: View {
                         .fullScreenCover(isPresented: $showPref) {PrefMenu()}
                 }
                 //.listRowBackground(appDelegate.appColor)
+                .onAppear{
+                    print("OnAppear called")
+                    //if appDelegate.enableShareForCreatedCard == true {
+                    //    print("EnableShare is true...")
+                    //    createNewShare(coreCard: appDelegate.createdCard!)
+                    //}
+                }
                 ProgressView()
                     .hidden(appDelegate.showProgViewOnAcceptShare)
                     .tint(.blue)
                     .scaleEffect(5)
                     .progressViewStyle(CircularProgressViewStyle())
         }
-        //.environmentObject(audioManager)
         //.background(appDelegate.appColor)
         .onAppear {
             print("Start Menu Opened...")
@@ -103,7 +108,17 @@ struct StartMenu: View {
 extension StartMenu {
 
 
-    
+    func createNewShare(coreCard: CoreCard) {
+       print("CreateNewShare called")
+       print(coreCard.songAddedUsing)
+       print(coreCard.songID)
+       if PersistenceController.shared.privatePersistentStore.contains(manageObject: coreCard) {
+           print("privateStoreDoesContainObject")
+           print(coreCard.songAddedUsing)
+           print(coreCard.songID)
+           PersistenceController.shared.presentCloudSharingController(coreCard: coreCard)
+       }
+   }
     
     
     

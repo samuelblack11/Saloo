@@ -67,6 +67,11 @@ class GiftCard: ObservableObject {
 }
 
 
+class CoreCardWrapper: ObservableObject {
+    @Published var enableShare = false
+    @Published var coreCard = CoreCard()
+}
+
 class ChosenSong: ObservableObject {
     @Published var id = String()
     @Published var name = String()

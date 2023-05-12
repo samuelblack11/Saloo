@@ -88,8 +88,9 @@ struct MusicSearchView: View {
                 TextField("Track", text: $songSearch)
                 TextField("Artist", text: $artistSearch)
                 Button("Search"){
-                    if networkMonitor.isConnected { searchWithSpotify() }
-                    else {showFailedConnectionAlert = true}
+                    searchWithSpotify()
+                    //if networkMonitor.isConnected {searchWithSpotify()}
+                    //else {showFailedConnectionAlert = true}
                 }
             }
             else {
@@ -97,7 +98,7 @@ struct MusicSearchView: View {
                     UIApplication.shared.resignFirstResponder()
                     if self.songSearch.isEmpty {
                         self.searchResults = []
-                    } else if networkMonitor.isConnected  {
+                    } else  {
                         print("Connection Available...")
                         switch appDelegate.musicSub.type {
                         case .Apple:
@@ -108,8 +109,6 @@ struct MusicSearchView: View {
                             return searchWithSpotify()
                         }
                     }
-                    else {showFailedConnectionAlert = true}
-                    
                 }).padding(.top, 15)
             }
             NavigationView {
@@ -149,13 +148,14 @@ struct MusicSearchView: View {
                         print("Run2")
                         refresh_token = (defaults.object(forKey: "SpotifyRefreshToken") as? String)!
                         refreshAccessToken = true
-                        if networkMonitor.isConnected{runGetToken(authType: "refresh_token")}
+                        runGetToken(authType: "refresh_token")
+                        //if networkMonitor.isConnected{runGetToken(authType: "refresh_token")}
                         counter += 1
                     }
-                    else{print("Run3");if networkMonitor.isConnected{requestSpotAuth(); runGetToken(authType: "code")}}
-                    if networkMonitor.isConnected{runInstantiateAppRemote()}
+                    else{print("Run3");requestSpotAuth(); runGetToken(authType: "code")}
+                    runInstantiateAppRemote()
                 }
-                if appDelegate.musicSub.type == .Apple {if networkMonitor.isConnected{getAMUserToken(); getAMStoreFront()}}
+                if appDelegate.musicSub.type == .Apple {getAMUserToken(); getAMStoreFront()}
             }
             // Show an alert if showAlert is true
             .alert(isPresented: $showFailedConnectionAlert) {
@@ -248,8 +248,9 @@ extension MusicSearchView {
             chosenSong.spotPreviewURL = song.previewURL
             chosenSong.songAddedUsing = "Spotify"
             getSpotAlbum()
-            if networkMonitor.isConnected{showSPV = true}
-            else{showFailedConnectionAlert = true}
+            showSPV = true
+            //if networkMonitor.isConnected{showSPV = true}
+            //else{showFailedConnectionAlert = true}
         }
         if appDelegate.musicSub.type == .Apple {
             chosenSong.id = song.id
@@ -262,8 +263,9 @@ extension MusicSearchView {
             chosenSong.discNumber = song.disc_number!
             chosenSong.songAddedUsing = "Apple"
             getAlbum(storeFront: amAPI.storeFrontID!, userToken: amAPI.taskToken!)
-            if networkMonitor.isConnected{showAPV = true}
-            else{showFailedConnectionAlert = true}
+            showAPV = true
+            //if networkMonitor.isConnected{showAPV = true}
+            //else{showFailedConnectionAlert = true}
         }
     }
     
@@ -426,7 +428,7 @@ extension MusicSearchView {
                     print("ccccccc")
                     print(response!)
                     if response!.contains("https://www.google.com/?code="){}
-                    else{spotifyAuth.authForRedirect = response!; if networkMonitor.isConnected{showWebView = true}}
+                    else{spotifyAuth.authForRedirect = response!;showWebView = true}
                     refreshAccessToken = true
                 }}})
     }

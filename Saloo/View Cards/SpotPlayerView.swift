@@ -76,20 +76,18 @@ struct SpotPlayerView: View {
                         authCode = defaults.object(forKey: "SpotifyAuthCode") as? String
                         refresh_token = (defaults.object(forKey: "SpotifyRefreshToken") as? String)!
                         refreshAccessToken = true
-                        if networkMonitor.isConnected{runGetToken(authType: "refresh_token")}
-                        else{showFailedConnectionAlert = true}
+                        runGetToken(authType: "refresh_token")
                         counter += 1
                     }
                     else{print("Run3")
-                        if networkMonitor.isConnected{requestSpotAuth(); runGetToken(authType: "code")}
-                        else {showFailedConnectionAlert = true}
+                            requestSpotAuth(); runGetToken(authType: "code")
                     }
-                    if networkMonitor.isConnected{runInstantiateAppRemote()}
-                    else {showFailedConnectionAlert = true}
+                    runInstantiateAppRemote()
                 }
                 else{
-                    if networkMonitor.isConnected{playSong()}
-                    else {showFailedConnectionAlert = true}
+                    playSong()
+                    //if networkMonitor.isConnected{playSong()}
+                   // else {print("Connection failed3");showFailedConnectionAlert = true}
                     
                 }
             }

@@ -51,7 +51,10 @@ struct GridofCards: View {
     @StateObject var avPlayer = PlayerWrapper()
     @State private var displayCard = false
     @State var chosenCard: CoreCard?
-
+    @State var shouldShareCard: Bool = false
+    @EnvironmentObject var wrapper: CoreCardWrapper
+    @State var cardQueuedForshare: CoreCard?
+    
     var cardsFilteredBySearch: [CoreCard] {
         if searchText.isEmpty { return cardsForDisplay}
         //else if sortByValue == "Card Name" {return privateCards.filter { $0.cardName.contains(searchText)}}
@@ -82,6 +85,13 @@ struct GridofCards: View {
                     ForEach(cardsFilteredByBox(sortedCards(cardsFilteredBySearch, sortBy: sortByValue), whichBox: whichBoxVal), id: \.self) { gridCard in
                         cardView(for: gridCard, shareable: false)
                     }
+                }
+            }
+            .onAppear {
+                if shouldShareCard == true {
+                    print(cardQueuedForshare!)
+                    print(cardQueuedForshare?.songAddedUsing)
+                    shareCardFromFinalize(cardToShare: cardQueuedForshare!)
                 }
             }
             .fullScreenCover(item: $chosenCard, onDismiss: didDismiss) {chosenCard in
@@ -154,6 +164,22 @@ struct GridofCards: View {
 // MARK: Returns CKShare participant permission, methods and properties to share
 extension GridofCards {
     
+    
+    func shareCardFromFinalize(cardToShare: CoreCard) {
+        for card in cardsFilteredBySearch {
+            if card.uniqueName == cardToShare.uniqueName {
+                print("Found Match...")
+                createNewShare(coreCard: card)
+            }
+            print("Did not find match...")
+        }
+    }
+    
+    
+    
+    
+    
+    
 
     
     @ViewBuilder func contextMenuButtons(card: CoreCard) -> some View {
@@ -162,7 +188,7 @@ extension GridofCards {
             Button("Create New Share") {showCloudShareController = true; createNewShare(coreCard: card)}
                 .disabled(CoreCardUtils.shareStatus(card: card).0)
         }
-        Button("Manage Participation") { manageParticipation(coreCard: card)}
+        Button("Manage Participation") {manageParticipation(coreCard: card)}
         Button {chosenCard = card; chosenGridCardType = card.cardType;segueToEnlarge = true; displayCard = true} label: {Text("Enlarge eCard"); Image(systemName: "plus.magnifyingglass")}
         Button {deleteCoreCard(coreCard: card)} label: {Text("Delete eCard"); Image(systemName: "trash").foregroundColor(.red)}
         Button {showDeliveryScheduler = true} label: {Text("Schedule eCard Delivery")}

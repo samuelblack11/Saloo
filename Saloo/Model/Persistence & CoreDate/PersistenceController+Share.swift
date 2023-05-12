@@ -21,13 +21,27 @@ extension PersistenceController {
         var coreCardShare: CKShare?
         if let shareSet = try? persistentContainer.fetchShares(matching: [coreCard.objectID]),
            let (_, share) = shareSet.first {
+            print("ShareSetFirst is true")
             coreCardShare = share
         }
 
         let sharingController: UICloudSharingController
         if coreCardShare == nil {
+            print("coreCardShare is nil")
+            print(coreCard)
+            var counter = 0
+            while counter < 5 {
+                Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { timer in
+                    
+                }
+                counter += 1
+                print("Counter = \(counter)")
+            }
+            
+            
                     sharingController = newSharingController(unsharedCoreCard: coreCard, persistenceController: self)
                 } else {
+                    print("coreCardShare not nil")
                     sharingController = UICloudSharingController(share: coreCardShare!, container: cloudKitContainer)
                 }
                 sharingController.delegate = self
@@ -56,25 +70,42 @@ extension PersistenceController {
     }
     
     private func newSharingController(unsharedCoreCard: CoreCard, persistenceController: PersistenceController) -> UICloudSharingController {
-        return UICloudSharingController { (_, completion: @escaping (CKShare?, CKContainer?, Error?) -> Void) in
+        let sharingController = UICloudSharingController { (controller, completion: @escaping (CKShare?, CKContainer?, Error?) -> Void) in
+            DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+            print("Called new sharing controller...")
             /**
              The app doesn't specify a share intentionally, so Core Data creates a new share (zone).
              CloudKit has a limit on how many zones a database can have, so this app provides an option for users to use an existing share.
-
+             
              If the share's publicPermission is CKShareParticipantPermissionNone, only private participants can accept the share.
              Private participants mean the participants an app adds to a share by calling CKShare.addParticipant.
              If the share is more permissive, and is, therefore, a public share, anyone with the shareURL can accept it,
              or self-add themselves to it.
              The default value of publicPermission is CKShare.ParticipantPermission.none.
              */
+            
+            
             self.persistentContainer.share([unsharedCoreCard], to: nil) { objectIDs, share, container, error in
+                print("Beginning share completion handler...")
                 if let share = share {
+                    print("Share = Share")
                     self.configure(share: share)
+                    // Set the available permissions to an empty set to load the share into the sharing controller
+                    controller.availablePermissions = []
                 }
+                print("Called share completion")
+                print(share)
+                print(container)
+                print(error)
+                
                 completion(share, container, error)
             }
+            }
         }
+        return sharingController
     }
+
+        
     
     
     
@@ -228,11 +259,13 @@ extension PersistenceController {
     }
     
     private func configure(share: CKShare, with coreCard: CoreCard? = nil) {
+        print("Did configure?")
         share[CKShare.SystemFieldKey.title] = "A Greeting, from Saloo"
         share[CKShare.SystemFieldKey.thumbnailImageData] = coreCard?.coverImage
         share.publicPermission = .readOnly
         //share.recordID = coreCard?.associatedRecord.recordID
         //share.recordID = coreCard?.associatedRecord
+        print("Did configure")
     }
 }
 

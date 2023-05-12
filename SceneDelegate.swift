@@ -45,7 +45,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
                 Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { [self] timer in
                     if self.gotRecord && self.connectToScene {
                         if self.appDelegate.musicSub.type == .Neither{self.updateMusicSubType()}
-                        let contentView = GridofCards(cardsForDisplay: CoreCardUtils.loadCoreCards(), whichBoxVal: self.whichBoxForCKAccept!, chosenGridCard: self.coreCard).environmentObject(self.appDelegate)
+                        let contentView = GridofCards(cardsForDisplay: CoreCardUtils.loadCoreCards(), whichBoxVal: self.whichBoxForCKAccept!, chosenCard: self.coreCard).environmentObject(self.appDelegate)
                         let window = UIWindow(windowScene: windowScene)
                         self.window = window
                         let initialViewController = UIHostingController(rootView: contentView)
@@ -68,7 +68,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
             Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { timer in
                 if self.gotRecord && self.connectToScene {
                     if self.appDelegate.musicSub.type == .Neither{self.updateMusicSubType()}
-                    let contentView = GridofCards(cardsForDisplay: CoreCardUtils.loadCoreCards(), whichBoxVal: self.whichBoxForCKAccept!, chosenGridCard: self.coreCard).environmentObject(self.appDelegate)
+                    let contentView = GridofCards(cardsForDisplay: CoreCardUtils.loadCoreCards(), whichBoxVal: self.whichBoxForCKAccept!, chosenCard: self.coreCard).environmentObject(self.appDelegate)
                     let window = UIWindow(windowScene: windowScene)
                     self.window = window
                     let initialViewController = UIHostingController(rootView: contentView)

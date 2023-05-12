@@ -66,6 +66,7 @@ extension PersistenceController {
             
             context.save(with: .addCoreCard)
             createdCoreCard = coreCard
+            //let cardList = [createdCoreCard!]
             completion(createdCoreCard)
             //return createdCoreCard
             print("Save Successful")
