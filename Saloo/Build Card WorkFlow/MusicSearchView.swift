@@ -87,27 +87,30 @@ struct MusicSearchView: View {
                 TextField("Track", text: $songSearch)
                 TextField("Artist", text: $artistSearch)
                 Button("Search"){
-                    searchWithSpotify()
-                    //if networkMonitor.isConnected {searchWithSpotify()}
-                    //else {showFailedConnectionAlert = true}
+                    //searchWithSpotify()
+                    if networkMonitor.isConnected {searchWithSpotify()}
+                    else {showFailedConnectionAlert = true}
                 }
             }
             else {
                 TextField("Search Songs", text: $songSearch, onCommit: {
                     UIApplication.shared.resignFirstResponder()
-                    if self.songSearch.isEmpty {
-                        self.searchResults = []
-                    } else  {
-                        print("Connection Available...")
-                        switch appDelegate.musicSub.type {
-                        case .Apple:
-                            return searchWithAM()
-                        case .Neither:
-                            return searchWithAM()
-                        case .Spotify:
-                            return searchWithSpotify()
+                    if networkMonitor.isConnected {
+                        if self.songSearch.isEmpty {
+                            self.searchResults = []
+                        } else  {
+                            print("Connection Available...")
+                            switch appDelegate.musicSub.type {
+                            case .Apple:
+                                return searchWithAM()
+                            case .Neither:
+                                return searchWithAM()
+                            case .Spotify:
+                                return searchWithSpotify()
+                            }
                         }
                     }
+                    else {showFailedConnectionAlert = true}
                 }).padding(.top, 15)
             }
             NavigationView {
@@ -143,14 +146,28 @@ struct MusicSearchView: View {
                         print("Run2")
                         refresh_token = (defaults.object(forKey: "SpotifyRefreshToken") as? String)!
                         refreshAccessToken = true
-                        runGetToken(authType: "refresh_token")
-                        //if networkMonitor.isConnected{runGetToken(authType: "refresh_token")}
+                        //runGetToken(authType: "refresh_token")
+                        if networkMonitor.isConnected{runGetToken(authType: "refresh_token")}
+                        else {showFailedConnectionAlert = true}
                         counter += 1
                     }
-                    else{print("Run3");requestSpotAuth(); runGetToken(authType: "code")}
-                    runInstantiateAppRemote()
+                    else {print("Run3");
+                        if networkMonitor.isConnected {
+                            requestSpotAuth(); runGetToken(authType: "code")
+                        }
+                        else {showFailedConnectionAlert = true}
+                    }
+                    if networkMonitor.isConnected {
+                        runInstantiateAppRemote()
+                    }
+                    else {showFailedConnectionAlert = true}
                 }
-                if appDelegate.musicSub.type == .Apple {getAMUserToken(); getAMStoreFront()}
+                if appDelegate.musicSub.type == .Apple {
+                    if networkMonitor.isConnected {
+                        getAMUserToken(); getAMStoreFront()
+                    }
+                    else {showFailedConnectionAlert = true}
+                }
             }
             // Show an alert if showAlert is true
             .alert(isPresented: $showFailedConnectionAlert) {
@@ -241,11 +258,9 @@ extension MusicSearchView {
             chosenSong.discNumber = song.disc_number!
             print("Set disc_number to \(chosenSong.discNumber)")
             chosenSong.spotPreviewURL = song.previewURL
-            chosenSong.songAddedUsing = "Spotify"
+            if networkMonitor.isConnected{chosenSong.songAddedUsing = "Spotify"}
+            else{showFailedConnectionAlert = true}
             getSpotAlbum()
-            //showSPV = true
-            //if networkMonitor.isConnected{showSPV = true}
-            //else{showFailedConnectionAlert = true}
         }
         if appDelegate.musicSub.type == .Apple {
             chosenSong.id = song.id
@@ -257,10 +272,9 @@ extension MusicSearchView {
             chosenSong.durationInSeconds = Double(song.durationInMillis/1000)
             chosenSong.discNumber = song.disc_number!
             chosenSong.songAddedUsing = "Apple"
-            getAlbum(storeFront: amAPI.storeFrontID!, userToken: amAPI.taskToken!)
+            if networkMonitor.isConnected{getAlbum(storeFront: amAPI.storeFrontID!, userToken: amAPI.taskToken!)}
+            else{showFailedConnectionAlert = true}
             showAPV = true
-            //if networkMonitor.isConnected{showAPV = true}
-            //else{showFailedConnectionAlert = true}
         }
     }
     

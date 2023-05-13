@@ -85,9 +85,9 @@ struct SpotPlayerView: View {
                     runInstantiateAppRemote()
                 }
                 else{
-                    playSong()
-                    //if networkMonitor.isConnected{playSong()}
-                   // else {print("Connection failed3");showFailedConnectionAlert = true}
+                    //playSong()
+                    if networkMonitor.isConnected{playSong()}
+                    else {print("Connection failed3");showFailedConnectionAlert = true}
                 }
             }
             .onDisappear{
@@ -275,8 +275,9 @@ struct SpotPlayerView: View {
                     songArtImageData = artResponse!
                     songDuration = Double(song.duration_ms) * 0.001
                     playSong()
+                    DispatchQueue.main.async {updateRecordWithNewSPOTData(spotName: song.name, spotArtistName: allArtists, spotID: song.id, songArtImageData: artResponse!, songDuration: String(Double(song.duration_ms) * 0.001)); return}
                     completion(foundMatch)
-                    //DispatchQueue.main.async {updateRecordWithNewSPOTData(spotName: song.name, spotArtistName: allArtists, spotID: song.id, songArtImageData: artResponse!, songDuration: String(Double(song.duration_ms) * 0.001)); return}
+
                     
                 }); break innerLoop
             }}

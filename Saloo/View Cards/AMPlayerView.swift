@@ -60,9 +60,9 @@ struct AMPlayerView: View {
             AMPlayerView
             .fullScreenCover(isPresented: $showWriteNote) {WriteNoteView()}
             .onAppear{print("AM PLAYER APPEARED...."); if songArtImageData == nil{
-                getAMUserToken(); getAMStoreFront()
-                //if networkMonitor.isConnected{getAMUserToken(); getAMStoreFront()}
-                //else{showFailedConnectionAlert = true}
+                //getAMUserToken(); getAMStoreFront()
+                if networkMonitor.isConnected{getAMUserToken(); getAMStoreFront()}
+                else{showFailedConnectionAlert = true}
             }
                 
             }
