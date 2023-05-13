@@ -54,7 +54,9 @@ struct GridofCards: View {
     @State var shouldShareCard: Bool = false
     @EnvironmentObject var wrapper: CoreCardWrapper
     @State var cardQueuedForshare: CoreCard?
-    
+    @EnvironmentObject var networkMonitor: NetworkMonitor
+    @State private var showFailedConnectionAlert = false
+
     var cardsFilteredBySearch: [CoreCard] {
         if searchText.isEmpty { return cardsForDisplay}
         //else if sortByValue == "Card Name" {return privateCards.filter { $0.cardName.contains(searchText)}}
@@ -146,6 +148,9 @@ struct GridofCards: View {
                     Text(gridCard.cardName).font(.system(size: 8)).minimumScaleFactor(0.1)
                 }
             }
+            .alert(isPresented: $showFailedConnectionAlert) {
+                Alert(title: Text("Network Error"), message: Text("Sorry, we weren't able to connect to the internet. Please reconnect and try again."), dismissButton: .default(Text("OK")))
+            }
             .contextMenu {contextMenuButtons(card: gridCard)}
             .padding().overlay(RoundedRectangle(cornerRadius: 6).stroke(.blue, lineWidth: 2))
                 .font(.headline).padding(.horizontal).frame(maxHeight: 600)
@@ -160,11 +165,21 @@ extension GridofCards {
     @ViewBuilder func contextMenuButtons(card: CoreCard) -> some View {
 
         if PersistenceController.shared.privatePersistentStore.contains(manageObject: card) {
-            Button("Create New Share") {showCloudShareController = true; createNewShare(coreCard: card)}
+            Button("Create New Share") {showCloudShareController = true;
+                if networkMonitor.isConnected{createNewShare(coreCard: card)}
+                else{showFailedConnectionAlert = true}}
                 .disabled(CoreCardUtils.shareStatus(card: card).0)
         }
-        Button("Manage Participation") {manageParticipation(coreCard: card)}
-        Button {chosenCard = card; chosenGridCardType = card.cardType;segueToEnlarge = true; displayCard = true} label: {Text("Enlarge eCard"); Image(systemName: "plus.magnifyingglass")}
+        Button("Manage Participation") {
+            if networkMonitor.isConnected {manageParticipation(coreCard: card)}
+            else{showFailedConnectionAlert = true}
+            
+        }
+        Button {
+            if networkMonitor.isConnected {chosenCard = card; chosenGridCardType = card.cardType;segueToEnlarge = true; displayCard = true}
+            else {showFailedConnectionAlert = true}
+            
+        } label: {Text("Enlarge eCard"); Image(systemName: "plus.magnifyingglass")}
         Button {deleteCoreCard(coreCard: card)} label: {Text("Delete eCard"); Image(systemName: "trash").foregroundColor(.red)}
         Button {showDeliveryScheduler = true} label: {Text("Schedule eCard Delivery")}
         }

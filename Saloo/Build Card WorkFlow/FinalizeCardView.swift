@@ -56,6 +56,8 @@ struct FinalizeCardView: View {
     @State var emptyCard: CoreCard? = CoreCard()
     @State private var sharingController: UICloudSharingController?
     @State private var enableShare = false
+    @EnvironmentObject var networkMonitor: NetworkMonitor
+    @State private var showFailedToShareAlert = false
     
     
     
@@ -106,10 +108,16 @@ struct FinalizeCardView: View {
     
     var saveAndShareButton: some View {
         Button("Save & Share") {
-            enableShare = true
-            Task {saveCard(noteField: noteField, chosenOccassion: chosenOccassion, an1: annotation.text1, an2: annotation.text2, an2URL: annotation.text2URL.absoluteString, an3: annotation.text3, an4: annotation.text4, chosenObject: chosenObject, collageImage: collageImage, songID: chosenSong.id, spotID: chosenSong.spotID, spotName: chosenSong.spotName, spotArtistName: chosenSong.spotArtistName, songName: chosenSong.name, songArtistName: chosenSong.artistName, songAlbumName: chosenSong.songAlbumName, songArtImageData: chosenSong.artwork, songPreviewURL: chosenSong.songPreviewURL, songDuration: String(chosenSong.durationInSeconds), inclMusic: addMusic.addMusic, spotImageData: chosenSong.spotImageData, spotSongDuration: String(chosenSong.spotSongDuration), spotPreviewURL: chosenSong.spotPreviewURL, songAddedUsing: chosenSong.songAddedUsing, cardType: cardType, appleAlbumArtist: chosenSong.appleAlbumArtist,spotAlbumArtist: chosenSong.spotAlbumArtist);
-                print("Save & Share CoreCard...")
+            if networkMonitor.isConnected {
+                enableShare = true
+                Task {saveCard(noteField: noteField, chosenOccassion: chosenOccassion, an1: annotation.text1, an2: annotation.text2, an2URL: annotation.text2URL.absoluteString, an3: annotation.text3, an4: annotation.text4, chosenObject: chosenObject, collageImage: collageImage, songID: chosenSong.id, spotID: chosenSong.spotID, spotName: chosenSong.spotName, spotArtistName: chosenSong.spotArtistName, songName: chosenSong.name, songArtistName: chosenSong.artistName, songAlbumName: chosenSong.songAlbumName, songArtImageData: chosenSong.artwork, songPreviewURL: chosenSong.songPreviewURL, songDuration: String(chosenSong.durationInSeconds), inclMusic: addMusic.addMusic, spotImageData: chosenSong.spotImageData, spotSongDuration: String(chosenSong.spotSongDuration), spotPreviewURL: chosenSong.spotPreviewURL, songAddedUsing: chosenSong.songAddedUsing, cardType: cardType, appleAlbumArtist: chosenSong.appleAlbumArtist,spotAlbumArtist: chosenSong.spotAlbumArtist);
+                    print("Save & Share CoreCard...")
+                }
             }
+            else {
+                showFailedToShareAlert = true
+            }
+            
         }
     }
     
@@ -129,9 +137,7 @@ struct FinalizeCardView: View {
                         saveAndShareButton
                     }
                 }
-                .onAppear {
-                    safeAreaHeight = geometry.size.height
-                }
+                .onAppear {safeAreaHeight = geometry.size.height}
                 .toolbar {
                     ToolbarItemGroup(placement: .navigationBarLeading) {
                         if addMusic.addMusic == false {
@@ -144,6 +150,9 @@ struct FinalizeCardView: View {
                             Text("Menu")}
                     }
                 }
+            }
+            .alert(isPresented: $showFailedToShareAlert) {
+                Alert(title: Text("Network Error"), message: Text("Sorry, we weren't able to connect to the internet. We've saved this card to drafts, where you can share from once you reconnect."), dismissButton: .default(Text("OK")))
             }
             .fullScreenCover(isPresented: $showStartMenu) {StartMenu(appRemote2: appRemote2)}
             .fullScreenCover(isPresented: $showMusicSearch) {MusicSearchView()}

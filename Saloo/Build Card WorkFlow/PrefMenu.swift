@@ -44,6 +44,8 @@ struct PrefMenu: View {
     @State private var runCheckAMTokenErrorIfNeeded = false
     @State private var musicColor: Color?
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    @State private var showFailedConnectionAlert = false
+    @EnvironmentObject var networkMonitor: NetworkMonitor
 
     init() {
         if defaults.object(forKey: "MusicSubType") != nil {_currentSubSelection = State(initialValue: (defaults.object(forKey: "MusicSubType") as? String)!)}
@@ -66,14 +68,14 @@ struct PrefMenu: View {
                             .onTapGesture {
                                 musicColor = .pink
                                 hideProgressView = false
-                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.3){verifyAMSubscription()}
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.3){getAMUserTokenAndStoreFront{}}
                             }
                         Text("Spotify")
                             .onTapGesture {
                                 musicColor = .green
                                 hideProgressView = false
                                 if spotifyAuth.auth_code == "AuthFailed" {spotifyAuth.auth_code = ""}
-                                counter = 0; tokenCounter = 0; showWebView = false; refreshAccessToken = false; verifySpotSubscription()
+                                counter = 0; tokenCounter = 0; showWebView = false; refreshAccessToken = false; getSpotCredentials{_ in}
                                 
                             }
                         Text("I don't subscribe to either")
@@ -86,6 +88,9 @@ struct PrefMenu: View {
                         .scaleEffect(5)
                         .progressViewStyle(CircularProgressViewStyle())
                 }
+            }
+            .alert(isPresented: $showFailedConnectionAlert) {
+                Alert(title: Text("Network Error"), message: Text("Sorry, we weren't able to connect to the internet. Please reconnect and try again."), dismissButton: .default(Text("OK")))
             }
             .navigationBarItems(leading:Button {showStart.toggle()} label: {Image(systemName: "chevron.left").foregroundColor(.blue); Text("Back")})
         }
@@ -116,11 +121,7 @@ extension PrefMenu {
         //else{print("Can't open Spotify because it's not installed")}
     }
     
-    func verifyAMSubscription() {
-        getAMUserToken()
-        checkAMTokenError()
-        getAMStoreFront()
-    }
+
     
     func progView() -> some View {
         
@@ -132,71 +133,169 @@ extension PrefMenu {
     }
     
     
-    
-    
-    func getAMUserToken() {
+    func getAMUserTokenAndStoreFront(completion: @escaping () -> Void) {
+        if networkMonitor.isConnected {
+            getAMUserToken { [self] in
+                checkAMTokenError {
+                    getAMStoreFront(completion: completion)
+                }
+            }
+        }
+        else{hideProgressView = true;showFailedConnectionAlert = true}
+    }
+
+    func getAMUserToken(completion: @escaping () -> Void) {
+        SKCloudServiceController.requestAuthorization {(status) in
+            if status == .authorized {
+                amAPI.getUserToken { response, error in
+                    print("Checking Token"); print(response); print("^^"); print(error)
+                    completion()
+                }
+            }
+        }
+    }
+
+    func getAMStoreFront(completion: @escaping () -> Void) {
+        SKCloudServiceController.requestAuthorization {(status) in
+            if status == .authorized {
+                amAPI.fetchUserStorefront(userToken: amAPI.taskToken!) { response, error in
+                    amAPI.storeFrontID = response!.data[0].id
+                    currentSubSelection = "Apple Music"
+                    appDelegate.musicSub.type = .Apple
+                    hideProgressView = true
+                    completion()
+                }
+            }
+            else {
+                currentSubSelection = "Neither"
+                appDelegate.musicSub.type = .Neither
+                showAMAuthFailedAlert = true
+            }
+        }
+    }
+
+    func checkAMTokenError(completion: @escaping () -> Void) {
         Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { timer in
-            if amAPI.taskToken == nil && runGetAMToken == true {
-                runGetAMToken = false
-                SKCloudServiceController.requestAuthorization {(status) in if status == .authorized {amAPI.getUserToken(completionHandler: {(response, error) in
-                    print("Checking Token")
-                    print(response)
-                    print("^^")
-                    print(error)
-                    runCheckAMTokenErrorIfNeeded = true
-                   // runGetAMToken = true
-        })}}}}}
-    
-    func checkAMTokenError() {
-        Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { timer in
-            
             if amAPI.tokenError == true && runCheckAMTokenErrorIfNeeded {
                 showAMAuthFailedAlert = true
                 runCheckAMTokenErrorIfNeeded = false
+                timer.invalidate()
+                completion()
+            } else if amAPI.tokenError == false {
+                timer.invalidate()
+                completion()
+            }
+        }
+    }
+
+    
+    
+
+
+    
+    
+    
+    
+    
+    func getSpotCredentials(completion: @escaping (Bool) -> Void) {
+        print("Run1")
+        if defaults.object(forKey: "SpotifyAuthCode") != nil && counter == 0 {
+            print("Run2")
+            refresh_token = (defaults.object(forKey: "SpotifyRefreshToken") as? String)!
+            refreshAccessToken = true
+            if networkMonitor.isConnected {
+                getSpotTokenViaRefresh { success in
+                    if success {
+                        counter += 1
+                        runInstantiateAppRemote()
+                        hideProgressView = true
+                        currentSubSelection = "Spotify"
+                        appDelegate.musicSub.type = .Spotify
+                        completion(true)
+                    } else {
+                        showSpotAuthFailedAlert = true
+                        currentSubSelection = "Neither"
+                        appDelegate.musicSub.type = .Neither
+                        hideProgressView = true
+                        completion(false)
+                    }
+                }
+            } else {
+                showFailedConnectionAlert = true
+                currentSubSelection = "Neither"
+                appDelegate.musicSub.type = .Neither
+                hideProgressView = true
+                completion(false)
+            }
+        } else {
+            print("Run3")
+            if networkMonitor.isConnected {
+                requestAndRunToken(authType: "code") { success in
+                    if success {
+                        runInstantiateAppRemote()
+                        hideProgressView = true
+                        currentSubSelection = "Spotify"
+                        appDelegate.musicSub.type = .Spotify
+                        completion(true)
+                    } else {
+                        showSpotAuthFailedAlert = true
+                        currentSubSelection = "Neither"
+                        appDelegate.musicSub.type = .Neither
+                        hideProgressView = true
+                        completion(false)
+                    }
+                }
+            } else {
+                showFailedConnectionAlert = true
+                currentSubSelection = "Neither"
+                appDelegate.musicSub.type = .Neither
+                hideProgressView = true
+                completion(false)
+            }
+        }
+    }
+    
+    func requestAndRunToken(authType: String, completion: @escaping (Bool) -> Void) {
+        print("called....requestSpotAuth")
+        invalidAuthCode = false
+        SpotifyAPI().requestAuth { response, error in
+            guard let response = response else {
+                // handle error
+                print(error ?? "Unknown error")
+                completion(false)
+                return
+            }
+            
+            DispatchQueue.main.async {
+                print("ccccccc")
+                print(response)
+                
+                spotifyAuth.authForRedirect = response
+                showWebView = true
+                
+                refreshAccessToken = true
+                
+                if authType == "code", !authCode!.isEmpty {
+                    getSpotToken { success in
+                        completion(success)
+                    }
+                } else if authType == "refresh_token", !refresh_token!.isEmpty {
+                    getSpotTokenViaRefresh { success in
+                        completion(success)
+                    }
+                } else if authCode == "AuthFailed" {
+                    print("Unable to authorize")
+                    currentSubSelection = "Neither"
+                    appDelegate.musicSub.type = .Neither
+                    showSpotAuthFailedAlert = true
+                    completion(false)
+                }
             }
         }
     }
     
     
-
-    func getAMStoreFront() {
-        Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { timer in
-            if amAPI.taskToken != nil && ranAMStoreFront == false {
-                ranAMStoreFront = true
-                SKCloudServiceController.requestAuthorization {(status) in if status == .authorized {
-                    amAPI.storeFrontID = amAPI.fetchUserStorefront(userToken: amAPI.taskToken!, completionHandler: { ( response, error) in
-                        amAPI.storeFrontID = response!.data[0].id
-                        currentSubSelection = "Apple Music"
-                        appDelegate.musicSub.type = .Apple
-                        defaults.set("Apple Music", forKey: "MusicSubType")
-                        hideProgressView = true
-                        showStart = true
-                    })}}}
-            }
-        }
     
-    
-    
-    
-    
-    
-    
-    func verifySpotSubscription() {
-            print("Run1")
-            if defaults.object(forKey: "SpotifyAuthCode") != nil && (defaults.object(forKey: "SpotifyAuthCode") as? String)! != "AuthFailed" && counter == 0 {
-                print("Run2")
-                refresh_token = (defaults.object(forKey: "SpotifyRefreshToken") as? String)!
-                refreshAccessToken = true
-                runGetToken(authType: "refresh_token")
-                counter += 1
-            }
-            else{
-                print("Run3")
-                requestSpotAuth()
-                runGetToken(authType: "code")
-            }
-        }
-        
     func requestSpotAuth() {
         print("called....requestSpotAuth")
         invalidAuthCode = false
@@ -211,83 +310,51 @@ extension PrefMenu {
                 }}})
     }
     
-    func runGetToken(authType: String) {
-        Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { timer in
-            if tokenCounter == 0 && refreshAccessToken {
-                if authType == "code" {if authCode != "" {getSpotToken()}}
-                if authType == "refresh_token" {if refresh_token! != ""{getSpotTokenViaRefresh()}}
-                if authCode == "AuthFailed" || spotifyAuth.auth_code == "AuthFailed" {
-                        print("Unable to authorize")
-                        tokenCounter = 1
-                        appDelegate.musicSub.type = .Neither
-                        currentSubSelection = "Neither"
-                        showSpotAuthFailedAlert = true
-                        print("---")
-                        spotifyAuth.auth_code = "AuthFailed"
-                        print(showSpotAuthFailedAlert)
-                        hideProgressView = true
-                }
-            }
-        }
-    }
+
     
-    func getSpotToken() {
+    func getSpotToken(completion: @escaping (Bool) -> Void) {
         print("called....requestSpotToken")
         tokenCounter = 1
         spotifyAuth.auth_code = authCode!
         SpotifyAPI().getToken(authCode: authCode!, completionHandler: {(response, error) in
-            if response != nil {
+            if let response = response {
                 DispatchQueue.main.async {
-                    spotifyAuth.access_Token = response!.access_token
-                    spotifyAuth.refresh_Token = response!.refresh_token
-                    defaults.set(response!.access_token, forKey: "SpotifyAccessToken")
-                    defaults.set(response!.refresh_token, forKey: "SpotifyRefreshToken")
-                    appDelegate.musicSub.type = .Spotify
-                    defaults.set("Spotify", forKey: "MusicSubType")
-                    print("???")
-                    hideProgressView = true
-                    showStart = true
-                    
+                    spotifyAuth.access_Token = response.access_token
+                    spotifyAuth.refresh_Token = response.refresh_token
+                    defaults.set(response.access_token, forKey: "SpotifyAccessToken")
+                    defaults.set(response.refresh_token, forKey: "SpotifyRefreshToken")
+                    completion(true)
                 }
-            }
-            if error != nil {
-                print("Error... \(error?.localizedDescription)!")
+            } else if let error = error {
+                print("Error... \(error.localizedDescription)!")
                 invalidAuthCode = true
                 authCode = ""
+                completion(false)
             }
         })
     }
-    
-    func getSpotTokenViaRefresh() {
+
+    func getSpotTokenViaRefresh(completion: @escaping (Bool) -> Void) {
         print("called....requestSpotTokenViaRefresh")
         tokenCounter = 1
         spotifyAuth.auth_code = authCode!
         refresh_token = (defaults.object(forKey: "SpotifyRefreshToken") as? String)!
         SpotifyAPI().getTokenViaRefresh(refresh_token: refresh_token!, completionHandler: {(response, error) in
-            if response != nil {
+            if let response = response {
                 DispatchQueue.main.async {
-                    spotifyAuth.access_Token = response!.access_token
-                    defaults.set(response!.access_token, forKey: "SpotifyAccessToken")
-                    appDelegate.musicSub.type = .Spotify
-                    defaults.set("Spotify", forKey: "MusicSubType")
-                    print("!!!")
-                    hideProgressView = true
-                    showStart = true
+                    spotifyAuth.access_Token = response.access_token
+                    defaults.set(response.access_token, forKey: "SpotifyAccessToken")
+                    completion(true)
                 }
-            }
-            if error != nil {
-                print("Error... \(error?.localizedDescription)!")
+            } else if let error = error {
+                print("Error... \(error.localizedDescription)!")
                 invalidAuthCode = true
                 authCode = ""
+                completion(false)
             }
         })
     }
-    
-    func getAuthCodeAndTokenIfExpired() {
-        Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { timer in
-            if invalidAuthCode {requestSpotAuth()}
-        }
-    }
+
     
  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

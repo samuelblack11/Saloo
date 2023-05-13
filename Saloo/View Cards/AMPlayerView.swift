@@ -136,7 +136,11 @@ struct AMPlayerView: View {
             }
             selectButton
         }
-        .onAppear{songProgress = 0.0; self.musicPlayer.setQueue(with: [songID!]); self.musicPlayer.play()}
+        .onAppear{songProgress = 0.0;
+            if networkMonitor.isConnected {self.musicPlayer.setQueue(with: [songID!]); self.musicPlayer.play()}
+            else {showFailedConnectionAlert = true}
+            
+        }
         .onDisappear{self.musicPlayer.pause(); self.$musicPlayer.wrappedValue.currentPlaybackTime = 0}
     }
     
