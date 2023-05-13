@@ -58,15 +58,16 @@ struct AMPlayerView: View {
     
     var body: some View {
             AMPlayerView
+            .alert(isPresented: $showFailedConnectionAlert) {
+                Alert(title: Text("Network Error"), message: Text("Sorry, we weren't able to connect to the internet. Please reconnect and try again."), dismissButton: .default(Text("OK")))
+            }
             .fullScreenCover(isPresented: $showWriteNote) {WriteNoteView()}
             .onAppear{print("AM PLAYER APPEARED...."); if songArtImageData == nil{
-                //getAMUserToken(); getAMStoreFront()
-                if networkMonitor.isConnected{getAMUserToken(); getAMStoreFront()}
+                if networkMonitor.isConnected{getAMUserTokenAndStoreFront{}}
                 else{showFailedConnectionAlert = true}
             }
                 
             }
-            //.onAppear{if songName! == nil{getAMUserToken(); getAMStoreFront()}}
 
             .navigationBarItems(leading:Button {
                 if fromFinalize {musicPlayer.pause(); showWriteNote = true}
@@ -159,29 +160,32 @@ struct AMPlayerView: View {
 }
 
 extension AMPlayerView {
-        
-    func getAMUserToken() {
-        Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { timer in
-            if amAPI.taskToken == nil {
-                SKCloudServiceController.requestAuthorization {(status) in if status == .authorized {amAPI.getUserToken(completionHandler: { (response, error) in
-                    print("Checking Token")
-                    print(response as Any)
-                    print("^^")
-                    print(error as Any)
-        })}}}}}
     
-    func getAMStoreFront() {
-            Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { timer in
-                if amAPI.taskToken != nil && ranAMStoreFront == false {
-                    ranAMStoreFront = true
-                    SKCloudServiceController.requestAuthorization {(status) in if status == .authorized {
-                        amAPI.storeFrontID = amAPI.fetchUserStorefront(userToken: amAPI.taskToken!, completionHandler: { ( response, error) in
-                            amAPI.storeFrontID = response!.data[0].id
-                            if songName! == "" {
-                                convertSong(offset: nil)
-                            }
-                        })}}}
+    
+    func getAMUserTokenAndStoreFront(completion: @escaping () -> Void) {
+        getAMUserToken {[self] in self.getAMStoreFront(completion: completion)}
+    }
+
+    func getAMUserToken(completion: @escaping () -> Void) {
+        SKCloudServiceController.requestAuthorization {(status) in
+            if status == .authorized {
+                amAPI.getUserToken { response, error in
+                    print("Checking Token"); print(response); print("^^"); print(error)
+                    completion()
+                }
             }
+        }
+    }
+
+    func getAMStoreFront(completion: @escaping () -> Void) {
+        SKCloudServiceController.requestAuthorization {(status) in
+            if status == .authorized {
+                amAPI.fetchUserStorefront(userToken: amAPI.taskToken!) { response, error in
+                    amAPI.storeFrontID = response!.data[0].id
+                    completion()
+                }
+            }
+        }
     }
 
     func convertSong(offset: Int?) {

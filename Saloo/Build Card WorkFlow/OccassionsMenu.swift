@@ -102,8 +102,7 @@ struct OccassionsMenu: View {
                         .fullScreenCover(isPresented: $showUCV) {UnsplashCollectionView()}
                 }
             }
-            Section(header: Text("Year-Round Occassions")) {ForEach(yearRoundCollection) {menuSection(for: $0, shareable: false)                //.listRowBackground(appDelegate.appColor)
-                
+            Section(header: Text("Year-Round Occassions")) {ForEach(yearRoundCollection) {menuSection(for: $0, shareable: false)
             }}
             Section(header: Text("Winter Holidays")) {ForEach(winterCollection) {menuSection(for: $0, shareable: false)}}
             Section(header: Text("Spring Holidays")) {ForEach(springCollection) {menuSection(for: $0, shareable: false)}}
@@ -111,8 +110,9 @@ struct OccassionsMenu: View {
             Section(header: Text("Fall Holidays")) {ForEach(fallCollection) {menuSection(for: $0, shareable: false)}}
             Section(header: Text("Other Collections")) {ForEach(otherCollection) {menuSection(for: $0, shareable: false)}}
         }
+        .onAppear {if networkMonitor.isConnected == false {showFailedConnectionAlert = true}}
         .alert(isPresented: $showFailedConnectionAlert) {
-            Alert(title: Text("Error"), message: Text("Sorry, we weren't able to connect to the internet. Please reconnect and try again."), dismissButton: .default(Text("OK")))
+            Alert(title: Text("Network Error"), message: Text("Sorry, we weren't able to connect to the internet. Please reconnect and try again."), dismissButton: .default(Text("OK")))
         }
         .navigationBarItems(leading:Button {showStartMenu.toggle()} label: {Image(systemName: "chevron.left").foregroundColor(.blue); Text("Back")})
         .font(.headline)
@@ -137,7 +137,8 @@ extension OccassionsMenu {
                     showUCV.toggle()
                 }
                 else {showFailedConnectionAlert = true}
-            }.fullScreenCover(isPresented: $showUCV) {UnsplashCollectionView()}
+            }
+            .fullScreenCover(isPresented: $showUCV) {UnsplashCollectionView()}
     }
     
     func groupCollections(collections: [CollectionPair]) {

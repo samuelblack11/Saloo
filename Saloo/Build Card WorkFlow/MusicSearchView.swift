@@ -60,7 +60,7 @@ struct MusicSearchView: View {
     @State var emptyCard: CoreCard? = CoreCard()
     @State var deferToPreview = false
     @State private var showFailedConnectionAlert = false
-    
+    @State private var isLoading = false
     func determineCardType() -> String {
         var cardType2 = String()
         if chosenSong.id != nil && giftCard.id != ""  {cardType2 = "musicAndGift"}
@@ -114,66 +114,44 @@ struct MusicSearchView: View {
                 }).padding(.top, 15)
             }
             NavigationView {
-                List {
-                    ForEach(searchResults, id: \.self) { song in
-                        HStack {
-                            Image(uiImage: UIImage(data: song.artImageData)!)
-                            VStack{
-                                Text(song.name)
-                                    .font(.headline)
-                                    .lineLimit(2)
-                                    .frame(maxWidth: .infinity, alignment: .leading)
-                                Text(song.artistName)
-                                    .font(.caption)
-                                    .foregroundColor(.secondary)
-                                    .lineLimit(1)
-                                    .frame(maxWidth: .infinity, alignment: .leading)
+                ZStack {
+                    if isLoading {ProgressView().frame(width: UIScreen.screenWidth/2,height: UIScreen.screenHeight/2)}
+                    List {
+                        ForEach(searchResults, id: \.self) { song in
+                            HStack {
+                                Image(uiImage: UIImage(data: song.artImageData)!)
+                                VStack{
+                                    Text(song.name)
+                                        .font(.headline)
+                                        .lineLimit(2)
+                                        .frame(maxWidth: .infinity, alignment: .leading)
+                                    Text(song.artistName)
+                                        .font(.caption)
+                                        .foregroundColor(.secondary)
+                                        .lineLimit(1)
+                                        .frame(maxWidth: .infinity, alignment: .leading)
+                                }
+                                Spacer()
                             }
-                            Spacer()
-                        }
-                        .frame(width: UIScreen.screenWidth, height: (UIScreen.screenHeight/7))
-                        .onTapGesture {
-                            print("Playing \(song.name)")
-                            createChosenSong(song: song)
+                            .frame(width: UIScreen.screenWidth, height: (UIScreen.screenHeight/7))
+                            .onTapGesture {
+                                print("Playing \(song.name)")
+                                createChosenSong(song: song)
+                            }
                         }
                     }
                 }
             }
             .onAppear{
-                if appDelegate.musicSub.type == .Spotify {
-                    print("Run1")
-                    if defaults.object(forKey: "SpotifyAuthCode") != nil && counter == 0 {
-                        print("Run2")
-                        refresh_token = (defaults.object(forKey: "SpotifyRefreshToken") as? String)!
-                        refreshAccessToken = true
-                        //runGetToken(authType: "refresh_token")
-                        if networkMonitor.isConnected{runGetToken(authType: "refresh_token")}
-                        else {showFailedConnectionAlert = true}
-                        counter += 1
-                    }
-                    else {print("Run3");
-                        if networkMonitor.isConnected {
-                            requestSpotAuth(); runGetToken(authType: "code")
-                        }
-                        else {showFailedConnectionAlert = true}
-                    }
-                    if networkMonitor.isConnected {
-                        runInstantiateAppRemote()
-                    }
-                    else {showFailedConnectionAlert = true}
-                }
+                if appDelegate.musicSub.type == .Spotify {getSpotCredentials{success in}}
                 if appDelegate.musicSub.type == .Apple {
-                    if networkMonitor.isConnected {
-                        getAMUserToken(); getAMStoreFront()
-                    }
+                    if networkMonitor.isConnected {getAMUserTokenAndStoreFront{}}
                     else {showFailedConnectionAlert = true}
                 }
             }
-            // Show an alert if showAlert is true
             .alert(isPresented: $showFailedConnectionAlert) {
-                Alert(title: Text("Error"), message: Text("Sorry, we weren't able to connect to the internet. Please reconnect and try again."), dismissButton: .default(Text("OK")))
+                Alert(title: Text("Network Error"), message: Text("Sorry, we weren't able to connect to the internet. Please reconnect and try again."), dismissButton: .default(Text("OK")))
             }
-        
             .navigationBarItems(leading:Button {showWriteNote.toggle()} label: {Image(systemName: "chevron.left").foregroundColor(.blue); Text("Back")})
             .fullScreenCover(isPresented: $showWriteNote){WriteNoteView()}
             .popover(isPresented: $showAPV) {AMPlayerView(songID: chosenSong.id, songName: chosenSong.name, songArtistName: chosenSong.artistName, songArtImageData: chosenSong.artwork, songDuration: chosenSong.durationInSeconds, songPreviewURL: chosenSong.songPreviewURL, confirmButton: true, showFCV: $showFCV, chosenCard: $emptyCard, deferToPreview: $deferToPreview)
@@ -196,29 +174,41 @@ struct MusicSearchView: View {
 
 extension MusicSearchView {
     
-    func getAMUserToken() {
-        Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { timer in
-            if amAPI.taskToken == nil {
-                SKCloudServiceController.requestAuthorization {(status) in if status == .authorized {amAPI.getUserToken(completionHandler: { ( response, error) in
-                    print("Checking Token"); print(response); print("^^");print(error)
-        })}}}}}
+    func getAMUserTokenAndStoreFront(completion: @escaping () -> Void) {
+        getAMUserToken {[self] in self.getAMStoreFront(completion: completion)}
+    }
 
-    func getAMStoreFront() {
-        Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { timer in
-            if amAPI.taskToken != nil && ranAMStoreFront == false {
-                ranAMStoreFront = true
-                SKCloudServiceController.requestAuthorization {(status) in if status == .authorized {
-                    amAPI.storeFrontID = amAPI.fetchUserStorefront(userToken: amAPI.taskToken!, completionHandler: { ( response, error) in
-                        amAPI.storeFrontID = response!.data[0].id
-                    })}}}
+    func getAMUserToken(completion: @escaping () -> Void) {
+        SKCloudServiceController.requestAuthorization {(status) in
+            if status == .authorized {
+                amAPI.getUserToken { response, error in
+                    print("Checking Token"); print(response); print("^^"); print(error)
+                    completion()
+                }
             }
         }
+    }
 
+    func getAMStoreFront(completion: @escaping () -> Void) {
+        SKCloudServiceController.requestAuthorization {(status) in
+            if status == .authorized {
+                amAPI.fetchUserStorefront(userToken: amAPI.taskToken!) { response, error in
+                    amAPI.storeFrontID = response!.data[0].id
+                    completion()
+                }
+            }
+        }
+    }
     
     func searchWithAM() {
+        if amAPI.storeFrontID == nil {isLoading = true; getAMUserTokenAndStoreFront{performAMSearch()}}
+        else {performAMSearch()}
+    }
+    
+    func performAMSearch() {
+        isLoading = true
         SKCloudServiceController.requestAuthorization {(status) in if status == .authorized {
             let amSearch = cleanMusicData.cleanMusicString(input: self.songSearch, removeList: appDelegate.songFilterForSearch)
-
             self.searchResults = AppleMusicAPI().searchAppleMusic(amSearch, storeFrontID: amAPI.storeFrontID!, userToken: amAPI.taskToken!, completionHandler: { (response, error) in
                 if response != nil {
                     DispatchQueue.main.async {
@@ -243,6 +233,7 @@ extension MusicSearchView {
                             })}}}; if response != nil {print("No Response!")}
                 else {debugPrint(error?.localizedDescription)}}
             )}}
+        isLoading = false
     }
     
     func createChosenSong(song: SongForList) {
@@ -340,9 +331,7 @@ extension MusicSearchView {
                         group2.notify(queue: DispatchQueue.global()) {
                             group1.leave()
                         }
-                    } else {
-                        group1.leave()
-                    }
+                    } else {group1.leave()}
                 }
             }
             print("Album Group Complete of \(totalOffsets)")
@@ -373,13 +362,6 @@ extension MusicSearchView {
                 showSPV = true
             }
         }
-    }
-
-
-    func checkForCommonWords(_ str1: String, _ str2: String) -> Bool {
-        let str1Words = Set(str1.split(separator: " ").map { String($0) })
-        let str2Words = Set(str2.split(separator: " ").map { String($0) })
-        return !str1Words.isDisjoint(with: str2Words)
     }
 
     func getAlbum(storeFront: String, userToken: String) {
@@ -466,19 +448,7 @@ extension MusicSearchView {
     
 
     
-    func requestSpotAuth() {
-        print("called....requestSpotAuth")
-        invalidAuthCode = false
-        SpotifyAPI().requestAuth(completionHandler: {(response, error) in
-            if response != nil {
-                DispatchQueue.main.async {
-                    print("ccccccc")
-                    print(response!)
-                    if response!.contains("https://www.google.com/?code="){}
-                    else{spotifyAuth.authForRedirect = response!;showWebView = true}
-                    refreshAccessToken = true
-                }}})
-    }
+
     
     func getSpotToken() {
         print("called....requestSpotToken")
@@ -520,12 +490,7 @@ extension MusicSearchView {
             }
         })
     }
-    
-    func getAuthCodeAndTokenIfExpired() {
-        Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { timer in
-            if invalidAuthCode {requestSpotAuth()}
-        }
-    }
+
 
     func runGetToken(authType: String) {
         Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { timer in
@@ -552,8 +517,6 @@ extension MusicSearchView {
     }
     
     func instantiateAppRemote() {
-        print("called....instantiateAppRemote")
-        print(spotifyAuth.access_Token)
         instantiateAppRemoteCounter = 1
         DispatchQueue.main.async {
             appRemote2 = SPTAppRemote(configuration: config, logLevel: .debug)
@@ -561,7 +524,69 @@ extension MusicSearchView {
         }
     }
     
+    func requestSpotAuth() {
+        print("called....requestSpotAuth")
+        invalidAuthCode = false
+        SpotifyAPI().requestAuth(completionHandler: {(response, error) in
+            if response != nil {
+                DispatchQueue.main.async {
+                    print("ccccccc")
+                    print(response!)
+                    if response!.contains("https://www.google.com/?code="){}
+                    else{spotifyAuth.authForRedirect = response!;showWebView = true}
+                    refreshAccessToken = true
+                }}})
+    }
+    
+    
+    func getSpotCredentials(completion: @escaping (Bool) -> Void) {
+        print("Run1")
+        if defaults.object(forKey: "SpotifyAuthCode") != nil && counter == 0 {
+            print("Run2")
+            refresh_token = (defaults.object(forKey: "SpotifyRefreshToken") as? String)!
+            refreshAccessToken = true
+            if networkMonitor.isConnected {
+                runGetToken(authType: "refresh_token")
+                completion(true)
+            } else {
+                showFailedConnectionAlert = true
+                completion(false)
+            }
+            counter += 1
+        }
+        else {
+            print("Run3")
+            if networkMonitor.isConnected {
+                requestSpotAuth()
+                runGetToken(authType: "code")
+                completion(true)
+            } else {
+                showFailedConnectionAlert = true
+                completion(false)
+            }
+        }
+        if networkMonitor.isConnected {
+            runInstantiateAppRemote()
+            completion(true)
+        } else {
+            showFailedConnectionAlert = true
+            completion(false)
+        }
+    }
+
+    
+    
+    
+    
     func searchWithSpotify() {
+        print("searchWithSpotifyCalled...")
+        print(spotifyAuth.access_Token)
+        if spotifyAuth.access_Token == "" {isLoading = true; getSpotCredentials{success in performSPOTSearch()}}
+        else {performSPOTSearch()}
+    }
+    
+    
+    func performSPOTSearch() {
         
         
         let songTerm = cleanMusicData.cleanMusicString(input: self.songSearch, removeList: appDelegate.songFilterForSearch)

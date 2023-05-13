@@ -63,29 +63,15 @@ struct SpotPlayerView: View {
     @EnvironmentObject var networkMonitor: NetworkMonitor
     @State private var showFailedConnectionAlert = false
     @State private var foundMatch3 = false
+    
+
+    
     var body: some View {
         SpotPlayerView2
             .onAppear{
                 print("SPOT PLAYER APPEARED....")
-                if accessedViaGrid && appDelegate.musicSub.type == .Spotify {
-                    print("Run1")
-                    showProgressView = true
-                    if defaults.object(forKey: "SpotifyAuthCode") != nil && counter == 0 {
-                        print("Run2")
-                        print(defaults.object(forKey: "SpotifyAuthCode") as? String as Any)
-                        authCode = defaults.object(forKey: "SpotifyAuthCode") as? String
-                        refresh_token = (defaults.object(forKey: "SpotifyRefreshToken") as? String)!
-                        refreshAccessToken = true
-                        runGetToken(authType: "refresh_token")
-                        counter += 1
-                    }
-                    else{print("Run3")
-                            requestSpotAuth(); runGetToken(authType: "code")
-                    }
-                    runInstantiateAppRemote()
-                }
+                if accessedViaGrid && appDelegate.musicSub.type == .Spotify {getSpotCredentials{success in}}
                 else{
-                    //playSong()
                     if networkMonitor.isConnected{playSong()}
                     else {print("Connection failed3");showFailedConnectionAlert = true}
                 }
@@ -98,7 +84,7 @@ struct SpotPlayerView: View {
             } label: {Image(systemName: "chevron.left").foregroundColor(.blue); Text("Back")})
             // Show an alert if showAlert is true
             .alert(isPresented: $showFailedConnectionAlert) {
-            Alert(title: Text("Error"), message: Text("Sorry, we weren't able to connect to the internet. Please reconnect and try again."), dismissButton: .default(Text("OK")))
+            Alert(title: Text("Network Error"), message: Text("Sorry, we weren't able to connect to the internet. Please reconnect and try again."), dismissButton: .default(Text("OK")))
         }
     }
     
@@ -304,6 +290,8 @@ struct SpotPlayerView: View {
     }
 
     func playSong() {
+        print("network connected")
+        //getSpotCredentials{success in
         if appRemote2?.isConnected == false {
             appRemote2?.authorizeAndPlayURI("spotify:track:\(songID!)")
             DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {appRemote2?.connect()}
@@ -311,19 +299,53 @@ struct SpotPlayerView: View {
         appRemote2?.playerAPI?.pause(defaultCallback)
         appRemote2?.playerAPI?.enqueueTrackUri("spotify:track:\(songID!)", callback: defaultCallback)
         appRemote2?.playerAPI?.play("spotify:track:\(songID!)", callback: defaultCallback)
-        isPlaying = true
-        showProgressView = false
+        isPlaying = true; showProgressView = false
+        //}
     }
+    
+    
+    
+    
+    
 
 }
 
 extension SpotPlayerView {
     
-    //func getAuthCodeAndTokenIfExpired() {
-    //    Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { timer in
-    //        if invalidAuthCode {requestSpotAuth()}
-     //   }
-    //}
+    func getSpotCredentials(completion: @escaping (Bool) -> Void) {
+        print("Run1")
+        if defaults.object(forKey: "SpotifyAuthCode") != nil && counter == 0 {
+            print("Run2")
+            refresh_token = (defaults.object(forKey: "SpotifyRefreshToken") as? String)!
+            refreshAccessToken = true
+            if networkMonitor.isConnected {
+                runGetToken(authType: "refresh_token")
+                completion(true)
+            } else {
+                showFailedConnectionAlert = true
+                completion(false)
+            }
+            counter += 1
+        }
+        else {
+            print("Run3")
+            if networkMonitor.isConnected {
+                requestSpotAuth()
+                runGetToken(authType: "code")
+                completion(true)
+            } else {
+                showFailedConnectionAlert = true
+                completion(false)
+            }
+        }
+        if networkMonitor.isConnected {
+            runInstantiateAppRemote()
+            completion(true)
+        } else {
+            showFailedConnectionAlert = true
+            completion(false)
+        }
+    }
     
     func requestSpotAuth() {
         print("called....requestSpotAuth")
