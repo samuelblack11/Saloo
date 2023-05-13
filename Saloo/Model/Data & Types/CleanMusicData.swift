@@ -35,9 +35,9 @@ class CleanMusicData {
     
     func cleanMusicString(input: String, removeList: [String]) -> String {
         
-        print("CleanMusicString Called...")
-        print("-----")
-        print(input)
+        //print("CleanMusicString Called...")
+        //print("-----")
+        //print(input)
         var cleanString = removeAccents(from: input)
         cleanString = removeSubstrings(from: cleanString, removeList: removeList)
         cleanString = removeSpecialCharacters(from: cleanString)
@@ -75,9 +75,9 @@ class CleanMusicData {
     
     //func removeArtistsFromSongOrAlbum(songOrAlbum: String, songArtist: String?) -> (String, String) {
     func removeArtistsFromSongOrAlbum(songOrAlbum: String) -> (String, String) {
-        print("removeArtistsFromSongOrAlbum called...")
+        //print("removeArtistsFromSongOrAlbum called...")
         print(songOrAlbum)
-        print(songOrAlbum.lowercased())
+        //print(songOrAlbum.lowercased())
         var songOrAlbumString = songOrAlbum.replacingOccurrences(of: "[", with: "(").replacingOccurrences(of: "]", with: ")")
         var artistsInSongOrAlbumName = String()
         
@@ -103,8 +103,8 @@ class CleanMusicData {
         }
         
         //songOrAlbumString = (songOrAlbumString + " " + cleanSongArtistName + artistsInSongOrAlbumName)
-        print("songOrAlbumString....")
-        print(songOrAlbumString)
+        //print("songOrAlbumString....")
+        //print(songOrAlbumString)
         return (songOrAlbumString,artistsInSongOrAlbumName)
     }
     

@@ -131,10 +131,6 @@ struct MusicSearchView: View {
                         .frame(width: UIScreen.screenWidth, height: (UIScreen.screenHeight/7))
                         .onTapGesture {
                             print("Playing \(song.name)")
-                            print("Song Name is...\(song.name)")
-                            print("Disc Number is.... \(song.disc_number)")
-                            
-                            
                             createChosenSong(song: song)
                         }
                     }
@@ -247,7 +243,7 @@ extension MusicSearchView {
             chosenSong.spotPreviewURL = song.previewURL
             chosenSong.songAddedUsing = "Spotify"
             getSpotAlbum()
-            showSPV = true
+            //showSPV = true
             //if networkMonitor.isConnected{showSPV = true}
             //else{showFailedConnectionAlert = true}
         }
@@ -269,6 +265,7 @@ extension MusicSearchView {
     }
     
     func getSpotAlbum() {
+        print("CheckPoint1")
         var cleanAlbumName = String()
         var artistsInAlbumName = String()
         cleanAlbumName = cleanMusicData.compileMusicString(songOrAlbum: chosenSong.songAlbumName, artist: nil, removeList: appDelegate.songFilterForSearch)
@@ -277,14 +274,17 @@ extension MusicSearchView {
         let totalAlbums = 150
         let totalOffsets = totalAlbums / pageSize
         let group1 = DispatchGroup()
+        print("CheckPoint2")
 
         for offset in 0..<totalOffsets {
             group1.enter()
+            print("CheckPoint3")
 
             DispatchQueue.global().async {
                 SpotifyAPI().getAlbumIDUsingNameOnly(albumName: cleanAlbumName, offset: offset * pageSize, authToken: spotifyAuth.access_Token) { albumResponse, error in
                     
-                    
+                    print("CheckPoint4")
+
                     if let error = error as? URLError, error.code == .notConnectedToInternet {
                         showFailedConnectionAlert = true
                     }
@@ -293,6 +293,7 @@ extension MusicSearchView {
                         let group2 = DispatchGroup()
 
                         for album in albumResponse {
+                            print("CheckPoint5")
                             print("Current Album...\(album.name)")
                             group2.enter()
 
@@ -341,8 +342,10 @@ extension MusicSearchView {
                 for word in words {
                     if artistGroup.contains(word) {
                         print("contains word called")
+                        print(artistGroup)
                         chosenSong.spotAlbumArtist = artistGroup
                         foundMatch = true
+                        showSPV = true
                         break
                     }
                 }
@@ -353,6 +356,7 @@ extension MusicSearchView {
                 print("called !foundMatch")
                 chosenSong.spotAlbumArtist = albumArtistList[0]
                 chosenSong.spotAlbumArtist = albumArtistList.first ?? ""
+                showSPV = true
             }
         }
     }
@@ -363,7 +367,6 @@ extension MusicSearchView {
         let str2Words = Set(str2.split(separator: " ").map { String($0) })
         return !str1Words.isDisjoint(with: str2Words)
     }
-
 
     func getAlbum(storeFront: String, userToken: String) {
         var albumAndArtistForSearch = cleanMusicData.compileMusicString(songOrAlbum: chosenSong.songAlbumName, artist: chosenSong.artistName, removeList: appDelegate.songFilterForSearch)
@@ -410,7 +413,7 @@ extension MusicSearchView {
                                 print(words)
                                 for word in words {
                                     if artistGroup.contains(word) && songFound == false {
-                                        print("contains word called")
+                                        print("Strong Check - Found Match:")
                                         print(artistGroup)
                                         chosenSong.appleAlbumArtist = artistGroup
                                         foundMatch = true; break
