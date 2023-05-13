@@ -88,7 +88,6 @@ struct SpotPlayerView: View {
                     playSong()
                     //if networkMonitor.isConnected{playSong()}
                    // else {print("Connection failed3");showFailedConnectionAlert = true}
-                    
                 }
             }
             .onDisappear{
@@ -227,21 +226,15 @@ struct SpotPlayerView: View {
         let appleAlbumArtistForURL = cleanMusicData.cleanMusicString(input: appleAlbumArtist!, removeList: appDelegate.songFilterForMatch)
         let AMString = cleanMusicData.compileMusicString(songOrAlbum: songName!, artist: songArtistName!, removeList: appDelegate.songFilterForMatch)
         var foundMatch = false
-        
         SpotifyAPI().getAlbumID(albumName: cleanAlbumNameForURL, artistName: appleAlbumArtistForURL , authToken: spotifyAuth.access_Token, completion: { (albums, error) in
-            
             var albumIndex = 0
-            
             func processAlbum() {
                 guard albumIndex < albums!.count else {
                     // All albums processed or foundMatch4 is true
-                    completion(foundMatch)
-                    return
+                    completion(foundMatch); return
                 }
-                
                 let album = albums![albumIndex]
                 albumIndex += 1
-                
                 print("Got Album...\(album.name)")
                 let spotAlbumID = album.id // use the album ID from the current iteration
                 SpotifyAPI().searchForAlbum(albumId: spotAlbumID, authToken: spotifyAuth.access_Token) { (albumResponse, error) in
@@ -249,19 +242,12 @@ struct SpotPlayerView: View {
                         spotImageURL = album.images[2].url
                         getSpotAlbumTracks(spotAlbumID: spotAlbumID, AMString: AMString, completion: { foundMatch4 in
                             print("---foundMatch4: \(foundMatch4)")
-                            if foundMatch4 == true {
-                                foundMatch = true
-                                completion(foundMatch)
-                            } else {
-                                processAlbum()
-                            }
+                            if foundMatch4 == true {foundMatch = true; completion(foundMatch)}
+                            else {processAlbum()}
                         })
-                    } else {
-                        processAlbum()
-                    }
+                    } else {processAlbum()}
                 }
             }
-            
             processAlbum()
         })
     }
@@ -288,7 +274,7 @@ struct SpotPlayerView: View {
                     songID = song.id
                     songArtImageData = artResponse!
                     songDuration = Double(song.duration_ms) * 0.001
-                    //playSong()
+                    playSong()
                     completion(foundMatch)
                     //DispatchQueue.main.async {updateRecordWithNewSPOTData(spotName: song.name, spotArtistName: allArtists, spotID: song.id, songArtImageData: artResponse!, songDuration: String(Double(song.duration_ms) * 0.001)); return}
                     
@@ -372,7 +358,15 @@ extension SpotPlayerView {
                     defaults.set(response!.refresh_token, forKey: "SpotifyRefreshToken")
                     if songID!.count == 0 {getSongViaAlbumSearch(completion: {(foundMatchBool)
                         in print("Did Find Match? \(foundMatchBool)")
-                        //playSong()
+                        if foundMatchBool == false {
+                            if songPreviewURL != nil {
+                                deferToPreview = true
+                                //DispatchQueue.main.async {updateRecordWithNewSPOTData(spotName: "LookupFailed", spotArtistName: "LookupFailed", spotID: "LookupFailed", songArtImageData: Data(), songDuration: String(0))}
+                            }
+                            else { print("Else called to change card type...")
+                                //appDelegate.chosenGridCard?.cardType = "noMusicNoGift"
+                            }
+                        }
                     })}
                 }
             }
@@ -397,7 +391,15 @@ extension SpotPlayerView {
                     defaults.set(response!.access_token, forKey: "SpotifyAccessToken")
                     if songID!.count == 0 {getSongViaAlbumSearch(completion: {(foundMatchBool)
                         in print("Did Find Match? \(foundMatchBool)")
-                        //playSong()
+                        if foundMatchBool == false {
+                            if songPreviewURL != nil {
+                                deferToPreview = true
+                                //DispatchQueue.main.async {updateRecordWithNewSPOTData(spotName: "LookupFailed", spotArtistName: "LookupFailed", spotID: "LookupFailed", songArtImageData: Data(), songDuration: String(0))}
+                            }
+                            else { print("Else called to change card type...")
+                                //appDelegate.chosenGridCard?.cardType = "noMusicNoGift"
+                            }
+                        }
                     })}
                 }
             }
@@ -434,7 +436,7 @@ extension SpotPlayerView {
         DispatchQueue.main.async {
             appRemote2 = SPTAppRemote(configuration: config, logLevel: .debug)
             appRemote2?.connectionParameters.accessToken = spotifyAuth.access_Token
-            playSong()
+            if spotName != "" && spotName != "LookupFailed" {playSong()}
         }
     }
     
