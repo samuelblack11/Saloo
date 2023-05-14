@@ -162,7 +162,9 @@ extension PrefMenu {
                     amAPI.storeFrontID = response!.data[0].id
                     currentSubSelection = "Apple Music"
                     appDelegate.musicSub.type = .Apple
+                    defaults.set("Apple Music", forKey: "MusicSubType")
                     hideProgressView = true
+                    showStart = true
                     completion()
                 }
             }
@@ -208,22 +210,24 @@ extension PrefMenu {
                     if success {
                         counter += 1
                         runInstantiateAppRemote()
-                        hideProgressView = true
                         currentSubSelection = "Spotify"
                         appDelegate.musicSub.type = .Spotify
+                        defaults.set("Spotify", forKey: "MusicSubType")
+                        hideProgressView = true
+                        showStart = true
                         completion(true)
                     } else {
                         showSpotAuthFailedAlert = true
-                        currentSubSelection = "Neither"
-                        appDelegate.musicSub.type = .Neither
+                        //currentSubSelection = "Neither"
+                        //appDelegate.musicSub.type = .Neither
                         hideProgressView = true
                         completion(false)
                     }
                 }
             } else {
                 showFailedConnectionAlert = true
-                currentSubSelection = "Neither"
-                appDelegate.musicSub.type = .Neither
+                //currentSubSelection = "Neither"
+                //appDelegate.musicSub.type = .Neither
                 hideProgressView = true
                 completion(false)
             }
@@ -233,22 +237,24 @@ extension PrefMenu {
                 requestAndRunToken(authType: "code") { success in
                     if success {
                         runInstantiateAppRemote()
-                        hideProgressView = true
                         currentSubSelection = "Spotify"
                         appDelegate.musicSub.type = .Spotify
+                        defaults.set("Spotify", forKey: "MusicSubType")
+                        hideProgressView = true
+                        showStart = true
                         completion(true)
                     } else {
                         showSpotAuthFailedAlert = true
-                        currentSubSelection = "Neither"
-                        appDelegate.musicSub.type = .Neither
+                        //currentSubSelection = "Neither"
+                        //appDelegate.musicSub.type = .Neither
                         hideProgressView = true
                         completion(false)
                     }
                 }
             } else {
                 showFailedConnectionAlert = true
-                currentSubSelection = "Neither"
-                appDelegate.musicSub.type = .Neither
+                //currentSubSelection = "Neither"
+                //appDelegate.musicSub.type = .Neither
                 hideProgressView = true
                 completion(false)
             }

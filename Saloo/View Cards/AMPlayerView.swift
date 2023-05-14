@@ -186,6 +186,7 @@ extension AMPlayerView {
             if status == .authorized {
                 amAPI.fetchUserStorefront(userToken: amAPI.taskToken!) { response, error in
                     amAPI.storeFrontID = response!.data[0].id
+                    if songName! == "" {convertSong(offset: nil)}
                     completion()
                 }
             }
