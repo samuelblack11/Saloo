@@ -54,17 +54,37 @@ struct AMPlayerView: View {
     @Binding var deferToPreview: Bool
     let cleanMusicData = CleanMusicData()
     @EnvironmentObject var networkMonitor: NetworkMonitor
-    @State private var showFailedConnectionAlert = false
-    
+    enum ActiveAlert: Identifiable {
+        case songNotAvailable, noConnection
+        var id: Int {
+            switch self {
+            case .songNotAvailable:
+                return 1
+            case .noConnection:
+                return 2
+            }
+        }
+    }
+    @State private var activeAlert: ActiveAlert?
+
     var body: some View {
             AMPlayerView
-            .alert(isPresented: $showFailedConnectionAlert) {
-                Alert(title: Text("Network Error"), message: Text("Sorry, we weren't able to connect to the internet. Please reconnect and try again."), dismissButton: .default(Text("OK")))
+            .alert(item: $activeAlert) { alertType -> Alert in
+                switch alertType {
+                case .songNotAvailable:
+                    return Alert(title: Text("Song Not Available"), message: Text("Sorry, this song isn't available. Please select a different one."), dismissButton: .default(Text("OK")))
+                case .noConnection:
+                    return Alert(title: Text("Network Error"), message: Text("Sorry, we weren't able to connect to the internet. Please reconnect and try again."), dismissButton: .default(Text("OK")))
+                }
             }
+        
+        
+        
+        
             .fullScreenCover(isPresented: $showWriteNote) {WriteNoteView()}
             .onAppear{print("AM PLAYER APPEARED...."); if songArtImageData == nil{
                 if networkMonitor.isConnected{getAMUserTokenAndStoreFront{}}
-                else{showFailedConnectionAlert = true}
+                else{activeAlert = .noConnection}
             }
                 
             }
@@ -137,8 +157,13 @@ struct AMPlayerView: View {
             selectButton
         }
         .onAppear{songProgress = 0.0;
-            if networkMonitor.isConnected {self.musicPlayer.setQueue(with: [songID!]); self.musicPlayer.play()}
-            else {showFailedConnectionAlert = true}
+            if networkMonitor.isConnected {
+                self.musicPlayer.setQueue(with: [songID!]);
+                self.musicPlayer.play()
+                if self.musicPlayer.playbackState.rawValue == 0 {print("NotPlaying..."); activeAlert = .songNotAvailable}
+                print("<<<<\(self.musicPlayer.playbackState.rawValue)")
+            }
+            else {activeAlert = .noConnection}
             
         }
         .onDisappear{self.musicPlayer.pause(); self.$musicPlayer.wrappedValue.currentPlaybackTime = 0}
