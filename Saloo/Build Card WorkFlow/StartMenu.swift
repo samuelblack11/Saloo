@@ -76,26 +76,21 @@ struct StartMenu: View {
                         .onTapGesture {self.showPref = true}
                         .fullScreenCover(isPresented: $showPref) {PrefMenu()}
                 }
-                //.listRowBackground(appDelegate.appColor)
-                ProgressView()
-                    .hidden(gettingRecord.hideProgViewOnAcceptShare)
-                    //.tint(.blue)
-                    .scaleEffect(7)
-                    .progressViewStyle(CircularProgressViewStyle())
             }
             .overlay(
                 Group {
                 if gettingRecord.hideProgViewOnAcceptShare == false {
                     CountdownView(startTime: 60) // Countdown from 60 seconds
+                        .border(.gray)
                         .padding()
-                        .background(Color.white.opacity(1.0))
+                        .background(Color.black.opacity(1.0))
                         .cornerRadius(15)
-                }}, alignment: .center)
+                }}, alignment: .bottom)
         }
         //.background(appDelegate.appColor)
         .onAppear {
             print("Start Menu Opened...")
-            timerVar()
+            //timerVar()
             //print(sceneDelegate.hideProgViewOnAcceptShare)
             //print(appDelegate.showProgViewOnAcceptShare)
             appDelegate.startMenuAppeared = true
@@ -122,14 +117,14 @@ struct CountdownView: View {
         VStack {
             Text("We're Still Saving Your Card to the Cloud. It'll be ready in just a minute 😊")
                 .font(.system(size: 20))
-                .foregroundColor(.black)
+                .foregroundColor(.white)
                 .multilineTextAlignment(.center)
             Text("Time Remaining: \(remainingTime)")
                 .font(.system(size: 12))
                 .foregroundColor(.gray)
                 .multilineTextAlignment(.center)
             ProgressView()
-            //.tint(.blue)
+                .tint(.black)
                 .scaleEffect(2)
                 .progressViewStyle(CircularProgressViewStyle())
         }

@@ -89,6 +89,7 @@ struct eCardView: View {
             else {
                 VStack {
                     VStack {CoverViewWide(); NoteView()}
+                        .frame(maxHeight: UIScreen.screenHeight/2.1)
                     HStack {CollageAndAnnotationView(); MusicView}
                 }
                 .onAppear{print("MusicNoGiftView Appeared...")}

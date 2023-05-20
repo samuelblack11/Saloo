@@ -94,6 +94,7 @@ struct SongPreviewPlayer: View {
         PreviewPlayerView()
         //}
             .onAppear {
+                startCheckingPlaybackState()
                 print("PREVIEW PLAYER APPEARED....")
                 if !appDelegate.isPlayerCreated {
                     print("Did Create player...")
@@ -138,7 +139,21 @@ struct SongPreviewPlayer: View {
         catch { print(error.localizedDescription) }
     }
     
-
+    func startCheckingPlaybackState() {
+        Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { _ in
+            if let player = self.avPlayer.player {
+                switch player.timeControlStatus {
+                case .playing:
+                    self.isPlaying = true
+                case .paused, .waitingToPlayAtSpecifiedRate:
+                    self.isPlaying = false
+                @unknown default:
+                    // Handle any future cases.
+                    print("Unknown AVPlayer timeControlStatus.")
+                }
+            } else {self.isPlaying = false}
+        }
+    }
     
     
 

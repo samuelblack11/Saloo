@@ -69,17 +69,14 @@ struct SpotPlayerView: View {
     var body: some View {
         SpotPlayerView2
             .onAppear{
-                print("SPOT PLAYER APPEARED....")
+                startCheckingPlaybackState()
                 if accessedViaGrid && appDelegate.musicSub.type == .Spotify {getSpotCredentials{success in}}
                 else{
                     if networkMonitor.isConnected{playSong()}
                     else {print("Connection failed3");showFailedConnectionAlert = true}
                 }
             }
-            .onDisappear{
-                print("Did view disappear???")
-                appRemote2?.playerAPI?.pause()
-            }
+            .onDisappear{appRemote2?.playerAPI?.pause()}
             .navigationBarItems(leading:Button {chosenCard = nil
             } label: {Image(systemName: "chevron.left").foregroundColor(.blue); Text("Back")})
             // Show an alert if showAlert is true
@@ -102,6 +99,28 @@ struct SpotPlayerView: View {
         let completeTime = String("\(m):\(s)")
         return completeTime
     }
+    
+    func startCheckingPlaybackState() {
+        Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { _ in
+            guard let appRemote2 = self.appRemote2 else {
+                self.isPlaying = false
+                return
+            }
+
+            if appRemote2.isConnected {
+                appRemote2.playerAPI?.getPlayerState({ (result, error) in
+                    if let error = error {
+                        print("Error getting player state: \(error)")
+                        self.isPlaying = false
+                    } else if let playerState = result as? SPTAppRemotePlayerState {
+                        self.isPlaying = playerState.isPaused == false
+                    }
+                })
+            } else {self.isPlaying = false}
+        }
+    }
+    
+    
     
     var SpotPlayerView2: some View {
         ZStack {

@@ -211,9 +211,6 @@ extension GridofCards {
             for coreCard in coreCards {
                 getCurrentUserID()
                 print("Creator & Current User Record IDs....")
-                //print(chosenGridCard)
-                print(coreCard.creator!)
-                print(self.userID)
                 switch whichBoxVal {
                 case .outbox:
                     filteredCoreCards = coreCards.filter{_ in (coreCard.creator!.contains(self.userID))}

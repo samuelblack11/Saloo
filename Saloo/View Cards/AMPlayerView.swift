@@ -168,7 +168,7 @@ struct AMPlayerView: View {
                 print("<<<<\(self.musicPlayer.playbackState.rawValue)")
             }
             else {activeAlert = .noConnection}
-            
+            startCheckingPlaybackState()
         }
         .onDisappear{self.musicPlayer.pause(); self.$musicPlayer.wrappedValue.currentPlaybackTime = 0}
     }
@@ -193,6 +193,13 @@ struct AMPlayerView: View {
 }
 
 extension AMPlayerView {
+    
+    func startCheckingPlaybackState() {
+        Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { _ in
+            if self.musicPlayer.playbackState == .paused {self.isPlaying = false}
+            else {self.isPlaying = true}
+        }
+    }
     
     
     func getAMUserTokenAndStoreFront(completion: @escaping () -> Void) {
