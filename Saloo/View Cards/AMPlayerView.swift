@@ -160,7 +160,9 @@ struct AMPlayerView: View {
             if networkMonitor.isConnected {
                 self.musicPlayer.setQueue(with: [songID!]);
                 self.musicPlayer.play()
-                if self.musicPlayer.playbackState.rawValue == 0 {print("NotPlaying..."); activeAlert = .songNotAvailable}
+                print("Song ID....")
+                print(songID)
+                if self.musicPlayer.playbackState.rawValue == 0 && songID != "" {print("NotPlaying..."); activeAlert = .songNotAvailable}
                 print("<<<<\(self.musicPlayer.playbackState.rawValue)")
             }
             else {activeAlert = .noConnection}
@@ -228,7 +230,20 @@ extension AMPlayerView {
         //    group.enter()
         
         amAPI.searchForAlbum(albumAndArtist:  "\(songAlbumName!) \(spotAlbumArtist!)", storeFrontID: amAPI.storeFrontID!, offset: offset, userToken: amAPI.taskToken!, completion: {(albumResponse, error) in
+                print("+++++")
                 print(error?.localizedDescription as Any)
+                if error != nil {
+                    print("search did fail...")
+                    foundMatch = "searchFailed"
+                    if songPreviewURL != nil {
+                        print("Defer to preview")
+                        deferToPreview = true
+                        DispatchQueue.main.async {
+                                updateRecordWithNewAMData(songName: "LookupFailed", songArtistName: "LookupFailed", songID: "LookupFailed", songArtImageData: Data(), songDuration: String(0))
+                    }}
+                
+                }
+            else {
                 //if error != nil {foundMatch = "searchFailed"}
                 let cleanSpotString =  cleanMusicData.compileMusicString(songOrAlbum: spotName!, artist: spotArtistName!, removeList: appDelegate.songFilterForMatch)
                 if let albumList = albumResponse?.results.albums.data {
@@ -283,7 +298,7 @@ extension AMPlayerView {
                                 deferToPreview = true
                                 DispatchQueue.main.async {
                                     updateRecordWithNewAMData(songName: "LookupFailed", songArtistName: "LookupFailed", songID: "LookupFailed", songArtImageData: Data(), songDuration: String(0))
-                        }}}
+                                }}}}
                     }}})}
 
 
