@@ -11,7 +11,7 @@ import CloudKit
 
 extension NSPersistentStore {
     func contains(manageObject: NSManagedObject) -> Bool {
-        print("Called contains")
+        //print("Called contains")
         let objectID = manageObject.objectID
         let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: manageObject.entity.name!)
         fetchRequest.predicate = NSPredicate(format: "self == %@", objectID)
@@ -19,10 +19,10 @@ extension NSPersistentStore {
         
         if let context = manageObject.managedObjectContext,
            let result = try? context.count(for: fetchRequest), result > 0 {
-            print("returning true")
+            //print("returning true")
             return true
         }
-        print("returning false...")
+        //print("returning false...")
         return false
     }
 }

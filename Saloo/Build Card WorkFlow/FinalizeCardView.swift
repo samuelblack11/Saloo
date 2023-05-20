@@ -180,9 +180,8 @@ extension FinalizeCardView {
                 createNewShare(coreCard: savedCoreCard)
                 //}
             }
-            else {
-                print("Do Not Share card right now")
-            }
+            //else {PersistenceController.shared.createCKShare(unsharedCoreCard: savedCoreCard, persistenceController: PersistenceController.shared)}
+            //else {print("Do Not Share card right now")}
         }))
             
     }

@@ -32,6 +32,8 @@ struct StartMenu: View {
     @State var appRemote2: SPTAppRemote?
     @State var whichBoxForCKAccept: InOut.SendReceive?
     @State var userID = String()
+    @ObservedObject var gettingRecord = GettingRecord.shared
+
     //@StateObject var audioManager = AudioSessionManager()
     var possibleSubscriptionValues = ["Apple Music", "Spotify", "Neither"]
     let buildCardWorkFlow = """
@@ -47,49 +49,54 @@ struct StartMenu: View {
     
     var body: some View {
         NavigationView {
+            ZStack {
                 List {
                     Text(buildCardWorkFlow)
-                        //.listRowBackground(appDelegate.appColor)
+                    //.listRowBackground(appDelegate.appColor)
                         .onTapGesture {self.showOccassions = true}
                         .fullScreenCover(isPresented: $showOccassions){OccassionsMenu()}
                     Text("Drafts 📓")
-                        //.listRowBackground(appDelegate.appColor)
+                    //.listRowBackground(appDelegate.appColor)
                         .onTapGesture {self.showDraftBox = true}
                         .fullScreenCover(isPresented: $showDraftBox) {GridofCards(cardsForDisplay: CoreCardUtils.loadCoreCards(), whichBoxVal: .draftbox)}
                     Text("Inbox 📥")
-                        //.listRowBackground(appDelegate.appColor)
+                    //.listRowBackground(appDelegate.appColor)
                         .onTapGesture {self.showInbox = true}
                         .fullScreenCover(isPresented: $showInbox) {GridofCards(cardsForDisplay: CoreCardUtils.loadCoreCards(), whichBoxVal: .inbox)}
                     Text("Outbox 📥")
-                        //.listRowBackground(appDelegate.appColor)
+                    //.listRowBackground(appDelegate.appColor)
                         .onTapGesture {self.showOutbox = true}
                         .fullScreenCover(isPresented: $showOutbox) {GridofCards(cardsForDisplay: CoreCardUtils.loadCoreCards(), whichBoxVal: .outbox)}
                     //Text("Calendar 🗓")
-                        //.listRowBackground(appDelegate.appColor)
-                        //.onTapGesture {self.showCalendar = true}
-                        //.fullScreenCover(isPresented: $showCalendar) {CalendarParent(calViewModel: calViewModel, showDetailView: showDetailView)}
+                    //.listRowBackground(appDelegate.appColor)
+                    //.onTapGesture {self.showCalendar = true}
+                    //.fullScreenCover(isPresented: $showCalendar) {CalendarParent(calViewModel: calViewModel, showDetailView: showDetailView)}
                     Text("Preferences 📱")
-                        //.listRowBackground(appDelegate.appColor)
+                    //.listRowBackground(appDelegate.appColor)
                         .onTapGesture {self.showPref = true}
                         .fullScreenCover(isPresented: $showPref) {PrefMenu()}
                 }
                 //.listRowBackground(appDelegate.appColor)
-                .onAppear{
-                    print("OnAppear called")
-                    //if appDelegate.enableShareForCreatedCard == true {
-                    //    print("EnableShare is true...")
-                    //    createNewShare(coreCard: appDelegate.createdCard!)
-                    //}
-                }
                 ProgressView()
-                    .hidden(appDelegate.showProgViewOnAcceptShare)
-                    .tint(.blue)
-                    .scaleEffect(5)
+                    .hidden(gettingRecord.hideProgViewOnAcceptShare)
+                    //.tint(.blue)
+                    .scaleEffect(7)
                     .progressViewStyle(CircularProgressViewStyle())
+            }
+            .overlay(
+                Group {
+                if gettingRecord.hideProgViewOnAcceptShare == false {
+                    CountdownView(startTime: 60) // Countdown from 60 seconds
+                        .padding()
+                        .background(Color.white.opacity(1.0))
+                        .cornerRadius(15)
+                }}, alignment: .center)
         }
         //.background(appDelegate.appColor)
         .onAppear {
             print("Start Menu Opened...")
+            timerVar()
+            //print(sceneDelegate.hideProgViewOnAcceptShare)
             //print(appDelegate.showProgViewOnAcceptShare)
             appDelegate.startMenuAppeared = true
             //print((defaults.object(forKey: "MusicSubType") as? String))
@@ -105,17 +112,54 @@ struct StartMenu: View {
     
 }
 
+struct CountdownView: View {
+    @State private var remainingTime: Int
+    init(startTime: Int) { _remainingTime = State(initialValue: startTime)}
+    let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
+    @State private var backgroundTime = Date()
+
+    var body: some View {
+        VStack {
+            Text("We're Still Saving Your Card to the Cloud. It'll be ready in just a minute 😊")
+                .font(.system(size: 20))
+                .foregroundColor(.black)
+                .multilineTextAlignment(.center)
+            Text("Time Remaining: \(remainingTime)")
+                .font(.system(size: 12))
+                .foregroundColor(.gray)
+                .multilineTextAlignment(.center)
+            ProgressView()
+            //.tint(.blue)
+                .scaleEffect(2)
+                .progressViewStyle(CircularProgressViewStyle())
+        }
+            .onReceive(timer) { _ in if remainingTime > 0 {remainingTime -= 1}}
+            .onReceive(NotificationCenter.default.publisher(for: UIApplication.willResignActiveNotification)) { _ in
+                backgroundTime = Date()
+            }
+            .onReceive(NotificationCenter.default.publisher(for: UIApplication.willEnterForegroundNotification)) { _ in
+                let elapsedSeconds = Int(Date().timeIntervalSince(backgroundTime))
+                remainingTime = max(remainingTime - elapsedSeconds, 0)
+            }
+    }
+}
+
+
 extension StartMenu {
 
 
+    func timerVar() {
+        Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { [self] timer in
+            print("TimeVar Should Hide Prog View? \(GettingRecord.shared.hideProgViewOnAcceptShare )")
+        }
+    }
+    
+    
+    
     func createNewShare(coreCard: CoreCard) {
        print("CreateNewShare called")
-       print(coreCard.songAddedUsing)
-       print(coreCard.songID)
        if PersistenceController.shared.privatePersistentStore.contains(manageObject: coreCard) {
            print("privateStoreDoesContainObject")
-           print(coreCard.songAddedUsing)
-           print(coreCard.songID)
            PersistenceController.shared.presentCloudSharingController(coreCard: coreCard)
        }
    }

@@ -72,6 +72,14 @@ class CoreCardWrapper: ObservableObject {
     @Published var coreCard = CoreCard()
 }
 
+class GettingRecord: ObservableObject {
+    static let shared = GettingRecord()
+    
+    @Published var hideProgViewOnAcceptShare: Bool = true
+    
+    private init() {} // Ensures no other instances can be created
+}
+
 class ChosenSong: ObservableObject {
     @Published var id = String()
     @Published var name = String()

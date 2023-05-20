@@ -22,9 +22,12 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
     var checkIfRecordAddedToStore = true
     var waitingToAcceptRecord = false
     @ObservedObject var appDelegate = AppDelegate()
-    var showProgViewOnAcceptShare: Bool = false
+    //@ObservedObject var networkMonitor =  NetworkMonitor()
+    @ObservedObject var networkMonitor = NetworkMonitor()
+    //var hideProgViewOnAcceptShare: Bool = true
     let defaults = UserDefaults.standard
-
+    var counter = 0
+    
     func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {print("Opened URL....")}
     
     func updateMusicSubType() {
@@ -45,7 +48,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
                 Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { [self] timer in
                     if self.gotRecord && self.connectToScene {
                         if self.appDelegate.musicSub.type == .Neither{self.updateMusicSubType()}
-                        let contentView = GridofCards(cardsForDisplay: CoreCardUtils.loadCoreCards(), whichBoxVal: self.whichBoxForCKAccept!, chosenCard: self.coreCard).environmentObject(self.appDelegate)
+                        let contentView = GridofCards(cardsForDisplay: CoreCardUtils.loadCoreCards(), whichBoxVal: self.whichBoxForCKAccept!, chosenCard: self.coreCard).environmentObject(self.appDelegate).environmentObject(self.networkMonitor)
                         let window = UIWindow(windowScene: windowScene)
                         self.window = window
                         let initialViewController = UIHostingController(rootView: contentView)
@@ -68,7 +71,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
             Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { timer in
                 if self.gotRecord && self.connectToScene {
                     if self.appDelegate.musicSub.type == .Neither{self.updateMusicSubType()}
-                    let contentView = GridofCards(cardsForDisplay: CoreCardUtils.loadCoreCards(), whichBoxVal: self.whichBoxForCKAccept!, chosenCard: self.coreCard).environmentObject(self.appDelegate)
+                    let contentView = GridofCards(cardsForDisplay: CoreCardUtils.loadCoreCards(), whichBoxVal: self.whichBoxForCKAccept!, chosenCard: self.coreCard).environmentObject(self.appDelegate).environmentObject(self.networkMonitor)
                     let window = UIWindow(windowScene: windowScene)
                     self.window = window
                     let initialViewController = UIHostingController(rootView: contentView)
@@ -98,7 +101,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
             if let error = error {
                 print("\(#function): Failed to accept share invitations: \(error)")
                 // repeat same logic for accept share as participant, and use to open the specified record.
-                self.acceptedShare = cloudKitShareMetadata.share; print("Accepted Share..."); print(self.acceptedShare as Any)
+                self.acceptedShare = cloudKitShareMetadata.share; print("Trying to Get Share as Owner..."); print(self.acceptedShare as Any)
                 waitingToAcceptRecord = true
                 Task {await self.getRecordViaQueryAsOwner(shareMetaData: cloudKitShareMetadata)}
             }
@@ -117,40 +120,120 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
         }
     }
     
-    func getRecordViaQueryAsOwner(shareMetaData: CKShare.Metadata) {
+    func getRecordViaQuery(shareMetaData: CKShare.Metadata) {
         print("called getRecordViaQueryAsOwner....")
+        //var counter = 0
         let ckContainer = PersistenceController.shared.cloudKitContainer
         let pred = NSPredicate(value: true)
         let query = CKQuery(recordType: "CD_CoreCard", predicate: pred)
         let op3 = CKQueryOperation(query: query)
-        op3.zoneID = shareMetaData.share.recordID.zoneID//.zoneName
+        op3.zoneID = shareMetaData.share.recordID.zoneID
+        //print("Got zone ID -> \(op3.zoneID)")
+
+        var foundRecord = false // Introduce a flag here
+
         op3.recordMatchedBlock = {recordID, result in
-            self.checkIfRecordAddedToStore = false
-            ckContainer.privateCloudDatabase.fetch(withRecordID: recordID){ record, error in
-                self.parseRecord(record: record)
+            foundRecord = true // Set the flag to true if any record is found
+            // ... rest of your code
+            GettingRecord.shared.hideProgViewOnAcceptShare  = false
+            switch result {
+            case .success(let record):
+                //var recordID2 = record.recordID
+                self.checkIfRecordAddedToStore = false
+                ckContainer.sharedCloudDatabase.fetch(withRecordID: record.recordID){ record, error in
+                    self.parseRecord(record: record)
+                    print("Got Record...")
+                }
+            case .failure(let error):
+                print("ErrorOpeningShareAsOwner....\(error)")
             }
         }
-
-        ckContainer.privateCloudDatabase.add(op3)
-    }
-    
-    
-    func getRecordViaQuery(shareMetaData: CKShare.Metadata) {
-        print("called getRecordViaQuery....")
-        let ckContainer = PersistenceController.shared.cloudKitContainer
-        let pred = NSPredicate(value: true)
-        let query = CKQuery(recordType: "CD_CoreCard", predicate: pred)
-        let op3 = CKQueryOperation(query: query)
-        op3.zoneID = shareMetaData.share.recordID.zoneID//.zoneName
-        op3.recordMatchedBlock = {recordID, result in
-            self.checkIfRecordAddedToStore = false
-            ckContainer.sharedCloudDatabase.fetch(withRecordID: recordID){ record, error in
-                self.parseRecord(record: record)
+        
+        op3.queryCompletionBlock = { (cursor, error) in
+            print("QueryCompletionBlock")
+            GettingRecord.shared.hideProgViewOnAcceptShare = false
+            if let error = error {
+                print("Error executing CKQueryOperation: \(error)")
+            } else {
+                if foundRecord {
+                    print("CKQueryOperation completed successfully and found records.")
+                    GettingRecord.shared.hideProgViewOnAcceptShare  = true
+                    self.counter = 0
+                } else {
+                    GettingRecord.shared.hideProgViewOnAcceptShare  = false
+                    if self.counter < 20 {
+                        print("CKQueryOperation completed successfully but found no records.")
+                        // If no records are found, wait for 2 seconds and then retry the operation
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                            self.getRecordViaQueryAsOwner(shareMetaData: shareMetaData)
+                            print("Counter = \(self.counter)")
+                            self.counter += 1
+                        }
+                    }
+                }
             }
         }
 
         ckContainer.sharedCloudDatabase.add(op3)
     }
+    
+    func getRecordViaQueryAsOwner(shareMetaData: CKShare.Metadata) {
+        print("called getRecordViaQueryAsOwner....")
+        //var counter = 0
+        let ckContainer = PersistenceController.shared.cloudKitContainer
+        let pred = NSPredicate(value: true)
+        let query = CKQuery(recordType: "CD_CoreCard", predicate: pred)
+        let op3 = CKQueryOperation(query: query)
+        op3.zoneID = shareMetaData.share.recordID.zoneID
+        //print("Got zone ID -> \(op3.zoneID)")
+
+        var foundRecord = false // Introduce a flag here
+
+        op3.recordMatchedBlock = {recordID, result in
+            foundRecord = true // Set the flag to true if any record is found
+            // ... rest of your code
+            GettingRecord.shared.hideProgViewOnAcceptShare  = false
+            switch result {
+            case .success(let record):
+                //var recordID2 = record.recordID
+                self.checkIfRecordAddedToStore = false
+                ckContainer.privateCloudDatabase.fetch(withRecordID: record.recordID){ record, error in
+                    self.parseRecord(record: record)
+                    print("Got Record...")
+                }
+            case .failure(let error):
+                print("ErrorOpeningShareAsOwner....\(error)")
+            }
+        }
+        
+        op3.queryCompletionBlock = { (cursor, error) in
+            print("QueryCompletionBlock")
+            GettingRecord.shared.hideProgViewOnAcceptShare = false
+            if let error = error {
+                print("Error executing CKQueryOperation: \(error)")
+            } else {
+                if foundRecord {
+                    print("CKQueryOperation completed successfully and found records.")
+                    GettingRecord.shared.hideProgViewOnAcceptShare  = true
+                    self.counter = 0
+                } else {
+                    GettingRecord.shared.hideProgViewOnAcceptShare  = false
+                    if self.counter < 20 {
+                        print("CKQueryOperation completed successfully but found no records.")
+                        // If no records are found, wait for 2 seconds and then retry the operation
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                            self.getRecordViaQueryAsOwner(shareMetaData: shareMetaData)
+                            print("Counter = \(self.counter)")
+                            self.counter += 1
+                        }
+                    }
+                }
+            }
+        }
+
+        ckContainer.privateCloudDatabase.add(op3)
+    }
+
     
     func parseRecord(record: CKRecord?) {
         print("Parsing Record....")

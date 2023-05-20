@@ -104,6 +104,32 @@ extension PersistenceController {
         }
         return sharingController
     }
+    
+    
+    
+    func createCKShare(unsharedCoreCard: CoreCard, persistenceController: PersistenceController) {
+        let sharingController = UICloudSharingController { (controller, completion: @escaping (CKShare?, CKContainer?, Error?) -> Void) in
+            DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+            print("Called new sharing controller...")
+            
+            self.persistentContainer.share([unsharedCoreCard], to: nil) { objectIDs, share, container, error in
+                print("Beginning share completion handler...")
+                if let share = share {
+                    print("Share = Share")
+                    self.configure(share: share)
+                    // Set the available permissions to an empty set to load the share into the sharing controller
+                    controller.availablePermissions = []
+                }
+                print("Called share completion")
+                print(share)
+                print(container)
+                print(error)
+                
+                completion(share, container, error)
+            }
+            }
+        }
+    }
 
         
     
@@ -260,7 +286,7 @@ extension PersistenceController {
     
     private func configure(share: CKShare, with coreCard: CoreCard? = nil) {
         print("Did configure?")
-        share[CKShare.SystemFieldKey.title] = "A Greeting, from Saloo"
+        share[CKShare.SystemFieldKey.title] = "A Greeting from Saloo"
         share[CKShare.SystemFieldKey.thumbnailImageData] = coreCard?.coverImage
         share.publicPermission = .readOnly
         //share.recordID = coreCard?.associatedRecord.recordID

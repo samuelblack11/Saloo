@@ -54,6 +54,8 @@ struct AMPlayerView: View {
     @Binding var deferToPreview: Bool
     let cleanMusicData = CleanMusicData()
     @EnvironmentObject var networkMonitor: NetworkMonitor
+    @Binding var showAPV: Bool
+    @State private var disableSelect = false
     enum ActiveAlert: Identifiable {
         case songNotAvailable, noConnection
         var id: Int {
@@ -72,7 +74,7 @@ struct AMPlayerView: View {
             .alert(item: $activeAlert) { alertType -> Alert in
                 switch alertType {
                 case .songNotAvailable:
-                    return Alert(title: Text("Song Not Available"), message: Text("Sorry, this song isn't available. Please select a different one."), dismissButton: .default(Text("OK")))
+                    return Alert(title: Text("Song Not Available"), message: Text("Sorry, this song isn't available. Please select a different one."), dismissButton: .default(Text("OK")){showAPV = false})
                 case .noConnection:
                     return Alert(title: Text("Network Error"), message: Text("Sorry, we weren't able to connect to the internet. Please reconnect and try again."), dismissButton: .default(Text("OK")))
                 }
@@ -162,7 +164,7 @@ struct AMPlayerView: View {
                 self.musicPlayer.play()
                 print("Song ID....")
                 print(songID)
-                if self.musicPlayer.playbackState.rawValue == 0 && songID != "" {print("NotPlaying..."); activeAlert = .songNotAvailable}
+                if self.musicPlayer.playbackState.rawValue == 0 && songID != "" {print("NotPlaying..."); self.disableSelect = true; activeAlert = .songNotAvailable}
                 print("<<<<\(self.musicPlayer.playbackState.rawValue)")
             }
             else {activeAlert = .noConnection}
@@ -178,7 +180,7 @@ struct AMPlayerView: View {
             songProgress = 0.0
 
             
-        } label: {Text("Select Song For Card").foregroundColor(.blue)}}
+        } label: {Text("Select Song For Card").foregroundColor(.blue).disabled(disableSelect)}}
         else {Text("")}
     }
     

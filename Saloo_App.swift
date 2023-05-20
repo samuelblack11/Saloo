@@ -16,6 +16,7 @@ struct Saloo_App: App {
     @StateObject var appDelegate = AppDelegate()
     @StateObject var sceneDelegate = SceneDelegate()
     @StateObject var networkMonitor = NetworkMonitor()
+
     //@UIApplicationDelegateAdaptor var appDelegate2: AppDelegate
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate3
 
