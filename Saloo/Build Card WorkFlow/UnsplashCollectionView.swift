@@ -41,30 +41,33 @@ struct UnsplashCollectionView: View {
     
     var body: some View {
         NavigationView {
-            ScrollView {
-                LazyVGrid(columns: columns, spacing: 10) {
-                    ForEach(imageObjects, id: \.self.id) {photoObj in
-                        AsyncImage(url: photoObj.smallImageURL) { image in
-                            image.resizable()} placeholder: {ZStack{Color.gray; ProgressView()}}
-                            .frame(width: 125, height: 125)
-                            .onTapGesture {Task {
-                                //try? await handleTap(index: photoObj.index)
-                                if networkMonitor.isConnected{try? await handleTap(index: photoObj.index)}
-                                else{showFailedConnectionAlert = true}
-                            }}
+            ZStack {
+                ScrollView {
+                    LazyVGrid(columns: columns, spacing: 10) {
+                        ForEach(imageObjects, id: \.self.id) {photoObj in
+                            AsyncImage(url: photoObj.smallImageURL) { image in
+                                image.resizable()} placeholder: {ZStack{Color.gray; ProgressView()}}
+                                .frame(width: 125, height: 125)
+                                .onTapGesture {Task {
+                                    //try? await handleTap(index: photoObj.index)
+                                    if networkMonitor.isConnected{try? await handleTap(index: photoObj.index)}
+                                    else{showFailedConnectionAlert = true}
+                                }}
+                        }
                     }
+                    .navigationTitle("Choose Front Cover")
+                    .navigationBarItems(leading:Button {showOccassions.toggle()} label: {Image(systemName: "chevron.left").foregroundColor(.blue); Text("Back")})
+                    Button("More...") {
+                        if networkMonitor.isConnected {
+                            getMorePhotos(); print("page count: \(chosenObject.pageCount)")
+                        }
+                        else {showFailedConnectionAlert = true}
+                        
+                    }.disabled(setButtonStatus(imageObjects: imageObjects))
                 }
-                .navigationTitle("Choose Front Cover")
-                .navigationBarItems(leading:Button {showOccassions.toggle()} label: {Image(systemName: "chevron.left").foregroundColor(.blue); Text("Back")})
-                Button("More...") {
-                    if networkMonitor.isConnected {
-                        getMorePhotos(); print("page count: \(chosenObject.pageCount)")
-                    }
-                    else {showFailedConnectionAlert = true}
-
-                }.disabled(setButtonStatus(imageObjects: imageObjects))
+                .modifier(GettingRecordAlert())
+                LoadingOverlay()
             }
-            .modifier(GettingRecordAlert())
         }
         
         .font(.headline).padding(.horizontal).frame(maxHeight: 600)

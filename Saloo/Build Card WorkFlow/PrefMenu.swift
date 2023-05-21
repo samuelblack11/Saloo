@@ -81,12 +81,12 @@ struct PrefMenu: View {
                         Text("I don't subscribe to either")
                             .onTapGesture {appDelegate.musicSub.type = .Neither; defaults.set("Neither", forKey: "MusicSubType"); showStart = true}
                     }
-
                     ProgressView()
                         .hidden(hideProgressView)
                         .tint(musicColor)
                         .scaleEffect(5)
                         .progressViewStyle(CircularProgressViewStyle())
+                    LoadingOverlay()
                 }
             }
             .alert(isPresented: $showFailedConnectionAlert) {

@@ -40,30 +40,33 @@ struct ConfirmFrontCoverView: View {
 
     var body: some View {
         NavigationView {
-        VStack {
-            Image(uiImage: UIImage(data: chosenObject.coverImage)!)
-                .resizable()
-                .frame(width: 250, height: 250)
-                .padding(.top, 50)
-            VStack(spacing: 0) {
-                Text("Photo By ")
-                Link(String(chosenObject.coverImagePhotographer), destination: URL(string: "https://unsplash.com/@\(chosenObject.coverImageUserName)")!)
-                Text(" On ")
-                Link("Unsplash", destination: URL(string: "https://unsplash.com")!)
-            }
-            Spacer()
-            Button("Confirm Image for Front Cover") {
-                //segueToCollageMenu = true
-                showCollageMenu = true
-                PhotoAPI.pingDownloadURL(downloadLocation: chosenObject.downloadLocation, completionHandler: { (response, error) in
-                    if response != nil {
-                        debugPrint("Ping Success!.......")
-                        debugPrint(response)
-                        }
-                    if response == nil {
-                        debugPrint("Ping Failed!.......")}})
-            }.padding(.bottom, 10).fullScreenCover(isPresented: $showCollageMenu) {CollageStyleMenu()}
-            Text("(Attribution Will Be Included on Back Cover)").font(.system(size: 12)).padding(.bottom, 20)
+            ZStack {
+                VStack {
+                    Image(uiImage: UIImage(data: chosenObject.coverImage)!)
+                        .resizable()
+                        .frame(width: 250, height: 250)
+                        .padding(.top, 50)
+                    VStack(spacing: 0) {
+                        Text("Photo By ")
+                        Link(String(chosenObject.coverImagePhotographer), destination: URL(string: "https://unsplash.com/@\(chosenObject.coverImageUserName)")!)
+                        Text(" On ")
+                        Link("Unsplash", destination: URL(string: "https://unsplash.com")!)
+                    }
+                    Spacer()
+                    Button("Confirm Image for Front Cover") {
+                        //segueToCollageMenu = true
+                        showCollageMenu = true
+                        PhotoAPI.pingDownloadURL(downloadLocation: chosenObject.downloadLocation, completionHandler: { (response, error) in
+                            if response != nil {
+                                debugPrint("Ping Success!.......")
+                                debugPrint(response)
+                            }
+                            if response == nil {
+                                debugPrint("Ping Failed!.......")}})
+                    }.padding(.bottom, 10).fullScreenCover(isPresented: $showCollageMenu) {CollageStyleMenu()}
+                    Text("(Attribution Will Be Included on Back Cover)").font(.system(size: 12)).padding(.bottom, 20)
+                }
+                LoadingOverlay()
             }
         .onAppear{getCoverSize()}
         .modifier(GettingRecordAlert())

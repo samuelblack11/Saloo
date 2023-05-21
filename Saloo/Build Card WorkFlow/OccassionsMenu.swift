@@ -57,59 +57,62 @@ struct OccassionsMenu: View {
         // NavigationView combines display styling of UINavigationBar and VC stack behavior of UINavigationController.
         // Hold cmd + ctrl, then click space bar to show emoji menu
         NavigationView {
-        List {
-            Section(header: Text("Personal & Search")) {
-                Text("Select from Photo Library ")
-                    //.listRowBackground(appDelegate.appColor)
-                    .onTapGesture {self.showCameraCapture = false; self.showImagePicker = true}
-                    .fullScreenCover(isPresented: $showImagePicker){ImagePicker(image: $coverImageFromLibrary)}
-                    .onChange(of: coverImageFromLibrary) { _ in loadImage(pic: coverImageFromLibrary!)
-                        handlePersonalPhotoSelection()
-                        showCollageMenu = true; chosenObject.frontCoverIsPersonalPhoto = 1
-                        chosenOccassion.occassion = "None"; chosenOccassion.collectionID = "None"
-                        }
-                    .fullScreenCover(isPresented: $showCollageMenu){CollageStyleMenu()}
-                Text("Take Photo with Camera 📸 ")
-                    //.listRowBackground(appDelegate.appColor)
-                    .onTapGesture {
-                    self.showImagePicker = false
-                    self.showCameraCapture = true
-                }
-                .fullScreenCover(isPresented: $showCameraCapture)
-                {CameraCapture(image: self.$coverImageFromCamera, isPresented: self.$showCameraCapture, sourceType: .camera)}
-                .onChange(of: coverImageFromCamera) { _ in loadImage(pic: coverImageFromCamera!)
-                    handlePersonalPhotoSelection()
-                    showCollageMenu = true; chosenObject.frontCoverIsPersonalPhoto = 1
-                    chosenOccassion.occassion = "None"; chosenOccassion.collectionID = "None"
-                    }
-                .fullScreenCover(isPresented: $showCollageMenu){CollageStyleMenu()}
-                HStack {
-                    TextField("Custom Search", text: $customSearch)
-                        //.foregroundColor(appDelegate.appColor)
+            ZStack {
+                List {
+                    Section(header: Text("Personal & Search")) {
+                        Text("Select from Photo Library ")
                         //.listRowBackground(appDelegate.appColor)
-                        .padding(.leading, 5)
-                        .frame(height:35)
-                    Button {
-                        if networkMonitor.isConnected {
-                            showUCV = true
-                            chosenObject.frontCoverIsPersonalPhoto = 0
-                            chosenOccassion.occassion = "None"
-                            chosenOccassion.collectionID = (customSearch.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed))!
+                            .onTapGesture {self.showCameraCapture = false; self.showImagePicker = true}
+                            .fullScreenCover(isPresented: $showImagePicker){ImagePicker(image: $coverImageFromLibrary)}
+                            .onChange(of: coverImageFromLibrary) { _ in loadImage(pic: coverImageFromLibrary!)
+                                handlePersonalPhotoSelection()
+                                showCollageMenu = true; chosenObject.frontCoverIsPersonalPhoto = 1
+                                chosenOccassion.occassion = "None"; chosenOccassion.collectionID = "None"
+                            }
+                            .fullScreenCover(isPresented: $showCollageMenu){CollageStyleMenu()}
+                        Text("Take Photo with Camera 📸 ")
+                        //.listRowBackground(appDelegate.appColor)
+                            .onTapGesture {
+                                self.showImagePicker = false
+                                self.showCameraCapture = true
+                            }
+                            .fullScreenCover(isPresented: $showCameraCapture)
+                        {CameraCapture(image: self.$coverImageFromCamera, isPresented: self.$showCameraCapture, sourceType: .camera)}
+                            .onChange(of: coverImageFromCamera) { _ in loadImage(pic: coverImageFromCamera!)
+                                handlePersonalPhotoSelection()
+                                showCollageMenu = true; chosenObject.frontCoverIsPersonalPhoto = 1
+                                chosenOccassion.occassion = "None"; chosenOccassion.collectionID = "None"
+                            }
+                            .fullScreenCover(isPresented: $showCollageMenu){CollageStyleMenu()}
+                        HStack {
+                            TextField("Custom Search", text: $customSearch)
+                            //.foregroundColor(appDelegate.appColor)
+                            //.listRowBackground(appDelegate.appColor)
+                                .padding(.leading, 5)
+                                .frame(height:35)
+                            Button {
+                                if networkMonitor.isConnected {
+                                    showUCV = true
+                                    chosenObject.frontCoverIsPersonalPhoto = 0
+                                    chosenOccassion.occassion = "None"
+                                    chosenOccassion.collectionID = (customSearch.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed))!
+                                }
+                                else {showFailedConnectionAlert = true}
+                            }
+                        label: {Image(systemName: "magnifyingglass.circle.fill")}
+                                .fullScreenCover(isPresented: $showUCV) {UnsplashCollectionView()}
                         }
-                        else {showFailedConnectionAlert = true}
                     }
-                    label: {Image(systemName: "magnifyingglass.circle.fill")}
-                        .fullScreenCover(isPresented: $showUCV) {UnsplashCollectionView()}
+                    Section(header: Text("Year-Round Occassions")) {ForEach(yearRoundCollection) {menuSection(for: $0, shareable: false)
+                    }}
+                    Section(header: Text("Winter Holidays")) {ForEach(winterCollection) {menuSection(for: $0, shareable: false)}}
+                    Section(header: Text("Spring Holidays")) {ForEach(springCollection) {menuSection(for: $0, shareable: false)}}
+                    Section(header: Text("Summer Holidays")) {ForEach(summerCollection) {menuSection(for: $0, shareable: false)}}
+                    Section(header: Text("Fall Holidays")) {ForEach(fallCollection) {menuSection(for: $0, shareable: false)}}
+                    Section(header: Text("Other Collections")) {ForEach(otherCollection) {menuSection(for: $0, shareable: false)}}
                 }
+                LoadingOverlay()
             }
-            Section(header: Text("Year-Round Occassions")) {ForEach(yearRoundCollection) {menuSection(for: $0, shareable: false)
-            }}
-            Section(header: Text("Winter Holidays")) {ForEach(winterCollection) {menuSection(for: $0, shareable: false)}}
-            Section(header: Text("Spring Holidays")) {ForEach(springCollection) {menuSection(for: $0, shareable: false)}}
-            Section(header: Text("Summer Holidays")) {ForEach(summerCollection) {menuSection(for: $0, shareable: false)}}
-            Section(header: Text("Fall Holidays")) {ForEach(fallCollection) {menuSection(for: $0, shareable: false)}}
-            Section(header: Text("Other Collections")) {ForEach(otherCollection) {menuSection(for: $0, shareable: false)}}
-        }
         .onAppear {if networkMonitor.isConnected == false {showFailedConnectionAlert = true}}
         .alert(isPresented: $showFailedConnectionAlert) {
             Alert(title: Text("Network Error"), message: Text("Sorry, we weren't able to connect to the internet. Please reconnect and try again."), dismissButton: .default(Text("OK")))

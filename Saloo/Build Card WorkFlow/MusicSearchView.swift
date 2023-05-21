@@ -82,87 +82,72 @@ struct MusicSearchView: View {
 
     var body: some View {
         NavigationStack {
-            if appDelegate.musicSub.type == .Spotify {
-                //sortResults
-                TextField("Track", text: $songSearch)
-                TextField("Artist", text: $artistSearch)
-                Button("Search"){
-                    //searchWithSpotify()
-                    if networkMonitor.isConnected {searchWithSpotify()}
-                    else {showFailedConnectionAlert = true}
-                }
-            }
-            else {
-                TextField("Search Songs", text: $songSearch, onCommit: {
-                    UIApplication.shared.resignFirstResponder()
-                    if networkMonitor.isConnected {
-                        if self.songSearch.isEmpty {
-                            self.searchResults = []
-                        } else  {
-                            print("Connection Available...")
-                            switch appDelegate.musicSub.type {
-                            case .Apple:
-                                return searchWithAM()
-                            case .Neither:
-                                return searchWithAM()
-                            case .Spotify:
-                                return searchWithSpotify()
-                            }
-                        }
+            ZStack {
+                if appDelegate.musicSub.type == .Spotify {
+                    TextField("Track", text: $songSearch)
+                    TextField("Artist", text: $artistSearch)
+                    Button("Search"){
+                        if networkMonitor.isConnected {searchWithSpotify()}
+                        else {showFailedConnectionAlert = true}
                     }
-                    else {showFailedConnectionAlert = true}
-                }).padding(.top, 15)
-            }
-            NavigationView {
-                ZStack {
-                    if isLoading {ProgressView().frame(width: UIScreen.screenWidth/2,height: UIScreen.screenHeight/2)}
-                    List {
-                        ForEach(searchResults, id: \.self) { song in
-                            HStack {
-                                Image(uiImage: UIImage(data: song.artImageData)!)
-                                VStack{
-                                    Text(song.name)
-                                        .font(.headline)
-                                        .lineLimit(2)
-                                        .frame(maxWidth: .infinity, alignment: .leading)
-                                    Text(song.artistName)
-                                        .font(.caption)
-                                        .foregroundColor(.secondary)
-                                        .lineLimit(1)
-                                        .frame(maxWidth: .infinity, alignment: .leading)
+                }
+                else {
+                    TextField("Search Songs", text: $songSearch, onCommit: {
+                        UIApplication.shared.resignFirstResponder()
+                        if networkMonitor.isConnected {
+                            if self.songSearch.isEmpty {self.searchResults = []}
+                            else  {
+                                switch appDelegate.musicSub.type {
+                                case .Apple: return searchWithAM()
+                                case .Neither: return searchWithAM()
+                                case .Spotify: return searchWithSpotify()
                                 }
-                                Spacer()
                             }
-                            .frame(width: UIScreen.screenWidth, height: (UIScreen.screenHeight/7))
-                            .onTapGesture {
-                                print("Playing \(song.name)")
-                                createChosenSong(song: song)
+                        }
+                        else {showFailedConnectionAlert = true}
+                    }).padding(.top, 15)
+                }
+                NavigationView {
+                    ZStack {
+                        if isLoading {ProgressView().frame(width: UIScreen.screenWidth/2,height: UIScreen.screenHeight/2)}
+                        List {
+                            ForEach(searchResults, id: \.self) { song in
+                                HStack {
+                                    Image(uiImage: UIImage(data: song.artImageData)!)
+                                    VStack{
+                                        Text(song.name).font(.headline).lineLimit(2).frame(maxWidth: .infinity, alignment: .leading)
+                                        Text(song.artistName).font(.caption).foregroundColor(.secondary).lineLimit(1).frame(maxWidth: .infinity, alignment: .leading)
+                                    }
+                                    Spacer()
+                                }
+                                .frame(width: UIScreen.screenWidth, height: (UIScreen.screenHeight/7))
+                                .onTapGesture {print("Playing \(song.name)");createChosenSong(song: song)}
                             }
                         }
                     }
                 }
-            }
-            .onAppear{
-                if appDelegate.musicSub.type == .Spotify {getSpotCredentials{success in}}
-                if appDelegate.musicSub.type == .Apple {
-                    if networkMonitor.isConnected {getAMUserTokenAndStoreFront{}}
-                    else {showFailedConnectionAlert = true}
+                .onAppear{
+                    if appDelegate.musicSub.type == .Spotify {getSpotCredentials{success in}}
+                    if appDelegate.musicSub.type == .Apple {
+                        if networkMonitor.isConnected {getAMUserTokenAndStoreFront{}}
+                        else {showFailedConnectionAlert = true}}
                 }
-            }
-            .alert(isPresented: $showFailedConnectionAlert) {
-                Alert(title: Text("Network Error"), message: Text("Sorry, we weren't able to connect to the internet. Please reconnect and try again."), dismissButton: .default(Text("OK")))
-            }
-            .navigationBarItems(leading:Button {showWriteNote.toggle()} label: {Image(systemName: "chevron.left").foregroundColor(.blue); Text("Back")})
-            .fullScreenCover(isPresented: $showWriteNote){WriteNoteView()}
-            .popover(isPresented: $showAPV) {AMPlayerView(songID: chosenSong.id, songName: chosenSong.name, songArtistName: chosenSong.artistName, songArtImageData: chosenSong.artwork, songDuration: chosenSong.durationInSeconds, songPreviewURL: chosenSong.songPreviewURL, confirmButton: true, showFCV: $showFCV, chosenCard: $emptyCard, deferToPreview: $deferToPreview, showAPV: $showAPV)
-                    .presentationDetents([.fraction(0.4)])
-                    .fullScreenCover(isPresented: $showFCV) {FinalizeCardView(cardType: determineCardType())}
-                    .fullScreenCover(isPresented: $showWriteNote){WriteNoteView()}
-            }
-            .popover(isPresented: $showSPV) {SpotPlayerView(songID: chosenSong.spotID, spotName: chosenSong.spotName, spotArtistName: chosenSong.spotArtistName, songArtImageData: chosenSong.spotImageData, songDuration: chosenSong.spotSongDuration, songPreviewURL: chosenSong.spotPreviewURL, confirmButton: true, showFCV: $showFCV, accessedViaGrid: false, appRemote2: appRemote2, chosenCard: $emptyCard, deferToPreview: $deferToPreview)
-                    .presentationDetents([.fraction(0.4)])
-                    .fullScreenCover(isPresented: $showFCV) {FinalizeCardView(cardType: determineCardType(), appRemote2: appRemote2)}
-                    .fullScreenCover(isPresented: $showWriteNote) {WriteNoteView()}
+                .alert(isPresented: $showFailedConnectionAlert) {
+                    Alert(title: Text("Network Error"), message: Text("Sorry, we weren't able to connect to the internet. Please reconnect and try again."), dismissButton: .default(Text("OK")))
+                }
+                .navigationBarItems(leading:Button {showWriteNote.toggle()} label: {Image(systemName: "chevron.left").foregroundColor(.blue); Text("Back")})
+                .fullScreenCover(isPresented: $showWriteNote){WriteNoteView()}
+                .popover(isPresented: $showAPV) {AMPlayerView(songID: chosenSong.id, songName: chosenSong.name, songArtistName: chosenSong.artistName, songArtImageData: chosenSong.artwork, songDuration: chosenSong.durationInSeconds, songPreviewURL: chosenSong.songPreviewURL, confirmButton: true, showFCV: $showFCV, chosenCard: $emptyCard, deferToPreview: $deferToPreview, showAPV: $showAPV)
+                        .presentationDetents([.fraction(0.4)])
+                        .fullScreenCover(isPresented: $showFCV) {FinalizeCardView(cardType: determineCardType())}
+                        .fullScreenCover(isPresented: $showWriteNote){WriteNoteView()}
+                }
+                .popover(isPresented: $showSPV) {SpotPlayerView(songID: chosenSong.spotID, spotName: chosenSong.spotName, spotArtistName: chosenSong.spotArtistName, songArtImageData: chosenSong.spotImageData, songDuration: chosenSong.spotSongDuration, songPreviewURL: chosenSong.spotPreviewURL, confirmButton: true, showFCV: $showFCV, accessedViaGrid: false, appRemote2: appRemote2, chosenCard: $emptyCard, deferToPreview: $deferToPreview)
+                        .presentationDetents([.fraction(0.4)])
+                        .fullScreenCover(isPresented: $showFCV) {FinalizeCardView(cardType: determineCardType(), appRemote2: appRemote2)}
+                        .fullScreenCover(isPresented: $showWriteNote) {WriteNoteView()}
+                }
+                LoadingOverlay()
             }
             .modifier(GettingRecordAlert())
             .environmentObject(spotifyAuth)
@@ -222,9 +207,6 @@ extension MusicSearchView {
                             let artURL = URL(string:song.attributes.artwork.url.replacingOccurrences(of: "{w}", with: "80").replacingOccurrences(of: "{h}", with: "80"))
                             let _ = getURLData(url: artURL!, completionHandler: { (artResponse, error2) in
                                 print("Song Name is...\(song.attributes.name)")
-                                print("Disc Number is.... \(song.attributes.discNumber)")
-                                
-                                
                                 let songForList = SongForList(id: song.attributes.playParams.id, name: song.attributes.name, artistName: song.attributes.artistName, albumName: song.attributes.albumName,artImageData: artResponse!, durationInMillis: song.attributes.durationInMillis, isPlaying: false, previewURL: songPrev!, disc_number: song.attributes.discNumber)
                                 if cleanMusicData.containsString(listOfSubStrings: appDelegate.songFilterForSearch, songName: songForList.name) || cleanMusicData.containsString(listOfSubStrings: appDelegate.songFilterForSearch, songName: songForList.albumName){
                                 print("Did Not Append....")
@@ -248,7 +230,6 @@ extension MusicSearchView {
             chosenSong.spotImageData = song.artImageData
             chosenSong.spotSongDuration = Double(song.durationInMillis/1000)
             chosenSong.discNumber = song.disc_number!
-            print("Set disc_number to \(chosenSong.discNumber)")
             chosenSong.spotPreviewURL = song.previewURL
             chosenSong.songAddedUsing = "Spotify"
             if networkMonitor.isConnected{
@@ -286,11 +267,9 @@ extension MusicSearchView {
         let totalOffsets = totalAlbums / pageSize
         let group1 = DispatchGroup()
         print("CheckPoint2")
-
         for offset in 0..<totalOffsets {
             group1.enter()
             print("CheckPoint3")
-
             DispatchQueue.global().async {
                 SpotifyAPI().getAlbumIDUsingNameOnly(albumName: cleanAlbumName, offset: offset * pageSize, authToken: spotifyAuth.access_Token) { albumResponse, error in
                     print("FFFFF")

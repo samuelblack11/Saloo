@@ -67,53 +67,56 @@ struct WriteNoteView: View {
     
     var body: some View {
         NavigationView {
-            ScrollView {
-        TextEditor(text: $message.value)
-            .border(Color.red, width: $message.hasReachedLimit.wrappedValue ? 1 : 0 )
-            .frame(minHeight: 150)
-            .font(Font.custom(selectedFont, size: 14))
-            .onTapGesture {
-                if message.value == "Write Your Note Here" {message.value = ""}
-                //isNoteFieldFocused.toggle()
-                tappedTextEditor = true
+            ZStack {
+                ScrollView {
+                    TextEditor(text: $message.value)
+                        .border(Color.red, width: $message.hasReachedLimit.wrappedValue ? 1 : 0 )
+                        .frame(minHeight: 150)
+                        .font(Font.custom(selectedFont, size: 14))
+                        .onTapGesture {
+                            if message.value == "Write Your Note Here" {message.value = ""}
+                            //isNoteFieldFocused.toggle()
+                            tappedTextEditor = true
+                        }
+                    HStack {
+                        Text("\(225 - message.value.count) Characters Remaining").font(Font.custom(selectedFont, size: 10))
+                        //Image(uiImage: UIImage(data: collageImage.image1)!)
+                        //.resizable()
+                        //.frame(width: (UIScreen.screenWidth/5)-10, height: (UIScreen.screenWidth/5),alignment: .center)
+                    }
+                    //Spacer()
+                    fontMenu.frame(height: 65)
+                    TextField("To:", text: $recipient.value)
+                        .border(Color.red, width: $recipient.hasReachedLimit.wrappedValue ? 1 : 0 )
+                        .onTapGesture {if recipient.value == "To:" {recipient.value = ""}}
+                    TextField("From:", text: $sender.value)
+                        .border(Color.red, width: $sender.hasReachedLimit.wrappedValue ? 1 : 0 )
+                        .onTapGesture {if sender.value == "From:" {sender.value = ""}}
+                    TextField("Name Your Card", text: $cardName.value)
+                        .border(Color.red, width: $cardName.hasReachedLimit.wrappedValue ? 1 : 0 )
+                        .onTapGesture {if cardName.value == "Name Your Card" {cardName.value = ""}}
+                    Button("Confirm Note") {
+                        cardName.value = cardName.value.components(separatedBy: CharacterSet.punctuationCharacters).joined()
+                        if appDelegate.musicSub.type == .Apple {addMusicPrompt = true}
+                        if appDelegate.musicSub.type == .Spotify {addMusicPrompt = true}
+                        if appDelegate.musicSub.type == .Neither {showFinalize = true}
+                    }
+                    .alert("Please Enter Values for All Fields!", isPresented: $namesNotEntered) {Button("Ok", role: .cancel) {}}
+                    .alert("A Subscription to Spotify or Apple Music is Required to Add a Song. We'll skip that Step", isPresented: $skipMusicPrompt) {
+                        Button("Ok"){showFinalize = true}
+                    }
+                    .alert("Add Song to Card?", isPresented: $addMusicPrompt) {            
+                        Button("Hell Yea"){addMusic.addMusic = true; appDelegate.musicSub.timeToAddMusic = true; checkRequiredFields(); annotateIfNeeded()}
+                        Button("No Thanks") {checkRequiredFields(); annotateIfNeeded(); addMusic.addMusic = false; showFinalize = true}
+                    }
+                    .alert("Your typed message will only appear in your eCard", isPresented: $handWrite2) {Button("Ok", role: .cancel) {}}
+                    .padding(.bottom, 30)
+                    .fullScreenCover(isPresented: $showMusic) {MusicSearchView().environmentObject(appDelegate)}
+                    .fullScreenCover(isPresented: $showFinalize) {FinalizeCardView(cardType: determineCardType())}
+                    .fullScreenCover(isPresented: $showCollageBuilder) {CollageBuilder(showImagePicker: false)}
+                }
+                LoadingOverlay()
             }
-        HStack {
-        Text("\(225 - message.value.count) Characters Remaining").font(Font.custom(selectedFont, size: 10))
-            //Image(uiImage: UIImage(data: collageImage.image1)!)
-                //.resizable()
-                //.frame(width: (UIScreen.screenWidth/5)-10, height: (UIScreen.screenWidth/5),alignment: .center)
-        }
-        //Spacer()
-        fontMenu.frame(height: 65)
-        TextField("To:", text: $recipient.value)
-            .border(Color.red, width: $recipient.hasReachedLimit.wrappedValue ? 1 : 0 )
-            .onTapGesture {if recipient.value == "To:" {recipient.value = ""}}
-        TextField("From:", text: $sender.value)
-            .border(Color.red, width: $sender.hasReachedLimit.wrappedValue ? 1 : 0 )
-            .onTapGesture {if sender.value == "From:" {sender.value = ""}}
-        TextField("Name Your Card", text: $cardName.value)
-            .border(Color.red, width: $cardName.hasReachedLimit.wrappedValue ? 1 : 0 )
-            .onTapGesture {if cardName.value == "Name Your Card" {cardName.value = ""}}
-        Button("Confirm Note") {
-            cardName.value = cardName.value.components(separatedBy: CharacterSet.punctuationCharacters).joined()
-            if appDelegate.musicSub.type == .Apple {addMusicPrompt = true}
-            if appDelegate.musicSub.type == .Spotify {addMusicPrompt = true}
-            if appDelegate.musicSub.type == .Neither {showFinalize = true}
-            }
-        .alert("Please Enter Values for All Fields!", isPresented: $namesNotEntered) {Button("Ok", role: .cancel) {}}
-        .alert("A Subscription to Spotify or Apple Music is Required to Add a Song. We'll skip that Step", isPresented: $skipMusicPrompt) {
-            Button("Ok"){showFinalize = true}
-        }
-        .alert("Add Song to Card?", isPresented: $addMusicPrompt) {            
-            Button("Hell Yea"){addMusic.addMusic = true; appDelegate.musicSub.timeToAddMusic = true; checkRequiredFields(); annotateIfNeeded()}
-            Button("No Thanks") {checkRequiredFields(); annotateIfNeeded(); addMusic.addMusic = false; showFinalize = true}
-            }
-        .alert("Your typed message will only appear in your eCard", isPresented: $handWrite2) {Button("Ok", role: .cancel) {}}
-        .padding(.bottom, 30)
-        .fullScreenCover(isPresented: $showMusic) {MusicSearchView().environmentObject(appDelegate)}
-        .fullScreenCover(isPresented: $showFinalize) {FinalizeCardView(cardType: determineCardType())}
-        .fullScreenCover(isPresented: $showCollageBuilder) {CollageBuilder(showImagePicker: false)}
-        }
             .navigationBarItems(leading:Button {showCollageBuilder = true} label: {Image(systemName: "chevron.left").foregroundColor(.blue); Text("Back")})
         }
         .modifier(GettingRecordAlert())

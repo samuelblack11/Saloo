@@ -55,19 +55,22 @@ struct CollageBuilder: View {
     
     var body: some View {
         NavigationStack {
-            VStack {
-                Spacer()
-                collageView//.frame(width: UIScreen.screenHeight/4, height: UIScreen.screenHeight/4)
-                Spacer()
-                Button("Confirm Collage for Inside Cover") {
-                    showWriteNote = true
-                    collageImage.collageImage = snap2()
-                }.padding(.bottom, 30).fullScreenCover(isPresented: $showWriteNote ) {
-                    WriteNoteView()}
+            ZStack {
+                VStack {
+                    Spacer()
+                    collageView//.frame(width: UIScreen.screenHeight/4, height: UIScreen.screenHeight/4)
+                    Spacer()
+                    Button("Confirm Collage for Inside Cover") {
+                        showWriteNote = true
+                        collageImage.collageImage = snap2()
+                    }.padding(.bottom, 30).fullScreenCover(isPresented: $showWriteNote ) {
+                        WriteNoteView()}
+                }
+                .navigationBarItems(leading: Button {showCollageMenu = true} label: {
+                    Image(systemName: "chevron.left").foregroundColor(.blue)
+                    Text("Back")})
+                LoadingOverlay()
             }
-            .navigationBarItems(leading: Button {showCollageMenu = true} label: {
-                Image(systemName: "chevron.left").foregroundColor(.blue)
-                Text("Back")})
         }
         .modifier(GettingRecordAlert())
         .environmentObject(collageImage)

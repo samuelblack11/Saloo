@@ -81,13 +81,16 @@ struct GridofCards: View {
     
     var body: some View {
         NavigationView {
-            ScrollView {
-                sortResults
-                LazyVGrid(columns: columns, spacing: 10) {
-                    ForEach(cardsFilteredByBox(sortedCards(cardsFilteredBySearch, sortBy: sortByValue), whichBox: whichBoxVal), id: \.self) { gridCard in
-                        cardView(for: gridCard, shareable: false)
+            ZStack {
+                ScrollView {
+                    sortResults
+                    LazyVGrid(columns: columns, spacing: 10) {
+                        ForEach(cardsFilteredByBox(sortedCards(cardsFilteredBySearch, sortBy: sortByValue), whichBox: whichBoxVal), id: \.self) { gridCard in
+                            cardView(for: gridCard, shareable: false)
+                        }
                     }
                 }
+                LoadingOverlay()
             }
             .fullScreenCover(item: $chosenCard, onDismiss: didDismiss) {chosenCard in
                 NavigationView {
