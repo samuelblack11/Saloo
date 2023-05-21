@@ -22,9 +22,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
     var checkIfRecordAddedToStore = true
     var waitingToAcceptRecord = false
     @ObservedObject var appDelegate = AppDelegate()
-    //@ObservedObject var networkMonitor =  NetworkMonitor()
     @ObservedObject var networkMonitor = NetworkMonitor()
-    //var hideProgViewOnAcceptShare: Bool = true
     let defaults = UserDefaults.standard
     var counter = 0
     
@@ -46,50 +44,40 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
             let isOpened = openMyApp(from: urlContext.url)
             if isOpened {
                 Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { [self] timer in
-                    if self.gotRecord && self.connectToScene {
-                        if self.appDelegate.musicSub.type == .Neither{self.updateMusicSubType()}
-                        let contentView = GridofCards(cardsForDisplay: CoreCardUtils.loadCoreCards(), whichBoxVal: self.whichBoxForCKAccept!, chosenCard: self.coreCard).environmentObject(self.appDelegate).environmentObject(self.networkMonitor)
-                        let window = UIWindow(windowScene: windowScene)
-                        self.window = window
-                        let initialViewController = UIHostingController(rootView: contentView)
-                        let navigationController = UINavigationController(rootViewController: initialViewController)
-                        window.rootViewController = navigationController
-                        window.makeKeyAndVisible()
-                        // Customize the transition animation
-                        let transition = CATransition()
-                        transition.duration = 5.3
-                        transition.timingFunction = CAMediaTimingFunction(name: CAMediaTimingFunctionName.easeInEaseOut)
-                        transition.type = CATransitionType.fade
-                        navigationController.view.layer.add(transition, forKey: kCATransition)
-                        self.gotRecord = false
-                    }
+                    self.handleGridofCardsDisplay(windowScene: windowScene)
                 }
             }
         }
         print("when is willConnectTo called...")
         if let windowScene = scene as? UIWindowScene {
             Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { timer in
-                if self.gotRecord && self.connectToScene {
-                    if self.appDelegate.musicSub.type == .Neither{self.updateMusicSubType()}
-                    let contentView = GridofCards(cardsForDisplay: CoreCardUtils.loadCoreCards(), whichBoxVal: self.whichBoxForCKAccept!, chosenCard: self.coreCard).environmentObject(self.appDelegate).environmentObject(self.networkMonitor)
-                    let window = UIWindow(windowScene: windowScene)
-                    self.window = window
-                    let initialViewController = UIHostingController(rootView: contentView)
-                    let navigationController = UINavigationController(rootViewController: initialViewController)
-                    window.rootViewController = navigationController
-                    window.makeKeyAndVisible()
-                    // Customize the transition animation
-                    let transition = CATransition()
-                    transition.duration = 5.3
-                    transition.timingFunction = CAMediaTimingFunction(name: CAMediaTimingFunctionName.easeInEaseOut)
-                    transition.type = CATransitionType.fade
-                    navigationController.view.layer.add(transition, forKey: kCATransition)
-                    self.gotRecord = false
-                }
+                self.handleGridofCardsDisplay(windowScene: windowScene)
             }
         }
     }
     
+    private func handleGridofCardsDisplay(windowScene: UIWindowScene) {
+        if self.gotRecord && self.connectToScene {
+            if self.appDelegate.musicSub.type == .Neither{self.updateMusicSubType()}
+            let contentView = GridofCards(cardsForDisplay: CoreCardUtils.loadCoreCards(), whichBoxVal: self.whichBoxForCKAccept!, chosenCard: self.coreCard)
+                .environmentObject(self.appDelegate)
+                .environmentObject(self.networkMonitor)
+            let window = UIWindow(windowScene: windowScene)
+            self.window = window
+            let initialViewController = UIHostingController(rootView: contentView)
+            let navigationController = UINavigationController(rootViewController: initialViewController)
+            window.rootViewController = navigationController
+            window.makeKeyAndVisible()
+            // Customize the transition animation
+            let transition = CATransition()
+            transition.duration = 5.3
+            transition.timingFunction = CAMediaTimingFunction(name: CAMediaTimingFunctionName.easeInEaseOut)
+            transition.type = CATransitionType.fade
+            navigationController.view.layer.add(transition, forKey: kCATransition)
+            self.gotRecord = false
+        }
+    }
+
     /**
      To be able to accept a share, add a CKSharingSupported entry in the Info.plist file and set it to true.
      */
@@ -122,23 +110,18 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
     
     func getRecordViaQuery(shareMetaData: CKShare.Metadata) {
         print("called getRecordViaQueryAsOwner....")
-        //var counter = 0
         let ckContainer = PersistenceController.shared.cloudKitContainer
         let pred = NSPredicate(value: true)
         let query = CKQuery(recordType: "CD_CoreCard", predicate: pred)
         let op3 = CKQueryOperation(query: query)
         op3.zoneID = shareMetaData.share.recordID.zoneID
-        //print("Got zone ID -> \(op3.zoneID)")
-
         var foundRecord = false // Introduce a flag here
-
         op3.recordMatchedBlock = {recordID, result in
             foundRecord = true // Set the flag to true if any record is found
             // ... rest of your code
             GettingRecord.shared.hideProgViewOnAcceptShare  = false
             switch result {
             case .success(let record):
-                //var recordID2 = record.recordID
                 self.checkIfRecordAddedToStore = false
                 ckContainer.sharedCloudDatabase.fetch(withRecordID: record.recordID){ record, error in
                     self.parseRecord(record: record)
@@ -179,19 +162,16 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
     
     func getRecordViaQueryAsOwner(shareMetaData: CKShare.Metadata) {
         print("called getRecordViaQueryAsOwner....")
-        //var counter = 0
         let ckContainer = PersistenceController.shared.cloudKitContainer
         let pred = NSPredicate(value: true)
         let query = CKQuery(recordType: "CD_CoreCard", predicate: pred)
         let op3 = CKQueryOperation(query: query)
         op3.zoneID = shareMetaData.share.recordID.zoneID
-        //print("Got zone ID -> \(op3.zoneID)")
 
         var foundRecord = false // Introduce a flag here
 
         op3.recordMatchedBlock = {recordID, result in
             foundRecord = true // Set the flag to true if any record is found
-            // ... rest of your code
             GettingRecord.shared.hideProgViewOnAcceptShare  = false
             switch result {
             case .success(let record):
@@ -298,14 +278,13 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
     
     func getCurrentUserID() {
         PersistenceController.shared.cloudKitContainer.fetchUserRecordID { ckRecordID, error in
-            print("Current User ID...")
-            print(ckRecordID?.recordName)
             self.userID = (ckRecordID?.recordName)!
         }
     }
     
 
     func openMyApp(from url: URL) -> Bool {
+        print("Called OpenMyApp")
         let scheme = "saloo" // Replace this with your app's custom URL scheme
         // Check if the URL contains your app's custom URL scheme
         if url.scheme == scheme {

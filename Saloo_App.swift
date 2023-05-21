@@ -49,15 +49,7 @@ struct Saloo_App: App {
             }
         }
     }
-
-    
-    func timerVar() {
-        Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { timer in
-            print("TimeVar Should Hide Prog View? \(GettingRecord.shared.hideProgViewOnAcceptShare )")
-        }
-    }
 }
-
 
 struct CountdownView: View {
     @State private var remainingTime: Int
