@@ -39,50 +39,7 @@ struct Saloo_App: App {
     }
 }
 
-
-
-
-
-
-
-struct CountdownView: View {
-    @State private var remainingTime: Int
-    init(startTime: Int) { _remainingTime = State(initialValue: startTime)}
-    let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
-    @State private var backgroundTime = Date()
-
-    var body: some View {
-        VStack {
-            Text("We're Still Saving Your Card to the Cloud. It'll be ready in just a minute 😊")
-                .font(.system(size: 20))
-                .foregroundColor(.white)
-                .multilineTextAlignment(.center)
-            Text("Time Remaining: \(remainingTime)")
-                .font(.system(size: 12))
-                .foregroundColor(.gray)
-                .multilineTextAlignment(.center)
-            ProgressView()
-                .tint(.black)
-                .scaleEffect(2)
-                .progressViewStyle(CircularProgressViewStyle())
-        }
-            .onReceive(timer) { _ in if remainingTime > 0 {remainingTime -= 1}}
-            .onReceive(NotificationCenter.default.publisher(for: UIApplication.willResignActiveNotification)) { _ in
-                backgroundTime = Date()
-            }
-            .onReceive(NotificationCenter.default.publisher(for: UIApplication.willEnterForegroundNotification)) { _ in
-                let elapsedSeconds = Int(Date().timeIntervalSince(backgroundTime))
-                remainingTime = max(remainingTime - elapsedSeconds, 0)
-            }
-    }
-}
-
-
-extension View {
-    func alertView() -> some View {
-        self.modifier(GettingRecordAlert())
-    }
-}
+extension View {func alertView() -> some View {self.modifier(GettingRecordAlert())}}
 
 
 struct GettingRecordAlert: ViewModifier {
@@ -100,7 +57,6 @@ struct GettingRecordAlert: ViewModifier {
                         gettingRecord.isShowingActivityIndicator = true
                     }),
                     secondaryButton: .default(Text("I'll Open My Card Later"), action: {
-                        // Your action here...
                         gettingRecord.showLoadingRecordAlert = false
                         gettingRecord.willTryAgainLater = true
                     })
@@ -111,18 +67,40 @@ struct GettingRecordAlert: ViewModifier {
 
 struct LoadingOverlay: View {
     @ObservedObject var gettingRecord = GettingRecord.shared
-
+    @State private var remainingTime: Int
+    init(startTime: Int = 60) { _remainingTime = State(initialValue: startTime)}
+    let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
+    @State private var backgroundTime = Date()
     var body: some View {
-        ZStack {
-            Color.black.opacity(0.4)
-                .ignoresSafeArea() // This will make the semi-transparent view cover the entire screen
-
-            ProgressView() // This is the built-in iOS activity indicator
-                .progressViewStyle(CircularProgressViewStyle(tint: .white))
-                .scaleEffect(2)
+        if gettingRecord.isShowingActivityIndicator == true {
+            ZStack {
+                Color.black.opacity(0.4)
+                    .ignoresSafeArea() // This will make the semi-transparent view cover the entire screen
+                VStack {
+                    Text("We're Still Saving Your Card to the Cloud. It'll be ready in just a minute")
+                        .font(.system(size: 20))
+                        .foregroundColor(.white)
+                        .multilineTextAlignment(.center)
+                    Text("Time Remaining: \(remainingTime)")
+                        .font(.system(size: 12))
+                        .foregroundColor(.gray)
+                        .multilineTextAlignment(.center)
+                    
+                        .onReceive(timer) { _ in if remainingTime > 0 {remainingTime -= 1}}
+                        .onReceive(NotificationCenter.default.publisher(for: UIApplication.willResignActiveNotification)) { _ in
+                            backgroundTime = Date()
+                        }
+                        .onReceive(NotificationCenter.default.publisher(for: UIApplication.willEnterForegroundNotification)) { _ in
+                            let elapsedSeconds = Int(Date().timeIntervalSince(backgroundTime))
+                            remainingTime = max(remainingTime - elapsedSeconds, 0)
+                        }
+                    ProgressView() // This is the built-in iOS activity indicator
+                        .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                        .scaleEffect(2)
+                }
+                }
+                .opacity(gettingRecord.isShowingActivityIndicator ? 1 : 0)
+            }
+            
         }
-        .opacity(gettingRecord.isShowingActivityIndicator ? 1 : 0)
     }
-}
-
-

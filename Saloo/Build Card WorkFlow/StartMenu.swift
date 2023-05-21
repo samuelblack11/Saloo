@@ -72,6 +72,7 @@ struct StartMenu: View {
                         .onTapGesture {self.showPref = true}
                         .fullScreenCover(isPresented: $showPref) {PrefMenu()}
                 }
+                LoadingOverlay()
             }
 
         }
