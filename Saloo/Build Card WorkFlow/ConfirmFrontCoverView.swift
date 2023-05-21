@@ -66,6 +66,7 @@ struct ConfirmFrontCoverView: View {
             Text("(Attribution Will Be Included on Back Cover)").font(.system(size: 12)).padding(.bottom, 20)
             }
         .onAppear{getCoverSize()}
+        .modifier(GettingRecordAlert())
         .navigationBarItems(leading:
             Button {
                 print("Back button tapped")

@@ -69,6 +69,7 @@ struct CollageBuilder: View {
                 Image(systemName: "chevron.left").foregroundColor(.blue)
                 Text("Back")})
         }
+        .modifier(GettingRecordAlert())
         .environmentObject(collageImage)
         .environmentObject(chosenImagesObject)
         .fullScreenCover(isPresented: $showCollageMenu) {CollageStyleMenu()}

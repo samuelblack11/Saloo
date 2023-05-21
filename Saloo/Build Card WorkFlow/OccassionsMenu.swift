@@ -119,6 +119,7 @@ struct OccassionsMenu: View {
         .listStyle(GroupedListStyle())
         .onAppear {createOccassionsFromUserCollections()}
         }
+        .modifier(GettingRecordAlert())
         .environmentObject(chosenObject)
         .environmentObject(chosenOccassion)
         .fullScreenCover(isPresented: $showStartMenu) {StartMenu()}

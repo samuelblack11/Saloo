@@ -62,14 +62,15 @@ struct eCardView: View {
     @State private var showAPV = true
     
     var body: some View {
-        if cardType == "musicNoGift" {MusicNoGiftView}
+        if cardType == "musicNoGift" {MusicNoGiftView.modifier(GettingRecordAlert())}
         else{
             if fromFinalize == false {
                 NoMusicNoGiftView
+                    .modifier(GettingRecordAlert())
                     .navigationBarItems(leading:Button {chosenCard = nil
                     } label: {Image(systemName: "chevron.left").foregroundColor(.blue); Text("Back")})
             }
-            else {NoMusicNoGiftView}
+            else {NoMusicNoGiftView.modifier(GettingRecordAlert())}
         }
     }
     

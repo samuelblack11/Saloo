@@ -65,6 +65,7 @@ struct UnsplashCollectionView: View {
                 }.disabled(setButtonStatus(imageObjects: imageObjects))
             }
         }
+        .modifier(GettingRecordAlert())
         .font(.headline).padding(.horizontal).frame(maxHeight: 600)
         .onAppear {
             if chosenOccassion.occassion == "None" {

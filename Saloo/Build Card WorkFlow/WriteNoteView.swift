@@ -116,6 +116,7 @@ struct WriteNoteView: View {
         }
             .navigationBarItems(leading:Button {showCollageBuilder = true} label: {Image(systemName: "chevron.left").foregroundColor(.blue); Text("Back")})
         }
+        .modifier(GettingRecordAlert())
         //.environmentObject(appDelegate)
         .environmentObject(noteField)
         .environmentObject(annotation)

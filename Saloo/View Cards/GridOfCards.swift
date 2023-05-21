@@ -98,6 +98,7 @@ struct GridofCards: View {
             .navigationTitle("Your Cards")
             .navigationBarItems(leading:Button {print("Back Button pressed to Start menu..."); showStartMenu.toggle()} label: {Image(systemName: "chevron.left").foregroundColor(.blue); Text("Back")})
         }
+        .modifier(GettingRecordAlert())
         .environmentObject(audioManager)
         .environmentObject(avPlayer)
         // "Search by \(sortByValue)"

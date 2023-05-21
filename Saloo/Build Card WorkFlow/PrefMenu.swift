@@ -99,6 +99,7 @@ struct PrefMenu: View {
             if defaults.object(forKey: "MusicSubType") != nil {currentSubSelection = (defaults.object(forKey: "MusicSubType") as? String)!}
             else {currentSubSelection = "Neither"; appDelegate.musicSub.type = .Neither; defaults.set("Neither", forKey: "MusicSubType")}
         }
+        .modifier(GettingRecordAlert())
         //.environmentObject(appDelegate)
         .alert("Spotify Authorization Failed. If you have a Spotify Subscription, please try authorizing again", isPresented: $showSpotAuthFailedAlert){Button("Ok"){showSpotAuthFailedAlert = false}}
         .alert("Apple Music Authorization Failed. If you have an Apple Music Subscription, please try authorizing again", isPresented: $showAMAuthFailedAlert){Button("Ok"){showAMAuthFailedAlert = false}}

@@ -79,6 +79,7 @@ struct StartMenu: View {
             }
 
         }
+        .modifier(GettingRecordAlert())
         //.background(appDelegate.appColor)
         .onAppear {
             print("Start Menu Opened...")
@@ -104,15 +105,6 @@ struct StartMenu: View {
 
 extension StartMenu {
 
-
-    func timerVar() {
-        Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { [self] timer in
-            print("TimeVar Should Hide Prog View? \(GettingRecord.shared.hideProgViewOnAcceptShare )")
-        }
-    }
-    
-    
-    
     func createNewShare(coreCard: CoreCard) {
        print("CreateNewShare called")
        if PersistenceController.shared.privatePersistentStore.contains(manageObject: coreCard) {
@@ -120,9 +112,6 @@ extension StartMenu {
            PersistenceController.shared.presentCloudSharingController(coreCard: coreCard)
        }
    }
-    
-    
-    
     
     
     func getCurrentUserID() {
@@ -133,3 +122,4 @@ extension StartMenu {
         
     }
 }
+

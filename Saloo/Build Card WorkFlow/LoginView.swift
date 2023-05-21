@@ -58,6 +58,7 @@ struct LoginView: View {
                     .padding(.trailing, 35)
                 }
             }
+        .modifier(GettingRecordAlert())
         //}
         .sheet(isPresented: $signInSuccess) {CalendarParent(calViewModel: CalViewModel(), showDetailView: ShowDetailView())}
         .alert(isPresented: $signInFailure) {

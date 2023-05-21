@@ -18,7 +18,6 @@ struct Saloo_App: App {
     @StateObject var networkMonitor = NetworkMonitor()
     @ObservedObject var gettingRecord = GettingRecord.shared
     @State private var isCountdownShown: Bool = false
-
     //@UIApplicationDelegateAdaptor var appDelegate2: AppDelegate
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate3
 
@@ -35,21 +34,16 @@ struct Saloo_App: App {
                     .environmentObject(calViewModel)
                     .environmentObject(showDetailView)
                     .environmentObject(GettingRecord.shared)
-                    .onReceive(gettingRecord.$hideProgViewOnAcceptShare) { newValue in
-                        self.isCountdownShown = !newValue
-                    }
-                
-                if isCountdownShown {
-                    CountdownView(startTime: 60)
-                        .border(.gray)
-                        .padding()
-                        .background(Color.black.opacity(1.0))
-                        .cornerRadius(15)
-                }
             }
         }
     }
 }
+
+
+
+
+
+
 
 struct CountdownView: View {
     @State private var remainingTime: Int
@@ -82,3 +76,52 @@ struct CountdownView: View {
             }
     }
 }
+
+
+extension View {
+    func alertView() -> some View {
+        self.modifier(GettingRecordAlert())
+    }
+}
+
+
+struct GettingRecordAlert: ViewModifier {
+    @ObservedObject var gettingRecord = GettingRecord.shared
+
+    func body(content: Content) -> some View {
+        content
+            .alert(isPresented: $gettingRecord.showLoadingRecordAlert) {
+                Alert(
+                    title: Text("We're Still Saving Your Card to the Cloud."),
+                    message: Text("It'll be ready in just a minute."),
+                    primaryButton: .default(Text("OK, I'll Wait"), action: {
+                        gettingRecord.showLoadingRecordAlert = false
+                        gettingRecord.isShowingActivityIndicator = true
+                    }),
+                    secondaryButton: .default(Text("I'll Try Again Later"), action: {
+                        // Your action here...
+                        gettingRecord.showLoadingRecordAlert = false
+                        gettingRecord.willTryAgainLater = true
+                    })
+                )
+            }
+    }
+}
+
+struct LoadingOverlay: View {
+    @ObservedObject var gettingRecord = GettingRecord.shared
+
+    var body: some View {
+        ZStack {
+            Color.black.opacity(0.4)
+                .ignoresSafeArea() // This will make the semi-transparent view cover the entire screen
+
+            ProgressView() // This is the built-in iOS activity indicator
+                .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                .scaleEffect(2)
+        }
+        .opacity(gettingRecord.isShowingActivityIndicator ? 1 : 0)
+    }
+}
+
+

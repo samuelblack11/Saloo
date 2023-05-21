@@ -164,6 +164,7 @@ struct MusicSearchView: View {
                     .fullScreenCover(isPresented: $showFCV) {FinalizeCardView(cardType: determineCardType(), appRemote2: appRemote2)}
                     .fullScreenCover(isPresented: $showWriteNote) {WriteNoteView()}
             }
+            .modifier(GettingRecordAlert())
             .environmentObject(spotifyAuth)
             .sheet(isPresented: $showWebView){WebVCView(authURLForView: spotifyAuth.authForRedirect, authCode: $authCode)}
         }
