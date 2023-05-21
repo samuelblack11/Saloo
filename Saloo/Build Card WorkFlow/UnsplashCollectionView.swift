@@ -8,11 +8,7 @@
 import Foundation
 import SwiftUI
 
-// https://www.hackingwithswift.com/books/ios-swiftui/working-with-identifiable-items-in-swiftui
-// https://developer.apple.com/documentation/swiftui/adding-interactivity-with-gestures
-// https://www.hackingwithswift.com/books/ios-swiftui/running-code-when-our-app-launches
-// https://www.hackingwithswift.com/quick-start/swiftui/how-to-respond-to-view-lifecycle-events-onappear-and-ondisappear
-// https://www.hackingwithswift.com/quick-start/swiftui/how-to-fix-initializer-init-rowcontent-requires-that-sometype-conform-to-identifiable
+// 
 
 struct UnsplashCollectionView: View {
     // Object for collection selected by user

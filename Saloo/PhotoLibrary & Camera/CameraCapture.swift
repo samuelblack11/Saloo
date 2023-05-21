@@ -8,8 +8,7 @@
 import Foundation
 import SwiftUI
 import UIKit
-// https://betterprogramming.pub/how-to-pick-an-image-from-camera-or-photo-library-in-swiftui-a596a0a2ece
-// https://www.hackingwithswift.com/example-code/uikit/how-to-take-a-photo-using-the-camera-and-uiimagepickercontroller
+//
 // Solved debug issue by not using environment isPresented var and toggling it. And by using picker.dismiss(animated: true) instead
 
 

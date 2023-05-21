@@ -12,7 +12,6 @@ import MediaPlayer
 import CoreData
 import StoreKit
 import WebKit
-//https://www.appcoda.com/swiftui-confetti-animation/
 struct EnlargeECardView: View {
     @Binding var chosenCard: CoreCard?
     @State var share: CKShare?

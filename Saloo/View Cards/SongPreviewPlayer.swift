@@ -14,7 +14,7 @@ import StoreKit
 import MediaPlayer
 import AVFoundation
 import AVFAudio
-// https://santoshkumarjm.medium.com/how-to-design-a-custom-avplayer-to-play-audio-using-url-in-ios-swift-439f0dbf2ff2
+// 
 class PlayerWrapper: NSObject, ObservableObject {
     @Published var player: AVPlayer?
     

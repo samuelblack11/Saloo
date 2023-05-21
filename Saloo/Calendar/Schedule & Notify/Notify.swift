@@ -4,7 +4,6 @@
 //
 //  Created by Sam Black on 8/23/22.
 //
-// https://www.hackingwithswift.com/books/ios-swiftui/scheduling-local-notifications
 import SwiftUI
 import UserNotifications
 

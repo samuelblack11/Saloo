@@ -7,9 +7,7 @@
 import Foundation
 import SwiftUI
 
-// https://www.hackingwithswift.com/quick-start/swiftui/how-to-read-text-from-a-textfield
-// https://www.hackingwithswift.com/quick-start/swiftui/how-to-create-multi-line-editable-text-with-texteditor
-// https://www.hackingwithswift.com/quick-start/swiftui/what-is-the-focusstate-property-wrapper
+
 
 struct WriteNoteView: View {
     @EnvironmentObject var chosenObject: ChosenCoverImageObject
@@ -105,7 +103,7 @@ struct WriteNoteView: View {
                     .alert("A Subscription to Spotify or Apple Music is Required to Add a Song. We'll skip that Step", isPresented: $skipMusicPrompt) {
                         Button("Ok"){showFinalize = true}
                     }
-                    .alert("Add Song to Card?", isPresented: $addMusicPrompt) {            
+                    .alert("Add Song to Card?", isPresented: $addMusicPrompt) {
                         Button("Hell Yea"){addMusic.addMusic = true; appDelegate.musicSub.timeToAddMusic = true; checkRequiredFields(); annotateIfNeeded()}
                         Button("No Thanks") {checkRequiredFields(); annotateIfNeeded(); addMusic.addMusic = false; showFinalize = true}
                     }

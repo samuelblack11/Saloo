@@ -19,6 +19,8 @@
 		<key>UIApplicationSupportsMultipleScenes</key>
 		<false/>
 	</dict>
+	<key>NSUserActivityTypes</key>
+	<string></string>
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>

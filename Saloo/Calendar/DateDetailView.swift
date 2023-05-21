@@ -44,7 +44,6 @@ struct DateDetailView: View {
                         content.title = "Make a Card For \(event.eventNameCore!)"
                         content.subtitle = "Don't Forget 😁"
                         content.sound = UNNotificationSound.default
-                        //https://stackoverflow.com/questions/42042215/convert-date-to-datecomponents-in-function-to-schedule-local-notification-in-swi
                         let n = -7
                         let nextTriggerDate = Calendar.current.date(byAdding: .day, value: n, to: event.eventDateCore!)!
                         let comps = Calendar.current.dateComponents([.year, .month, .day], from: nextTriggerDate)

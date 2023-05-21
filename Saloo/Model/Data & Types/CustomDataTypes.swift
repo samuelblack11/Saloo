@@ -11,7 +11,7 @@ import SwiftUI
 import CloudKit
 import Network
 
-//https://www.hackingwithswift.com/example-code/language/how-to-conform-to-the-hashable-protocol
+
 struct ChosenCollection {@State var occassion: String!; @State var collectionID: String!}
 class ChosenCoreCard: ObservableObject {@Published var chosenCard = CoreCard()}
 class Occassion: ObservableObject {@Published var occassion = String(); @Published var collectionID = String()}
@@ -167,7 +167,6 @@ class CollageImage: ObservableObject {
 
 class AddMusic: ObservableObject {@Published var addMusic: Bool = false}
 
-// https://programmingwithswift.com/swiftui-textfield-character-limit/
 
 class MaximumText: ObservableObject {
     // variable for character limit

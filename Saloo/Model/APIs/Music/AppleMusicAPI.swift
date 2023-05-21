@@ -9,7 +9,6 @@ import StoreKit
 import SwiftUI
 import UIKit
 import CoreData
-//https://www.appcoda.com/musickit-music-api/
 class AppleMusicAPI {
     var taskToken: String?
     var tokenError: Bool = false
@@ -181,7 +180,7 @@ class AppleMusicAPI {
 }
 
 extension String {
-    //https://stackoverflow.com/questions/31725424/swift-get-string-between-2-strings-in-a-string
+
     func slice(from: String, to: String) -> String? {
         return (range(of: from)?.upperBound).flatMap { substringFrom in
             (range(of: to, range: substringFrom..<endIndex)?.lowerBound).map { substringTo in
@@ -189,7 +188,7 @@ extension String {
             }
         }
     }
-    //https://stackoverflow.com/questions/32851720/how-to-remove-special-characters-from-string-in-swift-2
+
     var stripped: String {
         let okayChars = Set("abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLKMNOPQRSTUVWXYZ1234567890+-=().!_")
         return self.filter {okayChars.contains($0) }

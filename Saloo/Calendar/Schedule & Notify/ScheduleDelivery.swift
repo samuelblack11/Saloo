@@ -8,9 +8,6 @@
 import Foundation
 import SwiftUI
 import CloudKit
-// https://developer.apple.com/documentation/swiftui/datepicker
-// https://www.hackingwithswift.com/books/ios-swiftui/adding-to-a-list-of-words
-// https://www.hackingwithswift.com/articles/117/the-ultimate-guide-to-timer
 
 struct ScheduleDelivery: View {
     @State var coreCard: CoreCard

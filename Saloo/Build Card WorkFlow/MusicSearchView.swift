@@ -107,6 +107,8 @@ struct MusicSearchView: View {
                         else {showFailedConnectionAlert = true}
                     }).padding(.top, 15)
                 }
+                LoadingOverlay()
+            }
                 NavigationView {
                     ZStack {
                         if isLoading {ProgressView().frame(width: UIScreen.screenWidth/2,height: UIScreen.screenHeight/2)}
@@ -147,8 +149,6 @@ struct MusicSearchView: View {
                         .fullScreenCover(isPresented: $showFCV) {FinalizeCardView(cardType: determineCardType(), appRemote2: appRemote2)}
                         .fullScreenCover(isPresented: $showWriteNote) {WriteNoteView()}
                 }
-                LoadingOverlay()
-            }
             .modifier(GettingRecordAlert())
             .environmentObject(spotifyAuth)
             .sheet(isPresented: $showWebView){WebVCView(authURLForView: spotifyAuth.authForRedirect, authCode: $authCode)}

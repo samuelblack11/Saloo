@@ -208,15 +208,4 @@ extension UIScreen{
                                    context: UIViewControllerRepresentableContext<ActivityView>) {}
        }
     
-// https://medium.com/swiftui-made-easy/activity-view-controller-in-swiftui-593fddadee79
-// https://www.hackingwithswift.com/example-code/uikit/how-to-render-pdfs-using-uigraphicspdfrenderer
-// https://stackoverflow.com/questions/1134289/cocoa-core-data-efficient-way-to-count-entities
-// https://www.advancedswift.com/resize-uiimage-no-stretching-swift/
-// https://www.hackingwithswift.com/articles/103/seven-useful-methods-from-cgrect
-// https://stackoverflow.com/questions/57727107/how-to-get-the-iphones-screen-width-in-swiftui
-// https://www.hackingwithswift.com/read/33/4/writing-to-icloud-with-cloudkit-ckrecord-and-ckasset
-// https://swiftwithmajid.com/2022/03/29/zone-sharing-in-cloudkit/
-// https://swiftwithmajid.com/2022/03/29/zone-sharing-in-cloudkit/
-// https://www.techotopia.com/index.php/An_Introduction_to_CloudKit_Data_Storage_on_iOS_8#Record_Zones
-// https://github.com/apple/sample-cloudkit-sharing
-// https://stackoverflow.com/questions/66313845/swiftui-dismiss-all-active-sheet-views
+

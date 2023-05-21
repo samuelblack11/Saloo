@@ -111,7 +111,7 @@ class PhotoAPI {
     //Must make this a class func in order to call the function properly in ImportPhotoViewController
     class func getPhoto(pageNum: Int, userSearch: String, completionHandler: @escaping ([ResultDetails]?,Error?) -> Void) {
         //class func getPhoto(randomSearch: String) {
-        // https://cocoacasts.com/networking-fundamentals-how-to-make-an-http-request-in-swift
+        //
         //let pageNumber = Int.random(in: 0...5)
         let pageNumber = pageNum
         //let apiKey = "GXA9JqJgKZiIkvWmnKVuzq1wWNPUN7GiVDHOTiq7f3A"
@@ -170,7 +170,7 @@ class PhotoAPI {
     //Must make this a class func in order to call the function properly in ImportPhotoViewController
     class func getCollection(pageNum: Int, collectionID: String, completionHandler: @escaping ([ResultDetails]?,Error?) -> Void) {
         //class func getPhoto(randomSearch: String) {
-        // https://cocoacasts.com/networking-fundamentals-how-to-make-an-http-request-in-swift
+        // 
         //let pageNumber = Int.random(in: 0...5)
         let pageNumber = pageNum
         //let apiKey = "GXA9JqJgKZiIkvWmnKVuzq1wWNPUN7GiVDHOTiq7f3A"

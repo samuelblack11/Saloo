@@ -27,8 +27,59 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
     //var hideProgViewOnAcceptShare: Bool = true
     let defaults = UserDefaults.standard
     var counter = 0
+    var launchedURL: URL?
     
-    func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {print("Opened URL....")}
+    func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
+        
+        print("Opened URL via openURLContexts....")
+        if let url = URLContexts.first?.url {
+            if let windowScene = scene as? UIWindowScene {
+                Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { timer in
+                    self.handleGridofCardsDisplay(windowScene: windowScene)
+                }
+            }
+        }
+    }
+    
+    func scene(_ scene: UIScene, continue userActivity: NSUserActivity) {
+        print("Called continue....")
+        if userActivity.activityType == NSUserActivityTypeBrowsingWeb {
+            if let url = userActivity.webpageURL {
+                // CKShare URL should start with "https://www.icloud.com/share/"
+                if url.absoluteString.starts(with: "https://www.icloud.com/share/") {
+                    // Process the URL as a CKShare URL.
+                    print("Called handleCKShareURL....")
+                    handleCKShareURL(url, scene: scene)
+                }
+            }
+        }
+    }
+
+    private func handleCKShareURL(_ url: URL, scene: UIScene) {
+        // Parse the URL to get the CKRecordID and CKRecordZoneID.
+        // Use the IDs to fetch the shared record from CloudKit.
+        // Handle the shared record as needed.
+
+        // Here handle your logic when the CKShare URL has been processed
+        if let windowScene = scene as? UIWindowScene {
+            print("Tried to handle Display...")
+            self.handleGridofCardsDisplay(windowScene: windowScene)
+        }
+    }
+
+
+    func sceneDidBecomeActive(_ scene: UIScene) {
+        print("SceneDidBecomeActive....")
+        print(scene.title)
+        print(launchedURL)
+        // Handle the URL if one was stored when the app was launched
+        if let url = launchedURL, let windowScene = scene as? UIWindowScene {
+            print("Set scene in SceneDidBecomeActive")
+            self.handleGridofCardsDisplay(windowScene: windowScene)
+            launchedURL = nil // Clear the stored URL
+        }
+    }
+
     
     func updateMusicSubType() {
         if (defaults.object(forKey: "MusicSubType") as? String) != nil  {
@@ -38,8 +89,28 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
         }
     }
     
+    @objc private func handleDidAcceptShare(_ notification: Notification) {
+        // Here handle your logic when the CKShare has been accepted
+        if let windowScene = window?.windowScene {
+            self.handleGridofCardsDisplay(windowScene: windowScene)
+        }
+    }
+
+    
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         //scene.userActivity?.removeAllSavedStates()
+        print("willConnectTo called...")
+        NotificationCenter.default.addObserver(self, selector: #selector(handleDidAcceptShare(_:)), name: .didAcceptShare, object: nil)
+
+        if let userActivity = connectionOptions.userActivities.first {
+            self.scene(scene, continue: userActivity)
+        }
+        // Check if the app was launched with a URL
+        if let urlContext = connectionOptions.urlContexts.first {
+            print("App launched with URL: \(urlContext.url.absoluteString)")
+            // Save the URL to process it later in sceneDidBecomeActive
+            self.launchedURL = urlContext.url
+        }
         
         guard let windowScene = (scene as? UIWindowScene) else { return }
         if let urlContext = connectionOptions.urlContexts.first {
@@ -50,7 +121,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
                 }
             }
         }
-        print("when is willConnectTo called...")
+        
         if let windowScene = scene as? UIWindowScene {
             Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { timer in
                 self.handleGridofCardsDisplay(windowScene: windowScene)
@@ -91,17 +162,30 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
             if let error = error {
                 print("\(#function): Failed to accept share invitations: \(error)")
                 // repeat same logic for accept share as participant, and use to open the specified record.
-                self.acceptedShare = cloudKitShareMetadata.share; print("Trying to Get Share as Owner..."); print(self.acceptedShare as Any)
+                self.acceptedShare = cloudKitShareMetadata.share; print("Trying to Get Share as Owner...")
                 waitingToAcceptRecord = true
-                Task {await self.getRecordViaQuery(shareMetaData: cloudKitShareMetadata, targetDatabase: PersistenceController.shared.cloudKitContainer.privateCloudDatabase)}
-            }
-            else {
-                self.acceptedShare = cloudKitShareMetadata.share; print("Accepted Share..."); print(self.acceptedShare as Any)
+                Task {
+                    await self.getRecordViaQuery(shareMetaData: cloudKitShareMetadata, targetDatabase: PersistenceController.shared.cloudKitContainer.privateCloudDatabase)
+                    // Notify observers that a CloudKit share was accepted.
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                        NotificationCenter.default.post(name: .didAcceptShare, object: nil)
+                    }
+                }
+            } else {
+                self.acceptedShare = cloudKitShareMetadata.share; print("Accepted Share...")
                 waitingToAcceptRecord = true
-                Task {await self.runGetRecord(shareMetaData: cloudKitShareMetadata)}
+                Task {
+                    await self.runGetRecord(shareMetaData: cloudKitShareMetadata)
+                    // Notify observers that a CloudKit share was accepted.
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                        NotificationCenter.default.post(name: .didAcceptShare, object: nil)
+                    }
+                }
             }
         }
     }
+
+
     
     func runGetRecord(shareMetaData: CKShare.Metadata) async {
         print("called getRecord")
@@ -117,35 +201,31 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
         let query = CKQuery(recordType: "CD_CoreCard", predicate: pred)
         let op3 = CKQueryOperation(query: query)
         op3.zoneID = shareMetaData.share.recordID.zoneID
-        var foundRecord = false // Introduce a flag here
+        var foundRecord = false
         op3.recordMatchedBlock = {recordID, result in
-            foundRecord = true // Set the flag to true if any record is found
-            // ... rest of your code
+            foundRecord = true
             GettingRecord.shared.showLoadingRecordAlert  = true
             switch result {
             case .success(let record):
-                //var recordID2 = record.recordID
                 self.checkIfRecordAddedToStore = false
                 targetDatabase.fetch(withRecordID: record.recordID){ record, error in
                     self.parseRecord(record: record)
                     print("Got Record...")
+                    GettingRecord.shared.isShowingActivityIndicator = false
                 }
-            case .failure(let error):
-                print("ErrorOpeningShare....\(error)")
+            case .failure(let error): print("ErrorOpeningShare....\(error)")
             }
         }
         
         op3.queryCompletionBlock = { (cursor, error) in
+            //if GettingRecord.shared.didDismissRecordAlert == false {GettingRecord.shared.showLoadingRecordAlert = true}
             print("QueryCompletionBlock")
-            if GettingRecord.shared.didDismissRecordAlert == false {
-                GettingRecord.shared.showLoadingRecordAlert = true
-            }
-            if let error = error {
-                print("Error executing CKQueryOperation: \(error)")
-            } else {
+            if let error = error {print("Error executing CKQueryOperation: \(error)")}
+            else {
                 if foundRecord {
                     print("CKQueryOperation completed successfully and found records.")
                     GettingRecord.shared.showLoadingRecordAlert  = false
+                    GettingRecord.shared.isShowingActivityIndicator = false
                     self.counter = 0
                 } else {
                     //GettingRecord.shared.showLoadingRecordAlert  = true
@@ -153,11 +233,11 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
                         print("CKQueryOperation completed successfully but found no records.")
                         // If no records are found, wait for 2 seconds and then retry the operation
                         DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                            
                             if GettingRecord.shared.willTryAgainLater {return}
                             else {
                                 self.getRecordViaQuery(shareMetaData: shareMetaData, targetDatabase: targetDatabase)
                                 print("Counter = \(self.counter)"); self.counter += 1
+                                if GettingRecord.shared.didDismissRecordAlert == false {GettingRecord.shared.showLoadingRecordAlert = true}
                             }
                         }
                     }
@@ -210,14 +290,12 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
     }
     
     func determineWhichBox(completion: @escaping () -> Void) {
-        //var box: InOut.SendReceive = .inbox
         let controller = PersistenceController.shared
         let ckContainer = PersistenceController.shared.cloudKitContainer
         ckContainer.fetchUserRecordID { ckRecordID, error in
             if self.coreCard.creator == (ckRecordID?.recordName)! {
                 print("Creator = recordname")
                 self.whichBoxForCKAccept = .outbox
-                print("Box1: \(self.whichBoxForCKAccept)")
                 completion()
             }
             else {
@@ -252,4 +330,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
         // If the URL does not contain your app's custom URL scheme or the app cannot be opened, return false
         return false
     }
+}
+
+extension Notification.Name {
+    static let didAcceptShare = Notification.Name("didAcceptShare")
 }

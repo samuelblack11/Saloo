@@ -4,7 +4,6 @@
 //
 //  Created by Sam Black on 1/24/23.
 //
-// https://developers.tremendous.com/reference/core-products-index
 import Foundation
 import UIKit
 

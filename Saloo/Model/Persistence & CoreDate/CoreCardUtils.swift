@@ -17,7 +17,7 @@ struct CoreCardUtils {
         var filteredCards: [CoreCard] = []
         do {
             cardsFromCore = try PersistenceController.shared.persistentContainer.viewContext.fetch(request)
-            print("START MENU Got \(cardsFromCore.count) Cards From Core")
+            //print("START MENU Got \(cardsFromCore.count) Cards From Core")
         }
         catch {print("Fetch failed")}
         return cardsFromCore

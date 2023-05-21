@@ -84,8 +84,7 @@ class WebVC: UIViewController, WKNavigationDelegate {
     
 }
 
-//https://www.hackingwithswift.com/books/ios-swiftui/using-coordinators-to-manage-swiftui-view-controllers
-//https://medium.com/@astitv96/passing-data-between-view-controllers-using-delegate-and-protocol-ios-swift-4-beginners-e32828862d3f
+
 struct WebVCView: UIViewControllerRepresentable {
     typealias UIViewControllerType = WebVC
     @State var authURLForView: String

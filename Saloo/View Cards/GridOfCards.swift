@@ -4,9 +4,7 @@
 //
 //  Created by Sam Black on 12/17/22.
 //
-// https://www.hackingwithswift.com/read/38/5/loading-core-data-objects-using-nsfetchrequest-and-nssortdescriptor
-///// https://www.hackingwithswift.com/read/33/4/writing-to-icloud-with-cloudkit-ckrecord-and-ckasset
-///// https://www.hackingwithswift.com/quick-start/swiftui/how-to-add-a-search-bar-to-filter-your-data
+// 
 import Foundation
 import SwiftUI
 import CloudKit
@@ -105,7 +103,6 @@ struct GridofCards: View {
         .environmentObject(audioManager)
         .environmentObject(avPlayer)
         // "Search by \(sortByValue)"
-        .onAppear{print("Grid Appeared....")}
         .searchable(text: $searchText, prompt: "Search by Card Name")
         .fullScreenCover(isPresented: $showStartMenu) {StartMenu()}
     }

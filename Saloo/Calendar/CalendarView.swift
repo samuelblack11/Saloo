@@ -5,8 +5,7 @@
 //  Created by Sam Black on 8/1/22.
 //
 
-// https://www.hackingwithswift.com/quick-start/swiftui/displaying-a-detail-screen-with-navigationlink
-
+// 
 import Foundation
 import CoreData
 import SwiftUI

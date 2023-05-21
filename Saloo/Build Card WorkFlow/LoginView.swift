@@ -35,7 +35,7 @@ struct LoginView: View {
                         .font(.system(size: 48))
                     }
                 Spacer()
-                // https://swifttom.com/2020/09/28/how-to-add-sign-in-with-apple-to-a-swiftui-project/
+
                 SignInWithAppleButton(
                         .signIn,
                         onRequest: { request in

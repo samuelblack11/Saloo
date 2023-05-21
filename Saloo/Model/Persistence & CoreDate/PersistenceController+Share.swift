@@ -9,7 +9,7 @@ import Foundation
 import CoreData
 import UIKit
 import CloudKit
-//https://www.reddit.com/r/SwiftUI/comments/qfs8x3/im_trying_to_present_a_share_sheet_but_it_doesnt/
+
 #if os(iOS) // UICloudSharingController is only available in iOS.
 // MARK: - Convenient methods for managing sharing.
 //

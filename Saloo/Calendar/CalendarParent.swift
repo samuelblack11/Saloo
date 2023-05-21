@@ -5,10 +5,7 @@
 //  Created by Sam Black on 4/30/22.
 //
 // Create Calendar App
-//https://www.youtube.com/watch?v=5Jwlet8L84w
-//https://cocoapods.org/pods/CalendarKit
-//https://developer.apple.com/documentation/eventkit/retrieving_events_and_reminders
-//https://github.com/dmi3j/calendar-demo
+
 
 import Foundation
 import SwiftUI

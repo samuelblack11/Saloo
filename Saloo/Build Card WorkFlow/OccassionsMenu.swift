@@ -4,9 +4,7 @@
 //
 //  Created by Sam Black on 4/28/22.
 //
-// https://www.hackingwithswift.com/quick-start/swiftui/how-to-make-a-view-dismiss-itself
-// https://www.hackingwithswift.com/books/ios-swiftui/building-a-list-we-can-delete-from
-// https://stackoverflow.com/questions/66283978/swiftui-open-a-specific-view-when-user-opens-a-push-notification/66284621#66284621
+
 import Foundation
 import SwiftUI
 import UIKit
