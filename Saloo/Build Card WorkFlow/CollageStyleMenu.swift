@@ -24,7 +24,8 @@ struct CollageStyleMenu: View {
     // Tracks which collage type (#) was selected by the user
     @State private var collageStyles = []
     @State private var collageBlocks = CollageBlocksAndViews()
-    
+    @ObservedObject var gettingRecord = GettingRecord.shared
+
     let columns = [GridItem(.flexible()),GridItem(.flexible())]
     
     var body: some View {
@@ -47,7 +48,7 @@ struct CollageStyleMenu: View {
                 LoadingOverlay()
             }
             .navigationTitle("Pick Collage Style").font(.headline).padding(.horizontal)
-            .navigationBarItems(leading:Button {showConfirmFrontCover = true} label: {Image(systemName: "chevron.left").foregroundColor(.blue); Text("Back")})
+            .navigationBarItems(leading:Button {showConfirmFrontCover = true} label: {Image(systemName: "chevron.left").foregroundColor(.blue); Text("Back")}.disabled(gettingRecord.isShowingActivityIndicator))
         }
         .modifier(GettingRecordAlert())
         .environmentObject(collageImage)

@@ -100,6 +100,8 @@ struct LoadingOverlay: View {
                 }
                 }
                 .opacity(gettingRecord.isShowingActivityIndicator ? 1 : 0)
+                .allowsHitTesting(gettingRecord.isShowingActivityIndicator) // This will block interaction when the activity indicator is showing
+
             }
             
         }

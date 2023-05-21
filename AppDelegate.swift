@@ -10,6 +10,8 @@ import SwiftUI
 import CloudKit
 import UIKit
 
+
+
 class AppDelegate: UIResponder, UIApplicationDelegate, ObservableObject {
     @State var acceptedShare: CKShare?
     @State var coreCard: CoreCard?
@@ -33,7 +35,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, ObservableObject {
     let appColor = Color("SalooTheme")
     @Published var isLaunchingFromClosed = true
     @Published var isPlayerCreated = false
-    
     func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
         print("AppDelegate Open with Options being called....")
         let isOpened = openMyApp(from: url)
@@ -65,7 +66,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, ObservableObject {
     }
     
     func application(_ application: UIApplication, userDidAcceptCloudKitShareWith cloudKitShareMetadata: CKShare.Metadata) {
-        
+
         let persistenceController = PersistenceController.shared
         let sharedStore = persistenceController.sharedPersistentStore
         let container = persistenceController.persistentContainer
@@ -116,6 +117,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, ObservableObject {
     
     func getRecordViaQuery(shareMetaData: CKShare.Metadata, targetDatabase: CKDatabase) {
         print("called getRecordViaQuery....")
+
         let pred = NSPredicate(value: true)
         let query = CKQuery(recordType: "CD_CoreCard", predicate: pred)
         let op3 = CKQueryOperation(query: query)

@@ -46,6 +46,7 @@ struct PrefMenu: View {
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////
     @State private var showFailedConnectionAlert = false
     @EnvironmentObject var networkMonitor: NetworkMonitor
+    @ObservedObject var gettingRecord = GettingRecord.shared
 
     init() {
         if defaults.object(forKey: "MusicSubType") != nil {_currentSubSelection = State(initialValue: (defaults.object(forKey: "MusicSubType") as? String)!)}
@@ -92,7 +93,7 @@ struct PrefMenu: View {
             .alert(isPresented: $showFailedConnectionAlert) {
                 Alert(title: Text("Network Error"), message: Text("Sorry, we weren't able to connect to the internet. Please reconnect and try again."), dismissButton: .default(Text("OK")))
             }
-            .navigationBarItems(leading:Button {showStart.toggle()} label: {Image(systemName: "chevron.left").foregroundColor(.blue); Text("Back")})
+            .navigationBarItems(leading:Button {showStart.toggle()} label: {Image(systemName: "chevron.left").foregroundColor(.blue); Text("Back")}.disabled(gettingRecord.isShowingActivityIndicator))
         }
         .onAppear {
             redirectToAppStore(musicvendor: "Spotify")

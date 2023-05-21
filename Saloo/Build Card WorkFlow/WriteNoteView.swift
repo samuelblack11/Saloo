@@ -36,7 +36,8 @@ struct WriteNoteView: View {
     @State private var handWrite2 = false
     @State private var selectedFont = "Papyrus"
     @FocusState private var isNoteFieldFocused: Bool
-    
+    @ObservedObject var gettingRecord = GettingRecord.shared
+
     var fonts = ["Zapfino","Papyrus","American-Typewriter-Bold"]
     var fontMenu: some View {
         HStack {
@@ -115,7 +116,7 @@ struct WriteNoteView: View {
                 }
                 LoadingOverlay()
             }
-            .navigationBarItems(leading:Button {showCollageBuilder = true} label: {Image(systemName: "chevron.left").foregroundColor(.blue); Text("Back")})
+            .navigationBarItems(leading:Button {showCollageBuilder = true} label: {Image(systemName: "chevron.left").foregroundColor(.blue); Text("Back")}.disabled(gettingRecord.isShowingActivityIndicator))
         }
         .modifier(GettingRecordAlert())
         //.environmentObject(appDelegate)

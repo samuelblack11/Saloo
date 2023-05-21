@@ -9,6 +9,7 @@ import Foundation
 import UIKit
 import CloudKit
 import SwiftUI
+import os.log
 
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
@@ -28,7 +29,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
     let defaults = UserDefaults.standard
     var counter = 0
     var launchedURL: URL?
-    
+    let customLog = OSLog(subsystem: "com.Saloo", category: "Custom Category")
+
     func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
         
         print("Opened URL via openURLContexts....")
@@ -158,19 +160,21 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
         let persistenceController = PersistenceController.shared
         let sharedStore = persistenceController.sharedPersistentStore
         let container = persistenceController.persistentContainer
-            container.acceptShareInvitations(from: [cloudKitShareMetadata], into: sharedStore) { [self] (_, error) in
-                if let error = error {
-                    print("\(#function): Failed to accept share invitations: \(error)")
+        os_log("called userDidAcceptCloudKitShareWith....", log: customLog, type: .info)
+
+        container.acceptShareInvitations(from: [cloudKitShareMetadata], into: sharedStore) { [self] (_, error) in
+            if let error = error {
+                print("\(#function): Failed to accept share invitations: \(error)")
                     // repeat same logic for accept share as participant, and use to open the specified record.
-                    self.acceptedShare = cloudKitShareMetadata.share; print("Trying to Get Share as Owner...")
+                self.acceptedShare = cloudKitShareMetadata.share; print("Trying to Get Share as Owner...")
                     waitingToAcceptRecord = true
                     Task {
                         await self.getRecordViaQuery(shareMetaData: cloudKitShareMetadata, targetDatabase: PersistenceController.shared.cloudKitContainer.privateCloudDatabase)
                         // Notify observers that a CloudKit share was accepted.
                         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
                             NotificationCenter.default.post(name: .didAcceptShare, object: nil)
-                        }
                     }
+                }
                 } else {
                     self.acceptedShare = cloudKitShareMetadata.share; print("Accepted Share...")
                     waitingToAcceptRecord = true
@@ -312,6 +316,13 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
             self.userID = (ckRecordID?.recordName)!
         }
     }
+    
+    func getCurrentUserID2() {
+        PersistenceController.shared.cloudKitContainer.fetchUserRecordID { ckRecordID, error in
+            self.userID = (ckRecordID?.recordName)!
+        }
+    }
+    
     
 
     func openMyApp(from url: URL) -> Bool {

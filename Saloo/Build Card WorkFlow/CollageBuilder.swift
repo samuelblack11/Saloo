@@ -27,7 +27,8 @@ struct CollageBuilder: View {
     // Is front cover a personal photo? (selected from camera or library)
     // Tracks which collage type (#) was selected by the user
     @State private var cBB = CollageBlocksAndViews()
-    
+    @ObservedObject var gettingRecord = GettingRecord.shared
+
     // Create instance of CollageBuildingBlocks, with blocks sized to fit the CollageBuilder view (menuSize = false)
     @State private var image: Image?
     @State private var chosenImage: UIImage?
@@ -68,7 +69,7 @@ struct CollageBuilder: View {
                 }
                 .navigationBarItems(leading: Button {showCollageMenu = true} label: {
                     Image(systemName: "chevron.left").foregroundColor(.blue)
-                    Text("Back")})
+                    Text("Back")}.disabled(gettingRecord.isShowingActivityIndicator))
                 LoadingOverlay()
             }
         }

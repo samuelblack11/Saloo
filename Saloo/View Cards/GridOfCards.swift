@@ -54,6 +54,7 @@ struct GridofCards: View {
     @State var cardQueuedForshare: CoreCard?
     @EnvironmentObject var networkMonitor: NetworkMonitor
     @State private var showFailedConnectionAlert = false
+    @ObservedObject var gettingRecord = GettingRecord.shared
 
     var cardsFilteredBySearch: [CoreCard] {
         if searchText.isEmpty { return cardsForDisplay}
@@ -97,7 +98,7 @@ struct GridofCards: View {
                     }
             }
             .navigationTitle("Your Cards")
-            .navigationBarItems(leading:Button {print("Back Button pressed to Start menu..."); showStartMenu.toggle()} label: {Image(systemName: "chevron.left").foregroundColor(.blue); Text("Back")})
+            .navigationBarItems(leading:Button {print("Back Button pressed to Start menu..."); showStartMenu.toggle()} label: {Image(systemName: "chevron.left").foregroundColor(.blue); Text("Back")}.disabled(gettingRecord.isShowingActivityIndicator))
         }
         .modifier(GettingRecordAlert())
         .environmentObject(audioManager)

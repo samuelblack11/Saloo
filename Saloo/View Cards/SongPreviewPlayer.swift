@@ -86,6 +86,7 @@ struct SongPreviewPlayer: View {
     @EnvironmentObject var audioManager: AudioSessionManager
     @EnvironmentObject var avPlayer: PlayerWrapper
     @Binding var chosenCard: CoreCard?
+    @ObservedObject var gettingRecord = GettingRecord.shared
 
     
     //@State var audioManager = AudioSessionManager()
@@ -111,7 +112,7 @@ struct SongPreviewPlayer: View {
             }
             .navigationBarItems(leading:Button {
                 avPlayer.player! .pause();avPlayer.player!.replaceCurrentItem(with: nil); chosenCard = nil
-            } label: {Image(systemName: "chevron.left").foregroundColor(.blue); Text("Back")})
+            } label: {Image(systemName: "chevron.left").foregroundColor(.blue); Text("Back")}.disabled(gettingRecord.isShowingActivityIndicator))
             .onDisappear{
                 AudioSessionManager.shared.deactivateAudioSession()
                 avPlayer.player!.pause();avPlayer.player!.replaceCurrentItem(with: nil);

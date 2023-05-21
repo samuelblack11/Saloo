@@ -28,6 +28,7 @@ struct MusicSearchView: View {
     @EnvironmentObject var networkMonitor: NetworkMonitor
 
     let cleanMusicData = CleanMusicData()
+    @ObservedObject var gettingRecord = GettingRecord.shared
 
     //@State private var musicPlayer = MPMusicPlayerController.applicationMusicPlayer
     @State private var player: AVPlayer?
@@ -137,7 +138,7 @@ struct MusicSearchView: View {
                 .alert(isPresented: $showFailedConnectionAlert) {
                     Alert(title: Text("Network Error"), message: Text("Sorry, we weren't able to connect to the internet. Please reconnect and try again."), dismissButton: .default(Text("OK")))
                 }
-                .navigationBarItems(leading:Button {showWriteNote.toggle()} label: {Image(systemName: "chevron.left").foregroundColor(.blue); Text("Back")})
+                .navigationBarItems(leading:Button {showWriteNote.toggle()} label: {Image(systemName: "chevron.left").foregroundColor(.blue); Text("Back")}.disabled(gettingRecord.isShowingActivityIndicator))
                 .fullScreenCover(isPresented: $showWriteNote){WriteNoteView()}
                 .popover(isPresented: $showAPV) {AMPlayerView(songID: chosenSong.id, songName: chosenSong.name, songArtistName: chosenSong.artistName, songArtImageData: chosenSong.artwork, songDuration: chosenSong.durationInSeconds, songPreviewURL: chosenSong.songPreviewURL, confirmButton: true, showFCV: $showFCV, chosenCard: $emptyCard, deferToPreview: $deferToPreview, showAPV: $showAPV)
                         .presentationDetents([.fraction(0.4)])

@@ -60,7 +60,8 @@ struct eCardView: View {
     @Binding var chosenCard: CoreCard?
     @State var deferToPreview = false
     @State private var showAPV = true
-    
+    @ObservedObject var gettingRecord = GettingRecord.shared
+
     var body: some View {
         ZStack {
             if cardType == "musicNoGift" {MusicNoGiftView.modifier(GettingRecordAlert())}
@@ -69,7 +70,7 @@ struct eCardView: View {
                     NoMusicNoGiftView
                         .modifier(GettingRecordAlert())
                         .navigationBarItems(leading:Button {chosenCard = nil
-                        } label: {Image(systemName: "chevron.left").foregroundColor(.blue); Text("Back")})
+                        } label: {Image(systemName: "chevron.left").foregroundColor(.blue); Text("Back")}.disabled(gettingRecord.isShowingActivityIndicator))
                 }
                 else {NoMusicNoGiftView.modifier(GettingRecordAlert())}
             }

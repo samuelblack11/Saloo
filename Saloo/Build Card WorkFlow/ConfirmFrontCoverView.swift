@@ -22,7 +22,8 @@ struct ConfirmFrontCoverView: View {
     @State var frontCoverUserName: String!
     @State private var segueToCollageMenu = false
     @State private var presentPrior = false
-    
+    @ObservedObject var gettingRecord = GettingRecord.shared
+
     func getCoverSize() -> (CGSize, Double) {
         var size = CGSize()
         var widthToHeightRatio = Double()
@@ -76,7 +77,7 @@ struct ConfirmFrontCoverView: View {
             } label: {
                 Image(systemName: "chevron.left").foregroundColor(.blue)
                 Text("Back")
-            })
+            }.disabled(gettingRecord.isShowingActivityIndicator))
         .fullScreenCover(isPresented: $showUCV) {UnsplashCollectionView()}
         }
     }

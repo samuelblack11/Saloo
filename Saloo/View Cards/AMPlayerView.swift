@@ -55,6 +55,8 @@ struct AMPlayerView: View {
     @EnvironmentObject var networkMonitor: NetworkMonitor
     @Binding var showAPV: Bool
     @State private var disableSelect = false
+    @ObservedObject var gettingRecord = GettingRecord.shared
+
     enum ActiveAlert: Identifiable {
         case songNotAvailable, noConnection
         var id: Int {
@@ -96,7 +98,7 @@ struct AMPlayerView: View {
                         musicPlayer.pause()
                         showGrid = true
                         chosenCard = nil
-            } label: {Image(systemName: "chevron.left").foregroundColor(.blue); Text("Back")})
+            } label: {Image(systemName: "chevron.left").foregroundColor(.blue); Text("Back")}.disabled(gettingRecord.isShowingActivityIndicator))
     }
     
     var AMPlayerView: some View {

@@ -28,7 +28,8 @@ struct UnsplashCollectionView: View {
     @State public var chosenPhotographer: String!
     @State public var chosenUserName: String!
     @State public var chosenDownloadLocation: String!
-    //
+    @ObservedObject var gettingRecord = GettingRecord.shared
+
     @State private var presentUCV2 = false
     let timer = Timer.publish(every: 0.05, on: .main, in: .common).autoconnect()
     let columns = [GridItem(.fixed(150)),GridItem(.fixed(150))]
@@ -52,7 +53,7 @@ struct UnsplashCollectionView: View {
                         }
                     }
                     .navigationTitle("Choose Front Cover")
-                    .navigationBarItems(leading:Button {showOccassions.toggle()} label: {Image(systemName: "chevron.left").foregroundColor(.blue); Text("Back")})
+                    .navigationBarItems(leading:Button {showOccassions.toggle()} label: {Image(systemName: "chevron.left").foregroundColor(.blue); Text("Back")}.disabled(gettingRecord.isShowingActivityIndicator))
                     Button("More...") {
                         if networkMonitor.isConnected {
                             getMorePhotos(); print("page count: \(chosenObject.pageCount)")

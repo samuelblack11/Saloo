@@ -62,7 +62,8 @@ struct SpotPlayerView: View {
     @EnvironmentObject var networkMonitor: NetworkMonitor
     @State private var showFailedConnectionAlert = false
     @State private var foundMatch3 = false
-    
+    @ObservedObject var gettingRecord = GettingRecord.shared
+
 
     
     var body: some View {
@@ -77,7 +78,7 @@ struct SpotPlayerView: View {
             }
             .onDisappear{appRemote2?.playerAPI?.pause()}
             .navigationBarItems(leading:Button {chosenCard = nil
-            } label: {Image(systemName: "chevron.left").foregroundColor(.blue); Text("Back")})
+            } label: {Image(systemName: "chevron.left").foregroundColor(.blue); Text("Back")}.disabled(gettingRecord.isShowingActivityIndicator))
             // Show an alert if showAlert is true
             .alert(isPresented: $showFailedConnectionAlert) {
             Alert(title: Text("Network Error"), message: Text("Sorry, we weren't able to connect to the internet. Please reconnect and try again."), dismissButton: .default(Text("OK")))

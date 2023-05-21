@@ -33,7 +33,8 @@ struct OccassionsMenu: View {
     @State private var fallCollection: [CollectionPair] = []
     @State private var otherCollection: [CollectionPair] = []
     @EnvironmentObject var appDelegate: AppDelegate
-    
+    @ObservedObject var gettingRecord = GettingRecord.shared
+
     
     
     // Cover Image Variables used dependent on the image's source
@@ -115,7 +116,7 @@ struct OccassionsMenu: View {
         .alert(isPresented: $showFailedConnectionAlert) {
             Alert(title: Text("Network Error"), message: Text("Sorry, we weren't able to connect to the internet. Please reconnect and try again."), dismissButton: .default(Text("OK")))
         }
-        .navigationBarItems(leading:Button {showStartMenu.toggle()} label: {Image(systemName: "chevron.left").foregroundColor(.blue); Text("Back")})
+        .navigationBarItems(leading:Button {showStartMenu.toggle()} label: {Image(systemName: "chevron.left").foregroundColor(.blue); Text("Back")}.disabled(gettingRecord.isShowingActivityIndicator))
         .font(.headline)
         .listStyle(GroupedListStyle())
         .onAppear {createOccassionsFromUserCollections()}
