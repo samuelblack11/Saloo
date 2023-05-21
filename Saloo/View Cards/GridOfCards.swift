@@ -181,7 +181,7 @@ extension GridofCards {
             
         } label: {Text("Enlarge eCard"); Image(systemName: "plus.magnifyingglass")}
         Button {deleteCoreCard(coreCard: card)} label: {Text("Delete eCard"); Image(systemName: "trash").foregroundColor(.red)}
-        Button {showDeliveryScheduler = true} label: {Text("Schedule eCard Delivery")}
+        //Button {showDeliveryScheduler = true} label: {Text("Schedule eCard Delivery")}
         }
     
     private func createNewShare(coreCard: CoreCard) {PersistenceController.shared.presentCloudSharingController(coreCard: coreCard)}
@@ -210,7 +210,7 @@ extension GridofCards {
         var filteredCoreCards: [CoreCard] = []
             for coreCard in coreCards {
                 getCurrentUserID()
-                print("Creator & Current User Record IDs....")
+                //print("Creator & Current User Record IDs....")
                 switch whichBoxVal {
                 case .outbox:
                     filteredCoreCards = coreCards.filter{_ in (coreCard.creator!.contains(self.userID))}

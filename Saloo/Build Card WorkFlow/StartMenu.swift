@@ -77,15 +77,7 @@ struct StartMenu: View {
                         .fullScreenCover(isPresented: $showPref) {PrefMenu()}
                 }
             }
-            .overlay(
-                Group {
-                if gettingRecord.hideProgViewOnAcceptShare == false {
-                    CountdownView(startTime: 60) // Countdown from 60 seconds
-                        .border(.gray)
-                        .padding()
-                        .background(Color.black.opacity(1.0))
-                        .cornerRadius(15)
-                }}, alignment: .bottom)
+
         }
         //.background(appDelegate.appColor)
         .onAppear {
@@ -107,37 +99,7 @@ struct StartMenu: View {
     
 }
 
-struct CountdownView: View {
-    @State private var remainingTime: Int
-    init(startTime: Int) { _remainingTime = State(initialValue: startTime)}
-    let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
-    @State private var backgroundTime = Date()
 
-    var body: some View {
-        VStack {
-            Text("We're Still Saving Your Card to the Cloud. It'll be ready in just a minute 😊")
-                .font(.system(size: 20))
-                .foregroundColor(.white)
-                .multilineTextAlignment(.center)
-            Text("Time Remaining: \(remainingTime)")
-                .font(.system(size: 12))
-                .foregroundColor(.gray)
-                .multilineTextAlignment(.center)
-            ProgressView()
-                .tint(.black)
-                .scaleEffect(2)
-                .progressViewStyle(CircularProgressViewStyle())
-        }
-            .onReceive(timer) { _ in if remainingTime > 0 {remainingTime -= 1}}
-            .onReceive(NotificationCenter.default.publisher(for: UIApplication.willResignActiveNotification)) { _ in
-                backgroundTime = Date()
-            }
-            .onReceive(NotificationCenter.default.publisher(for: UIApplication.willEnterForegroundNotification)) { _ in
-                let elapsedSeconds = Int(Date().timeIntervalSince(backgroundTime))
-                remainingTime = max(remainingTime - elapsedSeconds, 0)
-            }
-    }
-}
 
 
 extension StartMenu {

@@ -224,6 +224,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
                         DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                             self.getRecordViaQueryAsOwner(shareMetaData: shareMetaData)
                             print("Counter = \(self.counter)")
+                            print(GettingRecord.shared.hideProgViewOnAcceptShare)
                             self.counter += 1
                         }
                     }
