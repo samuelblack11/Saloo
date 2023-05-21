@@ -89,15 +89,11 @@ extension PersistenceController {
                 print("Beginning share completion handler...")
                 if let share = share {
                     print("Share = Share")
-                    self.configure(share: share)
+                    self.configure(share: share,coreCard: unsharedCoreCard)
                     // Set the available permissions to an empty set to load the share into the sharing controller
                     controller.availablePermissions = []
                 }
                 print("Called share completion")
-                print(share)
-                print(container)
-                print(error)
-                
                 completion(share, container, error)
             }
             }
@@ -116,15 +112,11 @@ extension PersistenceController {
                 print("Beginning share completion handler...")
                 if let share = share {
                     print("Share = Share")
-                    self.configure(share: share)
+                    self.configure(share: share,coreCard: unsharedCoreCard)
                     // Set the available permissions to an empty set to load the share into the sharing controller
                     controller.availablePermissions = []
                 }
                 print("Called share completion")
-                print(share)
-                print(container)
-                print(error)
-                
                 completion(share, container, error)
             }
             }
@@ -233,7 +225,7 @@ extension PersistenceController {
                     //self.deduplicateAndWait(tagObjectIDs: Array(tagObjectIDs))
                 }
             } else {
-                self.configure(share: share)
+                //self.configure(share: share)
             }
             /**
              Synchronize the changes on the share to the private persistent store.
@@ -283,11 +275,12 @@ extension PersistenceController {
         let shares = try? persistentContainer.fetchShares(in: stores)
         return shares?.map { $0.title } ?? []
     }
-    
-    private func configure(share: CKShare, with coreCard: CoreCard? = nil) {
+    //private func configure(share: CKShare, with coreCard: CoreCard? = nil) {
+    private func configure(share: CKShare, coreCard: CoreCard?) {
         print("Did configure?")
         share[CKShare.SystemFieldKey.title] = "A Greeting from Saloo"
         share[CKShare.SystemFieldKey.thumbnailImageData] = coreCard?.coverImage
+        
         share.publicPermission = .readOnly
         //share.recordID = coreCard?.associatedRecord.recordID
         //share.recordID = coreCard?.associatedRecord

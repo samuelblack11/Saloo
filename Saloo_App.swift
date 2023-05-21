@@ -96,9 +96,10 @@ struct GettingRecordAlert: ViewModifier {
                     message: Text("It'll be ready in just a minute."),
                     primaryButton: .default(Text("OK, I'll Wait"), action: {
                         gettingRecord.showLoadingRecordAlert = false
+                        gettingRecord.didDismissRecordAlert = true
                         gettingRecord.isShowingActivityIndicator = true
                     }),
-                    secondaryButton: .default(Text("I'll Try Again Later"), action: {
+                    secondaryButton: .default(Text("I'll Open My Card Later"), action: {
                         // Your action here...
                         gettingRecord.showLoadingRecordAlert = false
                         gettingRecord.willTryAgainLater = true

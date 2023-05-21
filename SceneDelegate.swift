@@ -138,7 +138,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
         
         op3.queryCompletionBlock = { (cursor, error) in
             print("QueryCompletionBlock")
-            GettingRecord.shared.showLoadingRecordAlert = true
+            if GettingRecord.shared.didDismissRecordAlert == false {
+                GettingRecord.shared.showLoadingRecordAlert = true
+            }
             if let error = error {
                 print("Error executing CKQueryOperation: \(error)")
             } else {
@@ -147,7 +149,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
                     GettingRecord.shared.showLoadingRecordAlert  = false
                     self.counter = 0
                 } else {
-                    GettingRecord.shared.showLoadingRecordAlert  = true
+                    //GettingRecord.shared.showLoadingRecordAlert  = true
                     if self.counter < 20 {
                         print("CKQueryOperation completed successfully but found no records.")
                         // If no records are found, wait for 2 seconds and then retry the operation
