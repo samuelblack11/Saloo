@@ -74,6 +74,7 @@ class CoreCardWrapper: ObservableObject {
 
 class GettingRecord: ObservableObject {
     static let shared = GettingRecord()
+    @Published var isLoadingAlert: Bool = false
     @Published var showLoadingRecordAlert: Bool = false
     @Published var didDismissRecordAlert: Bool = false
     @Published var isShowingActivityIndicator: Bool = false

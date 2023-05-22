@@ -194,12 +194,14 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
     func runGetRecord(shareMetaData: CKShare.Metadata) async {
         print("called getRecord")
         if self.checkIfRecordAddedToStore {
+            print("Running getRecordViaQuery...")
             self.getRecordViaQuery(shareMetaData: shareMetaData, targetDatabase: PersistenceController.shared.cloudKitContainer.sharedCloudDatabase)
         }
     }
     
     
     func getRecordViaQuery(shareMetaData: CKShare.Metadata, targetDatabase: CKDatabase) {
+        GettingRecord.shared.isLoadingAlert = true
         print("called getRecordViaQuery....")
         let pred = NSPredicate(value: true)
         let query = CKQuery(recordType: "CD_CoreCard", predicate: pred)
@@ -217,6 +219,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
                 targetDatabase.fetch(withRecordID: record.recordID){ record, error in
                     self.parseRecord(record: record)
                     print("Got Record...")
+                    GettingRecord.shared.isLoadingAlert = false
                     GettingRecord.shared.isShowingActivityIndicator = false
                 }
             case .failure(let error): print("ErrorOpeningShare....\(error)")
@@ -229,6 +232,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
             else {
                 if foundRecord {
                     print("CKQueryOperation completed successfully and found records.")
+                    GettingRecord.shared.isLoadingAlert = false
                     GettingRecord.shared.showLoadingRecordAlert  = false
                     GettingRecord.shared.isShowingActivityIndicator = false
                     self.counter = 0
@@ -240,6 +244,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
                         else {
                             self.getRecordViaQuery(shareMetaData: shareMetaData, targetDatabase: targetDatabase)
                             print("Counter = \(self.counter)"); self.counter += 1
+                            GettingRecord.shared.isLoadingAlert = false
                             //if GettingRecord.shared.didDismissRecordAlert == false {
                             //    GettingRecord.shared.showLoadingRecordAlert = true
                             //}
@@ -254,6 +259,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
         delayTask = DispatchWorkItem {
             if GettingRecord.shared.didDismissRecordAlert == false {
                 GettingRecord.shared.showLoadingRecordAlert  = true
+                GettingRecord.shared.isLoadingAlert = false
             }
         }
         DispatchQueue.main.asyncAfter(deadline: .now() + 1, execute: delayTask!)
@@ -299,6 +305,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
             self.appDelegate.chosenGridCard = self.coreCard
             self.determineWhichBox {}
             self.gotRecord = true
+            self.checkIfRecordAddedToStore = true
             print("getRecord complete...")
         }
     }

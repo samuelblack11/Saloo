@@ -50,7 +50,7 @@ struct GettingRecordAlert: ViewModifier {
             .alert(isPresented: $gettingRecord.showLoadingRecordAlert) {
                 Alert(
                     title: Text("We're Still Saving Your Card to the Cloud."),
-                    message: Text("It'll be ready in just a minute."),
+                    message: Text("It'll Be Ready In Just a Minute."),
                     primaryButton: .default(Text("OK, I'll Wait"), action: {
                         gettingRecord.showLoadingRecordAlert = false
                         gettingRecord.didDismissRecordAlert = true
@@ -72,12 +72,19 @@ struct LoadingOverlay: View {
     let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
     @State private var backgroundTime = Date()
     var body: some View {
+        if gettingRecord.isLoadingAlert == true {
+            ZStack {
+                ProgressView() // This is the built-in iOS activity indicator
+                    .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                    .scaleEffect(2)
+            }
+        }
         if gettingRecord.isShowingActivityIndicator == true {
             ZStack {
-                Color.black.opacity(0.4)
+                Color.black.opacity(0.7)
                     .ignoresSafeArea() // This will make the semi-transparent view cover the entire screen
                 VStack {
-                    Text("We're Still Saving Your Card to the Cloud. It'll be ready in just a minute")
+                    Text("We're Still Saving Your Card to the Cloud. It'll Be Ready In Just a Minute")
                         .font(.system(size: 20))
                         .foregroundColor(.white)
                         .multilineTextAlignment(.center)
