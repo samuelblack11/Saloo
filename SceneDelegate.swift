@@ -206,9 +206,11 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
         let op3 = CKQueryOperation(query: query)
         op3.zoneID = shareMetaData.share.recordID.zoneID
         var foundRecord = false
+        var delayTask: DispatchWorkItem?
+        
         op3.recordMatchedBlock = {recordID, result in
             foundRecord = true
-            GettingRecord.shared.showLoadingRecordAlert  = true
+            delayTask?.cancel() // Cancel showing the alert if we've found the record
             switch result {
             case .success(let record):
                 self.checkIfRecordAddedToStore = false
@@ -222,7 +224,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
         }
         
         op3.queryCompletionBlock = { (cursor, error) in
-            //if GettingRecord.shared.didDismissRecordAlert == false {GettingRecord.shared.showLoadingRecordAlert = true}
             print("QueryCompletionBlock")
             if let error = error {print("Error executing CKQueryOperation: \(error)")}
             else {
@@ -232,25 +233,34 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
                     GettingRecord.shared.isShowingActivityIndicator = false
                     self.counter = 0
                 } else {
-                    //GettingRecord.shared.showLoadingRecordAlert  = true
-                    if self.counter < 20 {
-                        print("CKQueryOperation completed successfully but found no records.")
-                        // If no records are found, wait for 2 seconds and then retry the operation
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                            if GettingRecord.shared.willTryAgainLater {return}
-                            else {
-                                self.getRecordViaQuery(shareMetaData: shareMetaData, targetDatabase: targetDatabase)
-                                print("Counter = \(self.counter)"); self.counter += 1
-                                if GettingRecord.shared.didDismissRecordAlert == false {GettingRecord.shared.showLoadingRecordAlert = true}
-                            }
+                    print("CKQueryOperation completed successfully but found no records.")
+                    // If no records are found, wait for 2 seconds and then retry the operation
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                        if GettingRecord.shared.willTryAgainLater {return}
+                        else {
+                            self.getRecordViaQuery(shareMetaData: shareMetaData, targetDatabase: targetDatabase)
+                            print("Counter = \(self.counter)"); self.counter += 1
+                            //if GettingRecord.shared.didDismissRecordAlert == false {
+                            //    GettingRecord.shared.showLoadingRecordAlert = true
+                            //}
                         }
                     }
+
                 }
             }
         }
 
+        // Add a delay before showing the alert
+        delayTask = DispatchWorkItem {
+            if GettingRecord.shared.didDismissRecordAlert == false {
+                GettingRecord.shared.showLoadingRecordAlert  = true
+            }
+        }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1, execute: delayTask!)
+        
         targetDatabase.add(op3)
     }
+
 
     
     func parseRecord(record: CKRecord?) {
