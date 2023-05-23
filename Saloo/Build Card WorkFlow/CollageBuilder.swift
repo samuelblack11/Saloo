@@ -19,6 +19,7 @@ struct CollageBuilder: View {
     // Variable for collageImage object
     @EnvironmentObject var collageImage: CollageImage
     @StateObject var chosenImagesObject = ChosenImages()
+    @State var explicitPhotoAlert: Bool = false
     @State private var showCollageMenu = false
     @State private var showCollageBuilder = false
     @State private var showWriteNote = false
@@ -72,6 +73,9 @@ struct CollageBuilder: View {
                     Text("Back")}.disabled(gettingRecord.isShowingActivityIndicator))
                 LoadingOverlay()
             }
+            .alert(isPresented: $explicitPhotoAlert) {
+                Alert(title: Text("Error"), message: Text("The selected image contains explicit content and cannot be used."), dismissButton: .default(Text("OK")))
+            }
         }
         .modifier(GettingRecordAlert())
         .environmentObject(collageImage)
@@ -100,12 +104,6 @@ extension CollageBuilder {
         ]
         return imageDict[imageNumber]!
     }
-    
-    
-    
-    
-    
-
     
     func blockForPhotoSelection(imageForBlock: Image?, imageNum: Int) -> some View {
         let shapeOptions = defineShapes()
@@ -143,28 +141,28 @@ extension CollageBuilder {
     func block1() -> some View {
         return blockForPhotoSelection(imageForBlock: imageA, imageNum: 1)
             .fullScreenCover(isPresented: $showImagePicker) {
-                ImagePicker(image: $chosenImagesObject.chosenImageA)
+                ImagePicker(image: $chosenImagesObject.chosenImageA, explicitPhotoAlert: $explicitPhotoAlert)
             }
     }
     
     func block2() -> some View {
         return blockForPhotoSelection(imageForBlock: imageB, imageNum: 2)
             .fullScreenCover(isPresented: $showImagePicker) {
-                ImagePicker(image: $chosenImagesObject.chosenImageB)
+                ImagePicker(image: $chosenImagesObject.chosenImageB, explicitPhotoAlert: $explicitPhotoAlert)
             }
     }
     
     func block3() -> some View {
         return blockForPhotoSelection(imageForBlock: imageC, imageNum: 3)
             .fullScreenCover(isPresented: $showImagePicker) {
-                ImagePicker(image: $chosenImagesObject.chosenImageC)
+                ImagePicker(image: $chosenImagesObject.chosenImageC, explicitPhotoAlert: $explicitPhotoAlert)
             }
     }
     
     func block4() -> some View {
         return blockForPhotoSelection(imageForBlock: imageD, imageNum: 4)
             .fullScreenCover(isPresented: $showImagePicker) {
-                ImagePicker(image: $chosenImagesObject.chosenImageD)
+                ImagePicker(image: $chosenImagesObject.chosenImageD, explicitPhotoAlert: $explicitPhotoAlert)
             }
     }
     

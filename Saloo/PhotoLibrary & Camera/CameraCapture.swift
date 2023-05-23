@@ -10,17 +10,15 @@ import SwiftUI
 import UIKit
 //
 // Solved debug issue by not using environment isPresented var and toggling it. And by using picker.dismiss(animated: true) instead
-
-
 struct CameraCapture: UIViewControllerRepresentable {
     
     @Binding var image: UIImage?
     @Binding var isPresented: Bool
-    //@Environment(\.presentationMode) private var isPresented
+    @Binding var explicitPhotoAlert: Bool
     var sourceType: UIImagePickerController.SourceType
  
     func makeCoordinator() -> ImagePickerViewCoordinator {
-         return ImagePickerViewCoordinator(image: $image, isPresented: $isPresented)
+         return ImagePickerViewCoordinator(image: $image, isPresented: $isPresented, explicitPhotoAlert: $explicitPhotoAlert)
      }
      
      func makeUIViewController(context: Context) -> UIImagePickerController {
@@ -34,31 +32,52 @@ struct CameraCapture: UIViewControllerRepresentable {
          // Nothing to update here
      }
 
- }
+}
 
- class ImagePickerViewCoordinator: NSObject, UINavigationControllerDelegate, UIImagePickerControllerDelegate {
+class ImagePickerViewCoordinator: NSObject, UINavigationControllerDelegate, UIImagePickerControllerDelegate {
      
      @Binding var image: UIImage?
      @Binding var isPresented: Bool
-     
-     init(image: Binding<UIImage?>, isPresented: Binding<Bool>) {
+     @Binding var explicitPhotoAlert: Bool
+
+     init(image: Binding<UIImage?>, isPresented: Binding<Bool>, explicitPhotoAlert: Binding<Bool>) {
          self._image = image
          self._isPresented = isPresented
+         self._explicitPhotoAlert = explicitPhotoAlert
      }
      
      func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
-         picker.dismiss(animated: true)
          if let image = info[UIImagePickerController.InfoKey.originalImage] as? UIImage {
-             self.image = image
+             
+             // convert UIImage to base64 string
+             guard let imageData = image.jpegData(compressionQuality: 1.0) else { return }
+             let imageStr = imageData.base64EncodedString(options: .endLineWithLineFeed)
+             
+             // Now use the function to check for explicit content
+             ImageAnalysisService.checkImageForExplicitContent(imageBase64: imageStr) { isExplicitContent, error in
+                 if let isExplicitContent = isExplicitContent {
+                     if isExplicitContent {
+                         print("Explicit content detected")
+                         // Show an alert and dismiss the ImagePicker
+                         self.explicitPhotoAlert = true
+                         self.isPresented = false
+                     } else {
+                         print("No explicit content detected")
+                         // Proceed to add the image to the collage
+                         self.image = image
+                         self.isPresented = false
+                     }
+                 } else if let error = error {
+                     print("An error occurred: \(error)")
+                     // Handle the error
+                 }
+             }
          }
-         //self.isPresented = false
      }
      
      func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
          picker.dismiss(animated: true)
-
-         //self.isPresented = false
-         print(self.isPresented)
+         self.isPresented = false
      }
      
  }

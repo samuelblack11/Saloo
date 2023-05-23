@@ -34,6 +34,7 @@ struct OccassionsMenu: View {
     @State private var otherCollection: [CollectionPair] = []
     @EnvironmentObject var appDelegate: AppDelegate
     @ObservedObject var gettingRecord = GettingRecord.shared
+    @State var explicitPhotoAlert: Bool = false
 
     
     
@@ -62,7 +63,7 @@ struct OccassionsMenu: View {
                         Text("Select from Photo Library ")
                         //.listRowBackground(appDelegate.appColor)
                             .onTapGesture {self.showCameraCapture = false; self.showImagePicker = true}
-                            .fullScreenCover(isPresented: $showImagePicker){ImagePicker(image: $coverImageFromLibrary)}
+                            .fullScreenCover(isPresented: $showImagePicker){ImagePicker(image: $coverImageFromLibrary, explicitPhotoAlert: $explicitPhotoAlert)}
                             .onChange(of: coverImageFromLibrary) { _ in loadImage(pic: coverImageFromLibrary!)
                                 handlePersonalPhotoSelection()
                                 showCollageMenu = true; chosenObject.frontCoverIsPersonalPhoto = 1
@@ -76,7 +77,7 @@ struct OccassionsMenu: View {
                                 self.showCameraCapture = true
                             }
                             .fullScreenCover(isPresented: $showCameraCapture)
-                        {CameraCapture(image: self.$coverImageFromCamera, isPresented: self.$showCameraCapture, sourceType: .camera)}
+                        {CameraCapture(image: self.$coverImageFromCamera, isPresented: self.$showCameraCapture, explicitPhotoAlert: $explicitPhotoAlert, sourceType: .camera)}
                             .onChange(of: coverImageFromCamera) { _ in loadImage(pic: coverImageFromCamera!)
                                 handlePersonalPhotoSelection()
                                 showCollageMenu = true; chosenObject.frontCoverIsPersonalPhoto = 1
