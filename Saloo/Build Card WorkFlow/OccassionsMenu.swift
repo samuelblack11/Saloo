@@ -35,6 +35,7 @@ struct OccassionsMenu: View {
     @EnvironmentObject var appDelegate: AppDelegate
     @ObservedObject var gettingRecord = GettingRecord.shared
     @State var explicitPhotoAlert: Bool = false
+    @State private var isImageLoading: Bool = false
 
     
     
@@ -63,7 +64,7 @@ struct OccassionsMenu: View {
                         Text("Select from Photo Library ")
                         //.listRowBackground(appDelegate.appColor)
                             .onTapGesture {self.showCameraCapture = false; self.showImagePicker = true}
-                            .fullScreenCover(isPresented: $showImagePicker){ImagePicker(image: $coverImageFromLibrary, explicitPhotoAlert: $explicitPhotoAlert)}
+                            .fullScreenCover(isPresented: $showImagePicker){ImagePicker(image: $coverImageFromLibrary, explicitPhotoAlert: $explicitPhotoAlert, isImageLoading: $isImageLoading)}
                             .onChange(of: coverImageFromLibrary) { _ in loadImage(pic: coverImageFromLibrary!)
                                 handlePersonalPhotoSelection()
                                 showCollageMenu = true; chosenObject.frontCoverIsPersonalPhoto = 1
@@ -77,7 +78,7 @@ struct OccassionsMenu: View {
                                 self.showCameraCapture = true
                             }
                             .fullScreenCover(isPresented: $showCameraCapture)
-                        {CameraCapture(image: self.$coverImageFromCamera, isPresented: self.$showCameraCapture, explicitPhotoAlert: $explicitPhotoAlert, sourceType: .camera)}
+                        {CameraCapture(image: self.$coverImageFromCamera, isPresented: self.$showCameraCapture, explicitPhotoAlert: $explicitPhotoAlert, sourceType: .camera, isImageLoading: $isImageLoading)}
                             .onChange(of: coverImageFromCamera) { _ in loadImage(pic: coverImageFromCamera!)
                                 handlePersonalPhotoSelection()
                                 showCollageMenu = true; chosenObject.frontCoverIsPersonalPhoto = 1

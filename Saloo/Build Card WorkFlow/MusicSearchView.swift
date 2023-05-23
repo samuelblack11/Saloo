@@ -85,11 +85,13 @@ struct MusicSearchView: View {
         NavigationStack {
             ZStack {
                 if appDelegate.musicSub.type == .Spotify {
-                    TextField("Track", text: $songSearch)
-                    TextField("Artist", text: $artistSearch)
-                    Button("Search"){
-                        if networkMonitor.isConnected {searchWithSpotify()}
-                        else {showFailedConnectionAlert = true}
+                    VStack {
+                        TextField("Track", text: $songSearch)
+                        TextField("Artist", text: $artistSearch)
+                        Button("Search"){
+                            if networkMonitor.isConnected {searchWithSpotify()}
+                            else {showFailedConnectionAlert = true}
+                        }
                     }
                 }
                 else {
