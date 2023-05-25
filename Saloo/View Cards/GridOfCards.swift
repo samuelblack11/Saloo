@@ -49,12 +49,14 @@ struct GridofCards: View {
     @StateObject var avPlayer = PlayerWrapper()
     @State private var displayCard = false
     @State var chosenCard: CoreCard?
+    @State var cardToReport: CoreCard?
     @State var shouldShareCard: Bool = false
     @EnvironmentObject var wrapper: CoreCardWrapper
     @State var cardQueuedForshare: CoreCard?
     @EnvironmentObject var networkMonitor: NetworkMonitor
     @State private var showFailedConnectionAlert = false
     @ObservedObject var gettingRecord = GettingRecord.shared
+    @State private var showReportOffensiveContentView = false
 
     var cardsFilteredBySearch: [CoreCard] {
         if searchText.isEmpty { return cardsForDisplay}
@@ -91,6 +93,8 @@ struct GridofCards: View {
                 }
                 LoadingOverlay()
             }
+            .fullScreenCover(item: $cardToReport, onDismiss: didDismiss) {cardToReport in
+                ReportOffensiveContentView(card: cardToReport)}
             .fullScreenCover(item: $chosenCard, onDismiss: didDismiss) {chosenCard in
                 NavigationView {
                         //EnlargeECardView(chosenCard: $chosenCard, cardsForDisplay: cardsForDisplay, whichBoxVal: whichBoxVal)
@@ -106,6 +110,7 @@ struct GridofCards: View {
         // "Search by \(sortByValue)"
         .searchable(text: $searchText, prompt: "Search by Card Name")
         .fullScreenCover(isPresented: $showStartMenu) {StartMenu()}
+        
     }
     
     func didDismiss() {
@@ -182,7 +187,15 @@ extension GridofCards {
             else {showFailedConnectionAlert = true}
             
         } label: {Text("Enlarge eCard"); Image(systemName: "plus.magnifyingglass")}
-        Button {deleteCoreCard(coreCard: card)} label: {Text("Delete eCard"); Image(systemName: "trash").foregroundColor(.red)}
+        Button(action: { deleteCoreCard(coreCard: card) }) {
+            HStack {Text("Delete eCard"); Image(systemName: "trash") }.foregroundColor(.red)
+        }
+
+        Button(action: { cardToReport = card}) {
+            HStack {Text("Report Offensive Content"); Image(systemName: "exclamationmark.octagon")}.foregroundColor(.red)
+        }
+
+
         //Button {showDeliveryScheduler = true} label: {Text("Schedule eCard Delivery")}
         }
     

@@ -82,7 +82,7 @@ struct OccassionsMenu: View {
                             .onChange(of: coverImageFromCamera) { _ in loadImage(pic: coverImageFromCamera!)
                                 handlePersonalPhotoSelection()
                                 showCollageMenu = true; chosenObject.frontCoverIsPersonalPhoto = 1
-                                chosenOccassion.occassion = "None"; chosenOccassion.collectionID = "None"
+                                chosenOccassion.occassion = ""; chosenOccassion.collectionID = ""
                             }
                             .fullScreenCover(isPresented: $showCollageMenu){CollageStyleMenu()}
                         HStack {
@@ -117,6 +117,9 @@ struct OccassionsMenu: View {
         .onAppear {if networkMonitor.isConnected == false {showFailedConnectionAlert = true}}
         .alert(isPresented: $showFailedConnectionAlert) {
             Alert(title: Text("Network Error"), message: Text("Sorry, we weren't able to connect to the internet. Please reconnect and try again."), dismissButton: .default(Text("OK")))
+        }
+        .alert(isPresented: $explicitPhotoAlert) {
+            Alert(title: Text("Error"), message: Text("The selected image contains explicit content and cannot be used."), dismissButton: .default(Text("OK")))
         }
         .navigationBarItems(leading:Button {showStartMenu.toggle()} label: {Image(systemName: "chevron.left").foregroundColor(.blue); Text("Back")}.disabled(gettingRecord.isShowingActivityIndicator))
         .font(.headline)
