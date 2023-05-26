@@ -69,7 +69,7 @@ struct StartMenu: View {
                     //.onTapGesture {self.showCalendar = true}
                     //.fullScreenCover(isPresented: $showCalendar) {CalendarParent(calViewModel: calViewModel, showDetailView: showDetailView)}
                     Text("Preferences 📱")
-                        .onTapGesture {self.showPref = true}
+                        .onTapGesture {print("showPref sets to true"); self.showPref = true}
                         .fullScreenCover(isPresented: $showPref) {PrefMenu()}
                 }
                 LoadingOverlay()

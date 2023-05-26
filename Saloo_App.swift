@@ -20,11 +20,15 @@ struct Saloo_App: App {
     @State private var isCountdownShown: Bool = false
     //@UIApplicationDelegateAdaptor var appDelegate2: AppDelegate
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate3
+    @State private var isSignedIn = UserDefaults.standard.string(forKey: "SalooUserID") != nil
 
     var body: some Scene {
         WindowGroup {
             ZStack {
-                StartMenu()
+                ZStack {
+                    if isSignedIn {StartMenu()}
+                    else {LoginView()}
+                }
                 //.background(appDelegate.appColor)
                     .environment(\.managedObjectContext, persistenceController.persistentContainer.viewContext)
                     .environmentObject(networkMonitor)

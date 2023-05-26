@@ -13,6 +13,7 @@ import CoreData
 import MediaPlayer
 import StoreKit
 import WebKit
+import Combine
 
 struct PrefMenu: View {
     @State private var showStart = false
@@ -47,7 +48,7 @@ struct PrefMenu: View {
     @State private var showFailedConnectionAlert = false
     @EnvironmentObject var networkMonitor: NetworkMonitor
     @ObservedObject var gettingRecord = GettingRecord.shared
-
+    @State private var authType = ""
     init() {
         if defaults.object(forKey: "MusicSubType") != nil {_currentSubSelection = State(initialValue: (defaults.object(forKey: "MusicSubType") as? String)!)}
         else {_currentSubSelection = State(initialValue: "Neither")}
@@ -96,7 +97,7 @@ struct PrefMenu: View {
             .navigationBarItems(leading:Button {showStart.toggle()} label: {Image(systemName: "chevron.left").foregroundColor(.blue); Text("Back")}.disabled(gettingRecord.isShowingActivityIndicator))
         }
         .onAppear {
-            redirectToAppStore(musicvendor: "Spotify")
+            //redirectToAppStore(musicvendor: "Spotify")
             if defaults.object(forKey: "MusicSubType") != nil {currentSubSelection = (defaults.object(forKey: "MusicSubType") as? String)!}
             else {currentSubSelection = "Neither"; appDelegate.musicSub.type = .Neither; defaults.set("Neither", forKey: "MusicSubType")}
         }
@@ -104,7 +105,40 @@ struct PrefMenu: View {
         //.environmentObject(appDelegate)
         .alert("Spotify Authorization Failed. If you have a Spotify Subscription, please try authorizing again", isPresented: $showSpotAuthFailedAlert){Button("Ok"){showSpotAuthFailedAlert = false}}
         .alert("Apple Music Authorization Failed. If you have an Apple Music Subscription, please try authorizing again", isPresented: $showAMAuthFailedAlert){Button("Ok"){showAMAuthFailedAlert = false}}
-        .sheet(isPresented: $showWebView){WebVCView(authURLForView: spotifyAuth.authForRedirect, authCode: $authCode)}
+        //.sheet(isPresented: $showWebView){WebVCView(authURLForView: spotifyAuth.authForRedirect, authCode: $authCode)}
+        .sheet(isPresented: $showWebView) {
+            WebVCView(authURLForView: spotifyAuth.authForRedirect, authCode: $authCode)
+                .onReceive(Just(authCode)) { newAuthCode in
+                    if let authCode = newAuthCode, !authCode.isEmpty {
+                        // call requestAndRunToken or other logic here...
+                        if authType == "code", !authCode.isEmpty {
+                            getSpotToken { success in
+                                print("Called getSpotToken from auth....")
+                                print(success)
+                                counter += 1
+                                runInstantiateAppRemote()
+                                currentSubSelection = "Spotify"
+                                appDelegate.musicSub.type = .Spotify
+                                defaults.set("Spotify", forKey: "MusicSubType")
+                                hideProgressView = true
+                                showStart = true
+                                //completion(success)
+                            }
+                        } else if authType == "refresh_token", !refresh_token!.isEmpty {
+                            getSpotTokenViaRefresh { success in
+                                //completion(success)
+                            }
+                        } else if authCode == "AuthFailed" {
+                            print("Unable to authorize")
+                            currentSubSelection = "Neither"
+                            appDelegate.musicSub.type = .Neither
+                            showSpotAuthFailedAlert = true
+                            //completion(false)
+                        }
+                    }
+                }
+        }
+
         .fullScreenCover(isPresented: $showStart) {StartMenu()}
     }
 }
@@ -236,7 +270,10 @@ extension PrefMenu {
         } else {
             print("Run3")
             if networkMonitor.isConnected {
-                requestAndRunToken(authType: "code") { success in
+                authType = "code"
+                requestAndRunToken(authType: authType) { success in
+                    print("Checking...")
+                    print(success)
                     if success {
                         runInstantiateAppRemote()
                         currentSubSelection = "Spotify"
@@ -277,17 +314,21 @@ extension PrefMenu {
             DispatchQueue.main.async {
                 print("ccccccc")
                 print(response)
-                
+                print(authType)
+                print(authCode)
                 spotifyAuth.authForRedirect = response
                 showWebView = true
                 
                 refreshAccessToken = true
                 
-                if authType == "code", !authCode!.isEmpty {
-                    getSpotToken { success in
-                        completion(success)
-                    }
-                } else if authType == "refresh_token", !refresh_token!.isEmpty {
+                //if authType == "code", !authCode!.isEmpty {
+                //    getSpotToken { success in
+                //        print("Called getSpotToken from auth....")
+                //        print(success)
+                //        completion(success)
+                //    }
+                //}
+                if authType == "refresh_token", !refresh_token!.isEmpty {
                     getSpotTokenViaRefresh { success in
                         completion(success)
                     }

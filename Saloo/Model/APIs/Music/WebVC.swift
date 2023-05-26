@@ -80,6 +80,7 @@ class WebVC: UIViewController, WKNavigationDelegate {
     
     func webView(_ webView: WKWebView, didReceiveServerRedirectForProvisionalNavigation navigation: WKNavigation!) {
         print("redirect received. The accounts.spotify url was the input, and it converted to the redirectURI after Spotify Login")
+        self.dismiss(animated: true)
     }
     
 }

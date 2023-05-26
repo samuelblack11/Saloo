@@ -760,7 +760,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = Saloo/Preview_Content/;
-				DEVELOPMENT_TEAM = BSM3YZFUT2;
+				DEVELOPMENT_TEAM = 9AVZUF22VY;
 				ENABLE_PREVIEWS = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -772,7 +772,6 @@
 				INFOPLIST_KEY_NSCameraUsageDescription = "Use Camera for Front Cover Image";
 				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "Add Photos Taken from Camera to Photo Library";
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "User Photos for Front Cover";
-				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
@@ -792,7 +791,7 @@
 					"\"UIKit\"",
 					"-ObjC",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = Sam.Saloo;
+				PRODUCT_BUNDLE_IDENTIFIER = com.Saloo.saloo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_OBJC_BRIDGING_HEADER = "Saloo-Bridging-Header.h";
@@ -811,7 +810,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = Saloo/Preview_Content/;
-				DEVELOPMENT_TEAM = BSM3YZFUT2;
+				DEVELOPMENT_TEAM = 9AVZUF22VY;
 				ENABLE_PREVIEWS = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -823,7 +822,6 @@
 				INFOPLIST_KEY_NSCameraUsageDescription = "Use Camera for Front Cover Image";
 				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "Add Photos Taken from Camera to Photo Library";
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "User Photos for Front Cover";
-				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
@@ -843,7 +841,7 @@
 					"\"UIKit\"",
 					"-ObjC",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = Sam.Saloo;
+				PRODUCT_BUNDLE_IDENTIFIER = com.Saloo.saloo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_OBJC_BRIDGING_HEADER = "Saloo-Bridging-Header.h";

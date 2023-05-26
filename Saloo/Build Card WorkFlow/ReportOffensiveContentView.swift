@@ -26,6 +26,7 @@ struct ReportOffensiveContentView: View {
                 let report = createReportObject(userName: name, userEmail: email, userComments: comments, card: card)
                 sendReportToAzure(report: report)
                 reportComplete = true
+                deleteCoreCard(coreCard: card)
             }) {Text("Submit")}
 
         }
@@ -49,9 +50,8 @@ struct ReportOffensiveContentView: View {
     }
     
     func sendReportToAzure(report: Report) {
-        print("called sendReportToAzure")
         // The URL of your Azure Function
-        let urlString = "https://salooreportoffensivecontent.azurewebsites.net"
+        let urlString = "https://salooreportoffensivecontent.azurewebsites.net/api/SalooReportOffensiveContent"
         
         guard let url = URL(string: urlString) else {
             print("Invalid URL")
@@ -66,15 +66,14 @@ struct ReportOffensiveContentView: View {
             print("Failed to encode report")
             return
         }
-        
         request.httpBody = reportData
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
         
         URLSession.shared.dataTask(with: request) { data, response, error in
-            
-            print("Report Offensive Content dataTask...")
-            print(response)
-            
+            if let data = data {
+                let str = String(data: data, encoding: .utf8)
+                print("Response data: \(str ?? "")")
+            }
             
             // check for fundamental networking error
             guard error == nil else {
@@ -106,115 +105,99 @@ struct ReportOffensiveContentView: View {
 
     }
 
+                   
+                   
+    func createReportObject(userName: String, userEmail: String, userComments: String, card: CoreCard) -> Report {
+        let report = Report(userName: userName, userEmail: userEmail, userComments: userComments,id: card.id.debugDescription,
+                            cardName: card.cardName,
+                            occassion: card.occassion,
+                            recipient: card.recipient,
+                            sender: card.sender,
+                            an1: card.an1,
+                            an2: card.an2,
+                            an2URL: card.an2URL,
+                            an3: card.an3,
+                            an4: card.an4,
+                            date: card.date,
+                            font: card.font,
+                            message: card.message,
+                            songID: card.songID,
+                            spotID: card.spotID,
+                            spotName: card.spotName,
+                            spotArtistName: card.spotArtistName,
+                            songName: card.songName,
+                            songArtistName: card.songArtistName,
+                            songArtImageData: card.songArtImageData,
+                            songPreviewURL: card.songPreviewURL,
+                            songDuration: card.songDuration,
+                            inclMusic: card.inclMusic,
+                            spotImageData: card.spotImageData,
+                            spotSongDuration: card.spotSongDuration,
+                            spotPreviewURL: card.spotPreviewURL,
+                            creator: card.creator,
+                            songAddedUsing: card.songAddedUsing,
+                            cardType: card.cardType,
+                            recordID: card.recordID,
+                            songAlbumName: card.songAlbumName,
+                            appleAlbumArtist: card.appleAlbumArtist,
+                            spotAlbumArtist: card.spotAlbumArtist,
+                            collage: card.collage,
+                            coverImage: card.coverImage,
+                            collage1: card.collage1,
+                            collage2: card.collage2,
+                            collage3: card.collage3,
+                            collage4: card.collage4)
+        return report
+    }
+
     struct Report: Codable {
         let userName: String
         let userEmail: String
         let userComments: String
-        let coreCard: CardForReport
+        
+        let id: String
+        let cardName: String
+        let occassion: String?
+        let recipient: String?
+        let sender: String?
+        let an1: String?
+        let an2: String?
+        let an2URL: String?
+        let an3: String?
+        let an4: String?
+        let date: Date?
+        let font: String?
+        let message: String?
+        let songID: String?
+        let spotID: String?
+        let spotName: String?
+        let spotArtistName: String?
+        let songName: String?
+        let songArtistName: String?
+        let songArtImageData: Data?
+        let songPreviewURL: String?
+        let songDuration: String?
+        let inclMusic: Bool?
+        let spotImageData: Data?
+        let spotSongDuration: String?
+        let spotPreviewURL: String?
+        let creator: String?
+        let songAddedUsing: String?
+        let cardType: String?
+        let recordID: String?
+        let songAlbumName: String?
+        let appleAlbumArtist: String?
+        let spotAlbumArtist: String?
+        let collage: Data?
+        let coverImage: Data?
+        let collage1: Data?
+        let collage2: Data?
+        let collage3: Data?
+        let collage4: Data?
     }
-                   
-                   
-    func createReportObject(userName: String, userEmail: String, userComments: String, card: CoreCard) -> Report {
-        let report = Report(userName: userName, userEmail: userEmail, userComments: userComments, coreCard: coreCardToCardForReport(card: card))
-        return report
-    }
-                   
-                   
-                   
-    func coreCardToCardForReport(card: CoreCard) -> CardForReport {
     
-        let cardForReport = CardForReport(
-            id: card.id.debugDescription,
-            cardName: card.cardName,
-            occassion: card.occassion,
-            recipient: card.recipient,
-            sender: card.sender,
-            an1: card.an1,
-            an2: card.an2,
-            an2URL: card.an2URL,
-            an3: card.an3,
-            an4: card.an4,
-            collage: card.collage,
-            coverImage: card.coverImage,
-            date: card.date,
-            font: card.font,
-            message: card.message,
-            songID: card.songID,
-            spotID: card.spotID,
-            spotName: card.spotName,
-            spotArtistName: card.spotArtistName,
-            songName: card.songName,
-            songArtistName: card.songArtistName,
-            songArtImageData: card.songArtImageData,
-            songPreviewURL: card.songPreviewURL,
-            songDuration: card.songDuration,
-            inclMusic: card.inclMusic,
-            spotImageData: card.spotImageData,
-            spotSongDuration: card.spotSongDuration,
-            spotPreviewURL: card.spotPreviewURL,
-            creator: card.creator,
-            songAddedUsing: card.songAddedUsing,
-            collage1: card.collage1,
-            collage2: card.collage2,
-            collage3: card.collage3,
-            collage4: card.collage4,
-            cardType: card.cardType,
-            recordID: card.recordID,
-            songAlbumName: card.songAlbumName,
-            appleAlbumArtist: card.appleAlbumArtist,
-            spotAlbumArtist: card.spotAlbumArtist
-        )
-
-        return cardForReport
+    func deleteCoreCard(coreCard: CoreCard) {
+        do {PersistenceController.shared.persistentContainer.viewContext.delete(coreCard);try PersistenceController.shared.persistentContainer.viewContext.save()}
+        catch {}
     }
-                   
-                   
-                   
-                   
-                   
-                   
-
-}
-
-
-struct CardForReport: Codable {
-    let id: String
-    let cardName: String
-    let occassion: String?
-    let recipient: String?
-    let sender: String?
-    let an1: String?
-    let an2: String?
-    let an2URL: String?
-    let an3: String?
-    let an4: String?
-    let collage: Data?
-    let coverImage: Data?
-    let date: Date?
-    let font: String?
-    let message: String?
-    let songID: String?
-    let spotID: String?
-    let spotName: String?
-    let spotArtistName: String?
-    let songName: String?
-    let songArtistName: String?
-    let songArtImageData: Data?
-    let songPreviewURL: String?
-    let songDuration: String?
-    let inclMusic: Bool?
-    let spotImageData: Data?
-    let spotSongDuration: String?
-    let spotPreviewURL: String?
-    let creator: String?
-    let songAddedUsing: String?
-    let collage1: Data?
-    let collage2: Data?
-    let collage3: Data?
-    let collage4: Data?
-    let cardType: String?
-    let recordID: String?
-    let songAlbumName: String?
-    let appleAlbumArtist: String?
-    let spotAlbumArtist: String?
 }

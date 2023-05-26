@@ -192,7 +192,7 @@ extension GridofCards {
         }
 
         Button(action: { cardToReport = card}) {
-            HStack {Text("Report Offensive Content"); Image(systemName: "exclamationmark.octagon")}.foregroundColor(.red)
+            HStack {Text("Report Offensive Content"); Image(systemName: "exclamationmark.octagon")}.buttonStyle(RedTextButtonStyle())
         }
 
 
@@ -281,6 +281,14 @@ extension GridofCards {
         do {cardsFromCore = try PersistenceController.shared.persistentContainer.viewContext.fetch(request); for card in cardsFromCore {deleteCoreCard(coreCard: card)}}
         catch{}
     }
+    
+    struct RedTextButtonStyle: ButtonStyle {
+        func makeBody(configuration: Configuration) -> some View {
+            configuration.label
+                .foregroundColor(.red)
+        }
+    }
+
 }
 
 extension CKRecord{
