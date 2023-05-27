@@ -21,12 +21,14 @@ struct Saloo_App: App {
     //@UIApplicationDelegateAdaptor var appDelegate2: AppDelegate
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate3
     @State private var isSignedIn = UserDefaults.standard.string(forKey: "SalooUserID") != nil
-
+    @State private var userID = UserDefaults.standard.object(forKey: "SalooUserID") as? String
     var body: some Scene {
         WindowGroup {
             ZStack {
                 ZStack {
-                    if isSignedIn {StartMenu()}
+                    if isSignedIn {
+                        StartMenu()
+                    }
                     else {LoginView()}
                 }
                 //.background(appDelegate.appColor)
@@ -41,6 +43,8 @@ struct Saloo_App: App {
             }
         }
     }
+    
+   
 }
 
 extension View {func alertView() -> some View {self.modifier(GettingRecordAlert())}}

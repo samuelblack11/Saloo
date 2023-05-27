@@ -66,6 +66,21 @@ class GiftCard: ObservableObject {
     @Published var recipientName = String()
 }
 
+struct UserResponseParent: Codable {
+    let usersList: [UserResponse]
+}
+
+struct UserResponse: Codable {
+    let users: [User]
+}
+
+struct User: Codable {
+    let partitionKey: String
+    let rowKey: String
+    let isBanned: Bool
+}
+
+
 
 class CoreCardWrapper: ObservableObject {
     @Published var enableShare = false

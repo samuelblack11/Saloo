@@ -32,6 +32,8 @@ struct StartMenu: View {
     @State var appRemote2: SPTAppRemote?
     @State var whichBoxForCKAccept: InOut.SendReceive?
     @State var userID = String()
+   // @State var salooUserID: String = (UserDefaults.standard.object(forKey: "SalooUserID") as? String)!
+
     //@ObservedObject var gettingRecord = GettingRecord.shared
 
     //@StateObject var audioManager = AudioSessionManager()
@@ -79,7 +81,13 @@ struct StartMenu: View {
         .modifier(GettingRecordAlert())
         //.background(appDelegate.appColor)
         .onAppear {
-            print("Start Menu Opened...")
+           // print("Start Menu Opened...")
+            var salooUserID = (UserDefaults.standard.object(forKey: "SalooUserID") as? String)!
+            checkUserBanned(userId: salooUserID) { (isBanned, error) in
+                print("checkUserBanned Completion Called....")
+                print("isBanned = \(isBanned)")
+                print("error = \(error)")
+            }
             //timerVar()
             //print(sceneDelegate.hideProgViewOnAcceptShare)
             //print(appDelegate.showProgViewOnAcceptShare)
@@ -101,7 +109,50 @@ struct StartMenu: View {
 
 
 extension StartMenu {
+    
+    func checkUserBanned(userId: String, completion: @escaping (Bool, Error?) -> Void) {
+        print("Called checkUserBanned....")
+        guard let url = URL(string: "https://saloouserstatus.azurewebsites.net/is_banned/\(userId)") else {
+            // Handle invalid URL error
+            print("Invalid URL")
+            completion(false, nil)
+            return
+        }
 
+        let task = URLSession.shared.dataTask(with: url) { (data, response, error) in
+            print("DataTask...")
+            print(response)
+            if let error = error {
+                // Handle error
+                completion(false, error)
+                return
+            }
+
+            if let data = data {
+                do {
+                    let json = try JSONSerialization.jsonObject(with: data, options: [])
+                    // Process the JSON response and handle ban status accordingly
+                    // For example, check if the "message" field indicates ban status
+                    if let responseDict = json as? [String: Any],
+                       let message = responseDict["message"] as? String {
+                        let isBanned = (message == "User is banned")
+                        completion(isBanned, nil)
+                        return
+                    }
+                } catch {
+                    // Handle JSON parsing error
+                    completion(false, error)
+                    return
+                }
+            }
+
+            // Invalid response or data
+            completion(false, nil)
+        }
+
+        task.resume()
+    }
+    
     func createNewShare(coreCard: CoreCard) {
        print("CreateNewShare called")
        if PersistenceController.shared.privatePersistentStore.contains(manageObject: coreCard) {

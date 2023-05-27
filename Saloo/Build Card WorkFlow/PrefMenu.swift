@@ -370,6 +370,9 @@ extension PrefMenu {
                 DispatchQueue.main.async {
                     spotifyAuth.access_Token = response.access_token
                     spotifyAuth.refresh_Token = response.refresh_token
+                    print("Set Spot Access Token to: \(spotifyAuth.access_Token)")
+                    print("Set Spot Refresh Token to: \(spotifyAuth.refresh_Token)")
+
                     defaults.set(response.access_token, forKey: "SpotifyAccessToken")
                     defaults.set(response.refresh_token, forKey: "SpotifyRefreshToken")
                     completion(true)

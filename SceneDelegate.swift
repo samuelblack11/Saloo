@@ -72,8 +72,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
 
     func sceneDidBecomeActive(_ scene: UIScene) {
         print("SceneDidBecomeActive....")
-        print(scene.title)
-        print(launchedURL)
         // Handle the URL if one was stored when the app was launched
         if let url = launchedURL, let windowScene = scene as? UIWindowScene {
             print("Set scene in SceneDidBecomeActive")

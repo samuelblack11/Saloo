@@ -270,27 +270,25 @@ extension MusicSearchView {
         let totalOffsets = totalAlbums / pageSize
         let group1 = DispatchGroup()
         print("CheckPoint2")
+        print(cleanAlbumName)
         for offset in 0..<totalOffsets {
             group1.enter()
             print("CheckPoint3")
             DispatchQueue.global().async {
                 SpotifyAPI().getAlbumIDUsingNameOnly(albumName: cleanAlbumName, offset: offset * pageSize, authToken: spotifyAuth.access_Token) { albumResponse, error in
-                    print("FFFFF")
-                    print(spotifyAuth.access_Token)
                     print("CheckPoint4")
-
+                    print(albumResponse)
+                    print("---")
+                    print(error)
                     if let error = error as? URLError, error.code == .notConnectedToInternet {
                         showFailedConnectionAlert = true
                     }
-                    
                     if let albumResponse = albumResponse {
                         let group2 = DispatchGroup()
-
                         for album in albumResponse {
+                            group2.enter()
                             print("CheckPoint5")
                             print("Current Album...\(album.name)")
-                            group2.enter()
-
                             DispatchQueue.global().async {
                                 SpotifyAPI().getAlbumTracks(albumId: album.id, authToken: spotifyAuth.access_Token) { response, error in
                                     if let trackList = response {
@@ -307,20 +305,17 @@ extension MusicSearchView {
                                                 albumArtistList.append(allArtists)
                                             }
                                         }
-                                        print("All tracks in \(album) looped through")
                                     }
-
-                                    // Release the semaphore when getAlbumTracks is finished
-
+                                    // Ensuring group2.leave() is called for each album regardless of whether a match is found or not
                                     group2.leave()
                                 }
                             }
                         }
-
                         group2.notify(queue: DispatchQueue.global()) {
                             group1.leave()
                         }
-                    } else {group1.leave()
+                    } else {
+                        group1.leave()
                     }
                 }
             }
@@ -344,8 +339,8 @@ extension MusicSearchView {
                 }
                 if foundMatch { break }
             }
-
-            if !foundMatch {
+            // Check if albumArtistList is not empty before attempting to access its elements
+            if !foundMatch && !albumArtistList.isEmpty {
                 print("called !foundMatch")
                 chosenSong.spotAlbumArtist = albumArtistList[0]
                 chosenSong.spotAlbumArtist = albumArtistList.first ?? ""
@@ -354,6 +349,18 @@ extension MusicSearchView {
         }
     }
 
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     func getAlbum(storeFront: String, userToken: String) {
         var albumAndArtistForSearch = cleanMusicData.compileMusicString(songOrAlbum: chosenSong.songAlbumName, artist: chosenSong.artistName, removeList: appDelegate.songFilterForSearch)
         var albumForSearch = cleanMusicData.compileMusicString(songOrAlbum: chosenSong.songAlbumName, artist: nil, removeList: appDelegate.songFilterForSearch)
