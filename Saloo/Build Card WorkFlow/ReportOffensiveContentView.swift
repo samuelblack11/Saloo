@@ -108,7 +108,8 @@ struct ReportOffensiveContentView: View {
                    
                    
     func createReportObject(userName: String, userEmail: String, userComments: String, card: CoreCard) -> Report {
-        let report = Report(userName: userName, userEmail: userEmail, userComments: userComments,id:                    card.id.debugDescription,
+        let report = Report(userName: userName, userEmail: userEmail, userComments: userComments, salooUserID: card.salooUserID,
+                            id:card.id.debugDescription,
                             cardName: card.cardName,
                             occassion: card.occassion,
                             recipient: card.recipient,
@@ -154,7 +155,7 @@ struct ReportOffensiveContentView: View {
         let userName: String
         let userEmail: String
         let userComments: String
-        
+        let salooUserID: String?
         let id: String
         let cardName: String
         let occassion: String?
