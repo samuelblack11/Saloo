@@ -95,8 +95,6 @@ extension LoginView {
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
-        print("$$")
-        print(parameters)
         do {
             print("Trying do")
             request.httpBody = try JSONSerialization.data(withJSONObject: parameters, options: [])
@@ -108,8 +106,6 @@ extension LoginView {
         }
         
         let task = URLSession.shared.dataTask(with: request) { (data, response, error) in
-            print("***")
-            print(response)
             if let error = error {
                 // Handle network error
                 print("Network error: \(error)")

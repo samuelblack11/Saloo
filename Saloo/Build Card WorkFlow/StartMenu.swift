@@ -32,6 +32,8 @@ struct StartMenu: View {
     @State var appRemote2: SPTAppRemote?
     @State var whichBoxForCKAccept: InOut.SendReceive?
     @State var userID = String()
+    @State private var isBanned = false
+
    // @State var salooUserID: String = (UserDefaults.standard.object(forKey: "SalooUserID") as? String)!
 
     //@ObservedObject var gettingRecord = GettingRecord.shared
@@ -79,11 +81,17 @@ struct StartMenu: View {
 
         }
         .modifier(GettingRecordAlert())
+        .alert(isPresented: $isBanned) {
+            Alert(title: Text("User Banned"), message: Text("You have been banned from using this app."), dismissButton: .default(Text("OK"), action: {
+                exit(0) // Terminate the app
+            }))
+        }
         //.background(appDelegate.appColor)
         .onAppear {
            // print("Start Menu Opened...")
             var salooUserID = (UserDefaults.standard.object(forKey: "SalooUserID") as? String)!
             checkUserBanned(userId: salooUserID) { (isBanned, error) in
+                self.isBanned = isBanned
                 print("checkUserBanned Completion Called....")
                 print("isBanned = \(isBanned)")
                 print("error = \(error)")
@@ -102,7 +110,6 @@ struct StartMenu: View {
         }
         .fullScreenCover(isPresented: $showPrefMenu) {PrefMenu()}
     }
-    
 }
 
 
@@ -111,17 +118,19 @@ struct StartMenu: View {
 extension StartMenu {
     
     func checkUserBanned(userId: String, completion: @escaping (Bool, Error?) -> Void) {
-        print("Called checkUserBanned....")
-        guard let url = URL(string: "https://saloouserstatus.azurewebsites.net/is_banned/\(userId)") else {
+        guard let url = URL(string: "https://saloouserstatus.azurewebsites.net/is_banned?user_id=\(userId)") else {
             // Handle invalid URL error
             print("Invalid URL")
             completion(false, nil)
             return
         }
 
+        
         let task = URLSession.shared.dataTask(with: url) { (data, response, error) in
-            print("DataTask...")
-            print(response)
+            if let jsonObj = try? JSONSerialization.jsonObject(with: data!, options: []) as? [String: Any] {
+                print("&&&")
+                print(jsonObj)
+            }
             if let error = error {
                 // Handle error
                 completion(false, error)
@@ -130,16 +139,19 @@ extension StartMenu {
 
             if let data = data {
                 do {
-                    let json = try JSONSerialization.jsonObject(with: data, options: [])
-                    // Process the JSON response and handle ban status accordingly
-                    // For example, check if the "message" field indicates ban status
-                    if let responseDict = json as? [String: Any],
-                       let message = responseDict["message"] as? String {
-                        let isBanned = (message == "User is banned")
-                        completion(isBanned, nil)
-                        return
+                    if let responseDict = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any] {
+                        let value: Optional<Any> = responseDict["is_banned"]
+                        if let stringValue = value as? String {
+                            let stringValue2 = stringValue.lowercased()
+                            if let isBanned = Bool(stringValue2) {
+                                print("Value of isBanned \(isBanned)")
+                                completion(isBanned, nil)
+                                return
+                            }
+                        }
                     }
-                } catch {
+                }
+                catch {
                     // Handle JSON parsing error
                     completion(false, error)
                     return
@@ -152,6 +164,7 @@ extension StartMenu {
 
         task.resume()
     }
+
     
     func createNewShare(coreCard: CoreCard) {
        print("CreateNewShare called")
