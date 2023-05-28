@@ -99,6 +99,11 @@ struct WriteNoteView: View {
                         if appDelegate.musicSub.type == .Apple {addMusicPrompt = true}
                         if appDelegate.musicSub.type == .Spotify {addMusicPrompt = true}
                         if appDelegate.musicSub.type == .Neither {showFinalize = true}
+                        let fullTextDetails = message.value + " " + recipient.value + " " + sender.value + " " + cardName.value
+                        WriteNoteView.checkTextForOffensiveContent(text: fullTextDetails) { (textIsOffensive, error) in
+                            print("....")
+                            print(textIsOffensive)
+                        }
                     }
                     .alert("Please Enter Values for All Fields!", isPresented: $namesNotEntered) {Button("Ok", role: .cancel) {}}
                     .alert("A Subscription to Spotify or Apple Music is Required to Add a Song. We'll skip that Step", isPresented: $skipMusicPrompt) {
@@ -133,6 +138,11 @@ struct WriteNoteView: View {
 
 extension WriteNoteView {
     
+    
+    func checkForBannedContent(inputString: String) {
+        print("Checking for banned content...")
+    }
+    
     func annotateIfNeeded() {
         print("annotateIfNeeded was Called")
         print(chosenObject.frontCoverIsPersonalPhoto)
@@ -158,6 +168,53 @@ extension WriteNoteView {
             noteField.sender = sender.value
         }
         else {namesNotEntered = true}
+    }
+    
+    
+    static let subscriptionKey = "644c31910b4c473e9117a5127ceb3895"
+    static let endpoint = "https://saloocontentmoderator2.cognitiveservices.azure.com/"
+    static let textModerationEndpoint = "https://eastus.api.cognitive.microsoft.com/contentmoderator/moderate/v1.0/ProcessText/Screen"
+    static let textBase = endpoint + "contentmoderator/moderate/v1.0/ProcessText/Screen"
+    
+    static func checkTextForOffensiveContent(text: String, completion: @escaping (Bool?, Error?) -> Void) {
+        // Endpoint for Microsoft's Content Moderator API (text moderation)
+        guard let url = URL(string: textBase) else { return }
+        // Prepare the request body
+        let requestBody = ["text": text]
+        guard let jsonData = try? JSONSerialization.data(withJSONObject: requestBody) else {
+            let error = NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Failed to create request body"])
+            completion(nil, error)
+            return
+        }
+        // Prepare the URL request
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.httpBody = jsonData
+        request.addValue("text/plain", forHTTPHeaderField: "Content-Type")
+        request.addValue(subscriptionKey, forHTTPHeaderField: "Ocp-Apim-Subscription-Key")
+        // Make the request
+        let task = URLSession.shared.dataTask(with: request) { data, response, error in
+            guard let data = data, error == nil else {
+                completion(nil, error)
+                return
+            }
+            
+            do {
+                if let responseData = try JSONSerialization.jsonObject(with: data) as? [String: Any],
+                   let status = responseData["Status"] as? [String: Any],
+                   let description = status["Description"] as? String {
+                    // Access the extracted description
+                    if description == "OK" {completion(false, nil)}
+                    else {completion(true, nil)}
+                } else {
+                    let error = NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Failed to parse JSON or extract description"])
+                    completion(nil, error)
+                }
+            } catch {
+                completion(nil, error)
+            }
+        }
+        task.resume()
     }
     
     
