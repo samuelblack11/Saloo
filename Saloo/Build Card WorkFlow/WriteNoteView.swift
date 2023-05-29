@@ -174,22 +174,17 @@ extension WriteNoteView {
     static let subscriptionKey = "644c31910b4c473e9117a5127ceb3895"
     static let endpoint = "https://saloocontentmoderator2.cognitiveservices.azure.com/"
     static let textModerationEndpoint = "https://eastus.api.cognitive.microsoft.com/contentmoderator/moderate/v1.0/ProcessText/Screen"
-    static let textBase = endpoint + "contentmoderator/moderate/v1.0/ProcessText/Screen"
-    
+    //static let textBase = endpoint + "contentmoderator/moderate/v1.0/ProcessText/Screen"
+    //static let textBase = endpoint + "contentmoderator/moderate/v1.0/Text/Classify"
+    static let textBase = endpoint + "contentmoderator/moderate/v1.0/ProcessText/Screen?classify=true"
     static func checkTextForOffensiveContent(text: String, completion: @escaping (Bool?, Error?) -> Void) {
         // Endpoint for Microsoft's Content Moderator API (text moderation)
         guard let url = URL(string: textBase) else { return }
-        // Prepare the request body
-        let requestBody = ["text": text]
-        guard let jsonData = try? JSONSerialization.data(withJSONObject: requestBody) else {
-            let error = NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Failed to create request body"])
-            completion(nil, error)
-            return
-        }
+        
         // Prepare the URL request
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
-        request.httpBody = jsonData
+        request.httpBody = text.data(using: .utf8) // Send the text directly as data
         request.addValue("text/plain", forHTTPHeaderField: "Content-Type")
         request.addValue(subscriptionKey, forHTTPHeaderField: "Ocp-Apim-Subscription-Key")
         // Make the request
@@ -199,15 +194,36 @@ extension WriteNoteView {
                 return
             }
             
+            print("Checkpoint3")
+            print(response)
             do {
                 if let responseData = try JSONSerialization.jsonObject(with: data) as? [String: Any],
-                   let status = responseData["Status"] as? [String: Any],
-                   let description = status["Description"] as? String {
-                    // Access the extracted description
-                    if description == "OK" {completion(false, nil)}
-                    else {completion(true, nil)}
+                   let classification = responseData["Classification"] as? [String: Any],
+                   
+                   let category1 = classification["Category1"] as? [String: Any],
+                   let score1 = category1["Score"] as? Double,
+                   
+                   let category2 = classification["Category2"] as? [String: Any],
+                   let score2 = category2["Score"] as? Double,
+                   
+                   let category3 = classification["Category3"] as? [String: Any],
+                   let score3 = category3["Score"] as? Double {
+                    
+                    print("Checkpoint4")
+
+                    print("Classification Scores:")
+                    print("Score1: \(score1)")
+                    print("Score2: \(score2)")
+                    print("Score3: \(score3)")
+                    
+                    // Add your own logic for handling the classification scores
+                    
+                    // For now, just pass the maximum score to the completion handler
+                    let maxScore = max(score1, score2, score3)
+                    print("Max Score...\(maxScore)")
+                    completion(false, nil)
                 } else {
-                    let error = NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Failed to parse JSON or extract description"])
+                    let error = NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Failed to parse JSON or extract classification scores"])
                     completion(nil, error)
                 }
             } catch {
@@ -216,7 +232,8 @@ extension WriteNoteView {
         }
         task.resume()
     }
-    
+
+
     
     
 }

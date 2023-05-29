@@ -59,6 +59,7 @@
 		C23A9D3A28989B630059B97C /* DateDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C23A9D3928989B630059B97C /* DateDetailView.swift */; };
 		C23A9D3C28989C340059B97C /* CalendarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C23A9D3B28989C340059B97C /* CalendarView.swift */; };
 		C23B622128B5ABE300D88F85 /* Notify.swift in Sources */ = {isa = PBXBuildFile; fileRef = C23B622028B5ABE300D88F85 /* Notify.swift */; };
+		C23F27A42A23DB5D00D4E273 /* LaunchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C23F27A32A23DB5D00D4E273 /* LaunchView.swift */; };
 		C24B3ABB29574A3D00884E4D /* CustomDataTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = C24B3ABA29574A3D00884E4D /* CustomDataTypes.swift */; };
 		C2582A3B296E5841009F8FEC /* eCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2582A3A296E5841009F8FEC /* eCardView.swift */; };
 		C2582A3E296F7171009F8FEC /* AppleMusicAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2582A3D296F7171009F8FEC /* AppleMusicAPI.swift */; };
@@ -150,6 +151,7 @@
 		C23A9D3928989B630059B97C /* DateDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateDetailView.swift; sourceTree = "<group>"; };
 		C23A9D3B28989C340059B97C /* CalendarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarView.swift; sourceTree = "<group>"; };
 		C23B622028B5ABE300D88F85 /* Notify.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Notify.swift; sourceTree = "<group>"; };
+		C23F27A32A23DB5D00D4E273 /* LaunchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LaunchView.swift; sourceTree = "<group>"; };
 		C24B3ABA29574A3D00884E4D /* CustomDataTypes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomDataTypes.swift; sourceTree = "<group>"; };
 		C2582A3A296E5841009F8FEC /* eCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = eCardView.swift; sourceTree = "<group>"; };
 		C2582A3D296F7171009F8FEC /* AppleMusicAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppleMusicAPI.swift; sourceTree = "<group>"; };
@@ -185,6 +187,7 @@
 				C22CAE49298EAA3F003302C4 /* PrefMenu.swift */,
 				C22A180A296CF60600A7E9B8 /* StartMenu.swift */,
 				260F6906281DC0E3002E864B /* LoginView.swift */,
+				C23F27A32A23DB5D00D4E273 /* LaunchView.swift */,
 				260F68F4281DBDCD002E864B /* OccassionsMenu.swift */,
 				260F68F6281DBDD2002E864B /* UnsplashCollectionView.swift */,
 				26AD812A281F119A0069C3F0 /* ConfirmFrontCoverView.swift */,
@@ -607,6 +610,7 @@
 				C2DE5C98289EFECC00F8C556 /* AddEventToCalendarForm.swift in Sources */,
 				260F6907281DC0E3002E864B /* LoginView.swift in Sources */,
 				2688D704285FA24300954120 /* SnapShotECard.swift in Sources */,
+				C23F27A42A23DB5D00D4E273 /* LaunchView.swift in Sources */,
 				260F68FC281DBEA0002E864B /* UnsplashResponse.swift in Sources */,
 				C23A9D382897F3F00059B97C /* CalendarDate+CoreDataProperties.swift in Sources */,
 				C2163D0E28C1609C00DEE861 /* ScheduleDelivery.swift in Sources */,

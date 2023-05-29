@@ -13,7 +13,7 @@ struct Saloo_App: App {
     @StateObject var calViewModel = CalViewModel()
     @StateObject var showDetailView = ShowDetailView()
     let persistenceController = PersistenceController.shared
-    @StateObject var appDelegate = AppDelegate()
+    @EnvironmentObject var appDelegate: AppDelegate
     @StateObject var sceneDelegate = SceneDelegate()
     @StateObject var networkMonitor = NetworkMonitor()
     @ObservedObject var gettingRecord = GettingRecord.shared
@@ -22,20 +22,24 @@ struct Saloo_App: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate3
     @State private var isSignedIn = UserDefaults.standard.string(forKey: "SalooUserID") != nil
     @State private var userID = UserDefaults.standard.object(forKey: "SalooUserID") as? String
+    @State private var showLaunchView = true
+    
     var body: some Scene {
         WindowGroup {
             ZStack {
                 ZStack {
                     if isSignedIn {
                         StartMenu()
+                        LaunchView()
+                            .offset(x: showLaunchView ? 0 : -UIScreen.main.bounds.width, y: 0)
+                            .animation(Animation.easeInOut(duration: 0.5))
                     }
                     else {LoginView()}
                 }
-                //.background(appDelegate.appColor)
+                .onAppear {DispatchQueue.main.asyncAfter(deadline: .now() + 1) {withAnimation{showLaunchView = false}}}
                     .environment(\.managedObjectContext, persistenceController.persistentContainer.viewContext)
                     .environmentObject(networkMonitor)
                     .environmentObject(sceneDelegate)
-                    .environmentObject(appDelegate)
                     .environmentObject(musicSub)
                     .environmentObject(calViewModel)
                     .environmentObject(showDetailView)
@@ -43,6 +47,9 @@ struct Saloo_App: App {
             }
         }
     }
+
+    
+    
     
    
 }

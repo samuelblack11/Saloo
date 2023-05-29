@@ -101,7 +101,8 @@ struct StartMenu: View {
             //print(appDelegate.showProgViewOnAcceptShare)
             appDelegate.startMenuAppeared = true
             //print((defaults.object(forKey: "MusicSubType") as? String))
-            if (defaults.object(forKey: "MusicSubType") as? String) != nil  && appDelegate.isLaunchingFromClosed {
+            //if (defaults.object(forKey: "MusicSubType") as? String) != nil  && appDelegate.isLaunchingFromClosed {
+            if (defaults.object(forKey: "MusicSubType") as? String) != nil {
                 if (defaults.object(forKey: "MusicSubType") as? String)! == "Apple Music" {appDelegate.musicSub.type = .Apple}
                 if (defaults.object(forKey: "MusicSubType") as? String)! == "Spotify" {appDelegate.musicSub.type = .Spotify}
                 if (defaults.object(forKey: "MusicSubType") as? String)! == "Neither" {appDelegate.musicSub.type = .Neither}

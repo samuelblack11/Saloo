@@ -20,13 +20,7 @@ struct LoginView: View {
             ZStack {
                 VStack {
                     Image("logo180").frame(maxWidth: UIScreen.screenWidth/2,maxHeight: UIScreen.screenHeight/3)
-                    HStack {
-                        Text("Saloo")
-                            .padding(.top, 50)
-                            .foregroundColor(.white)
-                            .font(.system(size: 48))
-                            .font(.headline)
-                    }
+
                     Spacer()
                     SignInWithAppleButton(
                             .signIn,
