@@ -35,6 +35,8 @@ struct WriteNoteView: View {
     @State private var skipMusicPrompt = false
     @State private var handWrite2 = false
     @State private var selectedFont = "Papyrus"
+    @State private var showOffensiveTextAlert = false
+
     @FocusState private var isNoteFieldFocused: Bool
     @ObservedObject var gettingRecord = GettingRecord.shared
 
@@ -95,23 +97,31 @@ struct WriteNoteView: View {
                         .border(Color.red, width: $cardName.hasReachedLimit.wrappedValue ? 1 : 0 )
                         .onTapGesture {if cardName.value == "Name Your Card" {cardName.value = ""}}
                     Button("Confirm Note") {
-                        cardName.value = cardName.value.components(separatedBy: CharacterSet.punctuationCharacters).joined()
-                        if appDelegate.musicSub.type == .Apple {addMusicPrompt = true}
-                        if appDelegate.musicSub.type == .Spotify {addMusicPrompt = true}
-                        if appDelegate.musicSub.type == .Neither {showFinalize = true}
                         let fullTextDetails = message.value + " " + recipient.value + " " + sender.value + " " + cardName.value
                         WriteNoteView.checkTextForOffensiveContent(text: fullTextDetails) { (textIsOffensive, error) in
-                            print("....")
-                            print(textIsOffensive)
+                            print("....\(textIsOffensive)")
+                            if textIsOffensive! {showOffensiveTextAlert = true}
+                            else {
+                                cardName.value = cardName.value.components(separatedBy: CharacterSet.punctuationCharacters).joined()
+                                if appDelegate.musicSub.type == .Apple {addMusicPrompt = true}
+                                if appDelegate.musicSub.type == .Spotify {addMusicPrompt = true}
+                                if appDelegate.musicSub.type == .Neither {showFinalize = true}
+                                checkRequiredFields(); annotateIfNeeded()
+                            }
                         }
                     }
+                    .alert(isPresented: $showOffensiveTextAlert) {
+                        Alert(title: Text("Take it easy!"),message: Text("Tone down the rhetoric and write something else."),dismissButton: .default(Text("Ok")) {})
+                    }
+                    
+                    
                     .alert("Please Enter Values for All Fields!", isPresented: $namesNotEntered) {Button("Ok", role: .cancel) {}}
                     .alert("A Subscription to Spotify or Apple Music is Required to Add a Song. We'll skip that Step", isPresented: $skipMusicPrompt) {
                         Button("Ok"){showFinalize = true}
                     }
                     .alert("Add Song to Card?", isPresented: $addMusicPrompt) {
-                        Button("Hell Yea"){addMusic.addMusic = true; appDelegate.musicSub.timeToAddMusic = true; checkRequiredFields(); annotateIfNeeded()}
-                        Button("No Thanks") {checkRequiredFields(); annotateIfNeeded(); addMusic.addMusic = false; showFinalize = true}
+                        Button("Hell Yea"){addMusic.addMusic = true; appDelegate.musicSub.timeToAddMusic = true}
+                        Button("No Thanks") {addMusic.addMusic = false; showFinalize = true}
                     }
                     .alert("Your typed message will only appear in your eCard", isPresented: $handWrite2) {Button("Ok", role: .cancel) {}}
                     .padding(.bottom, 30)
@@ -134,7 +144,6 @@ struct WriteNoteView: View {
 
     }
 }
-
 
 extension WriteNoteView {
     
@@ -195,7 +204,9 @@ extension WriteNoteView {
             }
             
             print("Checkpoint3")
-            print(response)
+            let responseDataString = String(data: data, encoding: .utf8)
+            print("Response data string: \(responseDataString ?? "No data string")")
+
             do {
                 if let responseData = try JSONSerialization.jsonObject(with: data) as? [String: Any],
                    let classification = responseData["Classification"] as? [String: Any],
@@ -220,14 +231,16 @@ extension WriteNoteView {
                     
                     // For now, just pass the maximum score to the completion handler
                     let maxScore = max(score1, score2, score3)
+                    // seems to max out at 0.98799 with something particularly offensive
                     print("Max Score...\(maxScore)")
-                    completion(false, nil)
+                    if maxScore >= 0.99 {completion(true, nil)}
+                    else{completion(false,nil)}
                 } else {
                     let error = NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Failed to parse JSON or extract classification scores"])
-                    completion(nil, error)
+                    completion(false, error)
                 }
             } catch {
-                completion(nil, error)
+                completion(false, error)
             }
         }
         task.resume()

@@ -104,7 +104,7 @@ struct eCardView: View {
     
     var NoMusicNoGiftView: some View {
         return GeometryReader { geometry in
-            VStack {
+            VStack(alignment: .center) {
                 if getCoverSize().1 < 1.3 {
                     let height = geometry.size.height / 2.5
                     HStack{CoverViewTall();CollageAndAnnotationView()}.frame(height: height)
@@ -127,9 +127,10 @@ struct eCardView: View {
     func CoverViewWide() -> some View {
         return Image(uiImage: UIImage(data: coverImage)!)
                 .interpolation(.none).resizable()
-                .frame(maxWidth: UIScreen.main.bounds.width / 1.1, maxHeight: UIScreen.main.bounds.height / 4.2)
+                .frame(width: UIScreen.main.bounds.width/1.2, height: UIScreen.main.bounds.height / 4.2, alignment: .center)
                 .scaledToFill()
     }
+
     
     func CoverViewTall() -> some View {
         return Image(uiImage: UIImage(data: coverImage)!)
