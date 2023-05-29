@@ -105,8 +105,7 @@ struct WriteNoteView: View {
                                 cardName.value = cardName.value.components(separatedBy: CharacterSet.punctuationCharacters).joined()
                                 if appDelegate.musicSub.type == .Apple {addMusicPrompt = true}
                                 if appDelegate.musicSub.type == .Spotify {addMusicPrompt = true}
-                                if appDelegate.musicSub.type == .Neither {showFinalize = true}
-                                checkRequiredFields(); annotateIfNeeded()
+                                if appDelegate.musicSub.type == .Neither {checkRequiredFields(); annotateIfNeeded(); showFinalize = true}
                             }
                         }
                     }
@@ -120,8 +119,8 @@ struct WriteNoteView: View {
                         Button("Ok"){showFinalize = true}
                     }
                     .alert("Add Song to Card?", isPresented: $addMusicPrompt) {
-                        Button("Hell Yea"){addMusic.addMusic = true; appDelegate.musicSub.timeToAddMusic = true}
-                        Button("No Thanks") {addMusic.addMusic = false; showFinalize = true}
+                        Button("Hell Yea"){addMusic.addMusic = true; appDelegate.musicSub.timeToAddMusic = true; checkRequiredFields(); annotateIfNeeded()}
+                        Button("No Thanks") {checkRequiredFields(); annotateIfNeeded(); addMusic.addMusic = false; showFinalize = true}
                     }
                     .alert("Your typed message will only appear in your eCard", isPresented: $handWrite2) {Button("Ok", role: .cancel) {}}
                     .padding(.bottom, 30)

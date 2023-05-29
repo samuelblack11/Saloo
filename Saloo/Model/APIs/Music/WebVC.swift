@@ -39,8 +39,8 @@ class WebVC: UIViewController, WKNavigationDelegate {
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        print("called view will disapper")
-        print((defaults.object(forKey: "SpotifyAuthCode") as? String))
+        //print("called view will disapper")
+        //print((defaults.object(forKey: "SpotifyAuthCode") as? String))
         if defaults.object(forKey: "SpotifyAuthCode") == nil || (defaults.object(forKey: "SpotifyAuthCode") as? String) == "AuthFailed" {
             print("AuthFailed...")
             self.defaults.set("AuthFailed", forKey: "SpotifyAuthCode")
@@ -50,8 +50,8 @@ class WebVC: UIViewController, WKNavigationDelegate {
     
     
     override func viewDidLoad() {
-        print("%%%")
-        print(authURL)
+        //print("%%%")
+        //print(authURL)
         let url = URL(string: authURL!)!
         webView.load(URLRequest(url: url))
         webView.allowsBackForwardNavigationGestures = true
@@ -61,15 +61,15 @@ class WebVC: UIViewController, WKNavigationDelegate {
     
     override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
         if let key = change?[NSKeyValueChangeKey.newKey] {
-            print("observeValue \(key)")
+            //print("observeValue \(key)")
             let key_string = "\(key)"
             if key_string.contains("code=") {
                 DispatchQueue.main.async {
                     let redirectURL = self.webView.url!.absoluteString
                     let splitRedirectURL = redirectURL.components(separatedBy: "code=")
                     let authCode = splitRedirectURL[1]
-                    print("<<<<")
-                    print(authCode)
+                    //print("<<<<")
+                    //print(authCode)
                     self.defaults.set(authCode, forKey: "SpotifyAuthCode")
                     self.delegate?.sendDataToFirstViewController(strCode: authCode)
                     self.dismiss(animated: true)
@@ -106,8 +106,8 @@ struct WebVCView: UIViewControllerRepresentable {
     
     func makeUIViewController(context: Context) -> WebVC {
         //Return SpotAppRemoteVC Instance
-        print("#$#$")
-        print(authURLForView)
+        //print("#$#$")
+       // print(authURLForView)
         
         let vc = WebVC(authURL: authURLForView)
         vc.delegate = context.coordinator

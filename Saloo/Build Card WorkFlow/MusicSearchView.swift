@@ -49,7 +49,7 @@ struct MusicSearchView: View {
     @State private var refresh_token: String? = ""
     @State private var invalidAuthCode = false
     let defaults = UserDefaults.standard
-    let config = SPTConfiguration(clientID: "d15f76f932ce4a7c94c2ecb0dfb69f4b", redirectURL: URL(string: "saloo://")!)
+    let config = SPTConfiguration(clientID: SpotifyAPI.shared.clientIdentifier, redirectURL: URL(string: "saloo://")!)
     @State var appRemote2: SPTAppRemote?
     @State var counter = 0
     @State var refreshAccessToken = false
@@ -132,7 +132,11 @@ struct MusicSearchView: View {
                     }
                 }
                 .onAppear{
-                    if appDelegate.musicSub.type == .Spotify {getSpotCredentials{success in}}
+                    if appDelegate.musicSub.type == .Spotify {getSpotCredentials{success in
+                        print("Got SPOT Credentials...\(success)")
+                        print(spotifyAuth.access_Token)
+                        
+                    }}
                     if appDelegate.musicSub.type == .Apple {
                         if networkMonitor.isConnected {getAMUserTokenAndStoreFront{}}
                         else {showFailedConnectionAlert = true}}
@@ -163,101 +167,103 @@ struct MusicSearchView: View {
 
 extension MusicSearchView {
     
-    func getAMUserTokenAndStoreFront(completion: @escaping () -> Void) {
-        getAMUserToken {[self] in self.getAMStoreFront(completion: completion)}
+    func getSpotCredentials(completion: @escaping (Bool) -> Void) {
+        if networkMonitor.isConnected {
+            if let refreshToken = defaults.object(forKey: "SpotifyRefreshToken") as? String, counter == 0 {
+                refreshTokenAndRun(completion: completion)
+            } else {
+                requestAndRunToken(completion: completion)
+            }
+        } else {
+            showFailedConnectionAlert = true
+            completion(false)
+        }
+    }
+    
+    func refreshTokenAndRun(completion: @escaping (Bool) -> Void) {
+        refresh_token = (defaults.object(forKey: "SpotifyRefreshToken") as? String)!
+        SpotifyAPI().getTokenViaRefresh(refresh_token: refresh_token!) { response, error in
+            if let response = response {
+                spotifyAuth.access_Token = response.access_token
+                defaults.set(response.access_token, forKey: "SpotifyAccessToken")
+                runInstantiateAppRemote()
+                completion(true)
+            } else {
+                showFailedConnectionAlert = true
+                completion(false)
+            }
+        }
+    }
+    
+    
+    func getSpotToken(completion: @escaping (Bool) -> Void) {
+        tokenCounter = 1
+        spotifyAuth.auth_code = authCode!
+        if let authCode = authCode {
+            SpotifyAPI().getToken(authCode: spotifyAuth.auth_code) { response, error in
+                if let response = response {
+                    spotifyAuth.access_Token = response.access_token
+                    spotifyAuth.refresh_Token = response.refresh_token
+                    defaults.set(response.access_token, forKey: "SpotifyAccessToken")
+                    defaults.set(response.refresh_token, forKey: "SpotifyRefreshToken")
+                    completion(true)
+                } else {
+                    invalidAuthCode = true
+                    //authCode = ""
+                    spotifyAuth.auth_code = ""
+                    completion(false)
+                }
+            }
+        }
+    }
+    
+    
+    
+    
+    
+
+    func getSpotTokenViaRefresh(completion: @escaping (Bool) -> Void) {
+        print("called....requestSpotTokenViaRefresh")
+        tokenCounter = 1
+        spotifyAuth.auth_code = authCode!
+        refresh_token = (defaults.object(forKey: "SpotifyRefreshToken") as? String)!
+        SpotifyAPI().getTokenViaRefresh(refresh_token: refresh_token!, completionHandler: {(response, error) in
+            if let response = response {
+                DispatchQueue.main.async {
+                    spotifyAuth.access_Token = response.access_token
+                    defaults.set(response.access_token, forKey: "SpotifyAccessToken")
+                    completion(true)
+                }
+            } else if let error = error {
+                print("Error... \(error.localizedDescription)!")
+                invalidAuthCode = true
+                authCode = ""
+                completion(false)
+            }
+        })
     }
 
-    func getAMUserToken(completion: @escaping () -> Void) {
-        SKCloudServiceController.requestAuthorization {(status) in
-            if status == .authorized {
-                amAPI.getUserToken { response, error in
-                    print("Checking Token"); print(response); print("^^"); print(error)
-                    completion()
+    func requestAndRunToken(completion: @escaping (Bool) -> Void) {
+        SpotifyAPI().requestAuth { response, error in
+            guard let response = response else {
+                completion(false)
+                return
+            }
+            spotifyAuth.authForRedirect = response
+            showWebView = true
+            getSpotToken { success in
+                if success {
+                    
+                    runInstantiateAppRemote()
+                    completion(true)
+                } else {
+                    showFailedConnectionAlert = true
+                    completion(false)
                 }
             }
         }
     }
 
-    func getAMStoreFront(completion: @escaping () -> Void) {
-        SKCloudServiceController.requestAuthorization {(status) in
-            if status == .authorized {
-                amAPI.fetchUserStorefront(userToken: amAPI.taskToken!) { response, error in
-                    amAPI.storeFrontID = response!.data[0].id
-                    completion()
-                }
-            }
-        }
-    }
-    
-    func searchWithAM() {
-        if amAPI.storeFrontID == nil {isLoading = true; getAMUserTokenAndStoreFront{performAMSearch()}}
-        else {performAMSearch()}
-    }
-    
-    func performAMSearch() {
-        isLoading = true
-        SKCloudServiceController.requestAuthorization {(status) in if status == .authorized {
-            let amSearch = cleanMusicData.cleanMusicString(input: self.songSearch, removeList: appDelegate.songFilterForSearch)
-            self.searchResults = AppleMusicAPI().searchAppleMusic(amSearch, storeFrontID: amAPI.storeFrontID!, userToken: amAPI.taskToken!, completionHandler: { (response, error) in
-                if response != nil {
-                    DispatchQueue.main.async {
-                        for song in response! {
-                            let blankString: String? = ""
-                            var songPrev: String?
-                            if song.attributes.previews.count > 0 {songPrev = song.attributes.previews[0].url}
-                            else {songPrev = blankString}
-                            print("Search With AM called...")
-                            let artURL = URL(string:song.attributes.artwork.url.replacingOccurrences(of: "{w}", with: "80").replacingOccurrences(of: "{h}", with: "80"))
-                            let _ = getURLData(url: artURL!, completionHandler: { (artResponse, error2) in
-                                print("Song Name is...\(song.attributes.name)")
-                                let songForList = SongForList(id: song.attributes.playParams.id, name: song.attributes.name, artistName: song.attributes.artistName, albumName: song.attributes.albumName,artImageData: artResponse!, durationInMillis: song.attributes.durationInMillis, isPlaying: false, previewURL: songPrev!, disc_number: song.attributes.discNumber)
-                                if cleanMusicData.containsString(listOfSubStrings: appDelegate.songFilterForSearch, songName: songForList.name) || cleanMusicData.containsString(listOfSubStrings: appDelegate.songFilterForSearch, songName: songForList.albumName){
-                                print("Did Not Append....")
-                                print(songForList.name)
-                            }
-                            else {searchResults.append(songForList)}
-                            })}}}; if response != nil {print("No Response!")}
-                else {debugPrint(error?.localizedDescription)}}
-            )}}
-        isLoading = false
-    }
-    
-    func createChosenSong(song: SongForList) {
-
-        songProgress = 0.0; isPlaying = true
-        if appDelegate.musicSub.type == .Spotify {
-            chosenSong.spotID = song.id
-            chosenSong.spotName = song.name
-            chosenSong.spotArtistName = song.artistName
-            chosenSong.songAlbumName = song.albumName
-            chosenSong.spotImageData = song.artImageData
-            chosenSong.spotSongDuration = Double(song.durationInMillis/1000)
-            chosenSong.discNumber = song.disc_number!
-            chosenSong.spotPreviewURL = song.previewURL
-            chosenSong.songAddedUsing = "Spotify"
-            if networkMonitor.isConnected{
-                print("Checking network & credentials before getSpotAlbum...")
-                print(spotifyAuth.access_Token)
-                if !spotifyAuth.access_Token.isEmpty {print("Going to get album");getSpotAlbum()}
-                else {getSpotCredentials{_ in print("Getting credentials, then album");getSpotAlbum()}}
-            }
-            else{showFailedConnectionAlert = true}
-        }
-        if appDelegate.musicSub.type == .Apple {
-            chosenSong.id = song.id
-            chosenSong.name = song.name
-            chosenSong.artistName = song.artistName
-            chosenSong.songAlbumName = song.albumName
-            chosenSong.songPreviewURL = song.previewURL
-            chosenSong.artwork = song.artImageData
-            chosenSong.durationInSeconds = Double(song.durationInMillis/1000)
-            chosenSong.discNumber = song.disc_number!
-            chosenSong.songAddedUsing = "Apple"
-            if networkMonitor.isConnected{getAlbum(storeFront: amAPI.storeFrontID!, userToken: amAPI.taskToken!)}
-            else{showFailedConnectionAlert = true}
-            showAPV = true
-        }
-    }
     
     func getSpotAlbum() {
         print("CheckPoint1")
@@ -277,6 +283,7 @@ extension MusicSearchView {
             DispatchQueue.global().async {
                 SpotifyAPI().getAlbumIDUsingNameOnly(albumName: cleanAlbumName, offset: offset * pageSize, authToken: spotifyAuth.access_Token) { albumResponse, error in
                     print("CheckPoint4")
+                    print("albumName: \(cleanAlbumName), offset: \(offset * pageSize), authToken: \(spotifyAuth.access_Token)")
                     print(albumResponse)
                     print("---")
                     print(error)
@@ -334,7 +341,7 @@ extension MusicSearchView {
                         chosenSong.spotAlbumArtist = artistGroup
                         foundMatch = true
                         showSPV = true
-                        break
+                        //break
                     }
                 }
                 if foundMatch { break }
@@ -349,18 +356,6 @@ extension MusicSearchView {
         }
     }
 
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
     func getAlbum(storeFront: String, userToken: String) {
         var albumAndArtistForSearch = cleanMusicData.compileMusicString(songOrAlbum: chosenSong.songAlbumName, artist: chosenSong.artistName, removeList: appDelegate.songFilterForSearch)
         var albumForSearch = cleanMusicData.compileMusicString(songOrAlbum: chosenSong.songAlbumName, artist: nil, removeList: appDelegate.songFilterForSearch)
@@ -442,91 +437,6 @@ extension MusicSearchView {
                             }})
                     }
                 })}}}}
-    
-
-    
-
-    
-    func getSpotToken(completion: @escaping (Bool) -> Void) {
-        print("called....requestSpotToken")
-        tokenCounter = 1
-        spotifyAuth.auth_code = authCode!
-        SpotifyAPI().getToken(authCode: authCode!, completionHandler: {(response, error) in
-            if let response = response {
-                DispatchQueue.main.async {
-                    spotifyAuth.access_Token = response.access_token
-                    spotifyAuth.refresh_Token = response.refresh_token
-                    defaults.set(response.access_token, forKey: "SpotifyAccessToken")
-                    defaults.set(response.refresh_token, forKey: "SpotifyRefreshToken")
-                    completion(true)
-                }
-            } else if let error = error {
-                print("Error... \(error.localizedDescription)!")
-                invalidAuthCode = true
-                authCode = ""
-                completion(false)
-            }
-        })
-    }
-
-    func getSpotTokenViaRefresh(completion: @escaping (Bool) -> Void) {
-        print("called....requestSpotTokenViaRefresh")
-        tokenCounter = 1
-        spotifyAuth.auth_code = authCode!
-        refresh_token = (defaults.object(forKey: "SpotifyRefreshToken") as? String)!
-        SpotifyAPI().getTokenViaRefresh(refresh_token: refresh_token!, completionHandler: {(response, error) in
-            if let response = response {
-                DispatchQueue.main.async {
-                    spotifyAuth.access_Token = response.access_token
-                    defaults.set(response.access_token, forKey: "SpotifyAccessToken")
-                    completion(true)
-                }
-            } else if let error = error {
-                print("Error... \(error.localizedDescription)!")
-                invalidAuthCode = true
-                authCode = ""
-                completion(false)
-            }
-        })
-    }
-
-    func requestAndRunToken(authType: String, completion: @escaping (Bool) -> Void) {
-        print("called....requestSpotAuth")
-        invalidAuthCode = false
-        SpotifyAPI().requestAuth { response, error in
-            guard let response = response else {
-                // handle error
-                print(error ?? "Unknown error")
-                completion(false)
-                return
-            }
-            
-            DispatchQueue.main.async {
-                print("ccccccc")
-                print(response)
-                
-                spotifyAuth.authForRedirect = response
-                showWebView = true
-                
-                refreshAccessToken = true
-                
-                if authType == "code", !authCode!.isEmpty {
-                    getSpotToken { success in
-                        completion(success)
-                    }
-                } else if authType == "refresh_token", !refresh_token!.isEmpty {
-                    getSpotTokenViaRefresh { success in
-                        completion(success)
-                    }
-                } else if authCode == "AuthFailed" {
-                    print("Unable to authorize")
-                    appDelegate.musicSub.type = .Neither
-                    showSpotAuthFailedAlert = true
-                    completion(false)
-                }
-            }
-        }
-    }
 
     
  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -542,62 +452,15 @@ extension MusicSearchView {
         DispatchQueue.main.async {
             appRemote2 = SPTAppRemote(configuration: config, logLevel: .debug)
             appRemote2?.connectionParameters.accessToken = spotifyAuth.access_Token
+            print("Instantiated app remote...")
+            print(spotifyAuth.access_Token)
+            print(appRemote2)
         }
+
     }
     
-    func requestSpotAuth() {
-        print("called....requestSpotAuth")
-        invalidAuthCode = false
-        SpotifyAPI().requestAuth(completionHandler: {(response, error) in
-            if response != nil {
-                DispatchQueue.main.async {
-                    print("ccccccc")
-                    print(response!)
-                    if response!.contains("https://www.google.com/?code="){}
-                    else{spotifyAuth.authForRedirect = response!;showWebView = true}
-                    refreshAccessToken = true
-                }}})
-    }
     
-    func getSpotCredentials(completion: @escaping (Bool) -> Void) {
-        print("Run1")
-        if defaults.object(forKey: "SpotifyAuthCode") != nil && counter == 0 {
-            print("Run2")
-            refresh_token = (defaults.object(forKey: "SpotifyRefreshToken") as? String)!
-            refreshAccessToken = true
-            if networkMonitor.isConnected {
-                getSpotTokenViaRefresh { success in
-                    if success {
-                        counter += 1
-                        runInstantiateAppRemote()
-                        completion(true)
-                    } else {
-                        showFailedConnectionAlert = true
-                        completion(false)
-                    }
-                }
-            } else {
-                showFailedConnectionAlert = true
-                completion(false)
-            }
-        } else {
-            print("Run3")
-            if networkMonitor.isConnected {
-                requestAndRunToken(authType: "code") { success in
-                    if success {
-                        runInstantiateAppRemote()
-                        completion(true)
-                    } else {
-                        showFailedConnectionAlert = true
-                        completion(false)
-                    }
-                }
-            } else {
-                showFailedConnectionAlert = true
-                completion(false)
-            }
-        }
-    }
+
 
 
     
@@ -608,12 +471,18 @@ extension MusicSearchView {
         print("searchWithSpotifyCalled...")
         print(spotifyAuth.access_Token)
         if spotifyAuth.access_Token == "" || spotifyAuth.access_Token == nil {isLoading = true; getSpotCredentials{success in performSPOTSearch()}}
-        else {performSPOTSearch()}
+        else {
+            print("Else called...")
+            performSPOTSearch()
+            
+            
+        }
     }
     
     
     func performSPOTSearch() {
-        
+        print("!!!")
+        print(spotifyAuth.access_Token)
         
         let songTerm = cleanMusicData.cleanMusicString(input: self.songSearch, removeList: appDelegate.songFilterForSearch)
         let artistTerm = cleanMusicData.cleanMusicString(input: self.artistSearch, removeList: appDelegate.songFilterForSearch)
@@ -670,6 +539,103 @@ extension MusicSearchView {
             DispatchQueue.main.async {completionHandler(data, nil)}
         }
         dataTask.resume()
+    }
+    
+    func getAMUserTokenAndStoreFront(completion: @escaping () -> Void) {
+        getAMUserToken {[self] in self.getAMStoreFront(completion: completion)}
+    }
+
+    func getAMUserToken(completion: @escaping () -> Void) {
+        SKCloudServiceController.requestAuthorization {(status) in
+            if status == .authorized {
+                amAPI.getUserToken { response, error in
+                    print("Checking Token"); print(response); print("^^"); print(error)
+                    completion()
+                }
+            }
+        }
+    }
+
+    func getAMStoreFront(completion: @escaping () -> Void) {
+        SKCloudServiceController.requestAuthorization {(status) in
+            if status == .authorized {
+                amAPI.fetchUserStorefront(userToken: amAPI.taskToken!) { response, error in
+                    amAPI.storeFrontID = response!.data[0].id
+                    completion()
+                }
+            }
+        }
+    }
+    
+    func searchWithAM() {
+        if amAPI.storeFrontID == nil {isLoading = true; getAMUserTokenAndStoreFront{performAMSearch()}}
+        else {performAMSearch()}
+    }
+    
+    func performAMSearch() {
+        isLoading = true
+        SKCloudServiceController.requestAuthorization {(status) in if status == .authorized {
+            let amSearch = cleanMusicData.cleanMusicString(input: self.songSearch, removeList: appDelegate.songFilterForSearch)
+            self.searchResults = AppleMusicAPI().searchAppleMusic(amSearch, storeFrontID: amAPI.storeFrontID!, userToken: amAPI.taskToken!, completionHandler: { (response, error) in
+                if response != nil {
+                    DispatchQueue.main.async {
+                        for song in response! {
+                            let blankString: String? = ""
+                            var songPrev: String?
+                            if song.attributes.previews.count > 0 {songPrev = song.attributes.previews[0].url}
+                            else {songPrev = blankString}
+                            print("Search With AM called...")
+                            let artURL = URL(string:song.attributes.artwork.url.replacingOccurrences(of: "{w}", with: "80").replacingOccurrences(of: "{h}", with: "80"))
+                            let _ = getURLData(url: artURL!, completionHandler: { (artResponse, error2) in
+                                print("Song Name is...\(song.attributes.name)")
+                                let songForList = SongForList(id: song.attributes.playParams.id, name: song.attributes.name, artistName: song.attributes.artistName, albumName: song.attributes.albumName,artImageData: artResponse!, durationInMillis: song.attributes.durationInMillis, isPlaying: false, previewURL: songPrev!, disc_number: song.attributes.discNumber)
+                                if cleanMusicData.containsString(listOfSubStrings: appDelegate.songFilterForSearch, songName: songForList.name) || cleanMusicData.containsString(listOfSubStrings: appDelegate.songFilterForSearch, songName: songForList.albumName){
+                                print("Did Not Append....")
+                                print(songForList.name)
+                            }
+                            else {searchResults.append(songForList)}
+                            })}}}; if response != nil {print("No Response!")}
+                else {debugPrint(error?.localizedDescription)}}
+            )}}
+        isLoading = false
+    }
+    
+    func createChosenSong(song: SongForList) {
+
+        songProgress = 0.0; isPlaying = true
+        if appDelegate.musicSub.type == .Spotify {
+            chosenSong.spotID = song.id
+            chosenSong.spotName = song.name
+            chosenSong.spotArtistName = song.artistName
+            chosenSong.songAlbumName = song.albumName
+            chosenSong.spotImageData = song.artImageData
+            chosenSong.spotSongDuration = Double(song.durationInMillis/1000)
+            chosenSong.discNumber = song.disc_number!
+            chosenSong.spotPreviewURL = song.previewURL
+            chosenSong.songAddedUsing = "Spotify"
+            //showSPV = true
+            if networkMonitor.isConnected{
+                print("Checking network & credentials before getSpotAlbum...")
+                print(spotifyAuth.access_Token)
+                if !spotifyAuth.access_Token.isEmpty {print("Going to get album");getSpotAlbum()}
+                else {getSpotCredentials{_ in print("Getting credentials, then album");getSpotAlbum()}}
+            }
+            else{showFailedConnectionAlert = true}
+        }
+        if appDelegate.musicSub.type == .Apple {
+            chosenSong.id = song.id
+            chosenSong.name = song.name
+            chosenSong.artistName = song.artistName
+            chosenSong.songAlbumName = song.albumName
+            chosenSong.songPreviewURL = song.previewURL
+            chosenSong.artwork = song.artImageData
+            chosenSong.durationInSeconds = Double(song.durationInMillis/1000)
+            chosenSong.discNumber = song.disc_number!
+            chosenSong.songAddedUsing = "Apple"
+            if networkMonitor.isConnected{getAlbum(storeFront: amAPI.storeFrontID!, userToken: amAPI.taskToken!)}
+            else{showFailedConnectionAlert = true}
+            showAPV = true
+        }
     }
  
 }

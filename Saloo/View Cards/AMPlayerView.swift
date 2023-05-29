@@ -240,7 +240,6 @@ extension AMPlayerView {
         //    group.enter()
         
         amAPI.searchForAlbum(albumAndArtist:  "\(songAlbumName!) \(spotAlbumArtist!)", storeFrontID: amAPI.storeFrontID!, offset: offset, userToken: amAPI.taskToken!, completion: {(albumResponse, error) in
-                print("+++++")
                 print(error?.localizedDescription as Any)
                 if error != nil {
                     print("search did fail...")

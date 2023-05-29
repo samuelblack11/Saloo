@@ -49,7 +49,7 @@ struct SpotPlayerView: View {
     @State private var invalidAuthCode = false
     @State private var tokenCounter = 0
     @State private var instantiateAppRemoteCounter = 0
-    let config = SPTConfiguration(clientID: "d15f76f932ce4a7c94c2ecb0dfb69f4b", redirectURL: URL(string: "saloo://")!)
+    let config = SPTConfiguration(clientID: SpotifyAPI.shared.clientIdentifier, redirectURL: URL(string: "saloo://")!)
     @State private var showWebView = false
     @State var associatedRecord: CKRecord?
     @State var coreCard: CoreCard?
@@ -63,12 +63,15 @@ struct SpotPlayerView: View {
     @State private var showFailedConnectionAlert = false
     @State private var foundMatch3 = false
     @ObservedObject var gettingRecord = GettingRecord.shared
+    var delegate = SpotPlayerViewDelegate()
 
+    
 
     
     var body: some View {
         SpotPlayerView2
             .onAppear{
+                appRemote2?.delegate = self.delegate
                 startCheckingPlaybackState()
                 if accessedViaGrid && appDelegate.musicSub.type == .Spotify {getSpotCredentials{success in}}
                 else{
@@ -310,17 +313,32 @@ struct SpotPlayerView: View {
 
     func playSong() {
         print("network connected")
-        //getSpotCredentials{success in
-        if appRemote2?.isConnected == false {
-            appRemote2?.authorizeAndPlayURI("spotify:track:\(songID!)")
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {appRemote2?.connect()}
+        print(appRemote2?.isConnected)
+        print(appRemote2)
+        print(songID)
+        print(SpotifyAPI.shared.clientIdentifier)
+        if let songID = songID {
+            let trackURI = "spotify:track:\(songID)"
+            
+            if appRemote2?.isConnected == false {
+                // It appears you're trying to connect after attempting to play the song,
+                // You might want to connect first, then attempt to play the song after the connection is established.
+                //appRemote2?.connect()
+                appRemote2?.connect()
+                appRemote2?.authorizeAndPlayURI(trackURI)
+            } else {
+                appRemote2?.playerAPI?.pause(defaultCallback)
+                appRemote2?.playerAPI?.enqueueTrackUri(trackURI, callback: defaultCallback)
+                appRemote2?.playerAPI?.play(trackURI, callback: defaultCallback)
+            }
+
+            isPlaying = true
+            showProgressView = false
+        } else {
+            print("songID is nil")
         }
-        appRemote2?.playerAPI?.pause(defaultCallback)
-        appRemote2?.playerAPI?.enqueueTrackUri("spotify:track:\(songID!)", callback: defaultCallback)
-        appRemote2?.playerAPI?.play("spotify:track:\(songID!)", callback: defaultCallback)
-        isPlaying = true; showProgressView = false
-        //}
     }
+
     
     
     
@@ -498,5 +516,19 @@ extension SpotPlayerView {
 extension String {
     var withoutPunc: String {
         return self.components(separatedBy: CharacterSet.punctuationCharacters).joined(separator: "")
+    }
+}
+
+class SpotPlayerViewDelegate: NSObject, SPTAppRemoteDelegate {
+    func appRemoteDidEstablishConnection(_ appRemote: SPTAppRemote) {
+        print("Connected")
+    }
+
+    func appRemote(_ appRemote: SPTAppRemote, didDisconnectWithError error: Error?) {
+        print("Disconnected")
+    }
+
+    func appRemote(_ appRemote: SPTAppRemote, didFailConnectionAttemptWithError error: Error?) {
+        print("Failed to connect")
     }
 }

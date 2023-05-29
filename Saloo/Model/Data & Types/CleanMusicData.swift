@@ -42,7 +42,7 @@ class CleanMusicData {
         cleanString = removeSubstrings(from: cleanString, removeList: removeList)
         cleanString = removeSpecialCharacters(from: cleanString)
         cleanString = convertMultipleSpacesToSingleSpace(cleanString)//.replacingOccurrences(of: " ", with: "%20")
-        print(cleanString)
+        //print(cleanString)
         return cleanString
     }
     

@@ -31,7 +31,7 @@ struct EnlargeECardView: View {
     @State private var invalidAuthCode = false
     @State private var showWebView = false
     @State var appRemote2: SPTAppRemote?
-    let config = SPTConfiguration(clientID: "d15f76f932ce4a7c94c2ecb0dfb69f4b", redirectURL: URL(string: "saloo://")!)
+    let config = SPTConfiguration(clientID: SpotifyAPI.shared.clientIdentifier, redirectURL: URL(string: "saloo://")!)
     @State var spotCounter = 0
 
     var body: some View {

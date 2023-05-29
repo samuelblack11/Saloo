@@ -35,7 +35,7 @@ struct PrefMenu: View {
     @State var spotifyAuth = SpotifyAuth()
     @State private var tokenCounter = 0
     @State private var instantiateAppRemoteCounter = 0
-    let config = SPTConfiguration(clientID: "d15f76f932ce4a7c94c2ecb0dfb69f4b", redirectURL: URL(string: "saloo://")!)
+    let config = SPTConfiguration(clientID: SpotifyAPI.shared.clientIdentifier, redirectURL: URL(string: "saloo://")!)
     @State var counter = 0
     @State var appRemote2: SPTAppRemote?
     @State private var showSpotAuthFailedAlert = false
@@ -53,8 +53,6 @@ struct PrefMenu: View {
         if defaults.object(forKey: "MusicSubType") != nil {_currentSubSelection = State(initialValue: (defaults.object(forKey: "MusicSubType") as? String)!)}
         else {_currentSubSelection = State(initialValue: "Neither")}
     }
-    
-    
     
     
     
@@ -226,15 +224,6 @@ extension PrefMenu {
         }
     }
 
-    
-    
-
-
-    
-    
-    
-    
-    
     func getSpotCredentials(completion: @escaping (Bool) -> Void) {
         print("Run1")
         if defaults.object(forKey: "SpotifyAuthCode") != nil && counter == 0 {
