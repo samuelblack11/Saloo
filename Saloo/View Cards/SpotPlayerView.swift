@@ -66,7 +66,11 @@ struct SpotPlayerView: View {
             .onAppear{
                 if accessedViaGrid && appDelegate.musicSub.type == .Spotify {getSpotCredentials{success in}}
                 else{
-                    if networkMonitor.isConnected{playSong()}
+                    if networkMonitor.isConnected{
+                        print("Calling play song...")
+                        playSong()
+                        
+                    }
                     else {print("Connection failed3");showFailedConnectionAlert = true}
                 }
             }
@@ -329,9 +333,6 @@ struct SpotPlayerView: View {
 
     func playSong() {
         print("network connected")
-        print(spotifyManager.appRemote?.isConnected)
-        print(spotifyManager.appRemote)
-        print(songID)
         print(SpotifyAPI.shared.clientIdentifier)
         if let songID = songID {
             let trackURI = "spotify:track:\(songID)"
@@ -443,6 +444,7 @@ extension SpotPlayerView {
                             }
                         }
                     })}
+                    else {if accessedViaGrid {playSong()}}
                 }
             }
             if error != nil {
@@ -476,6 +478,7 @@ extension SpotPlayerView {
                             }
                         }
                     })}
+                    else {if accessedViaGrid {playSong()}}
                 }
             }
             if error != nil {

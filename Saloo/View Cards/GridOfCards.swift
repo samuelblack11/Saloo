@@ -93,7 +93,6 @@ struct GridofCards: View {
                 }
                 LoadingOverlay()
             }
-            .onAppear{if appDelegate.musicSub.type == .Spotify {spotifyManager.appRemote?.connect()}}
             .fullScreenCover(item: $cardToReport, onDismiss: didDismiss) {cardToReport in
                 ReportOffensiveContentView(card: cardToReport)}
             .fullScreenCover(item: $chosenCard, onDismiss: didDismiss) {chosenCard in
