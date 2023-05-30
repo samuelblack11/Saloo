@@ -52,13 +52,13 @@ struct FinalizeCardView: View {
     @State private var activeContainer: CKContainer?
     @State var cardType: String
     var config = SPTConfiguration(clientID: SpotifyAPI.shared.clientIdentifier, redirectURL: URL(string: "saloo://")!)
-    var appRemote2: SPTAppRemote?
     @State var emptyCard: CoreCard? = CoreCard()
     @State private var sharingController: UICloudSharingController?
     @State private var enableShare = false
     @EnvironmentObject var networkMonitor: NetworkMonitor
     @State private var showFailedToShareAlert = false
-    
+    @EnvironmentObject var spotifyManager: SpotifyManager
+
     
     
     
@@ -67,17 +67,7 @@ struct FinalizeCardView: View {
     //let emptyCard = CoreCard(id: "", cardName: "", occassion: "", recipient: "", sender: "", associatedRecord: CKRecord(recordType: ""), an1: "", an2: "", an2URL: "", an3: "", an4: "", collage: Data(), coverImage: Data(), date: Date(), font: "", message: "", uniqueName: "", songID: "", spotID: "", spotName: "", spotArtistName: "", songName: "", songArtistName: "", songArtImageData: Data(), songPreviewURL: "", songDuration: Int(), inclMusic: Bool, spotImageData: Data(), spotSongDuration: Int(), spotPreviewURL: "", creator: "", songAddedUsing: "", collage1: Data(), collage2: Data(), collage3: Data(), collage4: Data(), cardType: "", recordID: "", songAlbumName: "", appleAlbumArtist: "", spotAlbumArtist: "")
     @State private var safeAreaHeight: CGFloat = 0
     
-    var defaultCallback: SPTAppRemoteCallback? {
-        get {
-            return {[self] _, error in
-                print("defaultCallBack Running...")
-                print("started playing playlist")
-                if let error = error {
-                    print(error.localizedDescription)
-                }
-            }
-        }
-    }
+
     
     @EnvironmentObject var chosenSong: ChosenSong
     
@@ -128,7 +118,7 @@ struct FinalizeCardView: View {
         NavigationView {
             GeometryReader { geometry in
                 VStack(spacing: 0){
-                    eCardView(eCardText: noteField.noteText, font: noteField.font, coverImage: chosenObject.coverImage, collageImage: collageImage.collageImage, text1: annotation.text1, text2: annotation.text2, text2URL: annotation.text2URL, text3: annotation.text3, text4: annotation.text4, songID: chosenSong.id, spotID: chosenSong.spotID, spotName: chosenSong.spotName, spotArtistName: chosenSong.spotArtistName, songName: chosenSong.name, songArtistName: chosenSong.artistName, songArtImageData: chosenSong.artwork, songDuration: chosenSong.durationInSeconds, songPreviewURL: chosenSong.songPreviewURL, inclMusic: addMusic.addMusic, spotImageData: chosenSong.spotImageData, spotSongDuration: chosenSong.spotSongDuration, spotPreviewURL: chosenSong.spotPreviewURL, songAddedUsing: chosenSong.songAddedUsing, appRemote2: appRemote2, cardType: cardType, accessedViaGrid: false, fromFinalize: true, chosenCard: $emptyCard)
+                    eCardView(eCardText: noteField.noteText, font: noteField.font, coverImage: chosenObject.coverImage, collageImage: collageImage.collageImage, text1: annotation.text1, text2: annotation.text2, text2URL: annotation.text2URL, text3: annotation.text3, text4: annotation.text4, songID: chosenSong.id, spotID: chosenSong.spotID, spotName: chosenSong.spotName, spotArtistName: chosenSong.spotArtistName, songName: chosenSong.name, songArtistName: chosenSong.artistName, songArtImageData: chosenSong.artwork, songDuration: chosenSong.durationInSeconds, songPreviewURL: chosenSong.songPreviewURL, inclMusic: addMusic.addMusic, spotImageData: chosenSong.spotImageData, spotSongDuration: chosenSong.spotSongDuration, spotPreviewURL: chosenSong.spotPreviewURL, songAddedUsing: chosenSong.songAddedUsing, cardType: cardType, accessedViaGrid: false, fromFinalize: true, chosenCard: $emptyCard)
                         .frame(maxHeight: geometry.size.height - geometry.safeAreaInsets.bottom) // subtract height of toolbar
                     Spacer()
                     HStack {
@@ -154,13 +144,13 @@ struct FinalizeCardView: View {
             .alert(isPresented: $showFailedToShareAlert) {
                 Alert(title: Text("Network Error"), message: Text("Sorry, we weren't able to connect to the internet. We've saved this card to drafts, where you can share from once you reconnect."), dismissButton: .default(Text("OK")))
             }
-            .fullScreenCover(isPresented: $showStartMenu) {StartMenu(appRemote2: appRemote2)}
+            .fullScreenCover(isPresented: $showStartMenu) {StartMenu()}
             .fullScreenCover(isPresented: $showMusicSearch) {MusicSearchView()}
             .fullScreenCover(isPresented: $showWriteNote) {WriteNoteView()}
             .fullScreenCover(isPresented: $showShareSheet, content: {if let share = share {}})
             .fullScreenCover(isPresented: $showActivityController) {ActivityView(activityItems: $activityItemsArray, applicationActivities: nil)}
         }
-        .onAppear{ if appDelegate.musicSub.type == .Spotify{appRemote2?.playerAPI?.pause()}}
+        .onAppear{ if appDelegate.musicSub.type == .Spotify{spotifyManager.appRemote?.playerAPI?.pause()}}
     }
 }
 

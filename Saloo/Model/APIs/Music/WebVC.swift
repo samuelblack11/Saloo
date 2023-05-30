@@ -105,9 +105,6 @@ struct WebVCView: UIViewControllerRepresentable {
     }
     
     func makeUIViewController(context: Context) -> WebVC {
-        //Return SpotAppRemoteVC Instance
-        //print("#$#$")
-       // print(authURLForView)
         
         let vc = WebVC(authURL: authURLForView)
         vc.delegate = context.coordinator

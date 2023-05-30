@@ -30,6 +30,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
     var counter = 0
     var launchedURL: URL?
     let customLog = OSLog(subsystem: "com.Saloo", category: "Custom Category")
+    var spotifyManager: SpotifyManager?
 
     func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
         
@@ -56,6 +57,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
             }
         }
     }
+    
 
     private func handleCKShareURL(_ url: URL, scene: UIScene) {
         // Parse the URL to get the CKRecordID and CKRecordZoneID.
@@ -71,7 +73,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
 
 
     func sceneDidBecomeActive(_ scene: UIScene) {
-        print("SceneDidBecomeActive....")
         // Handle the URL if one was stored when the app was launched
         if let url = launchedURL, let windowScene = scene as? UIWindowScene {
             print("Set scene in SceneDidBecomeActive")
@@ -99,12 +100,12 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
     
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         //scene.userActivity?.removeAllSavedStates()
-        print("willConnectTo called...")
         NotificationCenter.default.addObserver(self, selector: #selector(handleDidAcceptShare(_:)), name: .didAcceptShare, object: nil)
 
         if let userActivity = connectionOptions.userActivities.first {
             self.scene(scene, continue: userActivity)
         }
+        
         // Check if the app was launched with a URL
         if let urlContext = connectionOptions.urlContexts.first {
             print("App launched with URL: \(urlContext.url.absoluteString)")

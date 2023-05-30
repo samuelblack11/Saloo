@@ -21,16 +21,14 @@ struct MusicSearchView: View {
     @State private var songSearch = ""
     @State private var artistSearch = ""
     @State private var albumSearch = ""
-    @State private var storeFrontID = "us"
+    //@State private var storeFrontID = "us"
     @State private var userToken = ""
     @State private var searchResults: [SongForList] = []
     @EnvironmentObject var giftCard: GiftCard
     @EnvironmentObject var networkMonitor: NetworkMonitor
-
+    @EnvironmentObject var spotifyManager: SpotifyManager
     let cleanMusicData = CleanMusicData()
     @ObservedObject var gettingRecord = GettingRecord.shared
-
-    //@State private var musicPlayer = MPMusicPlayerController.applicationMusicPlayer
     @State private var player: AVPlayer?
     @State var showFCV: Bool = false
     @State private var showAPV = false
@@ -40,17 +38,13 @@ struct MusicSearchView: View {
     @State private var isPlaying = false
     @State private var songProgress = 0.0
     @EnvironmentObject var sceneDelegate: SceneDelegate
-    //var appRemote: SPTAppRemote? {get {return (sceneDelegate.appRemote)}}
-    @StateObject var spotifyAuth = SpotifyAuth()
+    //@StateObject var spotifyAuth = SpotifyAuth()
     let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
     @State private var tokenCounter = 0
-    @State private var instantiateAppRemoteCounter = 0
     @State private var authCode: String? = ""
     @State private var refresh_token: String? = ""
     @State private var invalidAuthCode = false
     let defaults = UserDefaults.standard
-    let config = SPTConfiguration(clientID: SpotifyAPI.shared.clientIdentifier, redirectURL: URL(string: "saloo://")!)
-    @State var appRemote2: SPTAppRemote?
     @State var counter = 0
     @State var refreshAccessToken = false
     @State private var ranAMStoreFront = false
@@ -134,7 +128,7 @@ struct MusicSearchView: View {
                 .onAppear{
                     if appDelegate.musicSub.type == .Spotify {getSpotCredentials{success in
                         print("Got SPOT Credentials...\(success)")
-                        print(spotifyAuth.access_Token)
+                        print(spotifyManager.access_token)
                         
                     }}
                     if appDelegate.musicSub.type == .Apple {
@@ -151,16 +145,16 @@ struct MusicSearchView: View {
                         .fullScreenCover(isPresented: $showFCV) {FinalizeCardView(cardType: determineCardType())}
                         .fullScreenCover(isPresented: $showWriteNote){WriteNoteView()}
                 }
-                .popover(isPresented: $showSPV) {SpotPlayerView(songID: chosenSong.spotID, spotName: chosenSong.spotName, spotArtistName: chosenSong.spotArtistName, songArtImageData: chosenSong.spotImageData, songDuration: chosenSong.spotSongDuration, songPreviewURL: chosenSong.spotPreviewURL, confirmButton: true, showFCV: $showFCV, accessedViaGrid: false, appRemote2: appRemote2, chosenCard: $emptyCard, deferToPreview: $deferToPreview)
+                .popover(isPresented: $showSPV) {SpotPlayerView(songID: chosenSong.spotID, spotName: chosenSong.spotName, spotArtistName: chosenSong.spotArtistName, songArtImageData: chosenSong.spotImageData, songDuration: chosenSong.spotSongDuration, songPreviewURL: chosenSong.spotPreviewURL, confirmButton: true, showFCV: $showFCV, accessedViaGrid: false, chosenCard: $emptyCard, deferToPreview: $deferToPreview)
                         .presentationDetents([.fraction(0.4)])
-                        .fullScreenCover(isPresented: $showFCV) {FinalizeCardView(cardType: determineCardType(), appRemote2: appRemote2)}
+                        .fullScreenCover(isPresented: $showFCV) {FinalizeCardView(cardType: determineCardType())}
                         .fullScreenCover(isPresented: $showWriteNote) {WriteNoteView()}
                 }
             .modifier(GettingRecordAlert())
-            .environmentObject(spotifyAuth)
-            .sheet(isPresented: $showWebView){WebVCView(authURLForView: spotifyAuth.authForRedirect, authCode: $authCode)}
+            //environmentObject(spotifyAuth)
+            .sheet(isPresented: $showWebView){WebVCView(authURLForView: spotifyManager.authForRedirect, authCode: $authCode)}
         }
-        .environmentObject(spotifyAuth)
+        //.environmentObject(spotifyAuth)
     }
 
 }
@@ -184,9 +178,8 @@ extension MusicSearchView {
         refresh_token = (defaults.object(forKey: "SpotifyRefreshToken") as? String)!
         SpotifyAPI().getTokenViaRefresh(refresh_token: refresh_token!) { response, error in
             if let response = response {
-                spotifyAuth.access_Token = response.access_token
+                spotifyManager.access_token = response.access_token
                 defaults.set(response.access_token, forKey: "SpotifyAccessToken")
-                runInstantiateAppRemote()
                 completion(true)
             } else {
                 showFailedConnectionAlert = true
@@ -198,19 +191,19 @@ extension MusicSearchView {
     
     func getSpotToken(completion: @escaping (Bool) -> Void) {
         tokenCounter = 1
-        spotifyAuth.auth_code = authCode!
+        spotifyManager.auth_code = authCode!
         if let authCode = authCode {
-            SpotifyAPI().getToken(authCode: spotifyAuth.auth_code) { response, error in
+            SpotifyAPI().getToken(authCode: spotifyManager.auth_code) { response, error in
                 if let response = response {
-                    spotifyAuth.access_Token = response.access_token
-                    spotifyAuth.refresh_Token = response.refresh_token
+                    spotifyManager.access_token = response.access_token
+                    spotifyManager.refresh_token = response.refresh_token
                     defaults.set(response.access_token, forKey: "SpotifyAccessToken")
                     defaults.set(response.refresh_token, forKey: "SpotifyRefreshToken")
                     completion(true)
                 } else {
                     invalidAuthCode = true
                     //authCode = ""
-                    spotifyAuth.auth_code = ""
+                    spotifyManager.auth_code = ""
                     completion(false)
                 }
             }
@@ -225,12 +218,12 @@ extension MusicSearchView {
     func getSpotTokenViaRefresh(completion: @escaping (Bool) -> Void) {
         print("called....requestSpotTokenViaRefresh")
         tokenCounter = 1
-        spotifyAuth.auth_code = authCode!
+        spotifyManager.auth_code = authCode!
         refresh_token = (defaults.object(forKey: "SpotifyRefreshToken") as? String)!
         SpotifyAPI().getTokenViaRefresh(refresh_token: refresh_token!, completionHandler: {(response, error) in
             if let response = response {
                 DispatchQueue.main.async {
-                    spotifyAuth.access_Token = response.access_token
+                    spotifyManager.access_token = response.access_token
                     defaults.set(response.access_token, forKey: "SpotifyAccessToken")
                     completion(true)
                 }
@@ -249,12 +242,11 @@ extension MusicSearchView {
                 completion(false)
                 return
             }
-            spotifyAuth.authForRedirect = response
+            spotifyManager.authForRedirect = response
             showWebView = true
             getSpotToken { success in
                 if success {
                     
-                    runInstantiateAppRemote()
                     completion(true)
                 } else {
                     showFailedConnectionAlert = true
@@ -281,9 +273,9 @@ extension MusicSearchView {
             group1.enter()
             print("CheckPoint3")
             DispatchQueue.global().async {
-                SpotifyAPI().getAlbumIDUsingNameOnly(albumName: cleanAlbumName, offset: offset * pageSize, authToken: spotifyAuth.access_Token) { albumResponse, error in
+                SpotifyAPI().getAlbumIDUsingNameOnly(albumName: cleanAlbumName, offset: offset * pageSize, authToken: spotifyManager.access_token) { albumResponse, error in
                     print("CheckPoint4")
-                    print("albumName: \(cleanAlbumName), offset: \(offset * pageSize), authToken: \(spotifyAuth.access_Token)")
+                    print("albumName: \(cleanAlbumName), offset: \(offset * pageSize), authToken: \(spotifyManager.access_token)")
                     print(albumResponse)
                     print("---")
                     print(error)
@@ -297,7 +289,7 @@ extension MusicSearchView {
                             print("CheckPoint5")
                             print("Current Album...\(album.name)")
                             DispatchQueue.global().async {
-                                SpotifyAPI().getAlbumTracks(albumId: album.id, authToken: spotifyAuth.access_Token) { response, error in
+                                SpotifyAPI().getAlbumTracks(albumId: album.id, authToken: spotifyManager.access_token) { response, error in
                                     if let trackList = response {
                                         for track in trackList {
                                             print("----Track \(track.name)")
@@ -440,37 +432,10 @@ extension MusicSearchView {
 
     
  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    func runInstantiateAppRemote() {
-        Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { timer in
-            if instantiateAppRemoteCounter == 0 {if spotifyAuth.access_Token != "" {instantiateAppRemote()}}
-        }
-    }
-    
-    func instantiateAppRemote() {
-        instantiateAppRemoteCounter = 1
-        DispatchQueue.main.async {
-            appRemote2 = SPTAppRemote(configuration: config, logLevel: .debug)
-            appRemote2?.connectionParameters.accessToken = spotifyAuth.access_Token
-            print("Instantiated app remote...")
-            print(spotifyAuth.access_Token)
-            print(appRemote2)
-        }
-
-    }
-    
-    
-
-
-
-    
-    
-    
-    
     func searchWithSpotify() {
         print("searchWithSpotifyCalled...")
-        print(spotifyAuth.access_Token)
-        if spotifyAuth.access_Token == "" || spotifyAuth.access_Token == nil {isLoading = true; getSpotCredentials{success in performSPOTSearch()}}
+        print(spotifyManager.access_token)
+        if spotifyManager.access_token == "" || spotifyManager.access_token == nil {isLoading = true; getSpotCredentials{success in performSPOTSearch()}}
         else {
             print("Else called...")
             performSPOTSearch()
@@ -482,13 +447,13 @@ extension MusicSearchView {
     
     func performSPOTSearch() {
         print("!!!")
-        print(spotifyAuth.access_Token)
+        print(spotifyManager.access_token)
         
         let songTerm = cleanMusicData.cleanMusicString(input: self.songSearch, removeList: appDelegate.songFilterForSearch)
         let artistTerm = cleanMusicData.cleanMusicString(input: self.artistSearch, removeList: appDelegate.songFilterForSearch)
 
         
-        SpotifyAPI().searchSpotify(songTerm, artistName: artistTerm, authToken: spotifyAuth.access_Token, completionHandler: {(response, error) in
+        SpotifyAPI().searchSpotify(songTerm, artistName: artistTerm, authToken: spotifyManager.access_token, completionHandler: {(response, error) in
             
             //if let error = error as? URLError, error.code == .notConnectedToInternet {
             //    showFailedConnectionAlert = true
@@ -616,8 +581,8 @@ extension MusicSearchView {
             //showSPV = true
             if networkMonitor.isConnected{
                 print("Checking network & credentials before getSpotAlbum...")
-                print(spotifyAuth.access_Token)
-                if !spotifyAuth.access_Token.isEmpty {print("Going to get album");getSpotAlbum()}
+                print(spotifyManager.access_token)
+                if !spotifyManager.access_token.isEmpty {print("Going to get album");getSpotAlbum()}
                 else {getSpotCredentials{_ in print("Getting credentials, then album");getSpotAlbum()}}
             }
             else{showFailedConnectionAlert = true}

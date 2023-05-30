@@ -14,7 +14,8 @@ struct LaunchView: View {
     var body: some View {
         ZStack {
             appDelegate.appColor
-            Image("logo180").frame(maxWidth: UIScreen.screenWidth/2,maxHeight: UIScreen.screenHeight/3)
+            Image("logo180")
+                .frame(maxWidth: UIScreen.screenWidth/2,maxHeight: UIScreen.screenHeight/3)
         }
             .environmentObject(appDelegate)
             .ignoresSafeArea()

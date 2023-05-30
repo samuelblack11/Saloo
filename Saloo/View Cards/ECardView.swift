@@ -47,7 +47,7 @@ struct eCardView: View {
     let defaults = UserDefaults.standard
     @EnvironmentObject var appDelegate: AppDelegate
     @State var songAddedUsing: String?
-    var appRemote2: SPTAppRemote? = SPTAppRemote(configuration: SPTConfiguration(clientID: SpotifyAPI.shared.clientIdentifier, redirectURL: URL(string: "saloo://")!), logLevel: .debug)
+
     //@State var player: AVPlayer?
     @State var selectedPreviewURL: String?
     @State var eCardType: eCardType = .musicNoGift
@@ -61,6 +61,7 @@ struct eCardView: View {
     @State var deferToPreview = false
     @State private var showAPV = true
     @ObservedObject var gettingRecord = GettingRecord.shared
+    @EnvironmentObject var spotifyManager: SpotifyManager
 
     var body: some View {
         ZStack {
@@ -211,8 +212,7 @@ struct eCardView: View {
                         .frame(maxHeight: UIScreen.screenHeight/2.2)
                 }
             else if (appDelegate.musicSub.type == .Spotify) { // && (spotName != "LookupFailed")
-                SpotPlayerView(songID: spotID, songName: songName, songArtistName: songArtistName, spotName: spotName, spotArtistName: spotArtistName, songAlbumName: songAlbumName, songArtImageData: spotImageData, songDuration: spotSongDuration, songPreviewURL: spotPreviewURL, appleAlbumArtist: appleAlbumArtist, spotAlbumArtist: spotAlbumArtist, confirmButton: false, showFCV: $showFCV, accessedViaGrid: accessedViaGrid, appRemote2: appRemote2, coreCard: coreCard, chosenCard: $chosenCard, deferToPreview: $deferToPreview)
-                        .onAppear{appRemote2?.connectionParameters.accessToken = (defaults.object(forKey: "SpotifyAccessToken") as? String)!}
+                SpotPlayerView(songID: spotID, songName: songName, songArtistName: songArtistName, spotName: spotName, spotArtistName: spotArtistName, songAlbumName: songAlbumName, songArtImageData: spotImageData, songDuration: spotSongDuration, songPreviewURL: spotPreviewURL, appleAlbumArtist: appleAlbumArtist, spotAlbumArtist: spotAlbumArtist, confirmButton: false, showFCV: $showFCV, accessedViaGrid: accessedViaGrid, coreCard: coreCard, chosenCard: $chosenCard, deferToPreview: $deferToPreview)
                         .frame(maxHeight: .infinity, alignment: .bottom)
                 }
             }

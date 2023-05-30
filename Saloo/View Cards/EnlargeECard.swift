@@ -23,15 +23,12 @@ struct EnlargeECardView: View {
     //@State var player: AVPlayer?
     @State var refreshAccessToken = false
     @State private var tokenCounter = 0
-    @State private var instantiateAppRemoteCounter = 0
     @State private var authCode: String? = ""
     @State private var refresh_token: String? = ""
     let defaults = UserDefaults.standard
     @State var spotifyAuth = SpotifyAuth()
     @State private var invalidAuthCode = false
     @State private var showWebView = false
-    @State var appRemote2: SPTAppRemote?
-    let config = SPTConfiguration(clientID: SpotifyAPI.shared.clientIdentifier, redirectURL: URL(string: "saloo://")!)
     @State var spotCounter = 0
 
     var body: some View {

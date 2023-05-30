@@ -29,7 +29,6 @@ struct StartMenu: View {
     @State private var showPref = false
     @State private var showEnlargeECard = false
     @State var showPrefMenu = false
-    @State var appRemote2: SPTAppRemote?
     @State var whichBoxForCKAccept: InOut.SendReceive?
     @State var userID = String()
     @State private var isBanned = false
@@ -92,9 +91,7 @@ struct StartMenu: View {
             var salooUserID = (UserDefaults.standard.object(forKey: "SalooUserID") as? String)!
             checkUserBanned(userId: salooUserID) { (isBanned, error) in
                 self.isBanned = isBanned
-                print("checkUserBanned Completion Called....")
-                print("isBanned = \(isBanned)")
-                print("error = \(error)")
+                print("isBanned = \(isBanned) & error = \(error)")
             }
             //timerVar()
             //print(sceneDelegate.hideProgViewOnAcceptShare)
@@ -128,10 +125,6 @@ extension StartMenu {
 
         
         let task = URLSession.shared.dataTask(with: url) { (data, response, error) in
-            if let jsonObj = try? JSONSerialization.jsonObject(with: data!, options: []) as? [String: Any] {
-                print("&&&")
-                print(jsonObj)
-            }
             if let error = error {
                 // Handle error
                 completion(false, error)
@@ -145,7 +138,6 @@ extension StartMenu {
                         if let stringValue = value as? String {
                             let stringValue2 = stringValue.lowercased()
                             if let isBanned = Bool(stringValue2) {
-                                print("Value of isBanned \(isBanned)")
                                 completion(isBanned, nil)
                                 return
                             }

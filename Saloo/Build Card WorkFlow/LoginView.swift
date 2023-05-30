@@ -19,8 +19,8 @@ struct LoginView: View {
         NavigationView {
             ZStack {
                 VStack {
-                    Image("logo180").frame(maxWidth: UIScreen.screenWidth/2,maxHeight: UIScreen.screenHeight/3)
-
+                    Spacer()
+                    Image("logo180").frame(maxWidth: UIScreen.screenWidth/2,maxHeight: UIScreen.screenHeight/3, alignment: .center)
                     Spacer()
                     SignInWithAppleButton(
                             .signIn,

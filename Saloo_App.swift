@@ -23,7 +23,7 @@ struct Saloo_App: App {
     @State private var isSignedIn = UserDefaults.standard.string(forKey: "SalooUserID") != nil
     @State private var userID = UserDefaults.standard.object(forKey: "SalooUserID") as? String
     @State private var showLaunchView = true
-    
+    @StateObject var spotifyManager = SpotifyManager.shared
     var body: some Scene {
         WindowGroup {
             ZStack {
@@ -36,8 +36,12 @@ struct Saloo_App: App {
                     }
                     else {LoginView()}
                 }
-                .onAppear {DispatchQueue.main.asyncAfter(deadline: .now() + 1) {withAnimation{showLaunchView = false}}}
+                .onAppear {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 1) {withAnimation{showLaunchView = false}}
+                }
+                
                     .environment(\.managedObjectContext, persistenceController.persistentContainer.viewContext)
+                    .environmentObject(spotifyManager)
                     .environmentObject(networkMonitor)
                     .environmentObject(sceneDelegate)
                     .environmentObject(musicSub)
@@ -48,11 +52,79 @@ struct Saloo_App: App {
         }
     }
 
-    
-    
-    
-   
 }
+
+class SpotifyManager: ObservableObject {
+    static let shared = SpotifyManager()
+    let config = SPTConfiguration(clientID: SpotifyAPI.shared.clientIdentifier, redirectURL: URL(string: "saloo://")!)
+    var auth_code = String()
+    var refresh_token = String()
+    var access_token = String()
+    var authForRedirect = String()
+    var songID = String()
+    var appRemote: SPTAppRemote? = nil
+    let spotPlayerDelegate = SpotPlayerViewDelegate()
+    
+    init() {
+        enum UserDefaultsError: Error {case noMusicSubType}
+
+        do {
+            guard let musicSubType = UserDefaults.standard.object(forKey: "MusicSubType") as? String, musicSubType == "Spotify" else {
+                throw UserDefaultsError.noMusicSubType
+            }
+            instantiateAppRemote()
+        } catch {
+            print("Caught error: \(error)")
+        }
+
+    }
+    
+    
+    func instantiateAppRemote() {
+        self.appRemote = SPTAppRemote(configuration: self.config, logLevel: .debug)
+        self.appRemote?.connectionParameters.accessToken = (UserDefaults.standard.object(forKey: "SpotifyAccessToken") as? String)!
+        self.appRemote?.delegate = self.spotPlayerDelegate
+        
+    }
+    
+    func connect() {appRemote?.connect()}
+    func disconnect() {appRemote?.disconnect()}
+    var defaultCallback: SPTAppRemoteCallback? {
+        get {
+            return {[self] _, error in
+                print("defaultCallBack Running...")
+                print("started playing playlist")
+                if let error = error {
+                    print(error.localizedDescription)
+                }
+            }
+        }
+    }
+}
+
+class SpotPlayerViewDelegate: NSObject, SPTAppRemoteDelegate {
+    func appRemoteDidEstablishConnection(_ appRemote: SPTAppRemote) {
+        print("Connected appRemote")
+    }
+
+    func appRemote(_ appRemote: SPTAppRemote, didDisconnectWithError error: Error?) {
+        print("Disconnected appRemote")
+    }
+
+    func appRemote(_ appRemote: SPTAppRemote, didFailConnectionAttemptWithError error: Error?) {
+        print("Failed to connect appRemote")
+        if let error = error {
+            print("Error: \(error)")
+        }
+    }
+}
+
+
+
+
+
+
+
 
 extension View {func alertView() -> some View {self.modifier(GettingRecordAlert())}}
 

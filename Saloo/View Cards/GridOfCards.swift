@@ -57,7 +57,7 @@ struct GridofCards: View {
     @State private var showFailedConnectionAlert = false
     @ObservedObject var gettingRecord = GettingRecord.shared
     @State private var showReportOffensiveContentView = false
-
+    @EnvironmentObject var spotifyManager: SpotifyManager
     var cardsFilteredBySearch: [CoreCard] {
         if searchText.isEmpty { return cardsForDisplay}
         //else if sortByValue == "Card Name" {return privateCards.filter { $0.cardName.contains(searchText)}}
@@ -93,6 +93,7 @@ struct GridofCards: View {
                 }
                 LoadingOverlay()
             }
+            .onAppear{if appDelegate.musicSub.type == .Spotify {spotifyManager.appRemote?.connect()}}
             .fullScreenCover(item: $cardToReport, onDismiss: didDismiss) {cardToReport in
                 ReportOffensiveContentView(card: cardToReport)}
             .fullScreenCover(item: $chosenCard, onDismiss: didDismiss) {chosenCard in

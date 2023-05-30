@@ -32,12 +32,11 @@ struct PrefMenu: View {
     @State private var showWebView = false
     @State private var authCode: String? = ""
     @State private var ranAMStoreFront = false
-    @State var spotifyAuth = SpotifyAuth()
+    //@State var spotifyAuth = SpotifyAuth()
+    @EnvironmentObject var spotifyManager: SpotifyManager
     @State private var tokenCounter = 0
-    @State private var instantiateAppRemoteCounter = 0
     let config = SPTConfiguration(clientID: SpotifyAPI.shared.clientIdentifier, redirectURL: URL(string: "saloo://")!)
     @State var counter = 0
-    @State var appRemote2: SPTAppRemote?
     @State private var showSpotAuthFailedAlert = false
     @State private var showAMAuthFailedAlert = false
     @State private var runGetAMToken = true
@@ -49,6 +48,7 @@ struct PrefMenu: View {
     @EnvironmentObject var networkMonitor: NetworkMonitor
     @ObservedObject var gettingRecord = GettingRecord.shared
     @State private var authType = ""
+
     init() {
         if defaults.object(forKey: "MusicSubType") != nil {_currentSubSelection = State(initialValue: (defaults.object(forKey: "MusicSubType") as? String)!)}
         else {_currentSubSelection = State(initialValue: "Neither")}
@@ -74,7 +74,7 @@ struct PrefMenu: View {
                             .onTapGesture {
                                 musicColor = .green
                                 hideProgressView = false
-                                if spotifyAuth.auth_code == "AuthFailed" {spotifyAuth.auth_code = ""}
+                                if spotifyManager.auth_code == "AuthFailed" {spotifyManager.auth_code = ""}
                                 counter = 0; tokenCounter = 0; showWebView = false; refreshAccessToken = false; getSpotCredentials{_ in}
                                 
                             }
@@ -94,6 +94,7 @@ struct PrefMenu: View {
             }
             .navigationBarItems(leading:Button {showStart.toggle()} label: {Image(systemName: "chevron.left").foregroundColor(.blue); Text("Back")}.disabled(gettingRecord.isShowingActivityIndicator))
         }
+        .onDisappear {if appDelegate.musicSub.type == .Spotify {spotifyManager.instantiateAppRemote()}}
         .onAppear {
             //redirectToAppStore(musicvendor: "Spotify")
             if defaults.object(forKey: "MusicSubType") != nil {currentSubSelection = (defaults.object(forKey: "MusicSubType") as? String)!}
@@ -105,20 +106,20 @@ struct PrefMenu: View {
         .alert("Apple Music Authorization Failed. If you have an Apple Music Subscription, please try authorizing again", isPresented: $showAMAuthFailedAlert){Button("Ok"){showAMAuthFailedAlert = false}}
         //.sheet(isPresented: $showWebView){WebVCView(authURLForView: spotifyAuth.authForRedirect, authCode: $authCode)}
         .sheet(isPresented: $showWebView) {
-            WebVCView(authURLForView: spotifyAuth.authForRedirect, authCode: $authCode)
+            WebVCView(authURLForView: spotifyManager.authForRedirect, authCode: $authCode)
                 .onReceive(Just(authCode)) { newAuthCode in
                     if let authCode = newAuthCode, !authCode.isEmpty {
-                        // call requestAndRunToken or other logic here...
                         if authType == "code", !authCode.isEmpty {
                             getSpotToken { success in
                                 print("Called getSpotToken from auth....")
+                                print(authCode)
                                 print(success)
                                 counter += 1
-                                runInstantiateAppRemote()
                                 currentSubSelection = "Spotify"
                                 appDelegate.musicSub.type = .Spotify
                                 defaults.set("Spotify", forKey: "MusicSubType")
                                 hideProgressView = true
+                                if appDelegate.musicSub.type == .Spotify {print("Called instan..."); spotifyManager.instantiateAppRemote()}
                                 showStart = true
                                 //completion(success)
                             }
@@ -234,11 +235,11 @@ extension PrefMenu {
                 getSpotTokenViaRefresh { success in
                     if success {
                         counter += 1
-                        runInstantiateAppRemote()
                         currentSubSelection = "Spotify"
                         appDelegate.musicSub.type = .Spotify
                         defaults.set("Spotify", forKey: "MusicSubType")
                         hideProgressView = true
+                        if appDelegate.musicSub.type == .Spotify {spotifyManager.instantiateAppRemote()}
                         showStart = true
                         completion(true)
                     } else {
@@ -264,11 +265,11 @@ extension PrefMenu {
                     print("Checking...")
                     print(success)
                     if success {
-                        runInstantiateAppRemote()
                         currentSubSelection = "Spotify"
                         appDelegate.musicSub.type = .Spotify
                         defaults.set("Spotify", forKey: "MusicSubType")
                         hideProgressView = true
+                        if appDelegate.musicSub.type == .Spotify {spotifyManager.instantiateAppRemote()}
                         showStart = true
                         completion(true)
                     } else {
@@ -305,18 +306,9 @@ extension PrefMenu {
                 print(response)
                 print(authType)
                 print(authCode)
-                spotifyAuth.authForRedirect = response
+                spotifyManager.authForRedirect = response
                 showWebView = true
-                
                 refreshAccessToken = true
-                
-                //if authType == "code", !authCode!.isEmpty {
-                //    getSpotToken { success in
-                //        print("Called getSpotToken from auth....")
-                //        print(success)
-                //        completion(success)
-                //    }
-                //}
                 if authType == "refresh_token", !refresh_token!.isEmpty {
                     getSpotTokenViaRefresh { success in
                         completion(success)
@@ -343,7 +335,7 @@ extension PrefMenu {
                     print("ccccccc")
                     print(response!)
                     if response!.contains("https://www.google.com/?code="){}
-                    else{spotifyAuth.authForRedirect = response!; showWebView = true}
+                    else{spotifyManager.authForRedirect = response!; showWebView = true}
                     refreshAccessToken = true
                 }}})
     }
@@ -353,14 +345,14 @@ extension PrefMenu {
     func getSpotToken(completion: @escaping (Bool) -> Void) {
         print("called....requestSpotToken")
         tokenCounter = 1
-        spotifyAuth.auth_code = authCode!
+        spotifyManager.auth_code = authCode!
         SpotifyAPI().getToken(authCode: authCode!, completionHandler: {(response, error) in
             if let response = response {
                 DispatchQueue.main.async {
-                    spotifyAuth.access_Token = response.access_token
-                    spotifyAuth.refresh_Token = response.refresh_token
-                    print("Set Spot Access Token to: \(spotifyAuth.access_Token)")
-                    print("Set Spot Refresh Token to: \(spotifyAuth.refresh_Token)")
+                    spotifyManager.access_token = response.access_token
+                    spotifyManager.refresh_token = response.refresh_token
+                    print("Set Spot Access Token to: \(spotifyManager.access_token)")
+                    print("Set Spot Refresh Token to: \(spotifyManager.refresh_token)")
 
                     defaults.set(response.access_token, forKey: "SpotifyAccessToken")
                     defaults.set(response.refresh_token, forKey: "SpotifyRefreshToken")
@@ -378,12 +370,12 @@ extension PrefMenu {
     func getSpotTokenViaRefresh(completion: @escaping (Bool) -> Void) {
         print("called....requestSpotTokenViaRefresh")
         tokenCounter = 1
-        spotifyAuth.auth_code = authCode!
+        spotifyManager.auth_code = authCode!
         refresh_token = (defaults.object(forKey: "SpotifyRefreshToken") as? String)!
         SpotifyAPI().getTokenViaRefresh(refresh_token: refresh_token!, completionHandler: {(response, error) in
             if let response = response {
                 DispatchQueue.main.async {
-                    spotifyAuth.access_Token = response.access_token
+                    spotifyManager.access_token = response.access_token
                     defaults.set(response.access_token, forKey: "SpotifyAccessToken")
                     completion(true)
                 }
@@ -400,21 +392,6 @@ extension PrefMenu {
  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-    func runInstantiateAppRemote() {
-        Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { timer in
-            if instantiateAppRemoteCounter == 0 {if spotifyAuth.access_Token != "" {instantiateAppRemote()}}
-        }
-    }
-    
-    func instantiateAppRemote() {
-        print("called....instantiateAppRemote")
-        print(spotifyAuth.access_Token)
-        instantiateAppRemoteCounter = 1
-        DispatchQueue.main.async {
-            appRemote2 = SPTAppRemote(configuration: config, logLevel: .debug)
-            appRemote2?.connectionParameters.accessToken = spotifyAuth.access_Token
-        }
-    }
 }
 extension View {
     func hidden(_ shouldHide: Bool) -> some View {
