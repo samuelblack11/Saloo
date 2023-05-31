@@ -24,6 +24,8 @@ struct Saloo_App: App {
     @State private var userID = UserDefaults.standard.object(forKey: "SalooUserID") as? String
     @State private var showLaunchView = true
     @StateObject var spotifyManager = SpotifyManager.shared
+    @StateObject var apiManager = APIManager.shared
+
     var body: some Scene {
         WindowGroup {
             ZStack {
@@ -53,6 +55,54 @@ struct Saloo_App: App {
     }
 
 }
+
+
+
+class APIManager: ObservableObject {
+    static let shared = APIManager()
+    let baseURL = "https://getSalooKeys.azurewebsites.net/getkey"
+    var unsplashAPIKey = String()
+    var unsplashSecretKey = String()
+    var spotSecretKey = String()
+    var spotClientIdentifier = String()
+    var appleMusicDevToken = String()
+    
+    //guard let url = URL(string: "https://saloouserstatus.azurewebsites.net/is_banned?user_id=\(userId)")
+
+
+    init() {
+        getSecret(keyName: "unsplashAPIKey"){keyval in print("UnsplashAPIKey is \(String(describing: keyval))")
+            self.unsplashAPIKey = keyval!
+        }
+        //getSecret(keyName: "unsplashSecretKey"){keyval in print(keyval)}
+        //getSecret(keyName: "spotSecretKey"){keyval in print(keyval)}
+        //getSecret(keyName: "spotClientIdentifier"){keyval in print(keyval)}
+        //getSecret(keyName: "appleMusicDevToken"){keyval in print(keyval)}
+
+    }
+
+    func getSecret(keyName: String, completion: @escaping (String?) -> Void) {
+        //let url = baseURL.appendingPathComponent("getkey")
+        
+        let fullURL = baseURL + "?keyName=\(keyName)"
+        print(fullURL)
+        guard let url = URL(string: fullURL) else {fatalError("Invalid URL")}
+        let task = URLSession.shared.dataTask(with: url) { (data, response, error) in
+            print(response)
+
+            if let error = error {
+                print("Error: \(error)")
+                completion(nil)
+            } else if let data = data {
+                let str = String(data: data, encoding: .utf8)
+                completion(str)
+            }
+        }
+
+        task.resume()
+    }
+}
+
 
 class SpotifyManager: ObservableObject {
     static let shared = SpotifyManager()
