@@ -288,7 +288,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
             self.coreCard.songID = record?.object(forKey: "CD_songID") as? String
             self.coreCard.spotID = record?.object(forKey: "CD_spotID") as? String
             self.coreCard.songName = record?.object(forKey: "CD_songName") as? String
+            self.coreCard.spotName = record?.object(forKey: "CD_spotName") as? String
             self.coreCard.songArtistName = record?.object(forKey: "CD_songArtistName") as? String
+            self.coreCard.spotArtistName = record?.object(forKey: "CD_spotArtistName") as? String
+
             self.coreCard.songArtImageData = record?.object(forKey: "CD_songArtImageData") as? Data
             self.coreCard.songPreviewURL = record?.object(forKey: "CD_songPreviewURL") as? String
             self.coreCard.songDuration = record?.object(forKey: "CD_songDuration") as? String
@@ -296,6 +299,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
             self.coreCard.spotImageData = record?.object(forKey: "CD_spotImageData") as? Data
             self.coreCard.spotSongDuration = record?.object(forKey: "CD_spotSongDuration") as? String
             self.coreCard.spotPreviewURL = record?.object(forKey: "CD_spotPreviewURL") as? String
+            self.coreCard.songAlbumName = record?.object(forKey: "CD_songAlbumName") as? String
+            self.coreCard.spotAlbumArtist = record?.object(forKey: "CD_spotAlbumArtist") as? String
+            self.coreCard.appleAlbumArtist = record?.object(forKey: "CD_appleAlbumArtist") as? String
+
             self.coreCard.creator = record?.object(forKey: "CD_creator") as? String
             self.coreCard.songAddedUsing = record?.object(forKey: "CD_songAddedUsing") as? String
             self.coreCard.cardName = record?.object(forKey: "CD_cardName") as! String
