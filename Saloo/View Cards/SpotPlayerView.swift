@@ -58,7 +58,7 @@ struct SpotPlayerView: View {
     @EnvironmentObject var networkMonitor: NetworkMonitor
     @State private var showFailedConnectionAlert = false
     @ObservedObject var gettingRecord = GettingRecord.shared
-    @EnvironmentObject var spotifyManager: SpotifyManager
+    @ObservedObject var spotifyManager = SpotifyManager.shared
     @State private var syncTimer: Timer? = nil
     
     var body: some View {
@@ -254,7 +254,7 @@ struct SpotPlayerView: View {
         let appleAlbumArtistForURL = cleanMusicData.cleanMusicString(input: appleAlbumArtist!, removeList: appDelegate.songFilterForMatch)
         let AMString = cleanMusicData.compileMusicString(songOrAlbum: songName!, artist: songArtistName!, removeList: appDelegate.songFilterForMatch)
         var foundMatch = false
-        SpotifyAPI().getAlbumID(albumName: cleanAlbumNameForURL, artistName: appleAlbumArtistForURL , authToken: spotifyManager.access_token, completion: { (albums, error) in
+        SpotifyAPI.shared.getAlbumID(albumName: cleanAlbumNameForURL, artistName: appleAlbumArtistForURL , authToken: spotifyManager.access_token, completion: { (albums, error) in
             var albumIndex = 0
             func processAlbum() {
                 guard albumIndex < albums!.count else {
@@ -265,7 +265,7 @@ struct SpotPlayerView: View {
                 albumIndex += 1
                 print("Got Album...\(album.name)")
                 let spotAlbumID = album.id // use the album ID from the current iteration
-                SpotifyAPI().searchForAlbum(albumId: spotAlbumID, authToken: spotifyManager.access_token) { (albumResponse, error) in
+                SpotifyAPI.shared.searchForAlbum(albumId: spotAlbumID, authToken: spotifyManager.access_token) { (albumResponse, error) in
                     if let album = albumResponse {
                         spotImageURL = album.images[2].url
                         getSpotAlbumTracks(spotAlbumID: spotAlbumID, AMString: AMString, completion: { foundMatch4 in
@@ -285,7 +285,7 @@ struct SpotPlayerView: View {
     
     func getSpotAlbumTracks(spotAlbumID: String, AMString: String, completion: @escaping (Bool) -> Void) {
         var foundMatch = false
-        SpotifyAPI().getAlbumTracks(albumId: spotAlbumID, authToken: spotifyManager.access_token, completion: { (response, error) in
+        SpotifyAPI.shared.getAlbumTracks(albumId: spotAlbumID, authToken: spotifyManager.access_token, completion: { (response, error) in
         innerLoop: for song in response! {
             print("Got Track...\(song.name)")
             var allArtists = concatAllArtists(song: song)
@@ -333,6 +333,7 @@ struct SpotPlayerView: View {
 
     func playSong() {
         print("network connected")
+        print(APIManager.shared.spotClientIdentifier)
         if let songID = songID {
             let trackURI = "spotify:track:\(songID)"
             
@@ -391,7 +392,6 @@ extension SpotPlayerView {
             }
         }
         if networkMonitor.isConnected {
-            //runInstantiateAppRemote()
             completion(true)
         } else {
             showFailedConnectionAlert = true
@@ -402,7 +402,7 @@ extension SpotPlayerView {
     func requestSpotAuth() {
         print("called....requestSpotAuth")
         invalidAuthCode = false
-        SpotifyAPI().requestAuth(completionHandler: {(response, error) in
+        SpotifyAPI.shared.requestAuth(completionHandler: {(response, error) in
             if response != nil {
                 DispatchQueue.main.async {
                     if response!.contains("https://www.google.com/?code="){}
@@ -424,10 +424,11 @@ extension SpotPlayerView {
         print("called....requestSpotToken")
         tokenCounter = 1
         spotifyManager.auth_code = authCode!
-        SpotifyAPI().getToken(authCode: authCode!, completionHandler: {(response, error) in
+        SpotifyAPI.shared.getToken(authCode: authCode!, completionHandler: {(response, error) in
             if response != nil {
                 DispatchQueue.main.async {
                     spotifyManager.access_token = response!.access_token
+                    spotifyManager.appRemote?.connectionParameters.accessToken = spotifyManager.access_token
                     spotifyManager.refresh_token = response!.refresh_token
                     defaults.set(response!.access_token, forKey: "SpotifyAccessToken")
                     defaults.set(response!.refresh_token, forKey: "SpotifyRefreshToken")
@@ -459,7 +460,7 @@ extension SpotPlayerView {
         tokenCounter = 1
         spotifyManager.auth_code = authCode!
         refresh_token = (defaults.object(forKey: "SpotifyRefreshToken") as? String)!
-        SpotifyAPI().getTokenViaRefresh(refresh_token: refresh_token!, completionHandler: {(response, error) in
+        SpotifyAPI.shared.getTokenViaRefresh(refresh_token: refresh_token!, completionHandler: {(response, error) in
             if response != nil {
                 DispatchQueue.main.async {
                     spotifyManager.access_token = response!.access_token

@@ -26,7 +26,7 @@ struct MusicSearchView: View {
     @State private var searchResults: [SongForList] = []
     @EnvironmentObject var giftCard: GiftCard
     @EnvironmentObject var networkMonitor: NetworkMonitor
-    @EnvironmentObject var spotifyManager: SpotifyManager
+    @ObservedObject var spotifyManager = SpotifyManager.shared
     let cleanMusicData = CleanMusicData()
     @ObservedObject var gettingRecord = GettingRecord.shared
     @State private var player: AVPlayer?
@@ -176,7 +176,7 @@ extension MusicSearchView {
     
     func refreshTokenAndRun(completion: @escaping (Bool) -> Void) {
         refresh_token = (defaults.object(forKey: "SpotifyRefreshToken") as? String)!
-        SpotifyAPI().getTokenViaRefresh(refresh_token: refresh_token!) { response, error in
+        SpotifyAPI.shared.getTokenViaRefresh(refresh_token: refresh_token!) { response, error in
             if let response = response {
                 spotifyManager.access_token = response.access_token
                 defaults.set(response.access_token, forKey: "SpotifyAccessToken")
@@ -193,9 +193,10 @@ extension MusicSearchView {
         tokenCounter = 1
         spotifyManager.auth_code = authCode!
         if let authCode = authCode {
-            SpotifyAPI().getToken(authCode: spotifyManager.auth_code) { response, error in
+            SpotifyAPI.shared.getToken(authCode: spotifyManager.auth_code) { response, error in
                 if let response = response {
                     spotifyManager.access_token = response.access_token
+                    spotifyManager.appRemote?.connectionParameters.accessToken = spotifyManager.access_token
                     spotifyManager.refresh_token = response.refresh_token
                     defaults.set(response.access_token, forKey: "SpotifyAccessToken")
                     defaults.set(response.refresh_token, forKey: "SpotifyRefreshToken")
@@ -220,10 +221,11 @@ extension MusicSearchView {
         tokenCounter = 1
         spotifyManager.auth_code = authCode!
         refresh_token = (defaults.object(forKey: "SpotifyRefreshToken") as? String)!
-        SpotifyAPI().getTokenViaRefresh(refresh_token: refresh_token!, completionHandler: {(response, error) in
+        SpotifyAPI.shared.getTokenViaRefresh(refresh_token: refresh_token!, completionHandler: {(response, error) in
             if let response = response {
                 DispatchQueue.main.async {
                     spotifyManager.access_token = response.access_token
+                    spotifyManager.appRemote?.connectionParameters.accessToken = spotifyManager.access_token
                     defaults.set(response.access_token, forKey: "SpotifyAccessToken")
                     completion(true)
                 }
@@ -237,7 +239,7 @@ extension MusicSearchView {
     }
 
     func requestAndRunToken(completion: @escaping (Bool) -> Void) {
-        SpotifyAPI().requestAuth { response, error in
+        SpotifyAPI.shared.requestAuth { response, error in
             guard let response = response else {
                 completion(false)
                 return
@@ -273,7 +275,7 @@ extension MusicSearchView {
             group1.enter()
             print("CheckPoint3")
             DispatchQueue.global().async {
-                SpotifyAPI().getAlbumIDUsingNameOnly(albumName: cleanAlbumName, offset: offset * pageSize, authToken: spotifyManager.access_token) { albumResponse, error in
+                SpotifyAPI.shared.getAlbumIDUsingNameOnly(albumName: cleanAlbumName, offset: offset * pageSize, authToken: spotifyManager.access_token) { albumResponse, error in
                     print("CheckPoint4")
                     print("albumName: \(cleanAlbumName), offset: \(offset * pageSize), authToken: \(spotifyManager.access_token)")
                     print(albumResponse)
@@ -289,7 +291,7 @@ extension MusicSearchView {
                             print("CheckPoint5")
                             print("Current Album...\(album.name)")
                             DispatchQueue.global().async {
-                                SpotifyAPI().getAlbumTracks(albumId: album.id, authToken: spotifyManager.access_token) { response, error in
+                                SpotifyAPI.shared.getAlbumTracks(albumId: album.id, authToken: spotifyManager.access_token) { response, error in
                                     if let trackList = response {
                                         for track in trackList {
                                             print("----Track \(track.name)")
@@ -453,7 +455,7 @@ extension MusicSearchView {
         let artistTerm = cleanMusicData.cleanMusicString(input: self.artistSearch, removeList: appDelegate.songFilterForSearch)
 
         
-        SpotifyAPI().searchSpotify(songTerm, artistName: artistTerm, authToken: spotifyManager.access_token, completionHandler: {(response, error) in
+        SpotifyAPI.shared.searchSpotify(songTerm, artistName: artistTerm, authToken: spotifyManager.access_token, completionHandler: {(response, error) in
             
             //if let error = error as? URLError, error.code == .notConnectedToInternet {
             //    showFailedConnectionAlert = true

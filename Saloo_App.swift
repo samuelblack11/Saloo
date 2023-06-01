@@ -23,8 +23,9 @@ struct Saloo_App: App {
     @State private var isSignedIn = UserDefaults.standard.string(forKey: "SalooUserID") != nil
     @State private var userID = UserDefaults.standard.object(forKey: "SalooUserID") as? String
     @State private var showLaunchView = true
-    @StateObject var spotifyManager = SpotifyManager.shared
     @ObservedObject var apiManager = APIManager.shared
+    @ObservedObject var spotifyManager = SpotifyManager.shared
+    
 
     var body: some Scene {
         WindowGroup {
@@ -40,6 +41,7 @@ struct Saloo_App: App {
                 }
                 .onAppear {
                     DispatchQueue.main.asyncAfter(deadline: .now() + 1) {withAnimation{showLaunchView = false}}
+                    apiManager.initializeSpotifyManager(){}
                 }
                 
                     .environment(\.managedObjectContext, persistenceController.persistentContainer.viewContext)
@@ -68,35 +70,34 @@ class APIManager: ObservableObject {
     var appleMusicDevToken = String()
     var keys: [String: String] = [:]
     //guard let url = URL(string: "https://saloouserstatus.azurewebsites.net/is_banned?user_id=\(userId)")
+    //@Published var spotifyManager: SpotifyManager?
+
 
 
     init() {
         getSecret(keyName: "unsplashAPIKey"){keyval in print("UnsplashAPIKey is \(String(describing: keyval))")
            self.unsplashAPIKey = keyval!
         }
-        getSecret(keyName: "unsplashSecretKey"){keyval in print("unsplashSecretKey is \(String(describing: keyval))")
-           self.unsplashSecretKey = keyval!
-        }
-        getSecret(keyName: "spotClientIdentifier"){keyval in print("spotClientIdentifier is \(String(describing: keyval))")
-           self.spotClientIdentifier = keyval!
-        }
-        getSecret(keyName: "spotSecretKey"){keyval in print("spotSecretKey is \(String(describing: keyval))")
-           self.spotSecretKey = keyval!
-        }
+
         getSecret(keyName: "appleMusicDevToken"){keyval in print("appleMusicDevToken is \(String(describing: keyval))")
            self.appleMusicDevToken = keyval!
         }
-        
-        //getSecrets(keyNames: ["unsplashAPIKey","unsplashSecretKey", "spotSecretKey", "spotClientIdentifier", "appleMusicDevToken"]) { result in
-        //getSecrets(keyNames: ["unsplashAPIKey"]) { result in
-        //    print("Received keys: \(result)")
-        //    self.keys = result
-        //}
-        //getSecret(keyName: "unsplashSecretKey"){keyval in print(keyval)}
-        //getSecret(keyName: "spotSecretKey"){keyval in print(keyval)}
-        //getSecret(keyName: "spotClientIdentifier"){keyval in print(keyval)}
-        //getSecret(keyName: "appleMusicDevToken"){keyval in print(keyval)}
-
+    }
+    
+    func initializeSpotifyManager(completion: @escaping () -> Void) {
+        // Here, you're getting the keys for Spotify API
+        getSecret(keyName: "spotClientIdentifier") { keyval in
+            print("spotClientIdentifier is \(String(describing: keyval))")
+            self.spotClientIdentifier = keyval!
+            self.getSecret(keyName: "spotSecretKey"){keyval in print("spotSecretKey is \(String(describing: keyval))")
+                self.spotSecretKey = keyval!
+                // After setting the key, initialize SpotifyManager
+                SpotifyManager.shared.initializeConfiguration()
+                //self.spotifyManager = SpotifyManager.shared
+                // Call the completion handler
+                completion()
+            }
+        }
     }
 
     func getSecret(keyName: String, completion: @escaping (String?) -> Void) {
@@ -107,13 +108,24 @@ class APIManager: ObservableObject {
         guard let url = URL(string: fullURL) else {fatalError("Invalid URL")}
         let task = URLSession.shared.dataTask(with: url) { (data, response, error) in
             //print(response)
-            print(String(data: data!, encoding: .utf8))
+            //print(String(data: data!, encoding: .utf8))
             if let error = error {
                 print("Error: \(error)")
                 completion(nil)
             } else if let data = data {
-                let str = String(data: data, encoding: .utf8)
-                completion(str)
+                let jsonData = String(data: data, encoding: .utf8)
+                if let jsonData = jsonData {
+                    let data = Data(jsonData.utf8)
+                    do {
+                        // Make sure that the Decoder Setup matches your JSON Structure
+                        let json = try JSONDecoder().decode([String: String].self, from: data)
+                        if let value = json["value"] {
+                            completion(value)
+                        }
+                    } catch {
+                        print("error:\(error)")
+                    }
+                }
             }
         }
 
@@ -152,7 +164,7 @@ class APIManager: ObservableObject {
 
 class SpotifyManager: ObservableObject {
     static let shared = SpotifyManager()
-    let config = SPTConfiguration(clientID: APIManager.shared.spotClientIdentifier, redirectURL: URL(string: "saloo://")!)
+    var config: SPTConfiguration?
     var auth_code = String()
     var refresh_token = String()
     var access_token = String()
@@ -163,24 +175,31 @@ class SpotifyManager: ObservableObject {
     
     init() {
         enum UserDefaultsError: Error {case noMusicSubType}
-
         do {
             guard let musicSubType = UserDefaults.standard.object(forKey: "MusicSubType") as? String, musicSubType == "Spotify" else {
                 throw UserDefaultsError.noMusicSubType
             }
-            instantiateAppRemote()
-        } catch {
-            print("Caught error: \(error)")
-        }
-
+        } catch {print("Caught error: \(error)")}
     }
     
+    func initializeConfiguration() {
+        let spotClientIdentifier = APIManager.shared.spotClientIdentifier
+        if spotClientIdentifier.isEmpty {
+            print("Error: Spotify client identifier is not available")
+            return
+        }
+        config = SPTConfiguration(clientID: spotClientIdentifier, redirectURL: URL(string: "saloo://")!)
+        instantiateAppRemote()
+    }
+
     
     func instantiateAppRemote() {
-        self.appRemote = SPTAppRemote(configuration: self.config, logLevel: .debug)
-        self.appRemote?.connectionParameters.accessToken = (UserDefaults.standard.object(forKey: "SpotifyAccessToken") as? String)!
-        self.appRemote?.delegate = self.spotPlayerDelegate
-        
+        self.appRemote = SPTAppRemote(configuration: self.config!, logLevel: .debug)
+        if (UserDefaults.standard.object(forKey: "SpotifyAccessToken") as? String) != nil {
+            self.appRemote?.connectionParameters.accessToken = (UserDefaults.standard.object(forKey: "SpotifyAccessToken") as? String)!
+            self.appRemote?.delegate = self.spotPlayerDelegate
+            print("instantiated app remote...")
+        }
     }
     
     func connect() {appRemote?.connect()}
@@ -189,7 +208,6 @@ class SpotifyManager: ObservableObject {
         get {
             return {[self] _, error in
                 print("defaultCallBack Running...")
-                print("started playing playlist")
                 if let error = error {
                     print(error.localizedDescription)
                 }
@@ -199,19 +217,13 @@ class SpotifyManager: ObservableObject {
 }
 
 class SpotPlayerViewDelegate: NSObject, SPTAppRemoteDelegate {
-    func appRemoteDidEstablishConnection(_ appRemote: SPTAppRemote) {
-        print("Connected appRemote")
-    }
+    func appRemoteDidEstablishConnection(_ appRemote: SPTAppRemote) {print("Connected appRemote")}
 
-    func appRemote(_ appRemote: SPTAppRemote, didDisconnectWithError error: Error?) {
-        print("Disconnected appRemote")
-    }
+    func appRemote(_ appRemote: SPTAppRemote, didDisconnectWithError error: Error?) {print("Disconnected appRemote")}
 
     func appRemote(_ appRemote: SPTAppRemote, didFailConnectionAttemptWithError error: Error?) {
         print("Failed to connect appRemote")
-        if let error = error {
-            print("Error: \(error)")
-        }
+        if let error = error {print("Error: \(error)")}
     }
 }
 
@@ -296,3 +308,8 @@ struct LoadingOverlay: View {
             
         }
     }
+//getSecrets(keyNames: ["unsplashAPIKey","unsplashSecretKey", "spotSecretKey", "spotClientIdentifier", "appleMusicDevToken"]) { result in
+//getSecrets(keyNames: ["unsplashAPIKey"]) { result in
+//    print("Received keys: \(result)")
+//    self.keys = result
+//}

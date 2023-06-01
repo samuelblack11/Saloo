@@ -36,6 +36,7 @@ class PhotoAPI {
         var url: URL{ return URL(string: URLString)!}
     }
     class func getUserCollections(username: String, completionHandler: @escaping ([PhotoCollection]?,Error?) -> Void) {
+        print("called getUserCollection")
         let url = Endpoints.user(apiKey: APIManager.shared.unsplashAPIKey, user: username).url
         var request = URLRequest(url: url)
         request.httpMethod = "GET"

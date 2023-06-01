@@ -13,7 +13,6 @@ class AppleMusicAPI {
     var taskToken: String?
     var tokenError: Bool = false
     var storeFrontID: String?
-    //let devToken = "eyJhbGciOiJFUzI1NiIsImtpZCI6Ik5KN0MzVzgzTFoiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJCU00zWVpGVVQyIiwiZXhwIjoxNjg5MjQzOTI3LCJpYXQiOjE2NzM0Nzk1Mjd9.28_a1GIJEEKWzvJgmdM9lAmvB4ilY5pFx6TF0Q4uhIIKu8FR0fOaXd2-3xVHPWANA8tqbLurVE5yE8wEZEqR8g"
     @EnvironmentObject var appDelegate: AppDelegate
     let cleanMusicData = CleanMusicData()
 

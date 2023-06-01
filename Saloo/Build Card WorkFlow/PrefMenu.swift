@@ -293,7 +293,7 @@ extension PrefMenu {
     func requestAndRunToken(authType: String, completion: @escaping (Bool) -> Void) {
         print("called....requestSpotAuth")
         invalidAuthCode = false
-        SpotifyAPI().requestAuth { response, error in
+        SpotifyAPI.shared.requestAuth { response, error in
             guard let response = response else {
                 // handle error
                 print(error ?? "Unknown error")
@@ -329,7 +329,7 @@ extension PrefMenu {
     func requestSpotAuth() {
         print("called....requestSpotAuth")
         invalidAuthCode = false
-        SpotifyAPI().requestAuth(completionHandler: {(response, error) in
+        SpotifyAPI.shared.requestAuth(completionHandler: {(response, error) in
             if response != nil {
                 DispatchQueue.main.async {
                     print("ccccccc")
@@ -346,10 +346,11 @@ extension PrefMenu {
         print("called....requestSpotToken")
         tokenCounter = 1
         spotifyManager.auth_code = authCode!
-        SpotifyAPI().getToken(authCode: authCode!, completionHandler: {(response, error) in
+        SpotifyAPI.shared.getToken(authCode: authCode!, completionHandler: {(response, error) in
             if let response = response {
                 DispatchQueue.main.async {
                     spotifyManager.access_token = response.access_token
+                    spotifyManager.appRemote?.connectionParameters.accessToken = spotifyManager.access_token
                     spotifyManager.refresh_token = response.refresh_token
                     print("Set Spot Access Token to: \(spotifyManager.access_token)")
                     print("Set Spot Refresh Token to: \(spotifyManager.refresh_token)")
@@ -372,10 +373,11 @@ extension PrefMenu {
         tokenCounter = 1
         spotifyManager.auth_code = authCode!
         refresh_token = (defaults.object(forKey: "SpotifyRefreshToken") as? String)!
-        SpotifyAPI().getTokenViaRefresh(refresh_token: refresh_token!, completionHandler: {(response, error) in
+        SpotifyAPI.shared.getTokenViaRefresh(refresh_token: refresh_token!, completionHandler: {(response, error) in
             if let response = response {
                 DispatchQueue.main.async {
                     spotifyManager.access_token = response.access_token
+                    spotifyManager.appRemote?.connectionParameters.accessToken = spotifyManager.access_token
                     defaults.set(response.access_token, forKey: "SpotifyAccessToken")
                     completion(true)
                 }
