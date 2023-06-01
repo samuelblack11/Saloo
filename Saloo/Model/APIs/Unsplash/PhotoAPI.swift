@@ -7,46 +7,36 @@
 
 import Foundation
 import UIKit
+import SwiftUI
 
 
 class PhotoAPI {
-    
     enum Endpoints {
-    
-    static let apiKey = "GXA9JqJgKZiIkvWmnKVuzq1wWNPUN7GiVDHOTiq7f3A"
-    static let secretKey = "DKnRQDO4TVGHcmhJVAcgq1VoMpFzvuoMVzql9kvkCmI"
-    static let baseURL = "https://api.unsplash.com/search/photos?"
-    static let baseURL2 = "https://api.unsplash.com/"
-    static let downloadURL = "https://api.unsplash.com/photos?/"
-    case searchedWords(page_num: Int, userSearch: String)
-    case collection(page_num: Int, collectionID: String)
-    case pingDownloadForTrigger(downloadLocation: String)
-    case user(user: String)
-    case collectionPhotos(collectionID: String, page_num: Int)
+            
+        case searchedWords(apiKey: String, page_num: Int, userSearch: String)
+        case collection(apiKey: String, page_num: Int, collectionID: String)
+        case pingDownloadForTrigger(apiKey: String, downloadLocation: String)
+        case user(apiKey: String, user: String)
+        case collectionPhotos(apiKey: String, collectionID: String, page_num: Int)
 
-    var URLString: String{
-        switch self {
-            case .searchedWords(let page_num, let userSearch ):
-            return Endpoints.baseURL + "page=\(page_num)&per_page=50&query=\(userSearch)&client_id=\(PhotoAPI.Endpoints.apiKey)"
-        case .pingDownloadForTrigger(let downloadLocation):
-                return downloadLocation + "&client_id=\(PhotoAPI.Endpoints.apiKey)"
-        case .collection(let page_num, let collectionID ):
-            return Endpoints.baseURL +
-            "id=\(collectionID)&page=\(page_num)&per_page=50="
-        case .user(let user):
-            return Endpoints.baseURL2 + "users/\(user)/collections?&client_id=\(PhotoAPI.Endpoints.apiKey)"
-        case .collectionPhotos(let collectionID, let page_num):
-            return Endpoints.baseURL2 + "/collections/\(collectionID)/photos?page=\(page_num)&per_page=100&client_id=\(PhotoAPI.Endpoints.apiKey)"
-
-        
+        var URLString: String{
+            switch self {
+                case .searchedWords(let apiKey, let page_num, let userSearch ):
+                return "https://api.unsplash.com/search/photos?" + "page=\(page_num)&per_page=50&query=\(userSearch)&client_id=\(apiKey)"
+                case .pingDownloadForTrigger(let apiKey, let downloadLocation):
+                    return downloadLocation + "&client_id=\(apiKey)"
+                case .collection(let apiKey, let page_num, let collectionID ):
+                    return "https://api.unsplash.com/search/photos?" + "id=\(collectionID)&page=\(page_num)&per_page=50&client_id=\(apiKey)"
+                case .user(let apiKey, let user):
+                    return "https://api.unsplash.com/users/\(user)/collections?&client_id=\(apiKey)"
+                case .collectionPhotos(let apiKey, let collectionID, let page_num):
+                    return "https://api.unsplash.com/collections/\(collectionID)/photos?page=\(page_num)&per_page=100&client_id=\(apiKey)"
+                }
             }
-        }
-    //print(URLString)
-    var url: URL{ return URL(string: URLString)!}
+        var url: URL{ return URL(string: URLString)!}
     }
-    
     class func getUserCollections(username: String, completionHandler: @escaping ([PhotoCollection]?,Error?) -> Void) {
-        let url = Endpoints.user(user: username).url
+        let url = Endpoints.user(apiKey: APIManager.shared.unsplashAPIKey, user: username).url
         var request = URLRequest(url: url)
         request.httpMethod = "GET"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
@@ -71,7 +61,7 @@ class PhotoAPI {
     }
     
     class func getPhotosFromCollection(collectionID: String, page_num: Int, completionHandler: @escaping ([ResultDetails]?,Error?) -> Void) {
-        let url = Endpoints.collectionPhotos(collectionID: collectionID, page_num: page_num).url
+        let url = Endpoints.collectionPhotos(apiKey: APIManager.shared.unsplashAPIKey, collectionID: collectionID, page_num: page_num).url
         var request = URLRequest(url: url)
         request.httpMethod = "GET"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
@@ -117,7 +107,7 @@ class PhotoAPI {
         //let apiKey = "GXA9JqJgKZiIkvWmnKVuzq1wWNPUN7GiVDHOTiq7f3A"
         // Define url for the remote image, using the endpoint parameter
         //let url = URL(string: "https://api.unsplash.com/search/photos?query=\(user_search)/?client_id=\(apiKey)")!
-        let url = Endpoints.searchedWords(page_num: pageNumber, userSearch: userSearch).url
+        let url = Endpoints.searchedWords(apiKey: APIManager.shared.unsplashAPIKey, page_num: pageNumber, userSearch: userSearch).url
         // the request variables includes information the url session needs to perform the HTTP request
         // What do we gain from using URLRequest instead of passing in the url constant above? It allows us to configure the HTTP request the URL session performs. In this case, we want to specify it is a GET request and we want it in json format (rather than XML)
         var request = URLRequest(url: url)
@@ -176,7 +166,7 @@ class PhotoAPI {
         //let apiKey = "GXA9JqJgKZiIkvWmnKVuzq1wWNPUN7GiVDHOTiq7f3A"
         // Define url for the remote image, using the endpoint parameter
         //let url = URL(string: "https://api.unsplash.com/search/photos?query=\(user_search)/?client_id=\(apiKey)")!
-        let url = Endpoints.collection(page_num: pageNumber, collectionID: collectionID).url
+        let url = Endpoints.collection(apiKey: APIManager.shared.unsplashAPIKey, page_num: pageNumber, collectionID: collectionID).url
         // the request variables includes information the url session needs to perform the HTTP request
         // What do we gain from using URLRequest instead of passing in the url constant above? It allows us to configure the HTTP request the URL session performs. In this case, we want to specify it is a GET request and we want it in json format (rather than XML)
         var request = URLRequest(url: url)
@@ -230,7 +220,7 @@ class PhotoAPI {
     
     class func pingDownloadURL(downloadLocation: String,  completionHandler: @escaping (PingDownloadResponse?,Error?) -> Void) {
         
-        let urlString = Endpoints.pingDownloadForTrigger(downloadLocation: downloadLocation)
+        let urlString = Endpoints.pingDownloadForTrigger(apiKey: APIManager.shared.unsplashAPIKey, downloadLocation: downloadLocation)
         print(urlString)
         let url = urlString.url
         var request = URLRequest(url: url)

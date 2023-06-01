@@ -13,7 +13,7 @@ class AppleMusicAPI {
     var taskToken: String?
     var tokenError: Bool = false
     var storeFrontID: String?
-    let devToken = "eyJhbGciOiJFUzI1NiIsImtpZCI6Ik5KN0MzVzgzTFoiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJCU00zWVpGVVQyIiwiZXhwIjoxNjg5MjQzOTI3LCJpYXQiOjE2NzM0Nzk1Mjd9.28_a1GIJEEKWzvJgmdM9lAmvB4ilY5pFx6TF0Q4uhIIKu8FR0fOaXd2-3xVHPWANA8tqbLurVE5yE8wEZEqR8g"
+    //let devToken = "eyJhbGciOiJFUzI1NiIsImtpZCI6Ik5KN0MzVzgzTFoiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJCU00zWVpGVVQyIiwiZXhwIjoxNjg5MjQzOTI3LCJpYXQiOjE2NzM0Nzk1Mjd9.28_a1GIJEEKWzvJgmdM9lAmvB4ilY5pFx6TF0Q4uhIIKu8FR0fOaXd2-3xVHPWANA8tqbLurVE5yE8wEZEqR8g"
     @EnvironmentObject var appDelegate: AppDelegate
     let cleanMusicData = CleanMusicData()
 
@@ -23,7 +23,7 @@ class AppleMusicAPI {
         let musicURL = URL(string: "https://api.music.apple.com/v1/me/storefront")!
         var musicRequest = URLRequest(url: musicURL)
         musicRequest.httpMethod = "GET"
-        musicRequest.addValue("Bearer \(devToken)", forHTTPHeaderField: "Authorization")
+        musicRequest.addValue("Bearer \(APIManager.shared.appleMusicDevToken)", forHTTPHeaderField: "Authorization")
         musicRequest.addValue(userToken, forHTTPHeaderField: "Music-User-Token")
         let lock = DispatchSemaphore(value: 0)
 
@@ -54,7 +54,7 @@ class AppleMusicAPI {
     
     func getUserToken(completionHandler: @escaping (String?,Error?) -> Void) {
         //let lock = DispatchSemaphore(value: 1)
-        SKCloudServiceController().requestUserToken(forDeveloperToken: devToken) {(receivedToken, error) in
+        SKCloudServiceController().requestUserToken(forDeveloperToken: APIManager.shared.appleMusicDevToken) {(receivedToken, error) in
             //guard error == nil else { return }
             if error != nil {print("Token Error..."); self.tokenError = true; completionHandler(nil, error)}
             else{
@@ -75,7 +75,7 @@ class AppleMusicAPI {
             let musicURL = URL(string: "https://api.music.apple.com/v1/catalog/\(storeFrontID)/search?term=\(searchTerm.replacingOccurrences(of: " ", with: "+"))&types=songs&limit=25")
             var musicRequest = URLRequest(url: musicURL!)
             musicRequest.httpMethod = "GET"
-            musicRequest.addValue("Bearer \(devToken)", forHTTPHeaderField: "Authorization")
+            musicRequest.addValue("Bearer \(APIManager.shared.appleMusicDevToken)", forHTTPHeaderField: "Authorization")
             musicRequest.addValue(userToken, forHTTPHeaderField: "Music-User-Token")
             URLSession.shared.dataTask(with: musicRequest) { (data, response, error) in
                 guard error == nil else {return}
@@ -124,7 +124,7 @@ class AppleMusicAPI {
         // Set up the request
         var request = URLRequest(url: URL(string: fullURL)!)
         request.httpMethod = "GET"
-        request.addValue("Bearer \(devToken)", forHTTPHeaderField: "Authorization")
+        request.addValue("Bearer \(APIManager.shared.appleMusicDevToken)", forHTTPHeaderField: "Authorization")
         request.addValue(userToken, forHTTPHeaderField: "Music-User-Token")
         
         // Send the request
@@ -156,7 +156,7 @@ class AppleMusicAPI {
         let baseUrl = "https://api.music.apple.com/v1/catalog/\(storefrontId)/albums/\(albumId)/tracks"
         var request = URLRequest(url: URL(string: baseUrl)!)
         request.httpMethod = "GET"
-        request.addValue("Bearer \(devToken)", forHTTPHeaderField: "Authorization")
+        request.addValue("Bearer \(APIManager.shared.appleMusicDevToken)", forHTTPHeaderField: "Authorization")
         request.addValue(userToken, forHTTPHeaderField: "Music-User-Token")
         
         let task = URLSession.shared.dataTask(with: request) { (data, response, error) in

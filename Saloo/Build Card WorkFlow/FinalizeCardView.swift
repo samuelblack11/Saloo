@@ -51,7 +51,7 @@ struct FinalizeCardView: View {
     @State private var activeShare: CKShare?
     @State private var activeContainer: CKContainer?
     @State var cardType: String
-    var config = SPTConfiguration(clientID: SpotifyAPI.shared.clientIdentifier, redirectURL: URL(string: "saloo://")!)
+    var config = SPTConfiguration(clientID: APIManager.shared.spotClientIdentifier, redirectURL: URL(string: "saloo://")!)
     @State var emptyCard: CoreCard? = CoreCard()
     @State private var sharingController: UICloudSharingController?
     @State private var enableShare = false

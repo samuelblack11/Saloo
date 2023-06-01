@@ -333,7 +333,6 @@ struct SpotPlayerView: View {
 
     func playSong() {
         print("network connected")
-        print(SpotifyAPI.shared.clientIdentifier)
         if let songID = songID {
             let trackURI = "spotify:track:\(songID)"
             

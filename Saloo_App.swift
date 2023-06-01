@@ -24,7 +24,7 @@ struct Saloo_App: App {
     @State private var userID = UserDefaults.standard.object(forKey: "SalooUserID") as? String
     @State private var showLaunchView = true
     @StateObject var spotifyManager = SpotifyManager.shared
-    @StateObject var apiManager = APIManager.shared
+    @ObservedObject var apiManager = APIManager.shared
 
     var body: some Scene {
         WindowGroup {
@@ -66,14 +66,32 @@ class APIManager: ObservableObject {
     var spotSecretKey = String()
     var spotClientIdentifier = String()
     var appleMusicDevToken = String()
-    
+    var keys: [String: String] = [:]
     //guard let url = URL(string: "https://saloouserstatus.azurewebsites.net/is_banned?user_id=\(userId)")
 
 
     init() {
         getSecret(keyName: "unsplashAPIKey"){keyval in print("UnsplashAPIKey is \(String(describing: keyval))")
-            self.unsplashAPIKey = keyval!
+           self.unsplashAPIKey = keyval!
         }
+        getSecret(keyName: "unsplashSecretKey"){keyval in print("unsplashSecretKey is \(String(describing: keyval))")
+           self.unsplashSecretKey = keyval!
+        }
+        getSecret(keyName: "spotClientIdentifier"){keyval in print("spotClientIdentifier is \(String(describing: keyval))")
+           self.spotClientIdentifier = keyval!
+        }
+        getSecret(keyName: "spotSecretKey"){keyval in print("spotSecretKey is \(String(describing: keyval))")
+           self.spotSecretKey = keyval!
+        }
+        getSecret(keyName: "appleMusicDevToken"){keyval in print("appleMusicDevToken is \(String(describing: keyval))")
+           self.appleMusicDevToken = keyval!
+        }
+        
+        //getSecrets(keyNames: ["unsplashAPIKey","unsplashSecretKey", "spotSecretKey", "spotClientIdentifier", "appleMusicDevToken"]) { result in
+        //getSecrets(keyNames: ["unsplashAPIKey"]) { result in
+        //    print("Received keys: \(result)")
+        //    self.keys = result
+        //}
         //getSecret(keyName: "unsplashSecretKey"){keyval in print(keyval)}
         //getSecret(keyName: "spotSecretKey"){keyval in print(keyval)}
         //getSecret(keyName: "spotClientIdentifier"){keyval in print(keyval)}
@@ -88,8 +106,8 @@ class APIManager: ObservableObject {
         print(fullURL)
         guard let url = URL(string: fullURL) else {fatalError("Invalid URL")}
         let task = URLSession.shared.dataTask(with: url) { (data, response, error) in
-            print(response)
-
+            //print(response)
+            print(String(data: data!, encoding: .utf8))
             if let error = error {
                 print("Error: \(error)")
                 completion(nil)
@@ -101,12 +119,40 @@ class APIManager: ObservableObject {
 
         task.resume()
     }
+    
+    
+    func getSecrets(keyNames: [String], completion: @escaping ([String: String]) -> Void) {
+         let keyNamesString = keyNames.joined(separator: ",")
+         let fullURL = baseURL + "?keyNames=\(keyNamesString)"
+         print(fullURL)
+         guard let url = URL(string: fullURL) else {fatalError("Invalid URL")}
+         let task = URLSession.shared.dataTask(with: url) { (data, response, error) in
+             print(response)
+             print(String(data: data!, encoding: .utf8))
+             if let error = error {
+                 print("Error: \(error)")
+                 completion([:])
+             } else if let data = data {
+                 do {
+                     let decodedData = try JSONDecoder().decode([String: String].self, from: data)
+                     completion(decodedData)
+                 } catch {
+                     print("Error decoding data: \(error)")
+                     completion([:])
+                 }
+             }
+         }
+
+         task.resume()
+     }
+    
+    
 }
 
 
 class SpotifyManager: ObservableObject {
     static let shared = SpotifyManager()
-    let config = SPTConfiguration(clientID: SpotifyAPI.shared.clientIdentifier, redirectURL: URL(string: "saloo://")!)
+    let config = SPTConfiguration(clientID: APIManager.shared.spotClientIdentifier, redirectURL: URL(string: "saloo://")!)
     var auth_code = String()
     var refresh_token = String()
     var access_token = String()

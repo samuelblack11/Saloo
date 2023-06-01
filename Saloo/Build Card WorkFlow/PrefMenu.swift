@@ -35,7 +35,7 @@ struct PrefMenu: View {
     //@State var spotifyAuth = SpotifyAuth()
     @EnvironmentObject var spotifyManager: SpotifyManager
     @State private var tokenCounter = 0
-    let config = SPTConfiguration(clientID: SpotifyAPI.shared.clientIdentifier, redirectURL: URL(string: "saloo://")!)
+    let config = SPTConfiguration(clientID: APIManager.shared.spotClientIdentifier, redirectURL: URL(string: "saloo://")!)
     @State var counter = 0
     @State private var showSpotAuthFailedAlert = false
     @State private var showAMAuthFailedAlert = false
