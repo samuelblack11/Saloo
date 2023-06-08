@@ -20,11 +20,11 @@ struct WriteNoteView: View {
 
     @StateObject var noteField = NoteField()
     @StateObject var annotation = Annotation()
-    
+    @ObservedObject var alertVars = AlertVars.shared
+
     @State private var showMusic = false
     @State private var showFinalize = false
     @State private var showCollageBuilder = false
-    
     @ObservedObject var message = MaximumText(limit: 225, value: "Write Your Note Here")
     @ObservedObject var recipient = MaximumText(limit: 20, value: "To:")
     @ObservedObject var sender = MaximumText(limit: 20, value: "From:")
@@ -132,7 +132,13 @@ struct WriteNoteView: View {
             }
             .navigationBarItems(leading:Button {showCollageBuilder = true} label: {Image(systemName: "chevron.left").foregroundColor(.blue); Text("Back")}.disabled(gettingRecord.isShowingActivityIndicator))
         }
-        .modifier(GettingRecordAlert())
+        
+        .modifier(AlertViewMod(showAlert: alertVars.activateAlertBinding, activeAlert: alertVars.alertType, alertDismissAction: {
+            addMusic.addMusic = true
+            appDelegate.musicSub.timeToAddMusic = true
+            checkRequiredFields()
+            annotateIfNeeded()
+        }))
         //.environmentObject(appDelegate)
         .environmentObject(noteField)
         .environmentObject(annotation)

@@ -32,11 +32,10 @@ struct StartMenu: View {
     @State var whichBoxForCKAccept: InOut.SendReceive?
     @State var userID = String()
     @State private var isBanned = false
+    @ObservedObject var gettingRecord = GettingRecord.shared
+    @ObservedObject var alertVars = AlertVars.shared
 
    // @State var salooUserID: String = (UserDefaults.standard.object(forKey: "SalooUserID") as? String)!
-
-    //@ObservedObject var gettingRecord = GettingRecord.shared
-
     //@StateObject var audioManager = AudioSessionManager()
     var possibleSubscriptionValues = ["Apple Music", "Spotify", "Neither"]
     let buildCardWorkFlow = """
@@ -79,26 +78,13 @@ struct StartMenu: View {
             }
 
         }
-        .modifier(GettingRecordAlert())
-        .alert(isPresented: $isBanned) {
-            Alert(title: Text("User Banned"), message: Text("You have been banned from using this app."), dismissButton: .default(Text("OK"), action: {
-                exit(0) // Terminate the app
-            }))
-        }
-        //.background(appDelegate.appColor)
+        .modifier(AlertViewMod(showAlert: alertVars.activateAlertBinding, activeAlert: alertVars.alertType))
         .onAppear {
-           // print("Start Menu Opened...")
             var salooUserID = (UserDefaults.standard.object(forKey: "SalooUserID") as? String)!
             checkUserBanned(userId: salooUserID) { (isBanned, error) in
-                self.isBanned = isBanned
+                if isBanned == true {alertVars.alertType = .userBanned; alertVars.activateAlert = true}
                 print("isBanned = \(isBanned) & error = \(error)")
             }
-            //timerVar()
-            //print(sceneDelegate.hideProgViewOnAcceptShare)
-            //print(appDelegate.showProgViewOnAcceptShare)
-            appDelegate.startMenuAppeared = true
-            //print((defaults.object(forKey: "MusicSubType") as? String))
-            //if (defaults.object(forKey: "MusicSubType") as? String) != nil  && appDelegate.isLaunchingFromClosed {
             if (defaults.object(forKey: "MusicSubType") as? String) != nil {
                 if (defaults.object(forKey: "MusicSubType") as? String)! == "Apple Music" {appDelegate.musicSub.type = .Apple}
                 if (defaults.object(forKey: "MusicSubType") as? String)! == "Spotify" {appDelegate.musicSub.type = .Spotify}

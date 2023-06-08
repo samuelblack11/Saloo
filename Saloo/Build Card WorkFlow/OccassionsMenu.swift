@@ -52,7 +52,8 @@ struct OccassionsMenu: View {
     @State var loadedImagefromLibraryOrCamera: Bool?
     @EnvironmentObject var networkMonitor: NetworkMonitor
     @State private var showFailedConnectionAlert = false
-    
+    @ObservedObject var alertVars = AlertVars.shared
+
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     var body: some View {
@@ -142,7 +143,7 @@ struct OccassionsMenu: View {
         .listStyle(GroupedListStyle())
         .onAppear {createOccassionsFromUserCollections()}
         }
-        .modifier(GettingRecordAlert())
+        .modifier(AlertViewMod(showAlert: alertVars.activateAlertBinding, activeAlert: alertVars.alertType))
         .environmentObject(chosenObject)
         .environmentObject(chosenOccassion)
         .fullScreenCover(isPresented: $showStartMenu) {StartMenu()}

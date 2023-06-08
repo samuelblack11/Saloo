@@ -69,7 +69,8 @@ struct GridofCards: View {
     @State var chosenGridCard: CoreCard? = nil
     @EnvironmentObject var appDelegate: AppDelegate
     @State var chosenGridCardType: String?
-    
+    @ObservedObject var alertVars = AlertVars.shared
+
     var sortOptions = ["Date","Card Name","Occassion"]
     
     func determineDisplayName(coreCard: CoreCard) -> String {
@@ -104,7 +105,7 @@ struct GridofCards: View {
             .navigationTitle("Your Cards")
             .navigationBarItems(leading:Button {print("Back Button pressed to Start menu..."); showStartMenu.toggle()} label: {Image(systemName: "chevron.left").foregroundColor(.blue); Text("Back")}.disabled(gettingRecord.isShowingActivityIndicator))
         }
-        .modifier(GettingRecordAlert())
+        .modifier(AlertViewMod(showAlert: alertVars.activateAlertBinding, activeAlert: alertVars.alertType))
         .environmentObject(audioManager)
         .environmentObject(avPlayer)
         // "Search by \(sortByValue)"

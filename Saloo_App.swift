@@ -9,23 +9,22 @@ import CloudKit
 
 @main
 struct Saloo_App: App {
+    @StateObject var appDelegate = AppDelegate()
+    @ObservedObject var apiManager = APIManager.shared
+    @ObservedObject var spotifyManager = SpotifyManager.shared
+    @ObservedObject var appState = AppState.shared
+    @ObservedObject var alertVars = AlertVars.shared
+    @ObservedObject var gettingRecord = GettingRecord.shared
+    let persistenceController = PersistenceController.shared
     @StateObject var musicSub = MusicSubscription()
     @StateObject var calViewModel = CalViewModel()
     @StateObject var showDetailView = ShowDetailView()
-    let persistenceController = PersistenceController.shared
-    @EnvironmentObject var appDelegate: AppDelegate
     @StateObject var sceneDelegate = SceneDelegate()
     @StateObject var networkMonitor = NetworkMonitor()
-    @ObservedObject var gettingRecord = GettingRecord.shared
     @State private var isCountdownShown: Bool = false
-    //@UIApplicationDelegateAdaptor var appDelegate2: AppDelegate
-    @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate3
     @State private var isSignedIn = UserDefaults.standard.string(forKey: "SalooUserID") != nil
     @State private var userID = UserDefaults.standard.object(forKey: "SalooUserID") as? String
     @State private var showLaunchView = true
-    @ObservedObject var apiManager = APIManager.shared
-    @ObservedObject var spotifyManager = SpotifyManager.shared
-    
 
     var body: some Scene {
         WindowGroup {
@@ -43,7 +42,6 @@ struct Saloo_App: App {
                     DispatchQueue.main.asyncAfter(deadline: .now() + 1) {withAnimation{showLaunchView = false}}
                     apiManager.initializeSpotifyManager(){}
                 }
-                
                     .environment(\.managedObjectContext, persistenceController.persistentContainer.viewContext)
                     .environmentObject(spotifyManager)
                     .environmentObject(networkMonitor)
@@ -51,213 +49,103 @@ struct Saloo_App: App {
                     .environmentObject(musicSub)
                     .environmentObject(calViewModel)
                     .environmentObject(showDetailView)
-                    .environmentObject(GettingRecord.shared)
+                    .environmentObject(gettingRecord)
+                    .environmentObject(appState)
+                    .environmentObject(appDelegate)
+
+                
             }
         }
     }
 
 }
 
-
-
-class APIManager: ObservableObject {
-    static let shared = APIManager()
-    let baseURL = "https://getSalooKeys.azurewebsites.net/getkey"
-    var unsplashAPIKey = String()
-    var unsplashSecretKey = String()
-    var spotSecretKey = String()
-    var spotClientIdentifier = String()
-    var appleMusicDevToken = String()
-    var keys: [String: String] = [:]
-    //guard let url = URL(string: "https://saloouserstatus.azurewebsites.net/is_banned?user_id=\(userId)")
-    //@Published var spotifyManager: SpotifyManager?
-
-
-
-    init() {
-        getSecret(keyName: "unsplashAPIKey"){keyval in print("UnsplashAPIKey is \(String(describing: keyval))")
-           self.unsplashAPIKey = keyval!
-        }
-
-        getSecret(keyName: "appleMusicDevToken"){keyval in print("appleMusicDevToken is \(String(describing: keyval))")
-           self.appleMusicDevToken = keyval!
-        }
-    }
-    
-    func initializeSpotifyManager(completion: @escaping () -> Void) {
-        // Here, you're getting the keys for Spotify API
-        getSecret(keyName: "spotClientIdentifier") { keyval in
-            print("spotClientIdentifier is \(String(describing: keyval))")
-            self.spotClientIdentifier = keyval!
-            self.getSecret(keyName: "spotSecretKey"){keyval in print("spotSecretKey is \(String(describing: keyval))")
-                self.spotSecretKey = keyval!
-                // After setting the key, initialize SpotifyManager
-                SpotifyManager.shared.initializeConfiguration()
-                //self.spotifyManager = SpotifyManager.shared
-                // Call the completion handler
-                completion()
-            }
-        }
-    }
-
-    func getSecret(keyName: String, completion: @escaping (String?) -> Void) {
-        //let url = baseURL.appendingPathComponent("getkey")
-        
-        let fullURL = baseURL + "?keyName=\(keyName)"
-        print(fullURL)
-        guard let url = URL(string: fullURL) else {fatalError("Invalid URL")}
-        let task = URLSession.shared.dataTask(with: url) { (data, response, error) in
-            //print(response)
-            //print(String(data: data!, encoding: .utf8))
-            if let error = error {
-                print("Error: \(error)")
-                completion(nil)
-            } else if let data = data {
-                let jsonData = String(data: data, encoding: .utf8)
-                if let jsonData = jsonData {
-                    let data = Data(jsonData.utf8)
-                    do {
-                        // Make sure that the Decoder Setup matches your JSON Structure
-                        let json = try JSONDecoder().decode([String: String].self, from: data)
-                        if let value = json["value"] {
-                            completion(value)
-                        }
-                    } catch {
-                        print("error:\(error)")
-                    }
-                }
-            }
-        }
-
-        task.resume()
-    }
-    
-    
-    func getSecrets(keyNames: [String], completion: @escaping ([String: String]) -> Void) {
-         let keyNamesString = keyNames.joined(separator: ",")
-         let fullURL = baseURL + "?keyNames=\(keyNamesString)"
-         print(fullURL)
-         guard let url = URL(string: fullURL) else {fatalError("Invalid URL")}
-         let task = URLSession.shared.dataTask(with: url) { (data, response, error) in
-             print(response)
-             print(String(data: data!, encoding: .utf8))
-             if let error = error {
-                 print("Error: \(error)")
-                 completion([:])
-             } else if let data = data {
-                 do {
-                     let decodedData = try JSONDecoder().decode([String: String].self, from: data)
-                     completion(decodedData)
-                 } catch {
-                     print("Error decoding data: \(error)")
-                     completion([:])
-                 }
-             }
-         }
-
-         task.resume()
-     }
-    
-    
-}
-
-
-class SpotifyManager: ObservableObject {
-    static let shared = SpotifyManager()
-    var config: SPTConfiguration?
-    var auth_code = String()
-    var refresh_token = String()
-    var access_token = String()
-    var authForRedirect = String()
-    var songID = String()
-    var appRemote: SPTAppRemote? = nil
-    let spotPlayerDelegate = SpotPlayerViewDelegate()
-    
-    init() {
-        enum UserDefaultsError: Error {case noMusicSubType}
-        do {
-            guard let musicSubType = UserDefaults.standard.object(forKey: "MusicSubType") as? String, musicSubType == "Spotify" else {
-                throw UserDefaultsError.noMusicSubType
-            }
-        } catch {print("Caught error: \(error)")}
-    }
-    
-    func initializeConfiguration() {
-        let spotClientIdentifier = APIManager.shared.spotClientIdentifier
-        if spotClientIdentifier.isEmpty {
-            print("Error: Spotify client identifier is not available")
-            return
-        }
-        config = SPTConfiguration(clientID: spotClientIdentifier, redirectURL: URL(string: "saloo://")!)
-        instantiateAppRemote()
-    }
-
-    
-    func instantiateAppRemote() {
-        self.appRemote = SPTAppRemote(configuration: self.config!, logLevel: .debug)
-        if (UserDefaults.standard.object(forKey: "SpotifyAccessToken") as? String) != nil {
-            self.appRemote?.connectionParameters.accessToken = (UserDefaults.standard.object(forKey: "SpotifyAccessToken") as? String)!
-            self.appRemote?.delegate = self.spotPlayerDelegate
-            print("instantiated app remote...")
-        }
-    }
-    
-    func connect() {appRemote?.connect()}
-    func disconnect() {appRemote?.disconnect()}
-    var defaultCallback: SPTAppRemoteCallback? {
-        get {
-            return {[self] _, error in
-                print("defaultCallBack Running...")
-                if let error = error {
-                    print(error.localizedDescription)
-                }
-            }
-        }
+extension View {
+    func alertView(alertVars: AlertVars) -> some View {
+        self.modifier(AlertViewMod(showAlert: alertVars.activateAlertBinding, activeAlert: alertVars.alertType))
     }
 }
 
-class SpotPlayerViewDelegate: NSObject, SPTAppRemoteDelegate {
-    func appRemoteDidEstablishConnection(_ appRemote: SPTAppRemote) {print("Connected appRemote")}
-
-    func appRemote(_ appRemote: SPTAppRemote, didDisconnectWithError error: Error?) {print("Disconnected appRemote")}
-
-    func appRemote(_ appRemote: SPTAppRemote, didFailConnectionAttemptWithError error: Error?) {
-        print("Failed to connect appRemote")
-        if let error = error {print("Error: \(error)")}
-    }
+enum ActiveAlert {
+    case failedConnection, signInFailure, explicitPhoto, offensiveText, namesNotEntered, showCardComplete, showFailedToShare, addMusicPrompt, spotAuthFailed, amAuthFailed, AMSongNotAvailable, gettingRecord, userBanned, reportComplete
 }
 
-
-
-
-
-
-
-
-extension View {func alertView() -> some View {self.modifier(GettingRecordAlert())}}
-
-
-struct GettingRecordAlert: ViewModifier {
+struct AlertViewMod: ViewModifier {
     @ObservedObject var gettingRecord = GettingRecord.shared
-
+    @Binding var showAlert: Bool
+    var activeAlert: ActiveAlert
+    var alertDismissAction: (() -> Void)?    
+    
+    
     func body(content: Content) -> some View {
         content
-            .alert(isPresented: $gettingRecord.showLoadingRecordAlert) {
-                Alert(
-                    title: Text("We're Still Saving Your Card to the Cloud."),
-                    message: Text("It'll Be Ready In Just a Minute."),
-                    primaryButton: .default(Text("OK, I'll Wait"), action: {
-                        gettingRecord.showLoadingRecordAlert = false
-                        gettingRecord.didDismissRecordAlert = true
-                        gettingRecord.isShowingActivityIndicator = true
-                    }),
-                    secondaryButton: .default(Text("I'll Open My Card Later"), action: {
-                        gettingRecord.showLoadingRecordAlert = false
-                        gettingRecord.willTryAgainLater = true
-                    })
-                )
+            .alert(isPresented: $showAlert) {
+                switch activeAlert {
+                case .failedConnection:
+                    return Alert(title: Text("Network Error"), message: Text("Sorry, we weren't able to connect to the internet. Please reconnect and try again."), dismissButton: .default(Text("OK")))
+                case .signInFailure:
+                    return Alert(title: Text("Login Failed"), message: Text("Please Try Again"), dismissButton: .default(Text("Dismiss")))
+                case .explicitPhoto:
+                    return Alert(title: Text("Error"), message: Text("The selected image contains explicit content and cannot be used."), dismissButton: .default(Text("OK")))
+                case .offensiveText:
+                    return Alert(title: Text("Take it easy!"),message: Text("Tone down the rhetoric and write something else."),dismissButton: .default(Text("Ok")) {})
+                case .namesNotEntered:
+                    return Alert(title: Text("Please Enter Values for All Fields!"), dismissButton: .default(Text("Ok")))
+                case .spotAuthFailed:
+                    return Alert(title: Text("Spotify Authorization Failed. If you have a Spotify Subscription, please try authorizing again"), dismissButton: .default(Text("OK")){})
+                case .amAuthFailed:
+                    return Alert(title: Text("Apple Music Authorization Failed. If you have a Apple Music Subscription, please try authorizing again"), dismissButton: .default(Text("OK")){})
+                case .gettingRecord:
+                    return Alert(
+                        title: Text("We're Still Saving Your Card to the Cloud."),
+                        message: Text("It'll Be Ready In Just a Minute."),
+                        primaryButton: .default(Text("OK, I'll Wait"), action: {
+                            gettingRecord.showLoadingRecordAlert = false
+                            gettingRecord.didDismissRecordAlert = true
+                            gettingRecord.isShowingActivityIndicator = true
+                        }),
+                        secondaryButton: .default(Text("I'll Open My Card Later"), action: {
+                            gettingRecord.showLoadingRecordAlert = false
+                            gettingRecord.willTryAgainLater = true
+                        })
+                    )
+                case .showFailedToShare:
+                    return Alert(title: Text("Network Error"), message: Text("Sorry, we weren't able to connect to the internet. We've saved this card to drafts, where you can share from once you reconnect."), dismissButton: .default(Text("OK")))
+                case .userBanned:
+                    return Alert(
+                        title: Text("User Banned"),
+                        message: Text("You have been banned from using this app."),
+                        dismissButton: .default(Text("OK"), action: {exit(0)})
+                        )
+                case .showCardComplete:
+                    return Alert(
+                        title: Text("Save Complete"),
+                        primaryButton: .default(Text("Ok"), action: {AppState.shared.resetNavigation = false}),
+                        secondaryButton: .cancel()
+                    )
+                case .addMusicPrompt:
+                    return Alert(title: Text("Add Song to Card?"), primaryButton: .default(Text("Hell Yea"), action: {alertDismissAction?()}), secondaryButton: .cancel())
+                case .AMSongNotAvailable:
+                    return Alert(title: Text("Song Not Available"), message: Text("Sorry, this song isn't available. Please select a different one."), dismissButton: .default(Text("OK")){alertDismissAction?()})
+                case .reportComplete:
+                    return Alert(
+                        title: Text("Feedback Received"),
+                        message: Text("Thanks for your feedback. We will review these details along with the card itself and will be in touch about your concern."),
+                        dismissButton: .default(Text("Ok")) {AppState.shared.resetNavigation = false}
+                    )
             }
+        }
     }
+}
+
+class GettingRecord: ObservableObject {
+    static let shared = GettingRecord()
+    @Published var isLoadingAlert: Bool = false
+    @Published var showLoadingRecordAlert: Bool = false
+    @Published var didDismissRecordAlert: Bool = false
+    @Published var isShowingActivityIndicator: Bool = false
+    @Published var willTryAgainLater: Bool = false
+    private init() {} // Ensures no other instances can be created
 }
 
 struct LoadingOverlay: View {
@@ -287,7 +175,6 @@ struct LoadingOverlay: View {
                         .font(.system(size: 12))
                         .foregroundColor(.gray)
                         .multilineTextAlignment(.center)
-                    
                         .onReceive(timer) { _ in if remainingTime > 0 {remainingTime -= 1}}
                         .onReceive(NotificationCenter.default.publisher(for: UIApplication.willResignActiveNotification)) { _ in
                             backgroundTime = Date()
@@ -303,13 +190,6 @@ struct LoadingOverlay: View {
                 }
                 .opacity(gettingRecord.isShowingActivityIndicator ? 1 : 0)
                 .allowsHitTesting(gettingRecord.isShowingActivityIndicator) // This will block interaction when the activity indicator is showing
-
             }
-            
         }
     }
-//getSecrets(keyNames: ["unsplashAPIKey","unsplashSecretKey", "spotSecretKey", "spotClientIdentifier", "appleMusicDevToken"]) { result in
-//getSecrets(keyNames: ["unsplashAPIKey"]) { result in
-//    print("Received keys: \(result)")
-//    self.keys = result
-//}

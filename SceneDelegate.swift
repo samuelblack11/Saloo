@@ -210,7 +210,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
     
     
     func getRecordViaQuery(shareMetaData: CKShare.Metadata, targetDatabase: CKDatabase) {
-        GettingRecord.shared.isLoadingAlert = true
+        let gettingRecord = GettingRecord.shared
+        gettingRecord.isLoadingAlert = true
         print("called getRecordViaQuery....")
         let pred = NSPredicate(value: true)
         let query = CKQuery(recordType: "CD_CoreCard", predicate: pred)
@@ -228,8 +229,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
                 targetDatabase.fetch(withRecordID: record.recordID){ record, error in
                     self.parseRecord(record: record)
                     print("Got Record...")
-                    GettingRecord.shared.isLoadingAlert = false
-                    GettingRecord.shared.isShowingActivityIndicator = false
+                    DispatchQueue.main.async {
+                        gettingRecord.isLoadingAlert = false
+                        gettingRecord.isShowingActivityIndicator = false
+                    }
                 }
             case .failure(let error): print("ErrorOpeningShare....\(error)")
             }
@@ -241,38 +244,28 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
             else {
                 if foundRecord {
                     print("CKQueryOperation completed successfully and found records.")
-                    GettingRecord.shared.isLoadingAlert = false
-                    GettingRecord.shared.showLoadingRecordAlert  = false
-                    GettingRecord.shared.isShowingActivityIndicator = false
+                    DispatchQueue.main.async {
+                        gettingRecord.isLoadingAlert = false
+                        gettingRecord.showLoadingRecordAlert  = false
+                        gettingRecord.isShowingActivityIndicator = false
+                    }
                     self.counter = 0
                 } else {
                     print("CKQueryOperation completed successfully but found no records.")
                     // If no records are found, wait for 2 seconds and then retry the operation
                     DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                        if GettingRecord.shared.willTryAgainLater {return}
+                        if gettingRecord.willTryAgainLater {return}
                         else {
                             self.getRecordViaQuery(shareMetaData: shareMetaData, targetDatabase: targetDatabase)
+                            if self.counter == 0 {
+                                gettingRecord.showLoadingRecordAlert  = true
+                                print("##")
+                                print(gettingRecord.showLoadingRecordAlert)
+                                gettingRecord.isLoadingAlert = false
+                            }
                             print("Counter = \(self.counter)"); self.counter += 1
-                            GettingRecord.shared.isLoadingAlert = false
-                            //if GettingRecord.shared.didDismissRecordAlert == false {
-                            //    GettingRecord.shared.showLoadingRecordAlert = true
-                            //}
-                        }
-                    }
-
-                }
-            }
-        }
-
-        // Add a delay before showing the alert
-        delayTask = DispatchWorkItem {
-            if GettingRecord.shared.didDismissRecordAlert == false {
-                GettingRecord.shared.showLoadingRecordAlert  = true
-                GettingRecord.shared.isLoadingAlert = false
-            }
-        }
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1, execute: delayTask!)
-        
+                            gettingRecord.isLoadingAlert = false
+        }}}}}
         targetDatabase.add(op3)
     }
 
@@ -355,11 +348,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
         }
     }
     
-    func getCurrentUserID2() {
-        PersistenceController.shared.cloudKitContainer.fetchUserRecordID { ckRecordID, error in
-            self.userID = (ckRecordID?.recordName)!
-        }
-    }
+
 }
 
 extension Notification.Name {

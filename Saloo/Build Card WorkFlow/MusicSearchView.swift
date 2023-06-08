@@ -66,7 +66,8 @@ struct MusicSearchView: View {
         return cardType2
         
     }
-    
+    @ObservedObject var alertVars = AlertVars.shared
+
     var sortResults: some View {
         HStack {
             Text("Sort By:").padding(.leading, 5).font(Font.custom(sortByValue, size: 12))
@@ -154,7 +155,10 @@ struct MusicSearchView: View {
                         .fullScreenCover(isPresented: $showFCV) {FinalizeCardView(cardType: determineCardType())}
                         .fullScreenCover(isPresented: $showWriteNote) {WriteNoteView()}
                 }
-            .modifier(GettingRecordAlert())
+                .modifier(AlertViewMod(showAlert: alertVars.activateAlertBinding, activeAlert: alertVars.alertType, alertDismissAction: {
+                // code to dismiss your view
+                showAPV = false
+            }))
             //environmentObject(spotifyAuth)
             .sheet(isPresented: $showWebView){WebVCView(authURLForView: spotifyManager.authForRedirect, authCode: $authCode)}
         }
@@ -169,12 +173,8 @@ extension MusicSearchView {
         if networkMonitor.isConnected {
             if let refreshToken = defaults.object(forKey: "SpotifyRefreshToken") as? String, counter == 0 {
                 refreshTokenAndRun(completion: completion)
-            } else {
-                requestAndRunToken(completion: completion)
-            }
-        } else {
-            showFailedConnectionAlert = true
-            completion(false)
+            } else {requestAndRunToken(completion: completion)}
+        } else {showFailedConnectionAlert = true; completion(false)
         }
     }
     

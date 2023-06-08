@@ -14,6 +14,7 @@ struct LoginView: View {
     @State private var signInFailure = false
     @EnvironmentObject var appDelegate: AppDelegate
     let defaults = UserDefaults.standard
+    @ObservedObject var alertVars = AlertVars.shared
 
     var body: some View {
         NavigationView {
@@ -48,7 +49,8 @@ struct LoginView: View {
                                 case .failure(let error):
                                     // Handle error.
                                     print("Authorization failed: " + error.localizedDescription)
-                                    signInFailure = true
+                                    alertVars.alertType = .signInFailure
+                                    alertVars.activateAlert = true
                                 }
                         })
                         .frame(height: 55, alignment: .center)
@@ -64,10 +66,7 @@ struct LoginView: View {
                 }
             }
             .background(appDelegate.appColor)
-            .modifier(GettingRecordAlert())
-        }
-        .alert(isPresented: $signInFailure) {
-            Alert(title: Text("Login Failed"), message: Text("Please Try Again"), dismissButton: .default(Text("Dismiss")))
+            .modifier(AlertViewMod(showAlert: alertVars.activateAlertBinding, activeAlert: alertVars.alertType))
         }
     }
 }

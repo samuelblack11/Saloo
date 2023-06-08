@@ -62,18 +62,19 @@ struct eCardView: View {
     @State private var showAPV = true
     @ObservedObject var gettingRecord = GettingRecord.shared
     @EnvironmentObject var spotifyManager: SpotifyManager
+    @ObservedObject var alertVars = AlertVars.shared
 
     var body: some View {
         ZStack {
-            if cardType == "musicNoGift" {MusicNoGiftView.modifier(GettingRecordAlert())}
+            if cardType == "musicNoGift" {MusicNoGiftView.modifier(AlertViewMod(showAlert: alertVars.activateAlertBinding, activeAlert: alertVars.alertType))}
             else{
                 if fromFinalize == false {
                     NoMusicNoGiftView
-                        .modifier(GettingRecordAlert())
+                        .modifier(AlertViewMod(showAlert: alertVars.activateAlertBinding, activeAlert: alertVars.alertType))
                         .navigationBarItems(leading:Button {chosenCard = nil
                         } label: {Image(systemName: "chevron.left").foregroundColor(.blue); Text("Back")}.disabled(gettingRecord.isShowingActivityIndicator))
                 }
-                else {NoMusicNoGiftView.modifier(GettingRecordAlert())}
+                else {NoMusicNoGiftView.modifier(AlertViewMod(showAlert: alertVars.activateAlertBinding, activeAlert: alertVars.alertType))}
             }
             LoadingOverlay()
         }

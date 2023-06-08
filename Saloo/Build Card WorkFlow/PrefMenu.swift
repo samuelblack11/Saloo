@@ -37,17 +37,15 @@ struct PrefMenu: View {
     @State private var tokenCounter = 0
     let config = SPTConfiguration(clientID: APIManager.shared.spotClientIdentifier, redirectURL: URL(string: "saloo://")!)
     @State var counter = 0
-    @State private var showSpotAuthFailedAlert = false
-    @State private var showAMAuthFailedAlert = false
     @State private var runGetAMToken = true
     @State private var hideProgressView = true
     @State private var runCheckAMTokenErrorIfNeeded = false
     @State private var musicColor: Color?
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    @State private var showFailedConnectionAlert = false
     @EnvironmentObject var networkMonitor: NetworkMonitor
     @ObservedObject var gettingRecord = GettingRecord.shared
     @State private var authType = ""
+    @ObservedObject var alertVars = AlertVars.shared
 
     init() {
         if defaults.object(forKey: "MusicSubType") != nil {_currentSubSelection = State(initialValue: (defaults.object(forKey: "MusicSubType") as? String)!)}
@@ -89,9 +87,6 @@ struct PrefMenu: View {
                     LoadingOverlay()
                 }
             }
-            .alert(isPresented: $showFailedConnectionAlert) {
-                Alert(title: Text("Network Error"), message: Text("Sorry, we weren't able to connect to the internet. Please reconnect and try again."), dismissButton: .default(Text("OK")))
-            }
             .navigationBarItems(leading:Button {showStart.toggle()} label: {Image(systemName: "chevron.left").foregroundColor(.blue); Text("Back")}.disabled(gettingRecord.isShowingActivityIndicator))
         }
         .onDisappear {if appDelegate.musicSub.type == .Spotify {spotifyManager.instantiateAppRemote()}}
@@ -100,11 +95,8 @@ struct PrefMenu: View {
             if defaults.object(forKey: "MusicSubType") != nil {currentSubSelection = (defaults.object(forKey: "MusicSubType") as? String)!}
             else {currentSubSelection = "Neither"; appDelegate.musicSub.type = .Neither; defaults.set("Neither", forKey: "MusicSubType")}
         }
-        .modifier(GettingRecordAlert())
+        .modifier(AlertViewMod(showAlert: alertVars.activateAlertBinding, activeAlert: alertVars.alertType))
         //.environmentObject(appDelegate)
-        .alert("Spotify Authorization Failed. If you have a Spotify Subscription, please try authorizing again", isPresented: $showSpotAuthFailedAlert){Button("Ok"){showSpotAuthFailedAlert = false}}
-        .alert("Apple Music Authorization Failed. If you have an Apple Music Subscription, please try authorizing again", isPresented: $showAMAuthFailedAlert){Button("Ok"){showAMAuthFailedAlert = false}}
-        //.sheet(isPresented: $showWebView){WebVCView(authURLForView: spotifyAuth.authForRedirect, authCode: $authCode)}
         .sheet(isPresented: $showWebView) {
             WebVCView(authURLForView: spotifyManager.authForRedirect, authCode: $authCode)
                 .onReceive(Just(authCode)) { newAuthCode in
@@ -131,7 +123,8 @@ struct PrefMenu: View {
                             print("Unable to authorize")
                             currentSubSelection = "Neither"
                             appDelegate.musicSub.type = .Neither
-                            showSpotAuthFailedAlert = true
+                            alertVars.alertType = .spotAuthFailed
+                            alertVars.activateAlert = true
                             //completion(false)
                         }
                     }
@@ -176,7 +169,10 @@ extension PrefMenu {
                 }
             }
         }
-        else{hideProgressView = true;showFailedConnectionAlert = true}
+        else{hideProgressView = true;
+            alertVars.alertType = .failedConnection
+            alertVars.activateAlert = true
+        }
     }
 
     func getAMUserToken(completion: @escaping () -> Void) {
@@ -206,7 +202,8 @@ extension PrefMenu {
             else {
                 currentSubSelection = "Neither"
                 appDelegate.musicSub.type = .Neither
-                showAMAuthFailedAlert = true
+                alertVars.alertType = .amAuthFailed
+                alertVars.activateAlert = true
             }
         }
     }
@@ -214,7 +211,8 @@ extension PrefMenu {
     func checkAMTokenError(completion: @escaping () -> Void) {
         Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { timer in
             if amAPI.tokenError == true && runCheckAMTokenErrorIfNeeded {
-                showAMAuthFailedAlert = true
+                alertVars.alertType = .amAuthFailed
+                alertVars.activateAlert = true
                 runCheckAMTokenErrorIfNeeded = false
                 timer.invalidate()
                 completion()
@@ -243,7 +241,8 @@ extension PrefMenu {
                         showStart = true
                         completion(true)
                     } else {
-                        showSpotAuthFailedAlert = true
+                        alertVars.alertType = .spotAuthFailed
+                        alertVars.activateAlert = true
                         //currentSubSelection = "Neither"
                         //appDelegate.musicSub.type = .Neither
                         hideProgressView = true
@@ -251,7 +250,8 @@ extension PrefMenu {
                     }
                 }
             } else {
-                showFailedConnectionAlert = true
+                alertVars.alertType = .failedConnection
+                alertVars.activateAlert = true
                 //currentSubSelection = "Neither"
                 //appDelegate.musicSub.type = .Neither
                 hideProgressView = true
@@ -273,7 +273,8 @@ extension PrefMenu {
                         showStart = true
                         completion(true)
                     } else {
-                        showSpotAuthFailedAlert = true
+                        alertVars.alertType = .spotAuthFailed
+                        alertVars.activateAlert = true
                         //currentSubSelection = "Neither"
                         //appDelegate.musicSub.type = .Neither
                         hideProgressView = true
@@ -281,7 +282,8 @@ extension PrefMenu {
                     }
                 }
             } else {
-                showFailedConnectionAlert = true
+                alertVars.alertType = .failedConnection
+                alertVars.activateAlert = true
                 //currentSubSelection = "Neither"
                 //appDelegate.musicSub.type = .Neither
                 hideProgressView = true
@@ -317,7 +319,8 @@ extension PrefMenu {
                     print("Unable to authorize")
                     currentSubSelection = "Neither"
                     appDelegate.musicSub.type = .Neither
-                    showSpotAuthFailedAlert = true
+                    alertVars.alertType = .spotAuthFailed
+                    alertVars.activateAlert = true
                     completion(false)
                 }
             }

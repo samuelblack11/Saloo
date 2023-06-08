@@ -35,7 +35,8 @@ struct UnsplashCollectionView: View {
     let columns = [GridItem(.fixed(150)),GridItem(.fixed(150))]
     @EnvironmentObject var networkMonitor: NetworkMonitor
     @State private var showFailedConnectionAlert = false
-    
+    @ObservedObject var alertVars = AlertVars.shared
+
     var body: some View {
         NavigationView {
             ZStack {
@@ -62,7 +63,7 @@ struct UnsplashCollectionView: View {
                         
                     }.disabled(setButtonStatus(imageObjects: imageObjects))
                 }
-                .modifier(GettingRecordAlert())
+                .modifier(AlertViewMod(showAlert: alertVars.activateAlertBinding, activeAlert: alertVars.alertType))
                 LoadingOverlay()
             }
         }

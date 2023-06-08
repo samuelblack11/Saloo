@@ -18,7 +18,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, ObservableObject {
     let coreCardB = CoreCard(context: PersistenceController.shared.persistentContainer.newTaskContext())
     @State var musicSub = MusicSubscription()
     @Published var deferToPreview = false
-    @State var startMenuAppeared = false
     @State var gotRecord = false
     @Published var showGrid = false
     @Published var chosenGridCard: CoreCard? = nil

@@ -29,6 +29,7 @@ struct CollageBuilder: View {
     // Tracks which collage type (#) was selected by the user
     @State private var cBB = CollageBlocksAndViews()
     @ObservedObject var gettingRecord = GettingRecord.shared
+    @ObservedObject var alertVars = AlertVars.shared
 
     // Create instance of CollageBuildingBlocks, with blocks sized to fit the CollageBuilder view (menuSize = false)
     @State private var image: Image?
@@ -78,7 +79,7 @@ struct CollageBuilder: View {
                 Alert(title: Text("Error"), message: Text("The selected image contains explicit content and cannot be used."), dismissButton: .default(Text("OK")))
             }
         }
-        .modifier(GettingRecordAlert())
+        .modifier(AlertViewMod(showAlert: alertVars.activateAlertBinding, activeAlert: alertVars.alertType))
         .environmentObject(collageImage)
         .environmentObject(chosenImagesObject)
         .fullScreenCover(isPresented: $showCollageMenu) {CollageStyleMenu()}

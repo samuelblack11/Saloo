@@ -12,6 +12,7 @@ struct ReportOffensiveContentView: View {
     @State private var email = ""
     @State private var comments = "Why is this card offensive?"
     @State private var reportComplete = false
+    @ObservedObject var alertVars = AlertVars.shared
 
     var card: CoreCard // Assuming CoreCard is defined elsewhere
     
@@ -31,6 +32,7 @@ struct ReportOffensiveContentView: View {
 
         }
         .padding()
+        .modifier(AlertViewMod(showAlert: alertVars.activateAlertBinding, activeAlert: alertVars.alertType))
         .alert(isPresented: $reportComplete) {
             Alert(
                 title: Text("Feedback Received"),

@@ -87,16 +87,7 @@ class CoreCardWrapper: ObservableObject {
     @Published var coreCard = CoreCard()
 }
 
-class GettingRecord: ObservableObject {
-    static let shared = GettingRecord()
-    @Published var isLoadingAlert: Bool = false
-    @Published var showLoadingRecordAlert: Bool = false
-    @Published var didDismissRecordAlert: Bool = false
-    @Published var isShowingActivityIndicator: Bool = false
-    @Published var willTryAgainLater: Bool = false
 
-    private init() {} // Ensures no other instances can be created
-}
 
 class ChosenSong: ObservableObject {
     @Published var id = String()
@@ -243,6 +234,30 @@ class SpotifyAuth: ObservableObject {
     @Published var snapShotID = String()
 }
 
+class AppState: ObservableObject {
+    static let shared = AppState()
+    @Published var resetNavigation = false
+    private init() {}
+}
+
+
+class AlertVars: ObservableObject {
+    static let shared = AlertVars()
+    @Published var activateAlert: Bool = false
+    @Published var alertType: ActiveAlert = .signInFailure
+    private init() {}
+    
+    var activateAlertBinding: Binding<Bool> {
+        Binding<Bool>(
+            get: { self.activateAlert },
+            set: { self.activateAlert = $0 }
+        )
+    }
+    
+    
+}
+
+
 class CollageBlocksAndViews {
 
     func blockForStyle() -> some View {return GeometryReader {geometry in HStack(spacing: 0) {Rectangle().fill(Color.gray).border(Color.black)}}}
@@ -298,3 +313,169 @@ enum eCardType {
 
 
 
+class APIManager: ObservableObject {
+    static let shared = APIManager()
+    let baseURL = "https://getSalooKeys.azurewebsites.net/getkey"
+    var unsplashAPIKey = String()
+    var unsplashSecretKey = String()
+    var spotSecretKey = String()
+    var spotClientIdentifier = String()
+    var appleMusicDevToken = String()
+    var keys: [String: String] = [:]
+    //guard let url = URL(string: "https://saloouserstatus.azurewebsites.net/is_banned?user_id=\(userId)")
+    //@Published var spotifyManager: SpotifyManager?
+
+
+
+    init() {
+        getSecret(keyName: "unsplashAPIKey"){keyval in print("UnsplashAPIKey is \(String(describing: keyval))")
+           self.unsplashAPIKey = keyval!
+        }
+
+        getSecret(keyName: "appleMusicDevToken"){keyval in print("appleMusicDevToken is \(String(describing: keyval))")
+           self.appleMusicDevToken = keyval!
+        }
+    }
+    
+    func initializeSpotifyManager(completion: @escaping () -> Void) {
+        // Here, you're getting the keys for Spotify API
+        getSecret(keyName: "spotClientIdentifier") { keyval in
+            print("spotClientIdentifier is \(String(describing: keyval))")
+            self.spotClientIdentifier = keyval!
+            self.getSecret(keyName: "spotSecretKey"){keyval in print("spotSecretKey is \(String(describing: keyval))")
+                self.spotSecretKey = keyval!
+                // After setting the key, initialize SpotifyManager
+                SpotifyManager.shared.initializeConfiguration()
+                //self.spotifyManager = SpotifyManager.shared
+                // Call the completion handler
+                completion()
+            }
+        }
+    }
+
+    func getSecret(keyName: String, completion: @escaping (String?) -> Void) {
+        //let url = baseURL.appendingPathComponent("getkey")
+        
+        let fullURL = baseURL + "?keyName=\(keyName)"
+        print(fullURL)
+        guard let url = URL(string: fullURL) else {fatalError("Invalid URL")}
+        let task = URLSession.shared.dataTask(with: url) { (data, response, error) in
+            //print(response)
+            //print(String(data: data!, encoding: .utf8))
+            if let error = error {
+                print("Error: \(error)")
+                completion(nil)
+            } else if let data = data {
+                let jsonData = String(data: data, encoding: .utf8)
+                if let jsonData = jsonData {
+                    let data = Data(jsonData.utf8)
+                    do {
+                        // Make sure that the Decoder Setup matches your JSON Structure
+                        let json = try JSONDecoder().decode([String: String].self, from: data)
+                        if let value = json["value"] {
+                            completion(value)
+                        }
+                    } catch {
+                        print("error:\(error)")
+                    }
+                }
+            }
+        }
+
+        task.resume()
+    }
+    
+    
+    func getSecrets(keyNames: [String], completion: @escaping ([String: String]) -> Void) {
+         let keyNamesString = keyNames.joined(separator: ",")
+         let fullURL = baseURL + "?keyNames=\(keyNamesString)"
+         print(fullURL)
+         guard let url = URL(string: fullURL) else {fatalError("Invalid URL")}
+         let task = URLSession.shared.dataTask(with: url) { (data, response, error) in
+             print(response)
+             print(String(data: data!, encoding: .utf8))
+             if let error = error {
+                 print("Error: \(error)")
+                 completion([:])
+             } else if let data = data {
+                 do {
+                     let decodedData = try JSONDecoder().decode([String: String].self, from: data)
+                     completion(decodedData)
+                 } catch {
+                     print("Error decoding data: \(error)")
+                     completion([:])
+                 }
+             }
+         }
+
+         task.resume()
+     }
+    
+    
+}
+
+
+class SpotifyManager: ObservableObject {
+    static let shared = SpotifyManager()
+    var config: SPTConfiguration?
+    var auth_code = String()
+    var refresh_token = String()
+    var access_token = String()
+    var authForRedirect = String()
+    var songID = String()
+    var appRemote: SPTAppRemote? = nil
+    let spotPlayerDelegate = SpotPlayerViewDelegate()
+    
+    init() {
+        enum UserDefaultsError: Error {case noMusicSubType}
+        do {
+            guard let musicSubType = UserDefaults.standard.object(forKey: "MusicSubType") as? String, musicSubType == "Spotify" else {
+                throw UserDefaultsError.noMusicSubType
+            }
+        } catch {print("Caught error: \(error)")}
+    }
+    
+    func initializeConfiguration() {
+        let spotClientIdentifier = APIManager.shared.spotClientIdentifier
+        if spotClientIdentifier.isEmpty {
+            print("Error: Spotify client identifier is not available")
+            return
+        }
+        config = SPTConfiguration(clientID: spotClientIdentifier, redirectURL: URL(string: "saloo://")!)
+        instantiateAppRemote()
+    }
+
+    
+    func instantiateAppRemote() {
+        self.appRemote = SPTAppRemote(configuration: self.config!, logLevel: .debug)
+        if (UserDefaults.standard.object(forKey: "SpotifyAccessToken") as? String) != nil {
+            self.appRemote?.connectionParameters.accessToken = (UserDefaults.standard.object(forKey: "SpotifyAccessToken") as? String)!
+            self.appRemote?.delegate = self.spotPlayerDelegate
+            print("instantiated app remote...")
+        }
+    }
+    
+    func connect() {appRemote?.connect()}
+    func disconnect() {appRemote?.disconnect()}
+    var defaultCallback: SPTAppRemoteCallback? {
+        get {
+            return {[self] _, error in
+                print("defaultCallBack Running...")
+                if let error = error {
+                    print(error.localizedDescription)
+                }
+            }
+        }
+    }
+}
+
+class SpotPlayerViewDelegate: NSObject, SPTAppRemoteDelegate {
+    func appRemoteDidEstablishConnection(_ appRemote: SPTAppRemote) {print("Connected appRemote")}
+
+    func appRemote(_ appRemote: SPTAppRemote, didDisconnectWithError error: Error?) {print("Disconnected appRemote")}
+
+    func appRemote(_ appRemote: SPTAppRemote, didFailConnectionAttemptWithError error: Error?) {
+        print("Failed to connect appRemote")
+        if let error = error {print("Error: \(error)")}
+    }
+}

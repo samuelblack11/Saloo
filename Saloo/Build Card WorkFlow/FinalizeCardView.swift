@@ -12,7 +12,8 @@ import CloudKit
 
 
 struct FinalizeCardView: View {
-    
+    @ObservedObject var alertVars = AlertVars.shared
+
     @EnvironmentObject var chosenOccassion: Occassion
     @EnvironmentObject var chosenObject: ChosenCoverImageObject
     @EnvironmentObject var collageImage: CollageImage
@@ -141,6 +142,7 @@ struct FinalizeCardView: View {
                     }
                 }
             }
+            .modifier(AlertViewMod(showAlert: alertVars.activateAlertBinding, activeAlert: alertVars.alertType))
             .alert(isPresented: $showFailedToShareAlert) {
                 Alert(title: Text("Network Error"), message: Text("Sorry, we weren't able to connect to the internet. We've saved this card to drafts, where you can share from once you reconnect."), dismissButton: .default(Text("OK")))
             }

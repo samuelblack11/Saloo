@@ -25,6 +25,7 @@ struct CollageStyleMenu: View {
     @State private var collageStyles = []
     @State private var collageBlocks = CollageBlocksAndViews()
     @ObservedObject var gettingRecord = GettingRecord.shared
+    @ObservedObject var alertVars = AlertVars.shared
 
     let columns = [GridItem(.flexible()),GridItem(.flexible())]
     
@@ -50,7 +51,7 @@ struct CollageStyleMenu: View {
             .navigationTitle("Pick Collage Style").font(.headline).padding(.horizontal)
             .navigationBarItems(leading:Button {showConfirmFrontCover = true} label: {Image(systemName: "chevron.left").foregroundColor(.blue); Text("Back")}.disabled(gettingRecord.isShowingActivityIndicator))
         }
-        .modifier(GettingRecordAlert())
+        .modifier(AlertViewMod(showAlert: alertVars.activateAlertBinding, activeAlert: alertVars.alertType))
         .environmentObject(collageImage)
         .fullScreenCover(isPresented: $showCollageBuilder) {CollageBuilder(showImagePicker: false).environmentObject(collageImage)}
         .fullScreenCover(isPresented: $showConfirmFrontCover) {ConfirmFrontCoverView()}

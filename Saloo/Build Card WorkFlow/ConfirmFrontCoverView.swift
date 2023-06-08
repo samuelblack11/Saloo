@@ -12,6 +12,7 @@ import SwiftUI
 struct ConfirmFrontCoverView: View {
     @EnvironmentObject var chosenObject: ChosenCoverImageObject
     @EnvironmentObject var chosenOccassion: Occassion
+    @ObservedObject var alertVars = AlertVars.shared
 
     
     @State private var showUCV = false
@@ -69,7 +70,7 @@ struct ConfirmFrontCoverView: View {
                 LoadingOverlay()
             }
         .onAppear{getCoverSize()}
-        .modifier(GettingRecordAlert())
+        .modifier(AlertViewMod(showAlert: alertVars.activateAlertBinding, activeAlert: alertVars.alertType))
         .navigationBarItems(leading:
             Button {
                 print("Back button tapped")
