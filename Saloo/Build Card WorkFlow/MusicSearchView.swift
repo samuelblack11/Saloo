@@ -108,7 +108,6 @@ struct MusicSearchView: View {
             }
                 NavigationView {
                     ZStack {
-                        if isLoading {ProgressView().frame(width: UIScreen.screenWidth/2,height: UIScreen.screenHeight/2)}
                         List {
                             ForEach(searchResults, id: \.self) { song in
                                 HStack {
@@ -120,8 +119,13 @@ struct MusicSearchView: View {
                                     Spacer()
                                 }
                                 .frame(width: UIScreen.screenWidth, height: (UIScreen.screenHeight/7))
-                                .onTapGesture {print("Playing \(song.name)");createChosenSong(song: song)}
+                                .onTapGesture {isLoading = true ; print("Playing \(song.name)");createChosenSong(song: song)}
                             }
+                        }
+                        if isLoading {
+                            ProgressView().frame(width: UIScreen.screenWidth/2,height: UIScreen.screenHeight/2)
+                                .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                                .scaleEffect(2)
                         }
                     }
                 }
@@ -335,6 +339,7 @@ extension MusicSearchView {
                         chosenSong.spotAlbumArtist = artistGroup
                         foundMatch = true
                         showSPV = true
+                        isPlaying = false
                         //break
                     }
                 }
@@ -346,6 +351,7 @@ extension MusicSearchView {
                 chosenSong.spotAlbumArtist = albumArtistList[0]
                 chosenSong.spotAlbumArtist = albumArtistList.first ?? ""
                 showSPV = true
+                isPlaying = false
             }
         }
     }
@@ -541,6 +547,8 @@ extension MusicSearchView {
     
     func performAMSearch() {
         isLoading = true
+        print("---")
+        print(isLoading)
         SKCloudServiceController.requestAuthorization {(status) in if status == .authorized {
             let amSearch = cleanMusicData.cleanMusicString(input: self.songSearch, removeList: appDelegate.songFilterForSearch)
             self.searchResults = AppleMusicAPI().searchAppleMusic(amSearch, storeFrontID: amAPI.storeFrontID!, userToken: amAPI.taskToken!, completionHandler: { (response, error) in
@@ -602,6 +610,7 @@ extension MusicSearchView {
             if networkMonitor.isConnected{getAlbum(storeFront: amAPI.storeFrontID!, userToken: amAPI.taskToken!)}
             else{showFailedConnectionAlert = true}
             showAPV = true
+            isPlaying = false
         }
     }
  

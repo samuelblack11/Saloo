@@ -36,7 +36,8 @@ struct OccassionsMenu: View {
     @ObservedObject var gettingRecord = GettingRecord.shared
     @State var explicitPhotoAlert: Bool = false
     @State private var isImageLoading: Bool = false
-
+    @ObservedObject var apiManager = APIManager.shared
+    @State private var isLoadingMenu = false
     
     
     // Cover Image Variables used dependent on the image's source
@@ -59,6 +60,11 @@ struct OccassionsMenu: View {
         // Hold cmd + ctrl, then click space bar to show emoji menu
         NavigationView {
             ZStack {
+                if isLoadingMenu {
+                    ProgressView().frame(width: UIScreen.screenWidth/2,height: UIScreen.screenHeight/2)
+                        .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                        .scaleEffect(2)
+                }
                 List {
                     Section(header: Text("Personal & Search")) {
                         Text("Select from Photo Library ")
@@ -114,7 +120,17 @@ struct OccassionsMenu: View {
                 }
                 LoadingOverlay()
             }
-        .onAppear {if networkMonitor.isConnected == false {showFailedConnectionAlert = true}}
+        .onAppear {
+            if networkMonitor.isConnected == false {showFailedConnectionAlert = true}
+            if apiManager.unsplashAPIKey == "" {
+                isLoadingMenu = true
+                apiManager.getSecret(keyName: "unsplashAPIKey"){keyval in print("UnsplashAPIKey is \(String(describing: keyval))")
+                    apiManager.unsplashAPIKey = keyval!
+                    createOccassionsFromUserCollections()
+                    isLoadingMenu = false
+                }
+            }
+        }
         .alert(isPresented: $showFailedConnectionAlert) {
             Alert(title: Text("Network Error"), message: Text("Sorry, we weren't able to connect to the internet. Please reconnect and try again."), dismissButton: .default(Text("OK")))
         }
