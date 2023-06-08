@@ -51,7 +51,6 @@ struct OccassionsMenu: View {
     // Defines page number to be used when displaying photo results on UCV
     @State var loadedImagefromLibraryOrCamera: Bool?
     @EnvironmentObject var networkMonitor: NetworkMonitor
-    @State private var showFailedConnectionAlert = false
     @ObservedObject var alertVars = AlertVars.shared
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -105,7 +104,10 @@ struct OccassionsMenu: View {
                                     chosenOccassion.occassion = "None"
                                     chosenOccassion.collectionID = (customSearch.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed))!
                                 }
-                                else {showFailedConnectionAlert = true}
+                                else {
+                                    alertVars.alertType = .failedConnection
+                                    alertVars.activateAlert = true
+                                }
                             }
                         label: {Image(systemName: "magnifyingglass.circle.fill")}
                                 .fullScreenCover(isPresented: $showUCV) {UnsplashCollectionView()}
@@ -122,7 +124,10 @@ struct OccassionsMenu: View {
                 LoadingOverlay()
             }
         .onAppear {
-            if networkMonitor.isConnected == false {showFailedConnectionAlert = true}
+            if networkMonitor.isConnected == false {
+                alertVars.alertType = .failedConnection
+                alertVars.activateAlert = true
+            }
             if apiManager.unsplashAPIKey == "" {
                 isLoadingMenu = true
                 apiManager.getSecret(keyName: "unsplashAPIKey"){keyval in print("UnsplashAPIKey is \(String(describing: keyval))")
@@ -132,9 +137,8 @@ struct OccassionsMenu: View {
                 }
             }
         }
-        .alert(isPresented: $showFailedConnectionAlert) {
-            Alert(title: Text("Network Error"), message: Text("Sorry, we weren't able to connect to the internet. Please reconnect and try again."), dismissButton: .default(Text("OK")))
-        }
+        .modifier(AlertViewMod(showAlert: alertVars.activateAlertBinding, activeAlert: alertVars.alertType))
+
         .alert(isPresented: $explicitPhotoAlert) {
             Alert(title: Text("Error"), message: Text("The selected image contains explicit content and cannot be used."), dismissButton: .default(Text("OK")))
         }
@@ -143,7 +147,6 @@ struct OccassionsMenu: View {
         .listStyle(GroupedListStyle())
         .onAppear {createOccassionsFromUserCollections()}
         }
-        .modifier(AlertViewMod(showAlert: alertVars.activateAlertBinding, activeAlert: alertVars.alertType))
         .environmentObject(chosenObject)
         .environmentObject(chosenOccassion)
         .fullScreenCover(isPresented: $showStartMenu) {StartMenu()}
@@ -161,7 +164,10 @@ extension OccassionsMenu {
                     self.chosenOccassion.collectionID = collection.id
                     showUCV.toggle()
                 }
-                else {showFailedConnectionAlert = true}
+                else {
+                    alertVars.alertType = .failedConnection
+                    alertVars.activateAlert = true
+                }
             }
             .fullScreenCover(isPresented: $showUCV) {UnsplashCollectionView()}
     }

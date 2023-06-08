@@ -31,11 +31,7 @@ struct WriteNoteView: View {
     @ObservedObject var cardName = MaximumText(limit: 20, value: "Name Your Card")
     @State private var tappedTextEditor = false
     @State private var namesNotEntered = false
-    @State private var addMusicPrompt = false
-    @State private var skipMusicPrompt = false
-    @State private var handWrite2 = false
     @State private var selectedFont = "Papyrus"
-    @State private var showOffensiveTextAlert = false
 
     @FocusState private var isNoteFieldFocused: Bool
     @ObservedObject var gettingRecord = GettingRecord.shared
@@ -100,29 +96,24 @@ struct WriteNoteView: View {
                         let fullTextDetails = message.value + " " + recipient.value + " " + sender.value + " " + cardName.value
                         WriteNoteView.checkTextForOffensiveContent(text: fullTextDetails) { (textIsOffensive, error) in
                             print("....\(textIsOffensive)")
-                            if textIsOffensive! {showOffensiveTextAlert = true}
+                            if textIsOffensive! {
+                                alertVars.alertType = .offensiveText
+                                alertVars.activateAlert = true
+                            }
                             else {
                                 cardName.value = cardName.value.components(separatedBy: CharacterSet.punctuationCharacters).joined()
-                                if appDelegate.musicSub.type == .Apple {addMusicPrompt = true}
-                                if appDelegate.musicSub.type == .Spotify {addMusicPrompt = true}
+                                if appDelegate.musicSub.type == .Apple {
+                                    alertVars.alertType = .addMusicPrompt
+                                    alertVars.activateAlert = true
+                                }
+                                if appDelegate.musicSub.type == .Spotify {
+                                    alertVars.alertType = .addMusicPrompt
+                                    alertVars.activateAlert = true
+                                }
                                 if appDelegate.musicSub.type == .Neither {checkRequiredFields(); annotateIfNeeded(); showFinalize = true}
                             }
                         }
                     }
-                    .alert(isPresented: $showOffensiveTextAlert) {
-                        Alert(title: Text("Take it easy!"),message: Text("Tone down the rhetoric and write something else."),dismissButton: .default(Text("Ok")) {})
-                    }
-                    
-                    
-                    .alert("Please Enter Values for All Fields!", isPresented: $namesNotEntered) {Button("Ok", role: .cancel) {}}
-                    .alert("A Subscription to Spotify or Apple Music is Required to Add a Song. We'll skip that Step", isPresented: $skipMusicPrompt) {
-                        Button("Ok"){showFinalize = true}
-                    }
-                    .alert("Add Song to Card?", isPresented: $addMusicPrompt) {
-                        Button("Hell Yea"){addMusic.addMusic = true; appDelegate.musicSub.timeToAddMusic = true; checkRequiredFields(); annotateIfNeeded()}
-                        Button("No Thanks") {checkRequiredFields(); annotateIfNeeded(); addMusic.addMusic = false; showFinalize = true}
-                    }
-                    .alert("Your typed message will only appear in your eCard", isPresented: $handWrite2) {Button("Ok", role: .cancel) {}}
                     .padding(.bottom, 30)
                     .fullScreenCover(isPresented: $showMusic) {MusicSearchView().environmentObject(appDelegate)}
                     .fullScreenCover(isPresented: $showFinalize) {FinalizeCardView(cardType: determineCardType())}
@@ -172,7 +163,7 @@ extension WriteNoteView {
     
     func checkRequiredFields() {
         if recipient.value != "" && cardName.value != "" {
-            namesNotEntered = false
+            //namesNotEntered = false
             if addMusic.addMusic {showMusic = true}
             else {showFinalize = true}
             noteField.noteText = message.value
@@ -181,7 +172,10 @@ extension WriteNoteView {
             noteField.font = selectedFont
             noteField.sender = sender.value
         }
-        else {namesNotEntered = true}
+        else {
+            alertVars.alertType = .namesNotEntered
+            alertVars.activateAlert = true
+        }
     }
     
     

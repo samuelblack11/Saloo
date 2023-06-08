@@ -34,7 +34,6 @@ struct UnsplashCollectionView: View {
     let timer = Timer.publish(every: 0.05, on: .main, in: .common).autoconnect()
     let columns = [GridItem(.fixed(150)),GridItem(.fixed(150))]
     @EnvironmentObject var networkMonitor: NetworkMonitor
-    @State private var showFailedConnectionAlert = false
     @ObservedObject var alertVars = AlertVars.shared
 
     var body: some View {
@@ -49,7 +48,10 @@ struct UnsplashCollectionView: View {
                                 .onTapGesture {Task {
                                     //try? await handleTap(index: photoObj.index)
                                     if networkMonitor.isConnected{try? await handleTap(index: photoObj.index)}
-                                    else{showFailedConnectionAlert = true}
+                                    else{
+                                        alertVars.alertType = .failedConnection
+                                        alertVars.activateAlert = true
+                                    }
                                 }}
                         }
                     }
@@ -59,7 +61,11 @@ struct UnsplashCollectionView: View {
                         if networkMonitor.isConnected {
                             getMorePhotos(); print("page count: \(chosenObject.pageCount)")
                         }
-                        else {showFailedConnectionAlert = true}
+                        else {
+                            alertVars.alertType = .failedConnection
+                            alertVars.activateAlert = true
+                            
+                        }
                         
                     }.disabled(setButtonStatus(imageObjects: imageObjects))
                 }
@@ -73,16 +79,21 @@ struct UnsplashCollectionView: View {
             if chosenOccassion.occassion == "None" {
                 //getUnsplashPhotos()
                 if networkMonitor.isConnected{getUnsplashPhotos()}
-                else{showFailedConnectionAlert = true}
+                else{
+                    alertVars.alertType = .failedConnection
+                    alertVars.activateAlert = true
+                    
+                }
             }
             else {
                 //getPhotosFromCollection(collectionID: chosenOccassion.collectionID, page_num: chosenObject.pageCount)
                 if networkMonitor.isConnected{getPhotosFromCollection(collectionID: chosenOccassion.collectionID, page_num: chosenObject.pageCount)}
-                else {showFailedConnectionAlert = true}
+                else {
+                    alertVars.alertType = .failedConnection
+                    alertVars.activateAlert = true
+                    
+                }
             }
-        }
-        .alert(isPresented: $showFailedConnectionAlert) {
-            Alert(title: Text("Network Error"), message: Text("Sorry, we weren't able to connect to the internet. Please reconnect and try again."), dismissButton: .default(Text("OK")))
         }
         .fullScreenCover(isPresented: $showConfirmFrontCover) {ConfirmFrontCoverView()}
         .fullScreenCover(isPresented: $showOccassions) {OccassionsMenu()}

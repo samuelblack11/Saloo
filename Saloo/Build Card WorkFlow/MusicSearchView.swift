@@ -54,7 +54,6 @@ struct MusicSearchView: View {
     @State private var sortByValue = "Track"
     @State var emptyCard: CoreCard? = CoreCard()
     @State var deferToPreview = false
-    @State private var showFailedConnectionAlert = false
     @State private var isLoading = false
     func determineCardType() -> String {
         var cardType2 = String()
@@ -85,7 +84,10 @@ struct MusicSearchView: View {
                         TextField("Artist", text: $artistSearch)
                         Button("Search"){
                             if networkMonitor.isConnected {searchWithSpotify()}
-                            else {showFailedConnectionAlert = true}
+                            else {
+                                alertVars.alertType = .failedConnection
+                                alertVars.activateAlert = true
+                            }
                         }
                     }
                 }
@@ -102,7 +104,10 @@ struct MusicSearchView: View {
                                 }
                             }
                         }
-                        else {showFailedConnectionAlert = true}
+                        else {
+                            alertVars.alertType = .failedConnection
+                            alertVars.activateAlert = true
+                        }
                     }).padding(.top, 15)
                 }
                 LoadingOverlay()
@@ -138,10 +143,9 @@ struct MusicSearchView: View {
                     }}
                     if appDelegate.musicSub.type == .Apple {
                         if networkMonitor.isConnected {getAMUserTokenAndStoreFront{}}
-                        else {showFailedConnectionAlert = true}}
-                }
-                .alert(isPresented: $showFailedConnectionAlert) {
-                    Alert(title: Text("Network Error"), message: Text("Sorry, we weren't able to connect to the internet. Please reconnect and try again."), dismissButton: .default(Text("OK")))
+                        else {
+                            alertVars.alertType = .failedConnection
+                            alertVars.activateAlert = true}}
                 }
                 .navigationBarItems(leading:Button {showWriteNote.toggle()} label: {Image(systemName: "chevron.left").foregroundColor(.blue); Text("Back")}.disabled(gettingRecord.isShowingActivityIndicator))
                 .fullScreenCover(isPresented: $showWriteNote){WriteNoteView()}
@@ -174,7 +178,10 @@ extension MusicSearchView {
             if let refreshToken = defaults.object(forKey: "SpotifyRefreshToken") as? String, counter == 0 {
                 refreshTokenAndRun(completion: completion)
             } else {requestAndRunToken(completion: completion)}
-        } else {showFailedConnectionAlert = true; completion(false)
+        } else {
+            alertVars.alertType = .failedConnection
+            alertVars.activateAlert = true
+            completion(false)
         }
     }
     
@@ -186,7 +193,8 @@ extension MusicSearchView {
                 defaults.set(response.access_token, forKey: "SpotifyAccessToken")
                 completion(true)
             } else {
-                showFailedConnectionAlert = true
+                alertVars.alertType = .failedConnection
+                alertVars.activateAlert = true
                 completion(false)
             }
         }
@@ -255,7 +263,8 @@ extension MusicSearchView {
                     
                     completion(true)
                 } else {
-                    showFailedConnectionAlert = true
+                    alertVars.alertType = .failedConnection
+                    alertVars.activateAlert = true
                     completion(false)
                 }
             }
@@ -286,7 +295,8 @@ extension MusicSearchView {
                     print("---")
                     print(error)
                     if let error = error as? URLError, error.code == .notConnectedToInternet {
-                        showFailedConnectionAlert = true
+                        alertVars.alertType = .failedConnection
+                        alertVars.activateAlert = true
                     }
                     if let albumResponse = albumResponse {
                         let group2 = DispatchGroup()
@@ -339,6 +349,7 @@ extension MusicSearchView {
                         chosenSong.spotAlbumArtist = artistGroup
                         foundMatch = true
                         showSPV = true
+                        isLoading = false
                         isPlaying = false
                         //break
                     }
@@ -351,6 +362,7 @@ extension MusicSearchView {
                 chosenSong.spotAlbumArtist = albumArtistList[0]
                 chosenSong.spotAlbumArtist = albumArtistList.first ?? ""
                 showSPV = true
+                isLoading = false
                 isPlaying = false
             }
         }
@@ -462,11 +474,6 @@ extension MusicSearchView {
 
         
         SpotifyAPI.shared.searchSpotify(songTerm, artistName: artistTerm, authToken: spotifyManager.access_token, completionHandler: {(response, error) in
-            
-            //if let error = error as? URLError, error.code == .notConnectedToInternet {
-            //    showFailedConnectionAlert = true
-            //}
-            
             if response != nil {
                 searchResults = []
                 DispatchQueue.main.async {
@@ -595,7 +602,11 @@ extension MusicSearchView {
                 if !spotifyManager.access_token.isEmpty {print("Going to get album");getSpotAlbum()}
                 else {getSpotCredentials{_ in print("Getting credentials, then album");getSpotAlbum()}}
             }
-            else{showFailedConnectionAlert = true}
+            else{
+                alertVars.alertType = .failedConnection
+                alertVars.activateAlert = true
+                
+            }
         }
         if appDelegate.musicSub.type == .Apple {
             chosenSong.id = song.id
@@ -608,8 +619,13 @@ extension MusicSearchView {
             chosenSong.discNumber = song.disc_number!
             chosenSong.songAddedUsing = "Apple"
             if networkMonitor.isConnected{getAlbum(storeFront: amAPI.storeFrontID!, userToken: amAPI.taskToken!)}
-            else{showFailedConnectionAlert = true}
+            else{
+                alertVars.alertType = .failedConnection
+                alertVars.activateAlert = true
+                
+            }
             showAPV = true
+            isLoading = false
             isPlaying = false
         }
     }

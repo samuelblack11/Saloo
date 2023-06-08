@@ -26,29 +26,14 @@ struct ReportOffensiveContentView: View {
             Button(action: {
                 let report = createReportObject(userName: name, userEmail: email, userComments: comments, card: card)
                 sendReportToAzure(report: report)
-                reportComplete = true
+                alertVars.alertType = .reportComplete
+                alertVars.activateAlert = true
                 deleteCoreCard(coreCard: card)
             }) {Text("Submit")}
 
         }
         .padding()
         .modifier(AlertViewMod(showAlert: alertVars.activateAlertBinding, activeAlert: alertVars.alertType))
-        .alert(isPresented: $reportComplete) {
-            Alert(
-                title: Text("Feedback Received"),
-                message: Text("Thanks for your feedback. We will review these details along with the card itself and will be in touch about your concern."),
-                dismissButton: .default(Text("Ok")) {
-                    // Dismiss the current view
-                    let rootViewController = UIApplication.shared.connectedScenes
-                        .filter { $0.activationState == .foregroundActive }
-                        .compactMap { $0 as? UIWindowScene }
-                        .first?.windows
-                        .filter { $0.isKeyWindow }
-                        .first?.rootViewController
-                    rootViewController?.dismiss(animated: true)
-                }
-            )
-        }
     }
     
     func sendReportToAzure(report: Report) {

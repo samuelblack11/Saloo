@@ -54,7 +54,6 @@ struct GridofCards: View {
     @EnvironmentObject var wrapper: CoreCardWrapper
     @State var cardQueuedForshare: CoreCard?
     @EnvironmentObject var networkMonitor: NetworkMonitor
-    @State private var showFailedConnectionAlert = false
     @ObservedObject var gettingRecord = GettingRecord.shared
     @State private var showReportOffensiveContentView = false
     @EnvironmentObject var spotifyManager: SpotifyManager
@@ -156,9 +155,6 @@ struct GridofCards: View {
                     Text(gridCard.cardName).font(.system(size: 8)).minimumScaleFactor(0.1)
                 }
             }
-            .alert(isPresented: $showFailedConnectionAlert) {
-                Alert(title: Text("Network Error"), message: Text("Sorry, we weren't able to connect to the internet. Please reconnect and try again."), dismissButton: .default(Text("OK")))
-            }
             .contextMenu {contextMenuButtons(card: gridCard)}
             .padding().overlay(RoundedRectangle(cornerRadius: 6).stroke(.blue, lineWidth: 2))
                 .font(.headline).padding(.horizontal).frame(maxHeight: 600)
@@ -175,17 +171,26 @@ extension GridofCards {
         if PersistenceController.shared.privatePersistentStore.contains(manageObject: card) {
             Button("Create New Share") {showCloudShareController = true;
                 if networkMonitor.isConnected{createNewShare(coreCard: card)}
-                else{showFailedConnectionAlert = true}}
+                else{
+                    alertVars.alertType = .failedConnection
+                    alertVars.activateAlert = true
+                }}
                 .disabled(CoreCardUtils.shareStatus(card: card).0)
         }
         Button("Manage Participation") {
             if networkMonitor.isConnected {manageParticipation(coreCard: card)}
-            else{showFailedConnectionAlert = true}
+            else{
+                alertVars.alertType = .failedConnection
+                alertVars.activateAlert = true
+            }
             
         }
         Button {
             if networkMonitor.isConnected {chosenCard = card; chosenGridCardType = card.cardType;segueToEnlarge = true; displayCard = true}
-            else {showFailedConnectionAlert = true}
+            else {
+                alertVars.alertType = .failedConnection
+                alertVars.activateAlert = true
+            }
             
         } label: {Text("Enlarge eCard"); Image(systemName: "plus.magnifyingglass")}
         Button(action: { deleteCoreCard(coreCard: card) }) {

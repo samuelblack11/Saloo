@@ -57,7 +57,6 @@ struct FinalizeCardView: View {
     @State private var sharingController: UICloudSharingController?
     @State private var enableShare = false
     @EnvironmentObject var networkMonitor: NetworkMonitor
-    @State private var showFailedToShareAlert = false
     @EnvironmentObject var spotifyManager: SpotifyManager
 
     
@@ -76,6 +75,8 @@ struct FinalizeCardView: View {
         Button("Save to Drafts") {
             Task {saveCard(noteField: noteField, chosenOccassion: chosenOccassion, an1: annotation.text1, an2: annotation.text2, an2URL: annotation.text2URL.absoluteString, an3: annotation.text3, an4: annotation.text4, chosenObject: chosenObject, collageImage: collageImage, songID: chosenSong.id, spotID: chosenSong.spotID, spotName: chosenSong.spotName, spotArtistName: chosenSong.spotArtistName, songName: chosenSong.name, songArtistName: chosenSong.artistName, songAlbumName: chosenSong.songAlbumName, songArtImageData: chosenSong.artwork, songPreviewURL: chosenSong.songPreviewURL, songDuration: String(chosenSong.durationInSeconds), inclMusic: addMusic.addMusic, spotImageData: chosenSong.spotImageData, spotSongDuration: String(chosenSong.spotSongDuration), spotPreviewURL: chosenSong.spotPreviewURL, songAddedUsing: chosenSong.songAddedUsing, cardType: cardType, appleAlbumArtist: chosenSong.appleAlbumArtist,spotAlbumArtist: chosenSong.spotAlbumArtist, salooUserID: (UserDefaults.standard.object(forKey: "SalooUserID") as? String)!)}
             showCompleteAlert = true
+            alertVars.alertType = .showCardComplete
+            alertVars.activateAlert = true
         }
         .frame(height: UIScreen.screenHeight/20)
         .fullScreenCover(isPresented: $showStartMenu) {OccassionsMenu()}
@@ -85,16 +86,6 @@ struct FinalizeCardView: View {
         //    CloudSharingView(controller: controller)
         // }
         .disabled(saveAndShareIsActive)
-        .alert("Save Complete", isPresented: $showCompleteAlert) {
-            Button("Ok", role: .cancel) {showCollageBuilder = false; showWriteNote = false; showCollageMenu = false; showUCV = false;showStartMenu = true; let rootViewController = UIApplication.shared.connectedScenes
-                    .filter {$0.activationState == .foregroundActive }
-                    .map {$0 as? UIWindowScene }
-                    .compactMap { $0 }
-                    .first?.windows
-                    .filter({$0.isKeyWindow }).first?.rootViewController
-                rootViewController?.dismiss(animated: true)
-            }
-        }
     }
     
     var saveAndShareButton: some View {
@@ -106,7 +97,8 @@ struct FinalizeCardView: View {
                 }
             }
             else {
-                showFailedToShareAlert = true
+                alertVars.alertType = .showFailedToShare
+                alertVars.activateAlert = true
             }
             
         }
@@ -143,9 +135,6 @@ struct FinalizeCardView: View {
                 }
             }
             .modifier(AlertViewMod(showAlert: alertVars.activateAlertBinding, activeAlert: alertVars.alertType))
-            .alert(isPresented: $showFailedToShareAlert) {
-                Alert(title: Text("Network Error"), message: Text("Sorry, we weren't able to connect to the internet. We've saved this card to drafts, where you can share from once you reconnect."), dismissButton: .default(Text("OK")))
-            }
             .fullScreenCover(isPresented: $showStartMenu) {StartMenu()}
             .fullScreenCover(isPresented: $showMusicSearch) {MusicSearchView()}
             .fullScreenCover(isPresented: $showWriteNote) {WriteNoteView()}
