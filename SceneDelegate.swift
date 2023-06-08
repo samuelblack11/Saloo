@@ -31,18 +31,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
     var launchedURL: URL?
     let customLog = OSLog(subsystem: "com.Saloo", category: "Custom Category")
     var spotifyManager: SpotifyManager?
-
-    func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
-        
-        print("Opened URL via openURLContexts....")
-        if let url = URLContexts.first?.url {
-            if let windowScene = scene as? UIWindowScene {
-                Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { timer in
-                    self.handleGridofCardsDisplay(windowScene: windowScene)
-                }
-            }
-        }
-    }
     
     func scene(_ scene: UIScene, continue userActivity: NSUserActivity) {
         print("Called continue....")
@@ -58,20 +46,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
         }
     }
     
-
-    private func handleCKShareURL(_ url: URL, scene: UIScene) {
-        // Parse the URL to get the CKRecordID and CKRecordZoneID.
-        // Use the IDs to fetch the shared record from CloudKit.
-        // Handle the shared record as needed.
-
-        // Here handle your logic when the CKShare URL has been processed
-        if let windowScene = scene as? UIWindowScene {
-            print("Tried to handle Display...")
-            self.handleGridofCardsDisplay(windowScene: windowScene)
-        }
-    }
-
-
     func sceneDidBecomeActive(_ scene: UIScene) {
         // Handle the URL if one was stored when the app was launched
         if let url = launchedURL, let windowScene = scene as? UIWindowScene {
@@ -90,72 +64,93 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
         }
     }
     
-    @objc private func handleDidAcceptShare(_ notification: Notification) {
-        // Here handle your logic when the CKShare has been accepted
-        if let windowScene = window?.windowScene {
-            self.handleGridofCardsDisplay(windowScene: windowScene)
+    func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
+        print("called* openURLContexts")
+        guard let url = URLContexts.first?.url else { return }
+        let container = CKContainer.default()
+        container.fetchShareMetadata(with: url) { metadata, error in
+            guard error == nil, let metadata = metadata else {
+                print("An error occurred: \(error?.localizedDescription ?? "unknown error")")
+                return
+            }
+            
+            // From here, you can use metadata to fetch the associated record or perform other operations as needed
+            // Add your code here
+
+            DispatchQueue.main.async {print("called* openURLContexts2");self.processShareMetadata(metadata)}
         }
     }
+    private func handleCKShareURL(_ url: URL, scene: UIScene) {
+        // Parse the URL to get the CKRecordID and CKRecordZoneID.
+        // Use the IDs to fetch the shared record from CloudKit.
+        // Handle the shared record as needed.
+        print("called* handleCKShareURL")
+        // Here handle your logic when the CKShare URL has been processed
+        if let windowScene = scene as? UIWindowScene {
+            print("Tried to handle Display...")
+            self.handleGridofCardsDisplay(windowScene: windowScene)
+        }
+        print("called* handleCKShareURL2")
+    }
 
-    
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
-        //scene.userActivity?.removeAllSavedStates()
+        print("called* willConnectTo")
+
         NotificationCenter.default.addObserver(self, selector: #selector(handleDidAcceptShare(_:)), name: .didAcceptShare, object: nil)
 
         if let userActivity = connectionOptions.userActivities.first {
             self.scene(scene, continue: userActivity)
         }
-        
+
         // Check if the app was launched with a URL
         if let urlContext = connectionOptions.urlContexts.first {
             print("App launched with URL: \(urlContext.url.absoluteString)")
-            // Save the URL to process it later in sceneDidBecomeActive
             self.launchedURL = urlContext.url
         }
-        
-        guard let windowScene = (scene as? UIWindowScene) else { return }
-        if let urlContext = connectionOptions.urlContexts.first {
-            let isOpened = openMyApp(from: urlContext.url)
-            if isOpened {
-                Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { [self] timer in
-                    self.handleGridofCardsDisplay(windowScene: windowScene)
-                }
-            }
-        }
-        
-        if let windowScene = scene as? UIWindowScene {
-            Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { timer in
-                self.handleGridofCardsDisplay(windowScene: windowScene)
-            }
-        }
+        print("called* willConnectTo2")
+
     }
     
-    private func handleGridofCardsDisplay(windowScene: UIWindowScene) {
-        if self.gotRecord && self.connectToScene {
-            if self.appDelegate.musicSub.type == .Neither{self.updateMusicSubType()}
-            let contentView = GridofCards(cardsForDisplay: CoreCardUtils.loadCoreCards(), whichBoxVal: self.whichBoxForCKAccept!, chosenCard: self.coreCard)
-                .environmentObject(self.appDelegate)
-                .environmentObject(self.networkMonitor)
-            let window = UIWindow(windowScene: windowScene)
-            self.window = window
-            let initialViewController = UIHostingController(rootView: contentView)
-            let navigationController = UINavigationController(rootViewController: initialViewController)
-            window.rootViewController = navigationController
-            window.makeKeyAndVisible()
-            // Customize the transition animation
-            let transition = CATransition()
-            transition.duration = 5.3
-            transition.timingFunction = CAMediaTimingFunction(name: CAMediaTimingFunctionName.easeInEaseOut)
-            transition.type = CATransitionType.fade
-            navigationController.view.layer.add(transition, forKey: kCATransition)
-            self.gotRecord = false
-        }
+    @objc private func handleDidAcceptShare(_ notification: Notification) {
+        if let windowScene = window?.windowScene {self.handleGridofCardsDisplay(windowScene: windowScene)}
     }
 
-    /**
-     To be able to accept a share, add a CKSharingSupported entry in the Info.plist file and set it to true.
-     */
-    func windowScene(_ windowScene: UIWindowScene, userDidAcceptCloudKitShareWith cloudKitShareMetadata: CKShare.Metadata) {
+    private func handleGridofCardsDisplay(windowScene: UIWindowScene) {
+        print("called* handleGridofCardsDisplay")
+
+        guard self.gotRecord && self.connectToScene else { return }
+        
+        if self.appDelegate.musicSub.type == .Neither {self.updateMusicSubType()}
+        
+        let contentView = GridofCards(cardsForDisplay: CoreCardUtils.loadCoreCards(), whichBoxVal: self.whichBoxForCKAccept!, chosenCard: self.coreCard)
+            .environmentObject(self.appDelegate)
+            .environmentObject(self.networkMonitor)
+        
+        let window = UIWindow(windowScene: windowScene)
+        self.window = window
+        let initialViewController = UIHostingController(rootView: contentView)
+        let navigationController = UINavigationController(rootViewController: initialViewController)
+        window.rootViewController = navigationController
+        print("called* handleGridofCardsDisplay2")
+        window.makeKeyAndVisible()
+        
+        // Customize the transition animation
+        let transition = CATransition()
+        transition.duration = 5.3
+        transition.timingFunction = CAMediaTimingFunction(name: CAMediaTimingFunctionName.easeInEaseOut)
+        transition.type = CATransitionType.fade
+        navigationController.view.layer.add(transition, forKey: kCATransition)
+        
+        self.gotRecord = false
+    }
+
+
+
+
+    func processShareMetadata(_ cloudKitShareMetadata: CKShare.Metadata) {
+        print("called* processShareMetadata")
+        // Handle the share metadata: fetch the associated record, update your app's state, etc.
+        // This code is based on your implementation in userDidAcceptCloudKitShareWith.
         let persistenceController = PersistenceController.shared
         let sharedStore = persistenceController.sharedPersistentStore
         let container = persistenceController.persistentContainer
@@ -186,6 +181,21 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
                     }
                 }
             }
+        print("called* processShareMetadata2")
+        
+        
+    }
+    
+    
+    
+    
+    
+    /**
+     To be able to accept a share, add a CKSharingSupported entry in the Info.plist file and set it to true.
+     */
+    func windowScene(_ windowScene: UIWindowScene, userDidAcceptCloudKitShareWith cloudKitShareMetadata: CKShare.Metadata) {
+        print("called* userDidAcceptCloudKitShareWith")
+        self.processShareMetadata(cloudKitShareMetadata)
         }
 
 
@@ -313,6 +323,11 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
             self.gotRecord = true
             self.checkIfRecordAddedToStore = true
             print("getRecord complete...")
+            // Try to get the window scene from the shared application instance.
+             if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene {
+                 print("Trying to handle Display after parseRecord...")
+                 self.handleGridofCardsDisplay(windowScene: windowScene)
+             }
         }
     }
     
@@ -344,25 +359,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
         PersistenceController.shared.cloudKitContainer.fetchUserRecordID { ckRecordID, error in
             self.userID = (ckRecordID?.recordName)!
         }
-    }
-    
-    
-
-    func openMyApp(from url: URL) -> Bool {
-        print("Called OpenMyApp")
-        let scheme = "saloo" // Replace this with your app's custom URL scheme
-        // Check if the URL contains your app's custom URL scheme
-        if url.scheme == scheme {
-            // Attempt to open the app
-            if let appURL = URL(string: "\(scheme)://") {
-                if UIApplication.shared.canOpenURL(appURL) {
-                    UIApplication.shared.open(appURL)
-                    return true
-                }
-            }
-        }
-        // If the URL does not contain your app's custom URL scheme or the app cannot be opened, return false
-        return false
     }
 }
 

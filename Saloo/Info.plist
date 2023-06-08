@@ -22,7 +22,7 @@
 		</dict>
 		<dict>
 			<key>CFBundleURLName</key>
-			<string></string>
+			<string>com.Saloo.saloo</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
 				<string>saloo</string>
