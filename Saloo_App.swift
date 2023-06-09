@@ -99,7 +99,7 @@ struct AlertViewMod: ViewModifier {
                     return Alert(title: Text("Apple Music Authorization Failed. If you have a Apple Music Subscription, please try authorizing again"), dismissButton: .default(Text("OK")){})
                 case .gettingRecord:
                     return Alert(
-                        title: Text("We're Still Saving Your Card to the Cloud."),
+                        title: Text("We're Saving Your Card to the Cloud."),
                         message: Text("It'll Be Ready In Just a Minute."),
                         primaryButton: .default(Text("OK, I'll Wait"), action: {
                             gettingRecord.showLoadingRecordAlert = false
@@ -122,8 +122,8 @@ struct AlertViewMod: ViewModifier {
                 case .showCardComplete:
                     return Alert(
                         title: Text("Save Complete"),
-                        primaryButton: .default(Text("Ok"), action: {AppState.shared.resetNavigation = false}),
-                        secondaryButton: .cancel()
+                        message: nil,
+                        dismissButton: .default(Text("Ok"), action: { alertDismissAction?() })
                     )
                 case .addMusicPrompt:
                     return Alert(title: Text("Add Song to Card?"),

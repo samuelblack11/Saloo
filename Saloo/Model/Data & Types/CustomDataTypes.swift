@@ -127,7 +127,7 @@ class ChosenCoverImageObject: ObservableObject {
 }
 
 class NoteField: ObservableObject  {
-    @Published var noteText = MaximumText(limit: 225, value: "Write Your Note Here")
+    @Published var noteText = MaximumText(limit: 225, value: "")
     @Published var recipient = MaximumText(limit: 20, value: "To:")
     @Published var sender = MaximumText(limit: 20, value: "From:")
     @Published var cardName = MaximumText(limit: 20, value: "Name Your Card")

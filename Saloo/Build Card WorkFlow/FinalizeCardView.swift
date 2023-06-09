@@ -129,12 +129,12 @@ struct FinalizeCardView: View {
                         }
                     }
                     ToolbarItemGroup(placement: .navigationBarTrailing) {
-                        Button {showStartMenu = true} label: {Image(systemName: "menucard.fill").foregroundColor(.blue)
+                        Button {returnToMenu()} label: {Image(systemName: "menucard.fill").foregroundColor(.blue)
                             Text("Menu")}
                     }
                 }
             }
-            .modifier(AlertViewMod(showAlert: alertVars.activateAlertBinding, activeAlert: alertVars.alertType))
+            .modifier(AlertViewMod(showAlert: alertVars.activateAlertBinding, activeAlert: alertVars.alertType, alertDismissAction: {returnToMenu()}))
             .fullScreenCover(isPresented: $showStartMenu) {StartMenu()}
             .fullScreenCover(isPresented: $showMusicSearch) {MusicSearchView()}
             .fullScreenCover(isPresented: $showWriteNote) {WriteNoteView()}
@@ -147,6 +147,16 @@ struct FinalizeCardView: View {
 
 
 extension FinalizeCardView {
+    
+    func returnToMenu() {
+        showCollageBuilder = false; showWriteNote = false; showCollageMenu = false; showUCV = false;showStartMenu = true; let rootViewController = UIApplication.shared.connectedScenes
+                            .filter {$0.activationState == .foregroundActive }
+                            .map {$0 as? UIWindowScene }
+                            .compactMap { $0 }
+                            .first?.windows
+                            .filter({$0.isKeyWindow }).first?.rootViewController
+                        rootViewController?.dismiss(animated: true)
+    }
     
     private func saveCard(noteField: NoteField, chosenOccassion: Occassion, an1: String, an2: String, an2URL: String, an3: String, an4: String, chosenObject: ChosenCoverImageObject, collageImage: CollageImage, songID: String?, spotID: String?, spotName: String?, spotArtistName: String?, songName: String?, songArtistName: String?, songAlbumName: String?, songArtImageData: Data?, songPreviewURL: String?, songDuration: String?, inclMusic: Bool, spotImageData: Data?, spotSongDuration: String?, spotPreviewURL: String?, songAddedUsing: String?, cardType: String, appleAlbumArtist: String?,spotAlbumArtist: String?, salooUserID: String) {
         let controller = PersistenceController.shared

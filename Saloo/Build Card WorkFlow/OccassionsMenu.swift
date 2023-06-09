@@ -91,27 +91,6 @@ struct OccassionsMenu: View {
                                 chosenOccassion.occassion = ""; chosenOccassion.collectionID = ""
                             }
                             .fullScreenCover(isPresented: $showCollageMenu){CollageStyleMenu()}
-                        HStack {
-                            TextField("Custom Search", text: $customSearch)
-                            //.foregroundColor(appDelegate.appColor)
-                            //.listRowBackground(appDelegate.appColor)
-                                .padding(.leading, 5)
-                                .frame(height:35)
-                            Button {
-                                if networkMonitor.isConnected {
-                                    showUCV = true
-                                    chosenObject.frontCoverIsPersonalPhoto = 0
-                                    chosenOccassion.occassion = "None"
-                                    chosenOccassion.collectionID = (customSearch.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed))!
-                                }
-                                else {
-                                    alertVars.alertType = .failedConnection
-                                    alertVars.activateAlert = true
-                                }
-                            }
-                        label: {Image(systemName: "magnifyingglass.circle.fill")}
-                                .fullScreenCover(isPresented: $showUCV) {UnsplashCollectionView()}
-                        }
                     }
                     Section(header: Text("Year-Round Occassions")) {ForEach(yearRoundCollection) {menuSection(for: $0, shareable: false)
                     }}
@@ -217,5 +196,5 @@ extension OccassionsMenu {
         chosenObject.downloadLocation = ""
         chosenObject.index = 1
     }
-    
+
 }

@@ -34,7 +34,7 @@ struct WriteNoteView: View {
     @State var isFirstTap = true
     @FocusState private var isNoteFieldFocused: Bool
     @ObservedObject var gettingRecord = GettingRecord.shared
-
+    @State private var isEditing = false
     var fonts = ["Zapfino","Papyrus","American-Typewriter-Bold"]
     var fontMenu: some View {
         HStack {
@@ -67,29 +67,56 @@ struct WriteNoteView: View {
         NavigationView {
             ZStack {
                 ScrollView {
-                    TextEditor(text: $noteField.noteText.value)
-                        .border(Color.red, width: $message.hasReachedLimit.wrappedValue ? 1 : 0 )
-                        .frame(minHeight: 150)
-                        .font(Font.custom(noteField.font, size: 14))
-                        .onTapGesture {
-                            if noteField.noteText.value == "Write Your Note Here" {noteField.noteText.value = ""}
-                            //isNoteFieldFocused.toggle()
-                            tappedTextEditor = true
+                    ZStack(alignment: .topLeading) {
+                        if noteField.noteText.value == "" {
+                            Text("Write Your Note Here")
+                                .foregroundColor(.gray)
+                                .font(Font.custom(noteField.font, size: 14))
                         }
-                    HStack {
-                        Text("\(225 - noteField.noteText.value.count) Characters Remaining").font(Font.custom(noteField.font, size: 10))
+                        TextEditor(text: $noteField.noteText.value)
+                            .border(Color.red, width: noteField.noteText.hasReachedLimit ? 1 : 0)
+                            .frame(minHeight: 150)
+                            .font(Font.custom(noteField.font, size: 14))
                     }
-                    //Spacer()
-                    fontMenu.frame(height: 65)
-                    TextField("To:", text: $noteField.recipient.value)
-                        .border(Color.red, width: $recipient.hasReachedLimit.wrappedValue ? 1 : 0 )
-                        .onTapGesture {if noteField.recipient.value == "To:" {noteField.recipient.value = ""}}
-                    TextField("From:", text: $noteField.sender.value)
-                        .border(Color.red, width: $sender.hasReachedLimit.wrappedValue ? 1 : 0 )
-                        .onTapGesture {if noteField.sender.value == "From:" {noteField.sender.value = ""}}
-                    TextField("Name Your Card", text: $noteField.cardName.value)
-                        .border(Color.red, width: $cardName.hasReachedLimit.wrappedValue ? 1 : 0 )
-                        .onTapGesture {if noteField.cardName.value == "Name Your Card" {noteField.cardName.value = ""}}
+
+
+                    TextField("To:", text: Binding(
+                                get: {
+                                    if noteField.recipient.value == "To:" {return ""}
+                                    else { return noteField.recipient.value}
+                                },
+                                set: {noteField.recipient.value = $0}
+                            ), onEditingChanged: { isEditing in
+                                if isEditing && noteField.recipient.value == "To:" {noteField.recipient.value = ""}
+                            }).border(Color.red, width: $noteField.recipient.hasReachedLimit.wrappedValue ? 1 : 0 )
+
+                    TextField("From:", text: Binding(
+                        get: {
+                            if noteField.sender.value == "From:" {return ""} else {return noteField.sender.value}
+                        },
+                        set: {noteField.sender.value = $0}
+                    ), onEditingChanged: { isEditing in
+                        if isEditing && noteField.sender.value == "From:" {noteField.sender.value = ""}
+                    })
+                    .border(Color.red, width: noteField.sender.hasReachedLimit ? 1 : 0 )
+
+                    TextField("Name Your Card", text: Binding(
+                        get: {
+                            if noteField.cardName.value == "Name Your Card" {return ""} else {return noteField.cardName.value}
+                        },
+                        set: {noteField.cardName.value = $0}
+                    ), onEditingChanged: { isEditing in
+                        if isEditing && noteField.cardName.value == "Name Your Card" { noteField.cardName.value = ""}
+                    })
+                    .border(Color.red, width: noteField.cardName.hasReachedLimit ? 1 : 0 )
+
+                    
+                    
+                    
+                    
+                    
+                    
+                    
                     Button("Confirm Note") {
                         let fullTextDetails = noteField.noteText.value + " " + noteField.recipient.value + " " + noteField.sender.value + " " + noteField.cardName.value
                         WriteNoteView.checkTextForOffensiveContent(text: fullTextDetails) { (textIsOffensive, error) in
