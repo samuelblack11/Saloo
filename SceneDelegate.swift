@@ -36,14 +36,54 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
         print("Called continue....")
         if userActivity.activityType == NSUserActivityTypeBrowsingWeb {
             if let url = userActivity.webpageURL {
-                // CKShare URL should start with "https://www.icloud.com/share/"
                 if url.absoluteString.starts(with: "https://www.icloud.com/share/") {
-                    // Process the URL as a CKShare URL.
-                    print("Called handleCKShareURL....")
-                    handleCKShareURL(url, scene: scene)
+                    //self.processShareMetadata(metadata)
+                    //handleCKShareURL(url, scene: scene)
+                    print("Called processShareURL....")
+                    processShareURL(url)
                 }
             }
         }
+    }
+    
+    func processShareURL(_ url: URL) {
+        let operation = CKFetchShareMetadataOperation(shareURLs: [url])
+        operation.shouldFetchRootRecord = true
+        
+        operation.perShareMetadataBlock = { (shareURL, shareMetadata, error) in
+            if let error = error {
+                print("Failed to fetch share metadata: \(error)")
+            } else if let shareMetadata = shareMetadata {
+                self.processShareMetadata(shareMetadata)
+                print("Got shareMetaData???")
+            }
+        }
+        
+        operation.fetchShareMetadataCompletionBlock = { (error) in
+            if let error = error {
+                print("Failed to fetch share metadata: \(error)")
+            }
+        }
+        
+        CKContainer.default().add(operation)
+    }
+    
+    
+    
+    
+    
+    
+    private func handleCKShareURL(_ url: URL, scene: UIScene) {
+        // Parse the URL to get the CKRecordID and CKRecordZoneID.
+        // Use the IDs to fetch the shared record from CloudKit.
+        // Handle the shared record as needed.
+        print("called* handleCKShareURL")
+        // Here handle your logic when the CKShare URL has been processed
+        if let windowScene = scene as? UIWindowScene {
+            print("Tried to handle Display...")
+            self.handleGridofCardsDisplay(windowScene: windowScene)
+        }
+        print("called* handleCKShareURL2")
     }
     
     func sceneDidBecomeActive(_ scene: UIScene) {
@@ -80,18 +120,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
             DispatchQueue.main.async {print("called* openURLContexts2");self.processShareMetadata(metadata)}
         }
     }
-    private func handleCKShareURL(_ url: URL, scene: UIScene) {
-        // Parse the URL to get the CKRecordID and CKRecordZoneID.
-        // Use the IDs to fetch the shared record from CloudKit.
-        // Handle the shared record as needed.
-        print("called* handleCKShareURL")
-        // Here handle your logic when the CKShare URL has been processed
-        if let windowScene = scene as? UIWindowScene {
-            print("Tried to handle Display...")
-            self.handleGridofCardsDisplay(windowScene: windowScene)
-        }
-        print("called* handleCKShareURL2")
-    }
+
 
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         print("called* willConnectTo")
@@ -144,8 +173,13 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
         self.gotRecord = false
     }
 
-
-
+    /**
+     To be able to accept a share, add a CKSharingSupported entry in the Info.plist file and set it to true.
+     */
+    func windowScene(_ windowScene: UIWindowScene, userDidAcceptCloudKitShareWith cloudKitShareMetadata: CKShare.Metadata) {
+        print("called* userDidAcceptCloudKitShareWith")
+        self.processShareMetadata(cloudKitShareMetadata)
+        }
 
     func processShareMetadata(_ cloudKitShareMetadata: CKShare.Metadata) {
         print("called* processShareMetadata")
@@ -183,15 +217,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
             }
         print("called* processShareMetadata2")
     }
-    /**
-     To be able to accept a share, add a CKSharingSupported entry in the Info.plist file and set it to true.
-     */
-    func windowScene(_ windowScene: UIWindowScene, userDidAcceptCloudKitShareWith cloudKitShareMetadata: CKShare.Metadata) {
-        print("called* userDidAcceptCloudKitShareWith")
-        self.processShareMetadata(cloudKitShareMetadata)
-        }
-
-
     
     func runGetRecord(shareMetaData: CKShare.Metadata) async {
         print("called getRecord")

@@ -61,44 +61,33 @@ struct WriteNoteView: View {
         
     }
     
-    
-    
     var body: some View {
         NavigationView {
             ZStack {
                 ScrollView {
-                    ZStack(alignment: .topLeading) {
-                        if noteField.noteText.value == "" {
-                            Text("Write Your Note Here")
-                                .foregroundColor(.gray)
-                                .font(Font.custom(noteField.font, size: 14))
-                        }
-                        TextEditor(text: $noteField.noteText.value)
-                            .border(Color.red, width: noteField.noteText.hasReachedLimit ? 1 : 0)
-                            .frame(minHeight: 150)
-                            .font(Font.custom(noteField.font, size: 14))
-                    }
-
-
+                    TextEditor(text: $message.value)
+                        .onTapGesture {if message.value == "Write Your Note Here" {message.value = ""}}
+                        .border(Color.red, width: message.hasReachedLimit ? 1 : 0)
+                        .frame(minHeight: UIScreen.screenHeight/2.5)
+                        .font(Font.custom(noteField.font, size: 14))
                     TextField("To:", text: Binding(
-                                get: {
-                                    if noteField.recipient.value == "To:" {return ""}
-                                    else { return noteField.recipient.value}
-                                },
-                                set: {noteField.recipient.value = $0}
-                            ), onEditingChanged: { isEditing in
-                                if isEditing && noteField.recipient.value == "To:" {noteField.recipient.value = ""}
-                            }).border(Color.red, width: $noteField.recipient.hasReachedLimit.wrappedValue ? 1 : 0 )
-
+                            get: {
+                                if noteField.recipient.value == "To:" {return ""}
+                                else { return noteField.recipient.value}
+                            },
+                            set: {noteField.recipient.value = $0}
+                        ), onEditingChanged: { isEditing in
+                            if isEditing && noteField.recipient.value == "To:" {noteField.recipient.value = ""}
+                        }).border(Color.red, width: $noteField.recipient.hasReachedLimit.wrappedValue ? 1 : 0 )
                     TextField("From:", text: Binding(
-                        get: {
-                            if noteField.sender.value == "From:" {return ""} else {return noteField.sender.value}
-                        },
-                        set: {noteField.sender.value = $0}
-                    ), onEditingChanged: { isEditing in
-                        if isEditing && noteField.sender.value == "From:" {noteField.sender.value = ""}
-                    })
-                    .border(Color.red, width: noteField.sender.hasReachedLimit ? 1 : 0 )
+                            get: {
+                                if noteField.sender.value == "From:" {return ""} else {return noteField.sender.value}
+                            },
+                            set: {noteField.sender.value = $0}
+                        ), onEditingChanged: { isEditing in
+                            if isEditing && noteField.sender.value == "From:" {noteField.sender.value = ""}
+                        })
+                        .border(Color.red, width: noteField.sender.hasReachedLimit ? 1 : 0 )
 
                     TextField("Name Your Card", text: Binding(
                         get: {
@@ -109,17 +98,10 @@ struct WriteNoteView: View {
                         if isEditing && noteField.cardName.value == "Name Your Card" { noteField.cardName.value = ""}
                     })
                     .border(Color.red, width: noteField.cardName.hasReachedLimit ? 1 : 0 )
-
-                    
-                    
-                    
-                    
-                    
-                    
-                    
                     Button("Confirm Note") {
                         let fullTextDetails = noteField.noteText.value + " " + noteField.recipient.value + " " + noteField.sender.value + " " + noteField.cardName.value
                         WriteNoteView.checkTextForOffensiveContent(text: fullTextDetails) { (textIsOffensive, error) in
+                            noteField.noteText = message
                             print("....\(textIsOffensive)")
                             if textIsOffensive! {
                                 alertVars.alertType = .offensiveText
