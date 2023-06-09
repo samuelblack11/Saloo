@@ -34,7 +34,7 @@ struct StartMenu: View {
     @State private var isBanned = false
     @ObservedObject var gettingRecord = GettingRecord.shared
     @ObservedObject var alertVars = AlertVars.shared
-
+    @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate2
    // @State var salooUserID: String = (UserDefaults.standard.object(forKey: "SalooUserID") as? String)!
     //@StateObject var audioManager = AudioSessionManager()
     var possibleSubscriptionValues = ["Apple Music", "Spotify", "Neither"]

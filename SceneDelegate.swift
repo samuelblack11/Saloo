@@ -182,14 +182,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
                 }
             }
         print("called* processShareMetadata2")
-        
-        
     }
-    
-    
-    
-    
-    
     /**
      To be able to accept a share, add a CKSharingSupported entry in the Info.plist file and set it to true.
      */
@@ -246,7 +239,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
                     print("CKQueryOperation completed successfully and found records.")
                     DispatchQueue.main.async {
                         gettingRecord.isLoadingAlert = false
-                        gettingRecord.showLoadingRecordAlert  = false
+                        //gettingRecord.showLoadingRecordAlert  = false
                         gettingRecord.isShowingActivityIndicator = false
                     }
                     self.counter = 0
@@ -259,8 +252,11 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
                             self.getRecordViaQuery(shareMetaData: shareMetaData, targetDatabase: targetDatabase)
                             if self.counter == 0 {
                                 gettingRecord.showLoadingRecordAlert  = true
+                                AlertVars.shared.alertType = .gettingRecord
+                                AlertVars.shared.activateAlert = true
                                 print("##")
-                                print(gettingRecord.showLoadingRecordAlert)
+                                print(AlertVars.shared.alertType)
+                                print(AlertVars.shared.activateAlert)
                                 gettingRecord.isLoadingAlert = false
                             }
                             print("Counter = \(self.counter)"); self.counter += 1

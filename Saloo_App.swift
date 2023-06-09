@@ -10,6 +10,7 @@ import CloudKit
 @main
 struct Saloo_App: App {
     @StateObject var appDelegate = AppDelegate()
+    @StateObject var sceneDelegate = SceneDelegate()
     @ObservedObject var apiManager = APIManager.shared
     @ObservedObject var spotifyManager = SpotifyManager.shared
     @ObservedObject var appState = AppState.shared
@@ -19,7 +20,6 @@ struct Saloo_App: App {
     @StateObject var musicSub = MusicSubscription()
     @StateObject var calViewModel = CalViewModel()
     @StateObject var showDetailView = ShowDetailView()
-    @StateObject var sceneDelegate = SceneDelegate()
     @StateObject var networkMonitor = NetworkMonitor()
     @State private var isCountdownShown: Bool = false
     @State private var isSignedIn = UserDefaults.standard.string(forKey: "SalooUserID") != nil
@@ -75,7 +75,8 @@ struct AlertViewMod: ViewModifier {
     @Binding var showAlert: Bool
     var activeAlert: ActiveAlert
     var alertDismissAction: (() -> Void)?    
-    
+    var secondDismissAction: (() -> Void)?
+
     
     func body(content: Content) -> some View {
         content
@@ -124,7 +125,9 @@ struct AlertViewMod: ViewModifier {
                         secondaryButton: .cancel()
                     )
                 case .addMusicPrompt:
-                    return Alert(title: Text("Add Song to Card?"), primaryButton: .default(Text("Hell Yea"), action: {alertDismissAction?()}), secondaryButton: .cancel())
+                    return Alert(title: Text("Add Song to Card?"),
+                                 primaryButton: .default(Text("Hell Yea"), action: {alertDismissAction?()}),
+                                 secondaryButton: .default(Text("No Thanks"), action: {secondDismissAction?()}))
                 case .AMSongNotAvailable:
                     return Alert(title: Text("Song Not Available"), message: Text("Sorry, this song isn't available. Please select a different one."), dismissButton: .default(Text("OK")){alertDismissAction?()})
                 case .reportComplete:

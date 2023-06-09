@@ -31,7 +31,6 @@ struct WriteNoteView: View {
     @ObservedObject var cardName = MaximumText(limit: 20, value: "Name Your Card")
     @State private var tappedTextEditor = false
     @State private var namesNotEntered = false
-    @State private var selectedFont = "Papyrus"
 
     @FocusState private var isNoteFieldFocused: Bool
     @ObservedObject var gettingRecord = GettingRecord.shared
@@ -41,8 +40,8 @@ struct WriteNoteView: View {
         HStack {
             Text("Choose Font Here:  ")
                 .padding(.leading, 5)
-                .font(Font.custom(selectedFont, size: 12))
-            Picker("", selection: $selectedFont) {
+                .font(Font.custom(noteField.font, size: 12))
+            Picker("", selection: $noteField.font) {
                 ForEach(fonts, id:\.self) { fontType in
                     Text(fontType).font(Font.custom(fontType, size: 12))
                 }
@@ -62,38 +61,37 @@ struct WriteNoteView: View {
         
     }
     
+    
+    
     var body: some View {
         NavigationView {
             ZStack {
                 ScrollView {
-                    TextEditor(text: $message.value)
+                    TextEditor(text: $noteField.noteText.value)
                         .border(Color.red, width: $message.hasReachedLimit.wrappedValue ? 1 : 0 )
                         .frame(minHeight: 150)
-                        .font(Font.custom(selectedFont, size: 14))
+                        .font(Font.custom(noteField.font, size: 14))
                         .onTapGesture {
-                            if message.value == "Write Your Note Here" {message.value = ""}
+                            if noteField.noteText.value == "Write Your Note Here" {noteField.noteText.value = ""}
                             //isNoteFieldFocused.toggle()
                             tappedTextEditor = true
                         }
                     HStack {
-                        Text("\(225 - message.value.count) Characters Remaining").font(Font.custom(selectedFont, size: 10))
-                        //Image(uiImage: UIImage(data: collageImage.image1)!)
-                        //.resizable()
-                        //.frame(width: (UIScreen.screenWidth/5)-10, height: (UIScreen.screenWidth/5),alignment: .center)
+                        Text("\(225 - noteField.noteText.value.count) Characters Remaining").font(Font.custom(noteField.font, size: 10))
                     }
                     //Spacer()
                     fontMenu.frame(height: 65)
-                    TextField("To:", text: $recipient.value)
+                    TextField("To:", text: $noteField.recipient.value)
                         .border(Color.red, width: $recipient.hasReachedLimit.wrappedValue ? 1 : 0 )
-                        .onTapGesture {if recipient.value == "To:" {recipient.value = ""}}
-                    TextField("From:", text: $sender.value)
+                        .onTapGesture {if noteField.recipient.value == "To:" {noteField.recipient.value = ""}}
+                    TextField("From:", text: $noteField.sender.value)
                         .border(Color.red, width: $sender.hasReachedLimit.wrappedValue ? 1 : 0 )
-                        .onTapGesture {if sender.value == "From:" {sender.value = ""}}
-                    TextField("Name Your Card", text: $cardName.value)
+                        .onTapGesture {if noteField.sender.value == "From:" {noteField.sender.value = ""}}
+                    TextField("Name Your Card", text: $noteField.cardName.value)
                         .border(Color.red, width: $cardName.hasReachedLimit.wrappedValue ? 1 : 0 )
-                        .onTapGesture {if cardName.value == "Name Your Card" {cardName.value = ""}}
+                        .onTapGesture {if noteField.cardName.value == "Name Your Card" {noteField.cardName.value = ""}}
                     Button("Confirm Note") {
-                        let fullTextDetails = message.value + " " + recipient.value + " " + sender.value + " " + cardName.value
+                        let fullTextDetails = noteField.noteText.value + " " + noteField.recipient.value + " " + noteField.sender.value + " " + noteField.cardName.value
                         WriteNoteView.checkTextForOffensiveContent(text: fullTextDetails) { (textIsOffensive, error) in
                             print("....\(textIsOffensive)")
                             if textIsOffensive! {
@@ -101,10 +99,12 @@ struct WriteNoteView: View {
                                 alertVars.activateAlert = true
                             }
                             else {
-                                cardName.value = cardName.value.components(separatedBy: CharacterSet.punctuationCharacters).joined()
+                                noteField.cardName.value = noteField.cardName.value.components(separatedBy: CharacterSet.punctuationCharacters).joined()
                                 if appDelegate.musicSub.type == .Apple {
                                     alertVars.alertType = .addMusicPrompt
                                     alertVars.activateAlert = true
+                                    print("$$$")
+                                    print(noteField.noteText.value)
                                 }
                                 if appDelegate.musicSub.type == .Spotify {
                                     alertVars.alertType = .addMusicPrompt
@@ -125,10 +125,14 @@ struct WriteNoteView: View {
         }
         
         .modifier(AlertViewMod(showAlert: alertVars.activateAlertBinding, activeAlert: alertVars.alertType, alertDismissAction: {
+            print("Called alertDismissAction....")
+            print(noteField.noteText.value)
             addMusic.addMusic = true
             appDelegate.musicSub.timeToAddMusic = true
             checkRequiredFields()
             annotateIfNeeded()
+        }, secondDismissAction: {
+            checkRequiredFields(); annotateIfNeeded(); addMusic.addMusic = false; showFinalize = true
         }))
         //.environmentObject(appDelegate)
         .environmentObject(noteField)
@@ -162,15 +166,10 @@ extension WriteNoteView {
     }
     
     func checkRequiredFields() {
-        if recipient.value != "" && cardName.value != "" {
+        if noteField.recipient.value != "" && noteField.cardName.value != "" {
             //namesNotEntered = false
             if addMusic.addMusic {showMusic = true}
             else {showFinalize = true}
-            noteField.noteText = message.value
-            noteField.recipient = recipient.value
-            noteField.cardName = cardName.value
-            noteField.font = selectedFont
-            noteField.sender = sender.value
         }
         else {
             alertVars.alertType = .namesNotEntered
@@ -182,8 +181,6 @@ extension WriteNoteView {
     static let subscriptionKey = "644c31910b4c473e9117a5127ceb3895"
     static let endpoint = "https://saloocontentmoderator2.cognitiveservices.azure.com/"
     static let textModerationEndpoint = "https://eastus.api.cognitive.microsoft.com/contentmoderator/moderate/v1.0/ProcessText/Screen"
-    //static let textBase = endpoint + "contentmoderator/moderate/v1.0/ProcessText/Screen"
-    //static let textBase = endpoint + "contentmoderator/moderate/v1.0/Text/Classify"
     static let textBase = endpoint + "contentmoderator/moderate/v1.0/ProcessText/Screen?classify=true"
     static func checkTextForOffensiveContent(text: String, completion: @escaping (Bool?, Error?) -> Void) {
         // Endpoint for Microsoft's Content Moderator API (text moderation)

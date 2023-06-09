@@ -22,10 +22,10 @@ extension PersistenceController {
             let cardRecord = CKRecord(recordType: "Card", recordID: id)
             let coreCard = CoreCard(context: context)
             coreCard.uniqueName = UUID().uuidString
-            coreCard.cardName = noteField.cardName
+            coreCard.cardName = noteField.cardName.value
             coreCard.occassion = chosenOccassion.occassion
-            coreCard.recipient = noteField.recipient
-            coreCard.sender = noteField.sender
+            coreCard.recipient = noteField.recipient.value
+            coreCard.sender = noteField.sender.value
             coreCard.associatedRecord = cardRecord
             coreCard.an1 = an1
             coreCard.an2 = an2
@@ -36,7 +36,7 @@ extension PersistenceController {
             coreCard.coverImage = chosenObject.coverImage
             coreCard.date = Date.now
             coreCard.font = noteField.font
-            coreCard.message = noteField.noteText
+            coreCard.message = noteField.noteText.value
             coreCard.songID = songID
             coreCard.songName = songName
             coreCard.songArtistName = songArtistName

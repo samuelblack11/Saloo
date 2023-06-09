@@ -127,16 +127,38 @@ class ChosenCoverImageObject: ObservableObject {
 }
 
 class NoteField: ObservableObject  {
-    @Published var noteText = String()
-    @Published var recipient =  String()
-    @Published var sender =  String()
-    @Published var cardName = String()
-    @Published var font = String()
+    @Published var noteText = MaximumText(limit: 225, value: "Write Your Note Here")
+    @Published var recipient = MaximumText(limit: 20, value: "To:")
+    @Published var sender = MaximumText(limit: 20, value: "From:")
+    @Published var cardName = MaximumText(limit: 20, value: "Name Your Card")
+    @Published var font = "Papyrus"
     @Published var willHandWrite = Bool()
     @Published var eCardText = String()
     @Published var printCardText = String()
 }
 
+class MaximumText: ObservableObject {
+    // variable for character limit
+    private let limit: Int
+    init(limit: Int, value: String) {
+        self.limit = limit
+        self.value = value
+    }
+    
+    // value that text field displays
+    @Published var value: String {
+        didSet {
+            if value.count > self.limit {
+                value = String(value.prefix(self.limit))
+                self.hasReachedLimit = true
+            } else {
+                self.hasReachedLimit = false
+            }
+        }
+    }
+    
+    @Published var hasReachedLimit = false
+}
 
 struct CoverImageObject: Identifiable, Hashable {
     let id = UUID()
@@ -175,21 +197,7 @@ class CollageImage: ObservableObject {
 class AddMusic: ObservableObject {@Published var addMusic: Bool = false}
 
 
-class MaximumText: ObservableObject {
-    // variable for character limit
-    private let limit: Int
-    init(limit: Int, value: String) {self.limit = limit; self.value = value}
-    // value that text field displays
-    @Published var value: String {
-        didSet {
-            if value.count > self.limit {
-                value = String(value.prefix(self.limit))
-                self.hasReachedLimit = true
-            } else {self.hasReachedLimit = false}
-        }
-    }
-    @Published var hasReachedLimit = false
-}
+
 
 public class ChosenImages: ObservableObject {
     @Published var imagePlaceHolder: Image?
