@@ -31,7 +31,7 @@ struct WriteNoteView: View {
     @ObservedObject var cardName = MaximumText(limit: 20, value: "Name Your Card")
     @State private var tappedTextEditor = false
     @State private var namesNotEntered = false
-
+    @State var isFirstTap = true
     @FocusState private var isNoteFieldFocused: Bool
     @ObservedObject var gettingRecord = GettingRecord.shared
 

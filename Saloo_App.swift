@@ -9,6 +9,7 @@ import CloudKit
 
 @main
 struct Saloo_App: App {
+    @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate3
     @StateObject var appDelegate = AppDelegate()
     @StateObject var sceneDelegate = SceneDelegate()
     @ObservedObject var apiManager = APIManager.shared
