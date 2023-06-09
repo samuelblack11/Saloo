@@ -10,6 +10,7 @@ import Foundation
 import CoreData
 import SwiftUI
 import FSCalendar
+import os
 
 struct CalendarView: UIViewRepresentable, View {
     var calendar: FSCalendar
@@ -186,6 +187,7 @@ extension CalViewModel {
          //if first logon
         if defaults.bool(forKey: "First Launch") == true {
             print("Not First Launch")
+            NSLog("Not First Launch")
             //deleteAllForEntity()
             }
         else {

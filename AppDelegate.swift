@@ -34,25 +34,22 @@ class AppDelegate: UIResponder, UIApplicationDelegate, ObservableObject {
     let appColor = Color("SalooTheme")
     @Published var isLaunchingFromClosed = true
     @Published var isPlayerCreated = false
-    func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
-        print("AppDelegate Open with Options being called....")
-        let isOpened = openMyApp(from: url)
-        return isOpened
-    }
+    //func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
+    //    print("AppDelegate Open with Options being called....")
+    //    GettingRecord.shared.isLoadingAlert = true
+    //    let isOpened = openMyApp(from: url)
+    //    return isOpened
+    //}
     
-    //func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil) -> Bool {
-     //   print("didFinishLaunchingWithOptions")
-    //    return true
-   // }
+
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
            // Check if the app is launching from a terminated state
            if let launchOptions = launchOptions, launchOptions[UIApplication.LaunchOptionsKey.annotation] == nil {
                print("isLaunchingFromClosed")
+               //GettingRecord.shared.isLoadingAlert = true
                isLaunchingFromClosed = true
-           } else {
-               isLaunchingFromClosed = false
-           }
+           } else {isLaunchingFromClosed = false}
            
            return true
        }

@@ -39,8 +39,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
                 if url.absoluteString.starts(with: "https://www.icloud.com/share/") {
                     //self.processShareMetadata(metadata)
                     //handleCKShareURL(url, scene: scene)
-                    print("Called processShareURL....")
-                    processShareURL(url)
+                    //print("Called processShareURL....")
+                    //processShareURL(url)
+                    //GettingRecord.shared.isLoadingAlert  = true
                 }
             }
         }
@@ -49,7 +50,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
     func processShareURL(_ url: URL) {
         let operation = CKFetchShareMetadataOperation(shareURLs: [url])
         operation.shouldFetchRootRecord = true
-        
         operation.perShareMetadataBlock = { (shareURL, shareMetadata, error) in
             if let error = error {
                 print("Failed to fetch share metadata: \(error)")
@@ -58,20 +58,11 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
                 print("Got shareMetaData???")
             }
         }
-        
         operation.fetchShareMetadataCompletionBlock = { (error) in
-            if let error = error {
-                print("Failed to fetch share metadata: \(error)")
-            }
+            if let error = error {print("Failed to fetch share metadata: \(error)")}
         }
-        
         CKContainer.default().add(operation)
     }
-    
-    
-    
-    
-    
     
     private func handleCKShareURL(_ url: URL, scene: UIScene) {
         // Parse the URL to get the CKRecordID and CKRecordZoneID.
@@ -113,10 +104,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
                 print("An error occurred: \(error?.localizedDescription ?? "unknown error")")
                 return
             }
-            
-            // From here, you can use metadata to fetch the associated record or perform other operations as needed
-            // Add your code here
-
             DispatchQueue.main.async {print("called* openURLContexts2");self.processShareMetadata(metadata)}
         }
     }
@@ -124,20 +111,14 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
 
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         print("called* willConnectTo")
-
         NotificationCenter.default.addObserver(self, selector: #selector(handleDidAcceptShare(_:)), name: .didAcceptShare, object: nil)
-
-        if let userActivity = connectionOptions.userActivities.first {
-            self.scene(scene, continue: userActivity)
+        
+        if connectionOptions.cloudKitShareMetadata != nil {
+            //GettingRecord.shared.isLoadingAlert = true
+            self.processShareMetadata(connectionOptions.cloudKitShareMetadata!)
         }
-
-        // Check if the app was launched with a URL
-        if let urlContext = connectionOptions.urlContexts.first {
-            print("App launched with URL: \(urlContext.url.absoluteString)")
-            self.launchedURL = urlContext.url
-        }
+        
         print("called* willConnectTo2")
-
     }
     
     @objc private func handleDidAcceptShare(_ notification: Notification) {
@@ -146,15 +127,11 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
 
     private func handleGridofCardsDisplay(windowScene: UIWindowScene) {
         print("called* handleGridofCardsDisplay")
-
         guard self.gotRecord && self.connectToScene else { return }
-        
         if self.appDelegate.musicSub.type == .Neither {self.updateMusicSubType()}
-        
         let contentView = GridofCards(cardsForDisplay: CoreCardUtils.loadCoreCards(), whichBoxVal: self.whichBoxForCKAccept!, chosenCard: self.coreCard)
             .environmentObject(self.appDelegate)
             .environmentObject(self.networkMonitor)
-        
         let window = UIWindow(windowScene: windowScene)
         self.window = window
         let initialViewController = UIHostingController(rootView: contentView)
@@ -162,14 +139,12 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
         window.rootViewController = navigationController
         print("called* handleGridofCardsDisplay2")
         window.makeKeyAndVisible()
-        
         // Customize the transition animation
         let transition = CATransition()
         transition.duration = 5.3
         transition.timingFunction = CAMediaTimingFunction(name: CAMediaTimingFunctionName.easeInEaseOut)
         transition.type = CATransitionType.fade
         navigationController.view.layer.add(transition, forKey: kCATransition)
-        
         self.gotRecord = false
     }
 
@@ -197,6 +172,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
                 self.acceptedShare = cloudKitShareMetadata.share; print("Trying to Get Share as Owner...")
                     waitingToAcceptRecord = true
                     Task {
+                        
+                        print("^^^^^")
+                        print(self.acceptedShare?.recordID)
                         await self.getRecordViaQuery(shareMetaData: cloudKitShareMetadata, targetDatabase: PersistenceController.shared.cloudKitContainer.privateCloudDatabase)
                         // Notify observers that a CloudKit share was accepted.
                         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
@@ -237,7 +215,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
         op3.zoneID = shareMetaData.share.recordID.zoneID
         var foundRecord = false
         var delayTask: DispatchWorkItem?
-        
         op3.recordMatchedBlock = {recordID, result in
             foundRecord = true
             delayTask?.cancel() // Cancel showing the alert if we've found the record
@@ -290,8 +267,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
         targetDatabase.add(op3)
     }
 
-
-    
     func parseRecord(record: CKRecord?) {
         print("Parsing Record....")
         DispatchQueue.main.async() {
