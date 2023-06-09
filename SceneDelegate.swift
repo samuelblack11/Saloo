@@ -32,51 +32,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
     let customLog = OSLog(subsystem: "com.Saloo", category: "Custom Category")
     var spotifyManager: SpotifyManager?
     
-    func scene(_ scene: UIScene, continue userActivity: NSUserActivity) {
-        print("Called continue....")
-        if userActivity.activityType == NSUserActivityTypeBrowsingWeb {
-            if let url = userActivity.webpageURL {
-                if url.absoluteString.starts(with: "https://www.icloud.com/share/") {
-                    //self.processShareMetadata(metadata)
-                    //handleCKShareURL(url, scene: scene)
-                    //print("Called processShareURL....")
-                    //processShareURL(url)
-                    //GettingRecord.shared.isLoadingAlert  = true
-                }
-            }
-        }
-    }
-    
-    func processShareURL(_ url: URL) {
-        let operation = CKFetchShareMetadataOperation(shareURLs: [url])
-        operation.shouldFetchRootRecord = true
-        operation.perShareMetadataBlock = { (shareURL, shareMetadata, error) in
-            if let error = error {
-                print("Failed to fetch share metadata: \(error)")
-            } else if let shareMetadata = shareMetadata {
-                self.processShareMetadata(shareMetadata)
-                print("Got shareMetaData???")
-            }
-        }
-        operation.fetchShareMetadataCompletionBlock = { (error) in
-            if let error = error {print("Failed to fetch share metadata: \(error)")}
-        }
-        CKContainer.default().add(operation)
-    }
-    
-    private func handleCKShareURL(_ url: URL, scene: UIScene) {
-        // Parse the URL to get the CKRecordID and CKRecordZoneID.
-        // Use the IDs to fetch the shared record from CloudKit.
-        // Handle the shared record as needed.
-        print("called* handleCKShareURL")
-        // Here handle your logic when the CKShare URL has been processed
-        if let windowScene = scene as? UIWindowScene {
-            print("Tried to handle Display...")
-            self.handleGridofCardsDisplay(windowScene: windowScene)
-        }
-        print("called* handleCKShareURL2")
-    }
-    
     func sceneDidBecomeActive(_ scene: UIScene) {
         // Handle the URL if one was stored when the app was launched
         if let url = launchedURL, let windowScene = scene as? UIWindowScene {
@@ -163,8 +118,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
         let persistenceController = PersistenceController.shared
         let sharedStore = persistenceController.sharedPersistentStore
         let container = persistenceController.persistentContainer
-        os_log("called userDidAcceptCloudKitShareWith....", log: customLog, type: .info)
-
         container.acceptShareInvitations(from: [cloudKitShareMetadata], into: sharedStore) { [self] (_, error) in
             if let error = error {
                 print("\(#function): Failed to accept share invitations: \(error)")
@@ -172,9 +125,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
                 self.acceptedShare = cloudKitShareMetadata.share; print("Trying to Get Share as Owner...")
                     waitingToAcceptRecord = true
                     Task {
-                        
-                        print("^^^^^")
-                        print(self.acceptedShare?.recordID)
                         await self.getRecordViaQuery(shareMetaData: cloudKitShareMetadata, targetDatabase: PersistenceController.shared.cloudKitContainer.privateCloudDatabase)
                         // Notify observers that a CloudKit share was accepted.
                         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {

@@ -210,10 +210,22 @@ struct SpotPlayerView: View {
                     print("Error getting player state: \(error!)")
                     return
                 }
+                guard let playerState = result as? SPTAppRemotePlayerState else {
+                    print("Error: Could not cast result to SPTAppRemotePlayerState.")
+                    return
+                }
+                
+                if playerState.isPaused {self.isPlaying = false}
+                else {self.isPlaying = true}
+                
                 guard let playbackPosition = (result as AnyObject).playbackPosition else {
                     print("Error: Could not retrieve playback position.")
                     return
                 }
+                
+                print(">>>>")
+                print(result)
+                
                 // Use the unwrapped value of playbackPosition here
                 DispatchQueue.main.async {
                     self.songProgress = Double(playbackPosition / 1000)
