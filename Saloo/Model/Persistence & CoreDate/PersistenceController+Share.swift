@@ -16,27 +16,23 @@ import CloudKit
 extension PersistenceController {
 
     func presentCloudSharingController(coreCard: CoreCard) {
-        // Fetch the associated CKShare from the CoreCard.
         let shareId = CKRecord.ID(recordName: coreCard.sharedRecordRootID!, zoneID: CKRecordZone.ID(zoneName: "Cards", ownerName: CKCurrentUserDefaultName))
-        cloudKitContainer.privateCloudDatabase.fetch(withRecordID: shareId) { shareRecord, error in
+        cloudKitContainer.sharedCloudDatabase.fetch(withRecordID: shareId) { shareRecord, error in
             DispatchQueue.main.async {
                 if let error = error {
                     print("Error fetching share: \(error)")
                     return
                 }
-                
                 guard let share = shareRecord as? CKShare else {
                     print("Fetched record is not a CKShare")
                     return
                 }
-                
                 let sharingController = UICloudSharingController(share: share, container: self.cloudKitContainer)
                 sharingController.delegate = self
-
-                guard var topVC = UIApplication.shared.windows.first?.rootViewController else {
+                guard var topVC = UIApplication.shared.keyWindow?.rootViewController else {
                     return
                 }
-                while let presentedVC = topVC.presentedViewController {
+                if let presentedVC = topVC.presentedViewController {
                     topVC = presentedVC
                 }
                 sharingController.modalPresentationStyle = .formSheet
@@ -44,6 +40,7 @@ extension PersistenceController {
             }
         }
     }
+
 
     
     func presentCloudSharingController(share: CKShare) {

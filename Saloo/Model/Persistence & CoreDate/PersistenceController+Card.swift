@@ -43,7 +43,6 @@ extension PersistenceController {
     
     func addCoreCard(noteField: NoteField, chosenOccassion: Occassion, an1: String, an2: String, an2URL: String, an3: String, an4: String, chosenObject: ChosenCoverImageObject, collageImage: CollageImage, context: NSManagedObjectContext, songID: String?, spotID: String?, spotName: String?, spotArtistName: String?, songName: String?, songArtistName: String?, songAlbumName: String?, songArtImageData: Data?, songPreviewURL: String?, songDuration: String?, inclMusic: Bool, spotImageData: Data?, spotSongDuration: String?, spotPreviewURL: String?, songAddedUsing: String?, cardType: String, appleAlbumArtist: String?, spotAlbumArtist: String?, salooUserID: String, completion: @escaping (CoreCard) -> Void) {
         var createdCoreCard: CoreCard!
-        createZoneIfNeeded(zoneName: "Cards") {
             context.performAndWait {
                 print("running addCoreCard now...")
                 let recordZone = CKRecordZone(zoneName: "Cards")
@@ -93,40 +92,36 @@ extension PersistenceController {
                 PersistenceController.shared.cloudKitContainer.fetchUserRecordID { ckRecordID, error in
                     coreCard.creator = (ckRecordID?.recordName)!
                 }
-                    let shareZone = CKRecordZone(zoneName: "Cards")
-                    let shareZoneID = CKRecordZone.ID(zoneName: "Cards", ownerName: CKCurrentUserDefaultName)
                     let share = CKShare(rootRecord: cardRecord)
                     share[CKShare.SystemFieldKey.title] = "A Greeting from Saloo"
                     share[CKShare.SystemFieldKey.thumbnailImageData] = coreCard.coverImage
                     coreCard.sharedRecordRootID = share.recordID.recordName
-                    share.publicPermission = .readOnly
-                    let recordsToSave = [cardRecord, share]
-                                  let operation = CKModifyRecordsOperation(recordsToSave: recordsToSave, recordIDsToDelete: [])
-                                  
-                                  operation.modifyRecordsCompletionBlock = { savedRecords, deletedRecordIDs, error in
-                                      if let error = error {
-                                          print("Error saving records: \(error)")
-                                      } else {
-                                          print("Successfully saved records")
-                                          do {
-                                              try context.save()
-                                              createdCoreCard = coreCard
-                                              completion(createdCoreCard)
-                                              print("Save Successful")
-                                              print(share.recordID.recordName)
-                                          } catch {
-                                              print("Failed to save context: \(error)")
-                                          }
-                                      }
-                                  }
-                    self.cloudKitContainer.privateCloudDatabase.add(operation)
-                    context.save(with: .addCoreCard)
-                    createdCoreCard = coreCard
-                    completion(createdCoreCard)
-                    print("Save Successful")
+                    share.publicPermission = .readWrite
+                let operation = CKModifyRecordsOperation(recordsToSave: [cardRecord, share], recordIDsToDelete: [])
+                operation.modifyRecordsCompletionBlock = { savedRecords, deletedRecordIDs, error in
+                    if let error = error {
+                        print("Error saving records: \(error)")
+                    } else {
+                        print("Successfully saved records")
+                        do {
+                            try context.save()
+                            createdCoreCard = coreCard
+                            completion(createdCoreCard)
+                            print("Save Successful")
+                            
+                            if let savedShare = savedRecords?.first(where: { $0.recordType == "cloudkit.share" }) as? CKShare {
+                                // here is the shared zone ID
+                                let sharedZoneID = savedShare.recordID.zoneID
+                                print("Shared Zone ID: \(sharedZoneID)")
+                            }
+                        } catch {
+                            print("Failed to save context: \(error)")
+                        }
+                    }
+                }
+                self.cloudKitContainer.privateCloudDatabase.add(operation)
             }
         }
-    }
 
     
     func createShare(coreCard: CoreCard) {
