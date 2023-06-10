@@ -31,9 +31,6 @@ extension PersistenceController {
             print(coreCard)
             var counter = 0
             while counter < 5 {
-                Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { timer in
-                    
-                }
                 counter += 1
                 print("Counter = \(counter)")
             }
@@ -54,7 +51,7 @@ extension PersistenceController {
                 while let presentedVC = topVC.presentedViewController {topVC = presentedVC }
                     sharingController.modalPresentationStyle = .formSheet
                     topVC.present(sharingController, animated: true)
-                }
+    }
             
     
     func presentCloudSharingController(share: CKShare) {

@@ -315,7 +315,10 @@ struct SpotPlayerView: View {
                     songArtImageData = artResponse!
                     songDuration = Double(song.duration_ms) * 0.001
                     playSong()
-                    DispatchQueue.main.async {updateRecordWithNewSPOTData(spotName: song.name, spotArtistName: allArtists, spotID: song.id, songArtImageData: artResponse!, songDuration: String(Double(song.duration_ms) * 0.001)); return}
+                    DispatchQueue.main.async {updateRecordWithNewSPOTData(spotName: song.name, spotArtistName: allArtists, spotID: song.id, songArtImageData: artResponse!, songDuration: String(Double(song.duration_ms) * 0.001))
+                        //; return
+                        
+                    }
                     completion(foundMatch)
 
                     
@@ -337,7 +340,7 @@ struct SpotPlayerView: View {
         let ckContainer = PersistenceController.shared.cloudKitContainer
         taskContext.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
         print("????")
-        controller.updateRecordWithSpotData(for: coreCard!, in: taskContext, with: ckContainer.privateCloudDatabase, spotName: spotName, spotArtistName: spotArtistName,spotID: spotID, spotImageData: songArtImageData, spotSongDuration: songDuration, completion: { (error) in
+        controller.updateRecordWithSpotData(for: coreCard!, in: taskContext, spotName: spotName, spotArtistName: spotArtistName,spotID: spotID, spotImageData: songArtImageData, spotSongDuration: songDuration, completion: { (error) in
             print("Updated Record...")
             print(error as Any)
         } )
@@ -449,10 +452,10 @@ extension SpotPlayerView {
                         if foundMatchBool == false {
                             if songPreviewURL != nil {
                                 deferToPreview = true
-                                //DispatchQueue.main.async {updateRecordWithNewSPOTData(spotName: "LookupFailed", spotArtistName: "LookupFailed", spotID: "LookupFailed", songArtImageData: Data(), songDuration: String(0))}
+                                DispatchQueue.main.async {updateRecordWithNewSPOTData(spotName: "LookupFailed", spotArtistName: "LookupFailed", spotID: "LookupFailed", songArtImageData: Data(), songDuration: String(0))}
                             }
                             else { print("Else called to change card type...")
-                                //appDelegate.chosenGridCard?.cardType = "noMusicNoGift"
+                                appDelegate.chosenGridCard?.cardType = "noMusicNoGift"
                             }
                         }
                     })}
@@ -483,10 +486,10 @@ extension SpotPlayerView {
                         if foundMatchBool == false {
                             if songPreviewURL != nil {
                                 deferToPreview = true
-                                //DispatchQueue.main.async {updateRecordWithNewSPOTData(spotName: "LookupFailed", spotArtistName: "LookupFailed", spotID: "LookupFailed", songArtImageData: Data(), songDuration: String(0))}
+                                DispatchQueue.main.async {updateRecordWithNewSPOTData(spotName: "LookupFailed", spotArtistName: "LookupFailed", spotID: "LookupFailed", songArtImageData: Data(), songDuration: String(0))}
                             }
                             else { print("Else called to change card type...")
-                                //appDelegate.chosenGridCard?.cardType = "noMusicNoGift"
+                                appDelegate.chosenGridCard?.cardType = "noMusicNoGift"
                             }
                         }
                     })}
