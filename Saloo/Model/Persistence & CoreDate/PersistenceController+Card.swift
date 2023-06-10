@@ -101,21 +101,26 @@ extension PersistenceController {
                 operation.modifyRecordsCompletionBlock = { savedRecords, deletedRecordIDs, error in
                     if let error = error {
                         print("Error saving records: \(error)")
+                        completion(createdCoreCard) // Call completion with the createdCoreCard in error scenarios
                     } else {
                         print("Successfully saved records")
                         do {
                             try context.save()
                             createdCoreCard = coreCard
-                            completion(createdCoreCard)
-                            print("Save Successful")
-                            
+
                             if let savedShare = savedRecords?.first(where: { $0.recordType == "cloudkit.share" }) as? CKShare {
-                                // here is the shared zone ID
-                                let sharedZoneID = savedShare.recordID.zoneID
-                                print("Shared Zone ID: \(sharedZoneID)")
+                                // Fetch the CKShare object separately
+                                let zoneID = savedShare.recordID.zoneID
+                                print("Shared Zone ID: \(zoneID)")
+                                print("Shared Zone ID: \(zoneID.zoneName)")
+                                createdCoreCard.sharedZoneID = "\(zoneID.zoneName)@@@\(zoneID.ownerName)"
+                                completion(createdCoreCard)
+                            } else {
+                                completion(createdCoreCard)
                             }
                         } catch {
                             print("Failed to save context: \(error)")
+                            completion(createdCoreCard) // Call completion with the createdCoreCard in error scenarios
                         }
                     }
                 }

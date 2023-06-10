@@ -32,10 +32,7 @@ struct ConfirmFrontCoverView: View {
             let imageSize = image.size
             size = imageSize
         }
-        print("Image Size....")
         widthToHeightRatio = size.width/size.height
-        print(size)
-        print(widthToHeightRatio)
         return (size, widthToHeightRatio)
     }
 

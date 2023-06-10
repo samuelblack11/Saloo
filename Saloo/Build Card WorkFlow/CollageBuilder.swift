@@ -116,9 +116,6 @@ extension CollageBuilder {
         if imageNum == 4 {thisShape = shapeOptions.3}
         let (w2, h2) = shapeToDimensions(shape: thisShape)
         
-        print("Result of shapeToDimensions....\(shapeToDimensions(shape: thisShape))")
-        
-        
         return GeometryReader {geometry in
             ZStack(alignment: .center) {
                 Rectangle().fill(Color.gray).border(Color.black)
@@ -197,8 +194,6 @@ extension CollageBuilder {
     
     
     func shapeToDimensions(shape: String) -> (CGFloat, CGFloat){
-        print("---")
-        print(shape)
         var w = CGFloat(0.0)
         var h = CGFloat(0.0)
         

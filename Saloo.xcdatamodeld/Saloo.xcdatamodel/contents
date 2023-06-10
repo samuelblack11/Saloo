@@ -31,6 +31,7 @@
         <attribute name="salooUserID" optional="YES" attributeType="String"/>
         <attribute name="sender" optional="YES" attributeType="String"/>
         <attribute name="sharedRecordRootID" optional="YES" attributeType="String"/>
+        <attribute name="sharedZoneID" optional="YES" attributeType="String"/>
         <attribute name="songAddedUsing" optional="YES" attributeType="String"/>
         <attribute name="songAlbumName" optional="YES" attributeType="String"/>
         <attribute name="songArtImageData" optional="YES" attributeType="Binary"/>

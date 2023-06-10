@@ -16,30 +16,42 @@ import CloudKit
 extension PersistenceController {
 
     func presentCloudSharingController(coreCard: CoreCard) {
-        let shareId = CKRecord.ID(recordName: coreCard.sharedRecordRootID!, zoneID: CKRecordZone.ID(zoneName: "Cards", ownerName: CKCurrentUserDefaultName))
-        cloudKitContainer.sharedCloudDatabase.fetch(withRecordID: shareId) { shareRecord, error in
-            DispatchQueue.main.async {
-                if let error = error {
-                    print("Error fetching share: \(error)")
-                    return
+        if let sharedZoneID = coreCard.sharedZoneID {
+            let components = sharedZoneID.components(separatedBy: "@@@")
+            if components.count == 2 {
+                let zoneName = components[0]
+                let ownerName = components[1]
+                print("Zone Name: \(zoneName)")
+                print("Owner Name: \(ownerName)")
+                
+                let shareId = CKRecord.ID(recordName: coreCard.sharedRecordRootID!, zoneID: CKRecordZone.ID(zoneName: zoneName, ownerName: ownerName))
+                cloudKitContainer.privateCloudDatabase.fetch(withRecordID: shareId) { shareRecord, error in
+                    DispatchQueue.main.async {
+                        if let error = error {
+                            print("Error fetching share: \(error)")
+                            return
+                        }
+                        guard let share = shareRecord as? CKShare else {
+                            print("Fetched record is not a CKShare")
+                            return
+                        }
+                        let sharingController = UICloudSharingController(share: share, container: self.cloudKitContainer)
+                        sharingController.delegate = self
+                        guard var topVC = UIApplication.shared.keyWindow?.rootViewController else {
+                            return
+                        }
+                        if let presentedVC = topVC.presentedViewController {
+                            topVC = presentedVC
+                        }
+                        sharingController.modalPresentationStyle = .formSheet
+                        topVC.present(sharingController, animated: true)
+                    }
                 }
-                guard let share = shareRecord as? CKShare else {
-                    print("Fetched record is not a CKShare")
-                    return
-                }
-                let sharingController = UICloudSharingController(share: share, container: self.cloudKitContainer)
-                sharingController.delegate = self
-                guard var topVC = UIApplication.shared.keyWindow?.rootViewController else {
-                    return
-                }
-                if let presentedVC = topVC.presentedViewController {
-                    topVC = presentedVC
-                }
-                sharingController.modalPresentationStyle = .formSheet
-                topVC.present(sharingController, animated: true)
             }
         }
     }
+
+
 
 
     
