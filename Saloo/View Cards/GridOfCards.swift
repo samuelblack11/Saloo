@@ -182,10 +182,9 @@ extension GridofCards {
             if networkMonitor.isConnected {chosenCard = card; chosenGridCardType = card.cardType;segueToEnlarge = true; displayCard = true}
             else {alertVars.alertType = .failedConnection; alertVars.activateAlert = true}
         } label: {Text("Enlarge eCard"); Image(systemName: "plus.magnifyingglass")}
-        Button(action: {deleteCoreCard(coreCard: card) }) {HStack {Text("Delete eCard"); Image(systemName: "trash") }.foregroundColor(.red)}
+        Button(action: {deleteCoreCard(coreCard: card) }) {HStack {Text("Delete eCard"); Image(systemName: "trash") }}
         Button(action: { cardToReport = card}) {
-            HStack {Text("Report Offensive Content"); Image(systemName: "exclamationmark.octagon")}.buttonStyle(RedTextButtonStyle())
-        }
+            HStack {Text("Report Offensive Content"); Image(systemName: "exclamationmark.octagon")}}
         }
     
     private func createNewShare(coreCard: CoreCard) {PersistenceController.shared.presentCloudSharingController(coreCard: coreCard)}

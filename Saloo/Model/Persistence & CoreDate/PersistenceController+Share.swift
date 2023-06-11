@@ -55,6 +55,19 @@ extension PersistenceController {
         topVC.present(sharingController, animated: true)
     }
 
+
+
+    func prepareAndPresentSharingController(sharingController: UICloudSharingController) {
+        sharingController.delegate = self
+
+        // Setting the presentation style to .formSheet so there's no need to specify sourceView, sourceItem, or sourceRect.
+        guard var topVC = UIApplication.shared.windows.first?.rootViewController else {return}
+        while let presentedVC = topVC.presentedViewController {topVC = presentedVC }
+
+        sharingController.modalPresentationStyle = .formSheet
+        topVC.present(sharingController, animated: true)
+    }
+
             
     
     func presentCloudSharingController(share: CKShare) {
