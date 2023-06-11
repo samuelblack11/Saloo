@@ -69,6 +69,20 @@ struct GridofCards: View {
     @EnvironmentObject var appDelegate: AppDelegate
     @State var chosenGridCardType: String?
     @ObservedObject var alertVars = AlertVars.shared
+    
+    @State private var currentUserRecordID: CKRecord.ID?
+
+    func fetchCurrentUserRecordID() {
+        PersistenceController.shared.cloudKitContainer.fetchUserRecordID { ckRecordID, error in
+            DispatchQueue.main.async {self.currentUserRecordID = ckRecordID}
+        }
+    }
+    
+    
+    
+    
+    
+    
 
     var sortOptions = ["Date","Card Name","Occassion"]
     
@@ -93,6 +107,7 @@ struct GridofCards: View {
                 }
                 LoadingOverlay()
             }
+            .onAppear{fetchCurrentUserRecordID()}
             .fullScreenCover(item: $cardToReport, onDismiss: didDismiss) {cardToReport in
                 ReportOffensiveContentView(card: cardToReport)}
             .fullScreenCover(item: $chosenCard, onDismiss: didDismiss) {chosenCard in
@@ -167,17 +182,18 @@ struct GridofCards: View {
 extension GridofCards {
     
     @ViewBuilder func contextMenuButtons(card: CoreCard) -> some View {
-
-        if PersistenceController.shared.privatePersistentStore.contains(manageObject: card) {
-            Button("Create New Share") {showCloudShareController = true;
-                if networkMonitor.isConnected{createNewShare(coreCard: card)}
-                else{alertVars.alertType = .failedConnection; alertVars.activateAlert = true}}
+        if let currentUserRecordID = self.currentUserRecordID, card.creator == currentUserRecordID.recordName {
+            if PersistenceController.shared.privatePersistentStore.contains(manageObject: card) {
+                Button("Create New Share") {showCloudShareController = true;
+                    if networkMonitor.isConnected{createNewShare(coreCard: card)}
+                    else{alertVars.alertType = .failedConnection; alertVars.activateAlert = true}}
                 .disabled(CoreCardUtils.shareStatus(card: card).0)
+            }
+            Button {
+                if networkMonitor.isConnected{manageParticipation(coreCard: card)}
+                else{alertVars.alertType = .failedConnection; alertVars.activateAlert = true}
+            } label: {Text("Manage Participation"); Image(systemName: "person.badge.plus")}
         }
-        Button {
-            if networkMonitor.isConnected{manageParticipation(coreCard: card)}
-            else{alertVars.alertType = .failedConnection; alertVars.activateAlert = true}
-        } label: {Text("Manage Participation"); Image(systemName: "person.badge.plus")}
         Button {
             if networkMonitor.isConnected {chosenCard = card; chosenGridCardType = card.cardType;segueToEnlarge = true; displayCard = true}
             else {alertVars.alertType = .failedConnection; alertVars.activateAlert = true}

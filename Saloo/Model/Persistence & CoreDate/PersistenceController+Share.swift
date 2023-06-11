@@ -22,6 +22,7 @@ extension PersistenceController {
            let (_, share) = shareSet.first {
             print("ShareSetFirst is true")
             print(share.publicPermission.rawValue)
+            coreCardShare = share // moved outside of the block
             if share.publicPermission.rawValue != 3 {
                 print("Updating share permissions")
                 share.publicPermission = .readWrite
@@ -34,19 +35,19 @@ extension PersistenceController {
                     }
                 }
                 cloudKitContainer.privateCloudDatabase.add(modifyOperation)
-                coreCardShare = share
             }
         }
 
         let sharingController: UICloudSharingController
         if coreCardShare == nil {
+            print("called new sharing controller...")
             sharingController = newSharingController(unsharedCoreCard: coreCard, persistenceController: self)
         } else {
             print("----")
             print(coreCardShare)
             sharingController = UICloudSharingController(share: coreCardShare!, container: cloudKitContainer)
         }
-        
+
         sharingController.delegate = self
         //Setting the presentation style to .formSheet so there's no need to specify sourceView, sourceItem, or sourceRect.
         guard var topVC = UIApplication.shared.windows.first?.rootViewController else {return}
@@ -54,6 +55,7 @@ extension PersistenceController {
         sharingController.modalPresentationStyle = .formSheet
         topVC.present(sharingController, animated: true)
     }
+
 
 
 
