@@ -28,11 +28,8 @@ extension PersistenceController {
                 share.publicPermission = .readWrite
                 let modifyOperation = CKModifyRecordsOperation(recordsToSave: [share], recordIDsToDelete: nil)
                 modifyOperation.modifyRecordsCompletionBlock = { saved, _, error in
-                    if let error = error {
-                        print("Failed to update share permissions: \(error)")
-                    } else {
-                        print("Share permissions updated")
-                    }
+                    if let error = error {print("Failed to update share permissions: \(error)")}
+                    else {print("Share permissions updated")}
                 }
                 cloudKitContainer.privateCloudDatabase.add(modifyOperation)
             }
@@ -43,8 +40,7 @@ extension PersistenceController {
             print("called new sharing controller...")
             sharingController = newSharingController(unsharedCoreCard: coreCard, persistenceController: self)
         } else {
-            print("----")
-            print(coreCardShare)
+            print("----"); print(coreCardShare)
             sharingController = UICloudSharingController(share: coreCardShare!, container: cloudKitContainer)
         }
 

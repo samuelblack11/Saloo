@@ -67,6 +67,11 @@ extension View {
     }
 }
 
+
+
+
+
+
 enum ActiveAlert {
     case failedConnection, signInFailure, explicitPhoto, offensiveText, namesNotEntered, showCardComplete, showFailedToShare, addMusicPrompt, spotAuthFailed, amAuthFailed, AMSongNotAvailable, gettingRecord, userBanned, reportComplete
 }
@@ -149,6 +154,12 @@ class GettingRecord: ObservableObject {
     @Published var didDismissRecordAlert: Bool = false
     @Published var isShowingActivityIndicator: Bool = false
     @Published var willTryAgainLater: Bool = false
+    private init() {} // Ensures no other instances can be created
+}
+
+class ShareMD: ObservableObject {
+    static let shared = ShareMD()
+    @Published var metaData: CKShare.Metadata? = nil
     private init() {} // Ensures no other instances can be created
 }
 

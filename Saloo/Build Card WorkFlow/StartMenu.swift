@@ -80,6 +80,7 @@ struct StartMenu: View {
         }
         .modifier(AlertViewMod(showAlert: alertVars.activateAlertBinding, activeAlert: alertVars.alertType))
         .onAppear {
+            //deleteAllCoreCards()
             var salooUserID = (UserDefaults.standard.object(forKey: "SalooUserID") as? String)!
             checkUserBanned(userId: salooUserID) { (isBanned, error) in
                 if isBanned == true {alertVars.alertType = .userBanned; alertVars.activateAlert = true}
@@ -160,6 +161,19 @@ extension StartMenu {
             //print("Current User ID: \((ckRecordID?.recordName)!)")
         }
         
+    }
+    
+    
+    func deleteCoreCard(coreCard: CoreCard) {
+        do {PersistenceController.shared.persistentContainer.viewContext.delete(coreCard);try PersistenceController.shared.persistentContainer.viewContext.save()}
+        catch {}
+    }
+    
+    func deleteAllCoreCards() {
+        let request = CoreCard.createFetchRequest()
+        var cardsFromCore: [CoreCard] = []
+        do {cardsFromCore = try PersistenceController.shared.persistentContainer.viewContext.fetch(request); for card in cardsFromCore {deleteCoreCard(coreCard: card)}}
+        catch{}
     }
 }
 

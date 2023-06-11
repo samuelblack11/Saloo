@@ -314,11 +314,12 @@ extension AMPlayerView {
     
     func updateRecordWithNewAMData(songName: String, songArtistName: String, songID: String, songArtImageData: Data, songDuration: String) {
         let controller = PersistenceController.shared
-        let taskContext = controller.persistentContainer.newTaskContext()
+        //let taskContext = controller.persistentContainer.newTaskContext()
+        let taskContext = controller.persistentContainer.viewContext
         let ckContainer = PersistenceController.shared.cloudKitContainer
         taskContext.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
         print("About to run AM Data update on the CKRecord....")
-        controller.updateRecordWithAMData(for: coreCard!, in: taskContext, with: ckContainer.privateCloudDatabase, songName: songName, songArtistName: songArtistName,songID: songID, songImageData: songArtImageData, songDuration: songDuration, completion: { (error) in
+        controller.updateRecordWithAMData(for: coreCard!, in: taskContext, songName: songName, songArtistName: songArtistName,songID: songID, songImageData: songArtImageData, songDuration: songDuration, completion: { (error) in
             print("Updated Record...")
             print(error as Any)
         } )

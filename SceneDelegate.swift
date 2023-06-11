@@ -110,6 +110,25 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
         print("called* userDidAcceptCloudKitShareWith")
         self.processShareMetadata(cloudKitShareMetadata)
         }
+    
+    
+    func updateSharedRecordID(with metadata: CKShare.Metadata) {
+        let context = PersistenceController.shared.persistentContainer.newTaskContext()
+        let sharedRecordID = metadata.share.recordID.recordName
+        // Assuming you have a CoreData entity named SharedRecord
+        let sharedRecord = CoreCard(context: context)
+        sharedRecord.sharedRecordID = sharedRecordID
+        // Save the context
+        do {
+            try context.save()
+            print("Did save sharedRecordID")
+            print(sharedRecordID)
+        } catch {
+            print("Error saving context: \(error)")
+        }
+    }
+
+    
 
     func processShareMetadata(_ cloudKitShareMetadata: CKShare.Metadata) {
         print("called* processShareMetadata")
@@ -136,6 +155,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
                     waitingToAcceptRecord = true
                     Task {
                         await self.runGetRecord(shareMetaData: cloudKitShareMetadata)
+                        
+                        ShareMD.shared.metaData = cloudKitShareMetadata
+                        print(ShareMD.shared.metaData?.share)
+                        //updateSharedRecordID(with: cloudKitShareMetadata)
                         // Notify observers that a CloudKit share was accepted.
                         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
                             NotificationCenter.default.post(name: .didAcceptShare, object: nil)
