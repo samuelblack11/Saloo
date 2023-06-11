@@ -10,7 +10,7 @@ import UIKit
 import CloudKit
 import SwiftUI
 import os.log
-import CoreData
+
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
     var window: UIWindow?
@@ -119,14 +119,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
         let sharedStore = persistenceController.sharedPersistentStore
         let container = persistenceController.persistentContainer
         container.acceptShareInvitations(from: [cloudKitShareMetadata], into: sharedStore) { [self] (_, error) in
-            if let coreCard = getCoreCard(from: cloudKitShareMetadata) {
-                print("Got Core Card Worked I think?")
-                saveSharedRecordRootID(from: cloudKitShareMetadata, to: coreCard)
-            } else {
-                // handle the case when coreCard is nil
-                print("Error: CoreCard is nil")
-            }
-
             if let error = error {
                 print("\(#function): Failed to accept share invitations: \(error)")
                     // repeat same logic for accept share as participant, and use to open the specified record.
@@ -153,51 +145,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
             }
         print("called* processShareMetadata2")
     }
-    
-    
-    
-    func saveSharedRecordRootID(from shareMetaData: CKShare.Metadata, to coreCard: CoreCard) {
-        let context = PersistenceController.shared.persistentContainer.newTaskContext()
-        if coreCard.sharedRecordRootID == nil {
-
-            
-            coreCard.sharedRecordRootID = shareMetaData.hierarchicalRootRecordID?.recordName.description
-            print("!!!!!!")
-            print(coreCard.sharedRecordRootID)
-            print(shareMetaData.hierarchicalRootRecordID)
-            do {
-                print("Will try save...")
-                try context.save()
-                print("Did save!!")
-            }
-            catch {print("Error saving CoreData: \(error)")}
-        }
-        else {print("SharedRootRecordID not nil")}
-    }
-    
-    
-    
-    func getCoreCard(from shareMetaData: CKShare.Metadata) -> CoreCard? {
-        let request: NSFetchRequest<CoreCard> = CoreCard.createFetchRequest()
-        let context = PersistenceController.shared.persistentContainer.newTaskContext()
-        
-        if let uniqueName = shareMetaData.rootRecord?["uniqueName"] as? String {
-            request.predicate = NSPredicate(format: "uniqueName == %@", uniqueName)
-        }
-
-        do {
-            let results = try context.fetch(request)
-            print("....\(results.first?.songAlbumName)")
-            return results.first
-        } catch {
-            print("Error fetching CoreCard: \(error)")
-            return nil
-        }
-    }
-
-
-
-    
     
     func runGetRecord(shareMetaData: CKShare.Metadata) async {
         print("called getRecord")

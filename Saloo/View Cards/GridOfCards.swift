@@ -169,11 +169,15 @@ extension GridofCards {
     @ViewBuilder func contextMenuButtons(card: CoreCard) -> some View {
 
         if PersistenceController.shared.privatePersistentStore.contains(manageObject: card) {
-            Button {showCloudShareController = true;
+            Button("Create New Share") {showCloudShareController = true;
                 if networkMonitor.isConnected{createNewShare(coreCard: card)}
                 else{alertVars.alertType = .failedConnection; alertVars.activateAlert = true}}
-            label: {Text("Invite Participants"); Image(systemName: "person.badge.plus")}
+                .disabled(CoreCardUtils.shareStatus(card: card).0)
         }
+        Button {
+            if networkMonitor.isConnected{manageParticipation(coreCard: card)}
+            else{alertVars.alertType = .failedConnection; alertVars.activateAlert = true}
+        } label: {Text("Manage Participation"); Image(systemName: "person.badge.plus")}
         Button {
             if networkMonitor.isConnected {chosenCard = card; chosenGridCardType = card.cardType;segueToEnlarge = true; displayCard = true}
             else {alertVars.alertType = .failedConnection; alertVars.activateAlert = true}
@@ -253,7 +257,6 @@ extension GridofCards {
         catch {print("Fetch failed")}
     }
     
-
     
     func deleteCoreCard(coreCard: CoreCard) {
         do {PersistenceController.shared.persistentContainer.viewContext.delete(coreCard);try PersistenceController.shared.persistentContainer.viewContext.save()}
