@@ -113,9 +113,12 @@ struct eCardView: View {
                     NoteViewSquare()
                 }
                 else {
-                    CoverViewWide()
-                    NoteView()
-                    CollageAndAnnotationView()
+                    VStack(alignment: .center) {
+                        CoverViewWide()
+                        NoteView()
+                        CollageAndAnnotationView()
+                    }
+                    .frame(maxWidth: .infinity)
                 }
             }
         }

@@ -102,18 +102,12 @@ struct WriteNoteView: View {
                         let fullTextDetails = noteField.noteText.value + " " + noteField.recipient.value + " " + noteField.sender.value + " " + noteField.cardName.value
                         WriteNoteView.checkTextForOffensiveContent(text: fullTextDetails) { (textIsOffensive, error) in
                             noteField.noteText = message
-                            print("....\(textIsOffensive)")
-                            if textIsOffensive! {
-                                alertVars.alertType = .offensiveText
-                                alertVars.activateAlert = true
-                            }
+                            if textIsOffensive! {alertVars.alertType = .offensiveText; alertVars.activateAlert = true}
                             else {
                                 noteField.cardName.value = noteField.cardName.value.components(separatedBy: CharacterSet.punctuationCharacters).joined()
                                 if appDelegate.musicSub.type == .Apple {
                                     alertVars.alertType = .addMusicPrompt
                                     alertVars.activateAlert = true
-                                    print("$$$")
-                                    print(noteField.noteText.value)
                                 }
                                 if appDelegate.musicSub.type == .Spotify {
                                     alertVars.alertType = .addMusicPrompt
@@ -140,9 +134,7 @@ struct WriteNoteView: View {
             appDelegate.musicSub.timeToAddMusic = true
             checkRequiredFields()
             annotateIfNeeded()
-        }, secondDismissAction: {
-            checkRequiredFields(); annotateIfNeeded(); addMusic.addMusic = false; showFinalize = true
-        }))
+        }, secondDismissAction: {checkRequiredFields(); annotateIfNeeded(); addMusic.addMusic = false; showFinalize = true}))
         //.environmentObject(appDelegate)
         .environmentObject(noteField)
         .environmentObject(annotation)
