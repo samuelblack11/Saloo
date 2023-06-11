@@ -119,6 +119,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
         let sharedStore = persistenceController.sharedPersistentStore
         let container = persistenceController.persistentContainer
         container.acceptShareInvitations(from: [cloudKitShareMetadata], into: sharedStore) { [self] (_, error) in
+            print("))))")
+            print(cloudKitShareMetadata.participantPermission.rawValue)
+            
+            
             if let error = error {
                 print("\(#function): Failed to accept share invitations: \(error)")
                     // repeat same logic for accept share as participant, and use to open the specified record.

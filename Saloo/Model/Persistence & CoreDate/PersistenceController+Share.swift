@@ -14,46 +14,53 @@ import CloudKit
 // MARK: - Convenient methods for managing sharing.
 //
 extension PersistenceController {
-
     func presentCloudSharingController(coreCard: CoreCard) {
-        if let sharedZoneID = coreCard.sharedZoneID {
-            let components = sharedZoneID.components(separatedBy: "@@@")
-            if components.count == 2 {
-                let zoneName = components[0]
-                let ownerName = components[1]
-                print("Zone Name: \(zoneName)")
-                print("Owner Name: \(ownerName)")
-                
-                let shareId = CKRecord.ID(recordName: coreCard.sharedRecordRootID!, zoneID: CKRecordZone.ID(zoneName: zoneName, ownerName: ownerName))
-                cloudKitContainer.privateCloudDatabase.fetch(withRecordID: shareId) { shareRecord, error in
-                    DispatchQueue.main.async {
-                        if let error = error {
-                            print("Error fetching share: \(error)")
-                            return
-                        }
-                        guard let share = shareRecord as? CKShare else {
-                            print("Fetched record is not a CKShare")
-                            return
-                        }
-                        let sharingController = UICloudSharingController(share: share, container: self.cloudKitContainer)
-                        sharingController.delegate = self
-                        guard var topVC = UIApplication.shared.keyWindow?.rootViewController else {
-                            return
-                        }
-                        if let presentedVC = topVC.presentedViewController {
-                            topVC = presentedVC
-                        }
-                        sharingController.modalPresentationStyle = .formSheet
-                        topVC.present(sharingController, animated: true)
-                    }
-                }
+         //Grab the share if the photo is already shared.
+        var coreCardShare: CKShare?
+        let predicate = NSPredicate(format: "CD_uniqueName == %@", coreCard.uniqueName)
+        let query = CKQuery(recordType: "CD_CoreCard", predicate: predicate)
+        cloudKitContainer.privateCloudDatabase.perform(query, inZoneWith: nil) { [weak self] (records, error) in
+            guard let self = self else {
+                print("self doesnt equal self...")
+                return }
+            if let error = error {
+                print("CloudKit query error: \(error)")
+                return
             }
+            guard let record = records?.first else {
+                print("No matching CKRecord found")
+                return
+            }
+            let share = CKShare(rootRecord: record)
+            print("+++"); print(record); print("==="); print(share)
         }
-    }
+        
+        if let shareSet = try? persistentContainer.fetchShares(matching: [coreCard.objectID]),
+           let (_, share) = shareSet.first {
+            print("ShareSetFirst is true")
+            print(coreCard.objectID)
+            print(share.publicPermission.rawValue)
+            print(shareSet.count)
+            coreCardShare = share
+        }
 
-
-
-
+        let sharingController: UICloudSharingController
+        if coreCardShare == nil { sharingController = newSharingController(unsharedCoreCard: coreCard, persistenceController: self)}
+        else {
+            print("----")
+            print(coreCardShare)
+            print(coreCard.message)
+            
+            sharingController = UICloudSharingController(share: coreCardShare!, container: cloudKitContainer)
+        }
+                sharingController.delegate = self
+        //Setting the presentation style to .formSheet so there's no need to specify sourceView, sourceItem, or sourceRect.
+        guard var topVC = UIApplication.shared.windows.first?.rootViewController else {return}
+        while let presentedVC = topVC.presentedViewController {topVC = presentedVC }
+            sharingController.modalPresentationStyle = .formSheet
+            topVC.present(sharingController, animated: true)
+        }
+            
     
     func presentCloudSharingController(share: CKShare) {
         let sharingController = UICloudSharingController(share: share, container: cloudKitContainer)
@@ -92,6 +99,7 @@ extension PersistenceController {
                     controller.availablePermissions = []
                 }
                 print("Called share completion")
+                print(share?.publicPermission.rawValue)
                 completion(share, container, error)
             }
             }
@@ -267,6 +275,7 @@ extension PersistenceController {
         let share = shares?.first(where: { $0.title == title })
         return share
     }
+    
     func shareTitles() -> [String] {
         let stores = [privatePersistentStore, sharedPersistentStore]
         let shares = try? persistentContainer.fetchShares(in: stores)
@@ -274,12 +283,11 @@ extension PersistenceController {
     }
     //private func configure(share: CKShare, with coreCard: CoreCard? = nil) {
     private func configure(share: CKShare, coreCard: CoreCard?) {
-        print("Did configure?")
         share[CKShare.SystemFieldKey.title] = "A Greeting from Saloo"
         share[CKShare.SystemFieldKey.thumbnailImageData] = coreCard?.coverImage
-        share.publicPermission = .readOnly
-        //share.recordID = coreCard?.associatedRecord.recordID
-        //share.recordID = coreCard?.associatedRecord
+        share.publicPermission = .readWrite
+        print("!!@@")
+        print(share.publicPermission.rawValue)
         print("Did configure")
     }
 }

@@ -100,7 +100,6 @@ struct StartMenu: View {
 
 
 extension StartMenu {
-
     
     func checkUserBanned(userId: String, completion: @escaping (Bool, Error?) -> Void) {
         guard let url = URL(string: "https://saloouserstatus.azurewebsites.net/is_banned?user_id=\(userId)") else {

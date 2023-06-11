@@ -286,7 +286,6 @@ extension AMPlayerView {
                                                 musicPlayer.setQueue(with: [songID!])
                                                 musicPlayer.play()
                                                 DispatchQueue.main.async {
-                                                    print("Updating record....")
                                                     updateRecordWithNewAMData(songName: songName!, songArtistName: songArtistName!, songID: songID!, songArtImageData: artResponse!, songDuration: String(songDuration!))
                                                 //group.leave()
                                                 }})}
@@ -319,7 +318,7 @@ extension AMPlayerView {
         let ckContainer = PersistenceController.shared.cloudKitContainer
         taskContext.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
         print("About to run AM Data update on the CKRecord....")
-        controller.updateRecordWithAMData(for: coreCard!, in: taskContext, songName: songName, songArtistName: songArtistName,songID: songID, songImageData: songArtImageData, songDuration: songDuration, completion: { (error) in
+        controller.updateRecordWithAMData(for: coreCard!, in: taskContext, with: ckContainer.privateCloudDatabase, songName: songName, songArtistName: songArtistName,songID: songID, songImageData: songArtImageData, songDuration: songDuration, completion: { (error) in
             print("Updated Record...")
             print(error as Any)
         } )
