@@ -53,8 +53,6 @@ struct Saloo_App: App {
                     .environmentObject(gettingRecord)
                     .environmentObject(appState)
                     .environmentObject(appDelegate)
-
-                
             }
         }
     }
@@ -66,11 +64,6 @@ extension View {
         self.modifier(AlertViewMod(showAlert: alertVars.activateAlertBinding, activeAlert: alertVars.alertType))
     }
 }
-
-
-
-
-
 
 enum ActiveAlert {
     case failedConnection, signInFailure, explicitPhoto, offensiveText, namesNotEntered, showCardComplete, showFailedToShare, addMusicPrompt, spotAuthFailed, amAuthFailed, AMSongNotAvailable, gettingRecord, userBanned, reportComplete, deleteCard, mustSelectPic

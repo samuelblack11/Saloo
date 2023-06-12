@@ -141,7 +141,7 @@ struct FinalizeCardView: View {
             .fullScreenCover(isPresented: $showShareSheet, content: {if let share = share {}})
             .fullScreenCover(isPresented: $showActivityController) {ActivityView(activityItems: $activityItemsArray, applicationActivities: nil)}
         }
-        .onAppear{ if appDelegate.musicSub.type == .Spotify{spotifyManager.appRemote?.playerAPI?.pause()}}
+        //.onAppear{if appDelegate.musicSub.type == .Spotify{spotifyManager.appRemote?.playerAPI?.pause()}}
     }
 }
 
@@ -149,7 +149,9 @@ struct FinalizeCardView: View {
 extension FinalizeCardView {
     
     func returnToMenu() {
-        showCollageBuilder = false; showWriteNote = false; showCollageMenu = false; showUCV = false;showStartMenu = true; let rootViewController = UIApplication.shared.connectedScenes
+        //showCollageBuilder = false; showWriteNote = false; showCollageMenu = false; showUCV = false
+        showStartMenu = true
+        let rootViewController = UIApplication.shared.connectedScenes
                             .filter {$0.activationState == .foregroundActive }
                             .map {$0 as? UIWindowScene }
                             .compactMap { $0 }
