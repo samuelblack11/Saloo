@@ -121,7 +121,7 @@ struct OccassionsMenu: View {
         .alert(isPresented: $explicitPhotoAlert) {
             Alert(title: Text("Error"), message: Text("The selected image contains explicit content and cannot be used."), dismissButton: .default(Text("OK")))
         }
-        .navigationBarItems(leading:Button {showStartMenu.toggle()} label: {Image(systemName: "chevron.left").foregroundColor(.blue); Text("Back")}.disabled(gettingRecord.isShowingActivityIndicator))
+        .navigationBarItems(leading:Button {showStartMenu = true} label: {Image(systemName: "chevron.left").foregroundColor(.blue); Text("Back")}.disabled(gettingRecord.isShowingActivityIndicator))
         .font(.headline)
         .listStyle(GroupedListStyle())
         .onAppear {createOccassionsFromUserCollections()}

@@ -73,7 +73,7 @@ extension View {
 
 
 enum ActiveAlert {
-    case failedConnection, signInFailure, explicitPhoto, offensiveText, namesNotEntered, showCardComplete, showFailedToShare, addMusicPrompt, spotAuthFailed, amAuthFailed, AMSongNotAvailable, gettingRecord, userBanned, reportComplete
+    case failedConnection, signInFailure, explicitPhoto, offensiveText, namesNotEntered, showCardComplete, showFailedToShare, addMusicPrompt, spotAuthFailed, amAuthFailed, AMSongNotAvailable, gettingRecord, userBanned, reportComplete, deleteCard, mustSelectPic
 }
 
 struct AlertViewMod: ViewModifier {
@@ -82,12 +82,21 @@ struct AlertViewMod: ViewModifier {
     var activeAlert: ActiveAlert
     var alertDismissAction: (() -> Void)?    
     var secondDismissAction: (() -> Void)?
-
+    @State var cardToDelete: CoreCard?
     
     func body(content: Content) -> some View {
         content
             .alert(isPresented: $showAlert) {
                 switch activeAlert {
+                case .mustSelectPic:
+                    return Alert(title: Text("Please select a Picture!"), dismissButton: .default(Text("Ok")))
+                case .deleteCard:
+                    return Alert(
+                        title: Text("Are you sure you want to delete this card?."),
+                        message: Text("This will delete it for all of the card's participants."),
+                        primaryButton: .default(Text("Yes, delete it"), action: {alertDismissAction?()}),
+                        secondaryButton: .default(Text("No, I'll keep it"), action: {})
+                    )
                 case .failedConnection:
                     return Alert(title: Text("Network Error"), message: Text("Sorry, we weren't able to connect to the internet. Please reconnect and try again."), dismissButton: .default(Text("OK")))
                 case .signInFailure:

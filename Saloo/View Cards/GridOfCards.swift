@@ -50,6 +50,8 @@ struct GridofCards: View {
     @State private var displayCard = false
     @State var chosenCard: CoreCard?
     @State var cardToReport: CoreCard?
+    @State var cardToDelete: CoreCard?
+
     @State var shouldShareCard: Bool = false
     @EnvironmentObject var wrapper: CoreCardWrapper
     @State var cardQueuedForshare: CoreCard?
@@ -109,7 +111,7 @@ struct GridofCards: View {
             }
             .onAppear{fetchCurrentUserRecordID()}
             .fullScreenCover(item: $cardToReport, onDismiss: didDismiss) {cardToReport in
-                ReportOffensiveContentView(card: cardToReport)}
+                ReportOffensiveContentView(card: $cardToReport)}
             .fullScreenCover(item: $chosenCard, onDismiss: didDismiss) {chosenCard in
                 NavigationView {
                         //EnlargeECardView(chosenCard: $chosenCard, cardsForDisplay: cardsForDisplay, whichBoxVal: whichBoxVal)
@@ -119,7 +121,8 @@ struct GridofCards: View {
             .navigationTitle("Your Cards")
             .navigationBarItems(leading:Button {print("Back Button pressed to Start menu..."); showStartMenu.toggle()} label: {Image(systemName: "chevron.left").foregroundColor(.blue); Text("Back")}.disabled(gettingRecord.isShowingActivityIndicator))
         }
-        .modifier(AlertViewMod(showAlert: alertVars.activateAlertBinding, activeAlert: alertVars.alertType))
+        .modifier(AlertViewMod(showAlert: alertVars.activateAlertBinding, activeAlert: alertVars.alertType, alertDismissAction: {
+            deleteCoreCard(coreCard: cardToDelete!)}))
         .environmentObject(audioManager)
         .environmentObject(avPlayer)
         // "Search by \(sortByValue)"
@@ -198,8 +201,12 @@ extension GridofCards {
             if networkMonitor.isConnected {chosenCard = card; chosenGridCardType = card.cardType;segueToEnlarge = true; displayCard = true}
             else {alertVars.alertType = .failedConnection; alertVars.activateAlert = true}
         } label: {Text("Enlarge eCard"); Image(systemName: "plus.magnifyingglass")}
-        Button(action: {deleteCoreCard(coreCard: card) }) {HStack {Text("Delete eCard"); Image(systemName: "trash") }}
-        Button(action: { cardToReport = card}) {
+        Button(action: {
+            alertVars.alertType = .deleteCard
+            alertVars.activateAlert = true
+            cardToDelete = card
+        }) {HStack {Text("Delete eCard"); Image(systemName: "trash") }}
+        Button(action: {cardToReport = card}) {
             HStack {Text("Report Offensive Content"); Image(systemName: "exclamationmark.octagon")}}
         }
     
@@ -274,6 +281,7 @@ extension GridofCards {
     
     
     func deleteCoreCard(coreCard: CoreCard) {
+        print("DELETE THE CARD")
         do {PersistenceController.shared.persistentContainer.viewContext.delete(coreCard);try PersistenceController.shared.persistentContainer.viewContext.save()}
         catch {}
         self.reloadCoreCards()

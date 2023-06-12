@@ -10,7 +10,6 @@ import Foundation
 import SwiftUI
 
 struct CollageStyleMenu: View {
-    
     // The image, and it's components, selected by the user
     // Object for collection selected by user
     @EnvironmentObject var chosenObject: ChosenCoverImageObject
@@ -26,7 +25,6 @@ struct CollageStyleMenu: View {
     @State private var collageBlocks = CollageBlocksAndViews()
     @ObservedObject var gettingRecord = GettingRecord.shared
     @ObservedObject var alertVars = AlertVars.shared
-
     let columns = [GridItem(.flexible()),GridItem(.flexible())]
     
     var body: some View {

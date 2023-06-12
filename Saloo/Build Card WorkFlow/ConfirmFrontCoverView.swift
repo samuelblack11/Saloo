@@ -65,7 +65,6 @@ struct ConfirmFrontCoverView: View {
                             if response == nil {
                                 debugPrint("Ping Failed!.......")}})
                     }.padding(.bottom, 10).fullScreenCover(isPresented: $showCollageMenu) {CollageStyleMenu()}
-                    Text("(Attribution Will Be Included on Back Cover)").font(.system(size: 12)).padding(.bottom, 20)
                 }
                 LoadingOverlay()
             }

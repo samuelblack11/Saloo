@@ -35,6 +35,7 @@ struct WriteNoteView: View {
     @FocusState private var isNoteFieldFocused: Bool
     @ObservedObject var gettingRecord = GettingRecord.shared
     @State private var isEditing = false
+
     var fonts = ["Zapfino","Papyrus","American-Typewriter-Bold"]
     var fontMenu: some View {
         HStack {

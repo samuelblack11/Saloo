@@ -49,7 +49,8 @@ struct CollageBuilder: View {
     var maxHeight = CGFloat(320)
     var width = UIScreen.screenWidth/2
     var height = UIScreen.screenHeight/3
-    
+    @State private var blockCount: Int?
+
     @State private var isImageLoading: Bool = false
 
     
@@ -64,9 +65,15 @@ struct CollageBuilder: View {
                     Spacer()
                     collageView//.frame(width: UIScreen.screenHeight/4, height: UIScreen.screenHeight/4)
                     Spacer()
-                    Button("Confirm Collage for Inside Cover") {
-                        showWriteNote = true
-                        collageImage.collageImage = snap2()
+                    Button("Confirm Collage") {
+                        if blockCount != (4 - countNilImages()) {
+                            alertVars.alertType = .mustSelectPic
+                            alertVars.activateAlert = true
+                        }
+                        else {
+                            showWriteNote = true
+                            collageImage.collageImage = snap2()
+                        }
                     }.padding(.bottom, 30).fullScreenCover(isPresented: $showWriteNote ) {
                         WriteNoteView()}
                 }
@@ -75,6 +82,7 @@ struct CollageBuilder: View {
                     Text("Back")}.disabled(gettingRecord.isShowingActivityIndicator))
                 LoadingOverlay()
             }
+            .onAppear{countBlocks()}
             .alert(isPresented: $explicitPhotoAlert) {
                 Alert(title: Text("Error"), message: Text("The selected image contains explicit content and cannot be used."), dismissButton: .default(Text("OK")))
             }
@@ -86,7 +94,7 @@ struct CollageBuilder: View {
         }
     
     @ViewBuilder var chosenTemplate: some View {
-        if collageImage.chosenStyle == 1 {onePhotoView(block: block1()) }
+        if collageImage.chosenStyle == 1 {onePhotoView(block: block1())}
         if collageImage.chosenStyle == 2 {twoPhotoWide(block1: block1(),block2: block2())}
         if collageImage.chosenStyle == 3 {twoPhotoLong(block1: block1(),block2: block2())}
         if collageImage.chosenStyle == 4 { twoShortOneLong(block1: block1(), block2: block2(), block3: block3())}
@@ -96,6 +104,20 @@ struct CollageBuilder: View {
 }
 
 extension CollageBuilder {
+    
+    func countBlocks() {
+        if collageImage.chosenStyle == 1 {blockCount = 1}
+        if collageImage.chosenStyle == 2 {blockCount = 2}
+        if collageImage.chosenStyle == 3 {blockCount = 2}
+        if collageImage.chosenStyle == 4 {blockCount = 3}
+        if collageImage.chosenStyle == 5 {blockCount = 3}
+        if collageImage.chosenStyle == 6 {blockCount = 4}
+    }
+    
+    
+    
+    
+    
     
     func specifyImage(imageNumber: Int) -> UIImage? {
         let imageDict: [Int : UIImage?] = [
@@ -115,9 +137,6 @@ extension CollageBuilder {
         if imageNum == 3 {thisShape = shapeOptions.2}
         if imageNum == 4 {thisShape = shapeOptions.3}
         let (w2, h2) = shapeToDimensions(shape: thisShape)
-        
-        print("Result of shapeToDimensions....\(shapeToDimensions(shape: thisShape))")
-        
         
         return GeometryReader {geometry in
             ZStack(alignment: .center) {
@@ -195,24 +214,16 @@ extension CollageBuilder {
         return (shape1, shape2, shape3, shape4)
     }
     
-    
     func shapeToDimensions(shape: String) -> (CGFloat, CGFloat){
-        print("---")
-        print(shape)
         var w = CGFloat(0.0)
         var h = CGFloat(0.0)
-        
         if shape == "largeSquare" {w = width; h = height}
         if shape == "wide" {w = width; h = height/2}
         if shape == "tall" {w = width/2; h = height}
         if shape == "smallSquare" {w = width/2; h = height/2}
-        
         return (w, h)
     }
-    
-    
-    
-    
+
     @MainActor func snap2() -> Data {
         let renderer = ImageRenderer(content: collageView)
         
@@ -237,8 +248,14 @@ extension CollageBuilder {
         if imageNumber == 4 {imageD = Image(uiImage: chosenImage); collageImage.image4 = chosenImage.pngData()!}
     }
     
-}
+    func countNilImages() -> Int {
+        let images: [Image?] = [imageA, imageB, imageC, imageD]
+        let nonNilImages = images.compactMap { $0 }
+        return images.count - nonNilImages.count
+    }
 
+    
+}
 
 struct PhotoDetailView: UIViewRepresentable {
     let image: UIImage

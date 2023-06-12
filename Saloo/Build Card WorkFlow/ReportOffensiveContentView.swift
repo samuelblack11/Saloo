@@ -13,24 +13,27 @@ struct ReportOffensiveContentView: View {
     @State private var comments = "Why is this card offensive?"
     @State private var reportComplete = false
     @ObservedObject var alertVars = AlertVars.shared
+    @State private var showGrid = false
+    @Binding var card: CoreCard? // Assuming CoreCard is defined elsewhere
+    //@Binding var cardToReport: CoreCard?
 
-    var card: CoreCard // Assuming CoreCard is defined elsewhere
-    
     var body: some View {
-        VStack {
-            TextEditor(text: $comments)
-                .frame(height: 200)
-                .onTapGesture {if comments == "Why is this card offensive?" {comments = ""}}
-            TextField("Your Name", text: $name)
-            TextField("Your Email", text: $email)
-            Button(action: {
-                let report = createReportObject(userName: name, userEmail: email, userComments: comments, card: card)
-                sendReportToAzure(report: report)
-                alertVars.alertType = .reportComplete
-                alertVars.activateAlert = true
-                deleteCoreCard(coreCard: card)
-            }) {Text("Submit")}
-
+        NavigationView {
+            VStack {
+                TextEditor(text: $comments)
+                    .frame(height: 200)
+                    .onTapGesture {if comments == "Why is this card offensive?" {comments = ""}}
+                TextField("Your Name", text: $name)
+                TextField("Your Email", text: $email)
+                Button(action: {
+                    let report = createReportObject(userName: name, userEmail: email, userComments: comments, card: card!)
+                    sendReportToAzure(report: report)
+                    alertVars.alertType = .reportComplete
+                    alertVars.activateAlert = true
+                    deleteCoreCard(coreCard: card!)
+                }) {Text("Submit")}
+            }
+            .navigationBarItems(leading:Button {card = nil} label: {Image(systemName: "chevron.left").foregroundColor(.blue); Text("Back")})
         }
         .padding()
         .modifier(AlertViewMod(showAlert: alertVars.activateAlertBinding, activeAlert: alertVars.alertType))
