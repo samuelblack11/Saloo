@@ -29,6 +29,13 @@ struct SpotItem: Decodable {
     //let availableMarkets: [String]
     let restrictions: RestrictionObj?
     let disc_number: Int?
+    let external_urls: ExternalURLObj?
+}
+
+
+
+struct ExternalURLObj: Decodable {
+    let spotify: String?
 }
 
 struct RestrictionObj: Decodable {

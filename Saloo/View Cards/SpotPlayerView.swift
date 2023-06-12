@@ -315,7 +315,10 @@ struct SpotPlayerView: View {
                     songArtImageData = artResponse!
                     songDuration = Double(song.duration_ms) * 0.001
                     playSong()
-                    DispatchQueue.main.async {updateRecordWithNewSPOTData(spotName: song.name, spotArtistName: allArtists, spotID: song.id, songArtImageData: artResponse!, songDuration: String(Double(song.duration_ms) * 0.001)); return}
+                    DispatchQueue.main.async {
+                        //updateRecordWithNewSPOTData(spotName: song.name, spotArtistName: allArtists, spotID: song.id, songArtImageData: artResponse!, songDuration: String(Double(song.duration_ms) * 0.001)); return
+                        
+                    }
                     completion(foundMatch)
 
                     

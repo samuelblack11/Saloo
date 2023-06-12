@@ -63,7 +63,8 @@ struct eCardView: View {
     @ObservedObject var gettingRecord = GettingRecord.shared
     @EnvironmentObject var spotifyManager: SpotifyManager
     @ObservedObject var alertVars = AlertVars.shared
-
+    @State var appleSongURL: String?
+    @State var spotSongURL: String?
     var body: some View {
         ZStack {
             if cardType == "musicNoGift" {MusicNoGiftView.modifier(AlertViewMod(showAlert: alertVars.activateAlertBinding, activeAlert: alertVars.alertType))}
@@ -202,11 +203,11 @@ struct eCardView: View {
         VStack {
             if (deferToPreview == true || spotName == "LookupFailed"  || songName == "LookupFailed" || appDelegate.musicSub.type == .Neither) {
                 if songAddedUsing! == "Spotify"  {
-                    SongPreviewPlayer(songID: spotID, songName: spotName, songArtistName: spotArtistName, songArtImageData: spotImageData, songDuration: spotSongDuration, songPreviewURL: spotPreviewURL, confirmButton: false, showFCV: $showFCV, songAddedUsing: songAddedUsing!, chosenCard: $chosenCard)
+                    SongPreviewPlayer(songID: spotID, songName: spotName, songArtistName: spotArtistName, songArtImageData: spotImageData, songDuration: spotSongDuration, songPreviewURL: spotPreviewURL, songURL: spotSongURL,confirmButton: false, showFCV: $showFCV, songAddedUsing: songAddedUsing!, chosenCard: $chosenCard)
                         .frame(maxHeight: .infinity, alignment: .bottom)
                 }
                 else if songAddedUsing! == "Apple"  {
-                    SongPreviewPlayer(songID: songID, songName: songName, songArtistName: songArtistName, songArtImageData: songArtImageData, songDuration: songDuration, songPreviewURL: songPreviewURL, confirmButton: false, showFCV: $showFCV, songAddedUsing: songAddedUsing!, chosenCard: $chosenCard)
+                    SongPreviewPlayer(songID: songID, songName: songName, songArtistName: songArtistName, songArtImageData: songArtImageData, songDuration: songDuration, songPreviewURL: songPreviewURL,songURL: appleSongURL, confirmButton: false, showFCV: $showFCV, songAddedUsing: songAddedUsing!, chosenCard: $chosenCard)
                         .frame(maxHeight: .infinity, alignment: .bottom)
                  }
             }
@@ -220,6 +221,10 @@ struct eCardView: View {
                         .frame(maxHeight: .infinity, alignment: .bottom)
                 }
             }
+        .onAppear{
+            print("Song URL is...")
+            print(appleSongURL)
+        }
     }
     
     

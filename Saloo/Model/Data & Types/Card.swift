@@ -64,6 +64,8 @@ extension CoreCard {
     @NSManaged public var spotAlbumArtist: String?
     @NSManaged public var salooUserID: String?
     @NSManaged public var sharedRecordID: String?
+    @NSManaged public var appleSongURL: String?
+    @NSManaged public var spotSongURL: String?
 
     
 }
@@ -111,6 +113,9 @@ struct Card: Identifiable, Hashable {
     let spotAlbumArtist: String?
     let salooUserID: String
     let sharedRecordID: String?
+    let appleSongURL: String?
+    let spotSongURL: String?
+
 }
 
 extension Card {
@@ -155,6 +160,8 @@ extension Card {
               let spotAlbumArtist = record["spotAlbumArtist"] as? String,
               let salooUserID = record["salooUserID"] as? String,
               let sharedRecordID = record["sharedRecordID"] as? String,
+              let appleSongURL = record["appleSongURL"] as? String,
+              let spotSongURL = record["spotSongURL"] as? String,
               let cardType = record["cardType"] as? String else {
             return nil
         }
@@ -201,5 +208,7 @@ extension Card {
         self.cardType = cardType
         self.salooUserID = salooUserID
         self.sharedRecordID = sharedRecordID
+        self.appleSongURL = appleSongURL
+        self.spotSongURL = spotSongURL
     }
 }

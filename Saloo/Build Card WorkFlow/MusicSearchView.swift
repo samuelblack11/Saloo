@@ -478,6 +478,8 @@ extension MusicSearchView {
                 searchResults = []
                 DispatchQueue.main.async {
                     for song in response! {
+                        print("^^^")
+                        print(song)
                         let artURL = URL(string:song.album!.images[2].url)
                         let _ = getURLData(url: artURL!, completionHandler: {(artResponse, error2) in
                             let blankString: String? = ""
@@ -497,7 +499,7 @@ extension MusicSearchView {
                                 
                             }
                             else {allArtists = song.artists[0].name}
-                            let songForList = SongForList(id: song.id, name: song.name, artistName: allArtists, albumName: song.album!.name, artImageData: artResponse!, durationInMillis: song.duration_ms, isPlaying: false, previewURL: songPrev!, disc_number: song.disc_number)
+                            let songForList = SongForList(id: song.id, name: song.name, artistName: allArtists, albumName: song.album!.name, artImageData: artResponse!, durationInMillis: song.duration_ms, isPlaying: false, previewURL: songPrev!, disc_number: song.disc_number, url: (song.external_urls?.spotify!)!)
                             if song.restrictions?.reason == nil {
                                 //if containsString(listOfSubStrings: songKeyWordsToFilterOut, songName: songForList.name) || containsString(listOfSubStrings: songKeyWordsToFilterOut, songName: songForList.albumName) || song.album?.album_type == "single" {
                                 if cleanMusicData.containsString(listOfSubStrings: appDelegate.songFilterForSearch, songName: songForList.name) || cleanMusicData.containsString(listOfSubStrings: appDelegate.songFilterForSearch, songName: songForList.albumName) {
@@ -570,7 +572,7 @@ extension MusicSearchView {
                             let artURL = URL(string:song.attributes.artwork.url.replacingOccurrences(of: "{w}", with: "80").replacingOccurrences(of: "{h}", with: "80"))
                             let _ = getURLData(url: artURL!, completionHandler: { (artResponse, error2) in
                                 print("Song Name is...\(song.attributes.name)")
-                                let songForList = SongForList(id: song.attributes.playParams.id, name: song.attributes.name, artistName: song.attributes.artistName, albumName: song.attributes.albumName,artImageData: artResponse!, durationInMillis: song.attributes.durationInMillis, isPlaying: false, previewURL: songPrev!, disc_number: song.attributes.discNumber)
+                                let songForList = SongForList(id: song.attributes.playParams.id, name: song.attributes.name, artistName: song.attributes.artistName, albumName: song.attributes.albumName,artImageData: artResponse!, durationInMillis: song.attributes.durationInMillis, isPlaying: false, previewURL: songPrev!, disc_number: song.attributes.discNumber, url: song.attributes.url)
                                 if cleanMusicData.containsString(listOfSubStrings: appDelegate.songFilterForSearch, songName: songForList.name) || cleanMusicData.containsString(listOfSubStrings: appDelegate.songFilterForSearch, songName: songForList.albumName){
                                 print("Did Not Append....")
                                 print(songForList.name)
@@ -586,6 +588,8 @@ extension MusicSearchView {
 
         songProgress = 0.0; isPlaying = true
         if appDelegate.musicSub.type == .Spotify {
+            print("Chosen Song URL Is...")
+            print(song.url)
             chosenSong.spotID = song.id
             chosenSong.spotName = song.name
             chosenSong.spotArtistName = song.artistName
@@ -595,6 +599,7 @@ extension MusicSearchView {
             chosenSong.discNumber = song.disc_number!
             chosenSong.spotPreviewURL = song.previewURL
             chosenSong.songAddedUsing = "Spotify"
+            chosenSong.spotSongURL = song.url
             //showSPV = true
             if networkMonitor.isConnected{
                 print("Checking network & credentials before getSpotAlbum...")
@@ -609,6 +614,9 @@ extension MusicSearchView {
             }
         }
         if appDelegate.musicSub.type == .Apple {
+            print("Chosen Song URL Is...")
+            print(song.url)
+            //print(song.external_urls[0]!.spotify)
             chosenSong.id = song.id
             chosenSong.name = song.name
             chosenSong.artistName = song.artistName
@@ -618,6 +626,7 @@ extension MusicSearchView {
             chosenSong.durationInSeconds = Double(song.durationInMillis/1000)
             chosenSong.discNumber = song.disc_number!
             chosenSong.songAddedUsing = "Apple"
+            chosenSong.appleSongURL = song.url
             if networkMonitor.isConnected{getAlbum(storeFront: amAPI.storeFrontID!, userToken: amAPI.taskToken!)}
             else{
                 alertVars.alertType = .failedConnection

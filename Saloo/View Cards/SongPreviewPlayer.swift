@@ -76,6 +76,7 @@ struct SongPreviewPlayer: View {
     @State var songArtImageData: Data?
     @State var songDuration: Double?
     @State var songPreviewURL: String?
+    @State var songURL: String?
     @State private var songProgress = 0.0
     @State private var isPlaying = true
     @State var confirmButton: Bool
@@ -162,7 +163,7 @@ struct SongPreviewPlayer: View {
         let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
         return  VStack {
             Image(uiImage: UIImage(data: songArtImageData!)!)
-            Text(songName!)
+            Link(songName!, destination: URL(string: songURL!)!)
                 .font(.headline)
                 .lineLimit(2)
                 .multilineTextAlignment(.center)

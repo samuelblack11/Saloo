@@ -11,6 +11,7 @@
         <attribute name="an3" optional="YES" attributeType="String"/>
         <attribute name="an4" optional="YES" attributeType="String"/>
         <attribute name="appleAlbumArtist" optional="YES" attributeType="String"/>
+        <attribute name="appleSongURL" optional="YES" attributeType="String"/>
         <attribute name="associatedRecord" optional="YES" attributeType="Transformable"/>
         <attribute name="cardName" optional="YES" attributeType="String"/>
         <attribute name="cardType" optional="YES" attributeType="String"/>
@@ -46,6 +47,7 @@
         <attribute name="spotName" optional="YES" attributeType="String"/>
         <attribute name="spotPreviewURL" optional="YES" attributeType="String"/>
         <attribute name="spotSongDuration" optional="YES" attributeType="String"/>
+        <attribute name="spotSongURL" optional="YES" attributeType="String"/>
         <attribute name="uniqueName" optional="YES" attributeType="String"/>
     </entity>
     <entity name="FutureDelivery" representedClassName=".FutureDelivery" syncable="YES">

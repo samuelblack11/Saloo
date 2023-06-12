@@ -248,7 +248,7 @@ extension AMPlayerView {
                         print("Defer to preview")
                         deferToPreview = true
                         DispatchQueue.main.async {
-                                updateRecordWithNewAMData(songName: "LookupFailed", songArtistName: "LookupFailed", songID: "LookupFailed", songArtImageData: Data(), songDuration: String(0))
+                                //updateRecordWithNewAMData(songName: "LookupFailed", songArtistName: "LookupFailed", songID: "LookupFailed", songArtImageData: Data(), songDuration: String(0))
                     }}
                 
                 }
@@ -286,7 +286,7 @@ extension AMPlayerView {
                                                 musicPlayer.setQueue(with: [songID!])
                                                 musicPlayer.play()
                                                 DispatchQueue.main.async {
-                                                    updateRecordWithNewAMData(songName: songName!, songArtistName: songArtistName!, songID: songID!, songArtImageData: artResponse!, songDuration: String(songDuration!))
+                                                    //updateRecordWithNewAMData(songName: songName!, songArtistName: songArtistName!, songID: songID!, songArtImageData: artResponse!, songDuration: String(songDuration!))
                                                 //group.leave()
                                                 }})}
                                         if trackIndex == trackList.count - 1 && albumIndex == albumList.count - 1 {
@@ -306,7 +306,7 @@ extension AMPlayerView {
                                 print("Defer to preview")
                                 deferToPreview = true
                                 DispatchQueue.main.async {
-                                    updateRecordWithNewAMData(songName: "LookupFailed", songArtistName: "LookupFailed", songID: "LookupFailed", songArtImageData: Data(), songDuration: String(0))
+                                    //updateRecordWithNewAMData(songName: "LookupFailed", songArtistName: "LookupFailed", songID: "LookupFailed", songArtImageData: Data(), songDuration: String(0))
                                 }}}}
                     }}})}
 

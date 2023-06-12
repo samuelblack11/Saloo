@@ -95,7 +95,6 @@ extension PersistenceController {
              The default value of publicPermission is CKShare.ParticipantPermission.none.
              */
             
-            
             self.persistentContainer.share([unsharedCoreCard], to: nil) { objectIDs, share, container, error in
                 print("Beginning share completion handler...")
                 if let share = share {

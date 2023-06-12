@@ -55,6 +55,7 @@ struct SongAttributes: Decodable {
     let artwork: Artwork
     let playParams: PlayParams
     let previews: [PreviewURL]
+    let url: String
     let durationInMillis: Int
     let discNumber: Int?
 }
