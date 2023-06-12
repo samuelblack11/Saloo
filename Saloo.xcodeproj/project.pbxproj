@@ -23,7 +23,6 @@
 		26AD8127281F05160069C3F0 /* WriteNoteView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26AD8126281F05160069C3F0 /* WriteNoteView.swift */; };
 		26AD8129281F05310069C3F0 /* FinalizeCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26AD8128281F05310069C3F0 /* FinalizeCardView.swift */; };
 		26AD812B281F119A0069C3F0 /* ConfirmFrontCoverView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26AD812A281F119A0069C3F0 /* ConfirmFrontCoverView.swift */; };
-		26EB55652827120C00178F0B /* EnlargeECard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26EB55642827120C00178F0B /* EnlargeECard.swift */; };
 		C2075AFD295FDBA70048ECEB /* CollageBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2075AFC295FDBA70048ECEB /* CollageBuilder.swift */; };
 		C2075AFF295FDBC60048ECEB /* ImagePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2075AFE295FDBC60048ECEB /* ImagePicker.swift */; };
 		C20DEF602986C9F30080AE03 /* SpotifyAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = C20DEF5F2986C9F30080AE03 /* SpotifyAPI.swift */; };
@@ -67,7 +66,6 @@
 		C26890B0299E572900EA63A4 /* SpotPlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C26890AF299E572900EA63A4 /* SpotPlayerView.swift */; };
 		C271B2E729702D2200760B23 /* AMResponses.swift in Sources */ = {isa = PBXBuildFile; fileRef = C271B2E629702D2200760B23 /* AMResponses.swift */; };
 		C27430FC286335F000E17B19 /* CameraCapture.swift in Sources */ = {isa = PBXBuildFile; fileRef = C27430FB286335F000E17B19 /* CameraCapture.swift */; };
-		C275B6D529780C93009C59BC /* TremendousView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C275B6D429780C93009C59BC /* TremendousView.swift */; };
 		C2764CEB2A06A9CA0083819B /* CleanMusicData.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2764CEA2A06A9CA0083819B /* CleanMusicData.swift */; };
 		C28B13F828E3E106008E2C4C /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C28B13F728E3E106008E2C4C /* AppDelegate.swift */; };
 		C2B650CA287AFFF90002E252 /* CloudKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C2B650C9287AFFF90002E252 /* CloudKit.framework */; };
@@ -112,7 +110,6 @@
 		26AD8126281F05160069C3F0 /* WriteNoteView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WriteNoteView.swift; sourceTree = "<group>"; };
 		26AD8128281F05310069C3F0 /* FinalizeCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FinalizeCardView.swift; sourceTree = "<group>"; };
 		26AD812A281F119A0069C3F0 /* ConfirmFrontCoverView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfirmFrontCoverView.swift; sourceTree = "<group>"; };
-		26EB55642827120C00178F0B /* EnlargeECard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnlargeECard.swift; sourceTree = "<group>"; };
 		93AAAE1CF8AE1CB82C760293 /* Pods-GreetMe-2.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-GreetMe-2.debug.xcconfig"; path = "Target Support Files/Pods-GreetMe-2/Pods-GreetMe-2.debug.xcconfig"; sourceTree = "<group>"; };
 		C2075AFC295FDBA70048ECEB /* CollageBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollageBuilder.swift; sourceTree = "<group>"; };
 		C2075AFE295FDBC60048ECEB /* ImagePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagePicker.swift; sourceTree = "<group>"; };
@@ -159,7 +156,6 @@
 		C26890AF299E572900EA63A4 /* SpotPlayerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpotPlayerView.swift; sourceTree = "<group>"; };
 		C271B2E629702D2200760B23 /* AMResponses.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AMResponses.swift; sourceTree = "<group>"; };
 		C27430FB286335F000E17B19 /* CameraCapture.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraCapture.swift; sourceTree = "<group>"; };
-		C275B6D429780C93009C59BC /* TremendousView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TremendousView.swift; sourceTree = "<group>"; };
 		C2764CEA2A06A9CA0083819B /* CleanMusicData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CleanMusicData.swift; sourceTree = "<group>"; };
 		C28B13F728E3E106008E2C4C /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		C2B650C9287AFFF90002E252 /* CloudKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CloudKit.framework; path = System/Library/Frameworks/CloudKit.framework; sourceTree = SDKROOT; };
@@ -195,7 +191,6 @@
 				C2075AFC295FDBA70048ECEB /* CollageBuilder.swift */,
 				26AD8126281F05160069C3F0 /* WriteNoteView.swift */,
 				C22A180C296D010800A7E9B8 /* MusicSearchView.swift */,
-				C275B6D429780C93009C59BC /* TremendousView.swift */,
 				26AD8128281F05310069C3F0 /* FinalizeCardView.swift */,
 				C22A84E429667587001244CC /* PersistenceController+History.swift */,
 				C2BC52DA2A1EE55B000BAF60 /* ReportOffensiveContentView.swift */,
@@ -360,7 +355,6 @@
 			isa = PBXGroup;
 			children = (
 				C237E6E0294E453600E472AD /* GridOfCards.swift */,
-				26EB55642827120C00178F0B /* EnlargeECard.swift */,
 				C2582A3A296E5841009F8FEC /* eCardView.swift */,
 				C26890AB299E571D00EA63A4 /* AMPlayerView.swift */,
 				C26890AF299E572900EA63A4 /* SpotPlayerView.swift */,
@@ -597,7 +591,6 @@
 				C22A5CB92980A97B006A0A8B /* GiftCardResponse.swift in Sources */,
 				260F68FA281DBE61002E864B /* PhotoAPI.swift in Sources */,
 				C21EACE02998525000401DC8 /* WebVC.swift in Sources */,
-				C275B6D529780C93009C59BC /* TremendousView.swift in Sources */,
 				C26890B0299E572900EA63A4 /* SpotPlayerView.swift in Sources */,
 				C23403E42A0C4F62001A33F6 /* CoreCardUtils.swift in Sources */,
 				C23A9D222897ECA90059B97C /* Card.swift in Sources */,
@@ -620,7 +613,6 @@
 				C26890AC299E571D00EA63A4 /* AMPlayerView.swift in Sources */,
 				C22A84EA29667929001244CC /* SceneDelegate.swift in Sources */,
 				C22A84DF29666C23001244CC /* PersistenceController+Card.swift in Sources */,
-				26EB55652827120C00178F0B /* EnlargeECard.swift in Sources */,
 				C2582A3B296E5841009F8FEC /* eCardView.swift in Sources */,
 				C23340ED28C3D58D006222F5 /* FutureDelivery+CoreDataClass.swift in Sources */,
 				C22CAE4A298EAA3F003302C4 /* PrefMenu.swift in Sources */,

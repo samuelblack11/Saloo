@@ -66,11 +66,7 @@ struct SpotPlayerView: View {
             .onAppear{
                 if accessedViaGrid && appDelegate.musicSub.type == .Spotify {getSpotCredentials{success in}}
                 else{
-                    if networkMonitor.isConnected{
-                        print("Calling play song...")
-                        playSong()
-                        
-                    }
+                    if networkMonitor.isConnected{playSong()}
                     else {print("Connection failed3");showFailedConnectionAlert = true}
                 }
             }
@@ -85,8 +81,6 @@ struct SpotPlayerView: View {
     
     @ViewBuilder var selectButton: some View {
         if confirmButton == true {Button {
-            print("Did Click....")
-            
             spotifyManager.appRemote?.playerAPI?.pause();showFCV = true; spotifyManager.songID = songID!} label: {Text("Select Song For Card").foregroundColor(.blue)}}
         else {Text("")}
     }
@@ -222,18 +216,11 @@ struct SpotPlayerView: View {
                     print("Error: Could not retrieve playback position.")
                     return
                 }
-                
-                print(">>>>")
-                print(result)
-                
                 // Use the unwrapped value of playbackPosition here
-                DispatchQueue.main.async {
-                    self.songProgress = Double(playbackPosition / 1000)
-                }
+                DispatchQueue.main.async {self.songProgress = Double(playbackPosition / 1000)}
             }
-        } else {
-            print("Error: Could not retrieve player API.")
         }
+        else {print("Error: Could not retrieve player API.")}
     }
 
 
@@ -317,7 +304,6 @@ struct SpotPlayerView: View {
                     playSong()
                     DispatchQueue.main.async {
                         //updateRecordWithNewSPOTData(spotName: song.name, spotArtistName: allArtists, spotID: song.id, songArtImageData: artResponse!, songDuration: String(Double(song.duration_ms) * 0.001)); return
-                        
                     }
                     completion(foundMatch)
 
@@ -327,12 +313,6 @@ struct SpotPlayerView: View {
             completion(foundMatch)
         })
     }
-    
-    
-    
-    
-    
-    
     
     func updateRecordWithNewSPOTData(spotName: String, spotArtistName: String, spotID: String, songArtImageData: Data, songDuration: String) {
         let controller = PersistenceController.shared
@@ -351,9 +331,7 @@ struct SpotPlayerView: View {
         print(APIManager.shared.spotClientIdentifier)
         if let songID = songID {
             let trackURI = "spotify:track:\(songID)"
-            
             if spotifyManager.appRemote?.isConnected == false {
-
                 spotifyManager.appRemote?.authorizeAndPlayURI(trackURI)
                 //spotifyManager.appRemote?.connect()
                 DispatchQueue.main.asyncAfter(deadline: .now() + 2) {spotifyManager.appRemote?.connect()}
@@ -389,10 +367,8 @@ extension SpotPlayerView {
             if networkMonitor.isConnected {
                 runGetToken(authType: "refresh_token")
                 completion(true)
-            } else {
-                showFailedConnectionAlert = true
-                completion(false)
             }
+            else {showFailedConnectionAlert = true; completion(false)}
             counter += 1
         }
         else {
@@ -401,17 +377,11 @@ extension SpotPlayerView {
                 requestSpotAuth()
                 runGetToken(authType: "code")
                 completion(true)
-            } else {
-                showFailedConnectionAlert = true
-                completion(false)
             }
+            else {showFailedConnectionAlert = true; completion(false)}
         }
-        if networkMonitor.isConnected {
-            completion(true)
-        } else {
-            showFailedConnectionAlert = true
-            completion(false)
-        }
+        if networkMonitor.isConnected {completion(true)}
+        else {showFailedConnectionAlert = true; completion(false)}
     }
     
     func requestSpotAuth() {
@@ -518,7 +488,5 @@ extension SpotPlayerView {
 }
 
 extension String {
-    var withoutPunc: String {
-        return self.components(separatedBy: CharacterSet.punctuationCharacters).joined(separator: "")
-    }
+    var withoutPunc: String {return self.components(separatedBy: CharacterSet.punctuationCharacters).joined(separator: "")}
 }

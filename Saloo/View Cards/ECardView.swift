@@ -96,8 +96,11 @@ struct eCardView: View {
             }
             else {
                 VStack {
-                    VStack {CoverViewWide(); NoteView()}
-                        .frame(maxHeight: UIScreen.screenHeight/2.1)
+                    VStack {
+                        CoverViewWide1()
+                        NoteView()
+                    }
+                    .frame(maxHeight: UIScreen.screenHeight/2.1)
                     HStack {CollageAndAnnotationView(); MusicView}
                 }
                 .onAppear{print("MusicNoGiftView Appeared...")}
@@ -109,15 +112,15 @@ struct eCardView: View {
         return GeometryReader { geometry in
             VStack(alignment: .center) {
                 if getCoverSize().1 < 1.3 {
-                    let height = geometry.size.height / 2.5
+                    let height = geometry.size.height / 2.2
                     HStack{CoverViewTall();CollageAndAnnotationView()}.frame(height: height)
                     NoteViewSquare()
                 }
                 else {
                     VStack(alignment: .center) {
-                        CoverViewWide()
-                        NoteView()
-                        CollageAndAnnotationView()
+                        CoverViewWide2()
+                        Spacer()
+                        HStack{CollageAndAnnotationView();NoteViewSquare()}
                     }
                     .frame(maxWidth: .infinity)
                 }
@@ -130,13 +133,20 @@ struct eCardView: View {
                 //.interpolation(.none).resizable().scaledToFit()
     }
     
-    func CoverViewWide() -> some View {
+    func CoverViewWide1() -> some View {
         return Image(uiImage: UIImage(data: coverImage)!)
                 .interpolation(.none).resizable()
-                .frame(width: UIScreen.main.bounds.width/1.2, height: UIScreen.main.bounds.height / 4.2, alignment: .center)
+                .frame(width: UIScreen.main.bounds.width/1.05, height: UIScreen.main.bounds.height / 4.2, alignment: .center)
                 .scaledToFill()
     }
 
+    func CoverViewWide2() -> some View {
+        return Image(uiImage: UIImage(data: coverImage)!)
+                .interpolation(.none).resizable()
+                .frame(width: UIScreen.main.bounds.width/1.05, height: UIScreen.main.bounds.height / 3.3, alignment: .center)
+                .scaledToFill()
+    }
+    
     
     func CoverViewTall() -> some View {
         return Image(uiImage: UIImage(data: coverImage)!)
