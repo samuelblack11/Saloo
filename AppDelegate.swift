@@ -23,8 +23,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, ObservableObject {
     @Published var chosenGridCard: CoreCard? = nil
     @Published var showProgViewOnAcceptShare = false
     @Published var chosenGridCardType: String?
-    var songFilterForSearch = ["(live)","[live]","live at","live in","live from", "(mixed)", "[mixed]"]
-    var songFilterForMatch = ["(live)","[live]","live at","live in","live from", "(mixed)", "[mixed]", "- single","(deluxe)","(deluxe edition)"]
+    //var songFilterForSearch = ["(live)","[live]","live at","live in","live from", "(mixed)", "[mixed]"]
+    //var songFilterForMatch = ["(live)","[live]","live at","live in","live from", "(mixed)", "[mixed]", "- single","(deluxe)","(deluxe edition), (remastered),"]
+    var songFilterForSearchRegex = ["\\(live\\)", "\\[live\\]", "live at", "live in", "live from", "\\(mixed\\)", "\\[mixed\\]"]
+    var songFilterForMatchRegex = ["\\(live\\)", "\\[live\\]", "live at", "live in", "live from", "\\(mixed\\)", "\\[mixed\\]", "- single", "\\(deluxe\\)", "\\(deluxe edition\\)", "\\(remastered\\)", "- .*Remastered",  "- .*remastered"]
+
     var waitingToAcceptRecord = false
     var counter = 0
     var checkIfRecordAddedToStore = true

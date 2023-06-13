@@ -38,6 +38,7 @@ class AppState: ObservableObject {
 struct ContentView: View {
     @EnvironmentObject var apiManager: APIManager
     @EnvironmentObject var appState: AppState
+    @EnvironmentObject var cardsForDisplay: CardsForDisplay
     @State private var isSignedIn = UserDefaults.standard.string(forKey: "SalooUserID") != nil
 
     var body: some View {
@@ -53,11 +54,11 @@ struct ContentView: View {
                 case .buildCard(let steps):
                     BuildCardView(steps: steps)
                 case .draft:
-                    GridofCards(cardsForDisplay: CoreCardUtils.loadCoreCards(), whichBoxVal: .draftbox)
+                    GridofCards(cardsForDisplay: cardsForDisplay.cardsForDisplay, whichBoxVal: .draftbox)
                 case .inbox:
-                    GridofCards(cardsForDisplay: CoreCardUtils.loadCoreCards(), whichBoxVal: .inbox)
+                    GridofCards(cardsForDisplay: cardsForDisplay.cardsForDisplay, whichBoxVal: .inbox)
                 case .outbox:
-                    GridofCards(cardsForDisplay: CoreCardUtils.loadCoreCards(), whichBoxVal: .outbox)
+                    GridofCards(cardsForDisplay: cardsForDisplay.cardsForDisplay, whichBoxVal: .outbox)
                 case .preferences:
                     PrefMenu()
                 }

@@ -132,12 +132,15 @@ class CleanMusicData {
     
     func removeSubstrings(from string: String, removeList: [String]) -> String {
         var result = string
-        for substring in removeList {
-            result = result.lowercased().replacingOccurrences(of: substring, with: "")
+        for pattern in removeList {
+            let regex = try? NSRegularExpression(pattern: pattern, options: .caseInsensitive)
+            let range = NSRange(location: 0, length: result.utf16.count)
+            result = regex?.stringByReplacingMatches(in: result, options: [], range: range, withTemplate: "") ?? result
             result = result.capitalized
         }
         return result
     }
+
     
 
     

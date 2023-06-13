@@ -20,6 +20,7 @@ struct StartMenu: View {
     @EnvironmentObject var appDelegate: AppDelegate
     @EnvironmentObject var sceneDelegate: SceneDelegate
     @EnvironmentObject var appState: AppState
+    @EnvironmentObject var cardsForDisplay: CardsForDisplay
     @ObservedObject var gettingRecord = GettingRecord.shared
     @ObservedObject var alertVars = AlertVars.shared
     @State var whichBoxForCKAccept: InOut.SendReceive?
@@ -56,6 +57,7 @@ struct StartMenu: View {
             .modifier(AlertViewMod(showAlert: alertVars.activateAlertBinding, activeAlert: alertVars.alertType))
             .onAppear {
                 //deleteAllCoreCards()
+                cardsForDisplay.cardsForDisplay = cardsForDisplay.loadCoreCards()
                 var salooUserID = (UserDefaults.standard.object(forKey: "SalooUserID") as? String)!
                 checkUserBanned(userId: salooUserID) { (isBanned, error) in
                     if isBanned == true {alertVars.alertType = .userBanned; alertVars.activateAlert = true}

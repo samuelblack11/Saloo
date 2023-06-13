@@ -89,6 +89,23 @@ class CoreCardWrapper: ObservableObject {
 }
 
 
+class CardsForDisplay: ObservableObject {
+    @Published var cardsForDisplay: [CoreCard] = []
+    
+    func loadCoreCards() -> [CoreCard] {
+        let request = CoreCard.createFetchRequest()
+        let sort = NSSortDescriptor(key: "date", ascending: false)
+        request.sortDescriptors = [sort]
+        var cardsFromCore: [CoreCard] = []
+        var filteredCards: [CoreCard] = []
+        do {
+            cardsFromCore = try PersistenceController.shared.persistentContainer.viewContext.fetch(request)
+            //print("START MENU Got \(cardsFromCore.count) Cards From Core")
+        }
+        catch {print("Fetch failed")}
+        return cardsFromCore
+    }
+}
 
 class ChosenSong: ObservableObject {
     @Published var id = String()
@@ -327,7 +344,27 @@ class CardPrep: ObservableObject {
 }
 
 
-
+class UCVImageObjectModel: ObservableObject {
+    @Published var imageObjects: [CoverImageObject] = []
+    
+    func getPhotosFromCollection(collectionID: String, page_num: Int) {
+        PhotoAPI.getPhotosFromCollection(collectionID: collectionID, page_num: page_num, completionHandler: { (response, error) in
+            if response != nil {
+                DispatchQueue.main.async {
+                    for picture in response! {
+                        if picture.urls.small != nil && picture.user.username != nil && picture.user.name != nil && picture.links.download_location != nil {
+                            let thisPicture = picture.urls.small
+                            let imageURL = URL(string: thisPicture!)
+                            let newObj = CoverImageObject.init(coverImage: nil, smallImageURL: imageURL!, coverImagePhotographer: picture.user.name!, coverImageUserName: picture.user.username!, downloadLocation: picture.links.download_location!, index: self.imageObjects.count)
+                            self.imageObjects.append(newObj)
+                    }}
+                }
+            }
+            if response != nil {print("No Response!")}
+            else {debugPrint(error?.localizedDescription ?? "Error Getting Photos from Collection")}
+        })
+    }
+}
 
 
 

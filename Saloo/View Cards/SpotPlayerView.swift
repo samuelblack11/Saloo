@@ -264,13 +264,13 @@ struct SpotPlayerView: View {
     
     
     func getSongViaAlbumSearch(completion: @escaping (Bool) -> Void) {
-        let cleanAlbumNameForURL = cleanMusicData.compileMusicString(songOrAlbum: songAlbumName!, artist: nil, removeList: appDelegate.songFilterForMatch)
+        let cleanAlbumNameForURL = cleanMusicData.compileMusicString(songOrAlbum: songAlbumName!, artist: nil, removeList: appDelegate.songFilterForMatchRegex)
         var appleAlbumArtistForURL = String()
-        if appleAlbumArtist != "" {appleAlbumArtistForURL = cleanMusicData.cleanMusicString(input: appleAlbumArtist!, removeList: appDelegate.songFilterForMatch)}
-        else {appleAlbumArtistForURL = cleanMusicData.cleanMusicString(input: songArtistName!, removeList: appDelegate.songFilterForMatch)}
+        if appleAlbumArtist != "" {appleAlbumArtistForURL = cleanMusicData.cleanMusicString(input: appleAlbumArtist!, removeList: appDelegate.songFilterForMatchRegex)}
+        else {appleAlbumArtistForURL = cleanMusicData.cleanMusicString(input: songArtistName!, removeList: appDelegate.songFilterForMatchRegex)}
         
         
-        let AMString = cleanMusicData.compileMusicString(songOrAlbum: songName!, artist: songArtistName!, removeList: appDelegate.songFilterForMatch)
+        let AMString = cleanMusicData.compileMusicString(songOrAlbum: songName!, artist: songArtistName!, removeList: appDelegate.songFilterForMatchRegex)
         var foundMatch = false
         SpotifyAPI.shared.getAlbumID(albumName: cleanAlbumNameForURL, artistName: appleAlbumArtistForURL , authToken: spotifyManager.access_token, completion: { (albums, error) in
             var albumIndex = 0
@@ -309,7 +309,7 @@ struct SpotPlayerView: View {
         innerLoop: for song in response! {
             print("Got Track...\(song.name)")
             var allArtists = concatAllArtists(song: song)
-            let SPOTString = cleanMusicData.compileMusicString(songOrAlbum: song.name, artist: allArtists, removeList: appDelegate.songFilterForMatch)
+            let SPOTString = cleanMusicData.compileMusicString(songOrAlbum: song.name, artist: allArtists, removeList: appDelegate.songFilterForMatchRegex)
             print("Track Name....AMString: \(AMString) && SPOTString: \(SPOTString)")
             if cleanMusicData.containsSameWords(AMString, SPOTString) && foundMatch == false {
                 foundMatch = true

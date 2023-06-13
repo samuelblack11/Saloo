@@ -107,7 +107,7 @@ class AppleMusicAPI {
         let searchURL = "https://api.music.apple.com/v1/catalog/\(storeFrontID)/search"
         print("PreClean:")
         print(albumAndArtist)
-        var searchTerm = cleanMusicData.compileMusicString(songOrAlbum: albumAndArtist, artist: nil, removeList: AppDelegate().songFilterForMatch).replacingOccurrences(of: " ", with: "%20")
+        var searchTerm = cleanMusicData.compileMusicString(songOrAlbum: albumAndArtist, artist: nil, removeList: AppDelegate().songFilterForMatchRegex).replacingOccurrences(of: " ", with: "%20")
         print("PostClean:")
         print(searchTerm)
         let searchType = "albums"

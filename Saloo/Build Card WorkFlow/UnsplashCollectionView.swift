@@ -17,7 +17,7 @@ struct UnsplashCollectionView: View {
     @State private var showOccassions = false
     // Object holding Bools for all views to be displayed.
     // Array of all images displayed in the view
-    @State var imageObjects: [CoverImageObject] = []
+    @ObservedObject var imageObjectModel = UCVImageObjectModel()
     // Counts the number of images in the response from Unsplash, as they are added to imageObjects
     @State private var picCount: Int!
     // The image, and it's components, selected by the user
@@ -38,7 +38,7 @@ struct UnsplashCollectionView: View {
             ZStack {
                 ScrollView {
                     LazyVGrid(columns: columns, spacing: 10) {
-                        ForEach(imageObjects, id: \.self.id) {photoObj in
+                        ForEach(imageObjectModel.imageObjects, id: \.self.id) {photoObj in
                             AsyncImage(url: photoObj.smallImageURL) { image in
                                 image.resizable()} placeholder: {ZStack{Color.gray; ProgressView()}}
                                 .frame(width: 125, height: 125)
@@ -53,10 +53,13 @@ struct UnsplashCollectionView: View {
                         }
                     }
                     .navigationTitle("Choose Front Cover")
-                    .navigationBarItems(leading:Button {appState.currentScreen = .buildCard([.occasionsMenu])} label: {Image(systemName: "chevron.left").foregroundColor(.blue); Text("Back")}.disabled(gettingRecord.isShowingActivityIndicator))
+                    .navigationBarItems(leading:Button {chosenObject.pageCount = 1; appState.currentScreen = .buildCard([.occasionsMenu])} label: {Image(systemName: "chevron.left").foregroundColor(.blue); Text("Back")}.disabled(gettingRecord.isShowingActivityIndicator))
                     Button("More...") {
                         if networkMonitor.isConnected {
-                            getMorePhotos(); print("page count: \(chosenObject.pageCount)")
+                            //imageObjectModel.getMorePhotos(chosenObject: chosenObject); print("page count: \(chosenObject.pageCount)")
+                            chosenObject.pageCount = chosenObject.pageCount + 1
+                            imageObjectModel.imageObjects = []
+                            imageObjectModel.getPhotosFromCollection(collectionID: chosenOccassion.collectionID, page_num: chosenObject.pageCount)
                         }
                         else {
                             alertVars.alertType = .failedConnection
@@ -64,7 +67,7 @@ struct UnsplashCollectionView: View {
                             
                         }
                         
-                    }.disabled(setButtonStatus(imageObjects: imageObjects))
+                    }.disabled(setButtonStatus(imageObjects: imageObjectModel.imageObjects))
                 }
                 .modifier(AlertViewMod(showAlert: alertVars.activateAlertBinding, activeAlert: alertVars.alertType))
                 LoadingOverlay()
@@ -73,24 +76,13 @@ struct UnsplashCollectionView: View {
         
         .font(.headline).padding(.horizontal).frame(maxHeight: 600)
         .onAppear {
-            if chosenOccassion.occassion == "None" {
-                //getUnsplashPhotos()
-                if networkMonitor.isConnected{getUnsplashPhotos()}
-                else{
-                    alertVars.alertType = .failedConnection
-                    alertVars.activateAlert = true
-                    
+                if networkMonitor.isConnected {
+                    imageObjectModel.getPhotosFromCollection(collectionID: chosenOccassion.collectionID, page_num: chosenObject.pageCount)
                 }
-            }
-            else {
-                //getPhotosFromCollection(collectionID: chosenOccassion.collectionID, page_num: chosenObject.pageCount)
-                if networkMonitor.isConnected{getPhotosFromCollection(collectionID: chosenOccassion.collectionID, page_num: chosenObject.pageCount)}
                 else {
                     alertVars.alertType = .failedConnection
                     alertVars.activateAlert = true
-                    
                 }
-            }
         }
     }
     
@@ -108,7 +100,7 @@ extension UnsplashCollectionView {
     func handleTap(index: Int) async throws {
         print("handle tap has been called....")
             do {
-                let imageObjects = self.imageObjects
+                let imageObjects = imageObjectModel.imageObjects
                 let (data1, _) = try await URLSession.shared.data(from: imageObjects[index].smallImageURL)
                 chosenObject.smallImageURLString = imageObjects[index].smallImageURL.absoluteString
                 chosenObject.coverImage = data1
@@ -121,52 +113,4 @@ extension UnsplashCollectionView {
             }
         catch {debugPrint("Error handling tap .... : \(error)")}
     }
-    
-    func getPhotosFromCollection(collectionID: String, page_num: Int) {
-        PhotoAPI.getPhotosFromCollection(collectionID: collectionID, page_num: page_num, completionHandler: { (response, error) in
-            if response != nil {
-                DispatchQueue.main.async {
-                    for picture in response! {
-                        if picture.urls.small != nil && picture.user.username != nil && picture.user.name != nil && picture.links.download_location != nil {
-                            let thisPicture = picture.urls.small
-                            let imageURL = URL(string: thisPicture!)
-                            
-                            
-                            
-                            
-                            let newObj = CoverImageObject.init(coverImage: nil, smallImageURL: imageURL!, coverImagePhotographer: picture.user.name!, coverImageUserName: picture.user.username!, downloadLocation: picture.links.download_location!, index: imageObjects.count)
-                            imageObjects.append(newObj)
-                    }}
-                }
-            }
-            if response != nil {print("No Response!")}
-            else {debugPrint(error?.localizedDescription ?? "Error Getting Photos from Collection")}
-        })
-    }
-    
-    func getUnsplashPhotos() {
-        PhotoAPI.getPhoto(pageNum: chosenObject.pageCount, userSearch: chosenOccassion.collectionID, completionHandler: { (response, error) in
-            if response != nil {
-                self.picCount = response!.count
-                DispatchQueue.main.async {
-                    for picture in response! {
-                        if picture.urls.small != nil && picture.user.username != nil && picture.user.name != nil && picture.links.download_location != nil {
-                            let thisPicture = picture.urls.small
-                            let imageURL = URL(string: thisPicture!)
-                            let newObj = CoverImageObject.init(coverImage: nil, smallImageURL: imageURL!, coverImagePhotographer: picture.user.name!, coverImageUserName: picture.user.username!, downloadLocation: picture.links.download_location!, index: imageObjects.count)
-                            imageObjects.append(newObj)
-                    }}
-                }
-            if self.picCount == 0 {print("No Picture Available for that Search")}
-            if response == nil {print("Response is Nil")}
-            }
-        })
-        }
-    
-    func getMorePhotos() {
-        chosenObject.pageCount = chosenObject.pageCount + 1
-        appState.currentScreen = .buildCard([.unsplashCollectionView])
-        getUnsplashPhotos()
-    }
-
 }

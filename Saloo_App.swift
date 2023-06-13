@@ -34,6 +34,7 @@ struct Saloo_App: App {
     @StateObject var noteField = NoteField()
     @StateObject var annotation = Annotation()
     @StateObject var addMusic = AddMusic()
+    @StateObject var cardsForDisplay = CardsForDisplay()
     var body: some Scene {
         WindowGroup {
             ContentView()
@@ -56,6 +57,7 @@ struct Saloo_App: App {
                 .environmentObject(noteField)
                 .environmentObject(annotation)
                 .environmentObject(addMusic)
+                .environmentObject(cardsForDisplay)
         }
     }
 }

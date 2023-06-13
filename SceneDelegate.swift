@@ -84,6 +84,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
         print("called* handleGridofCardsDisplay")
         guard self.gotRecord && self.connectToScene else { return }
         if self.appDelegate.musicSub.type == .Neither {self.updateMusicSubType()}
+        //let contentView = GridofCards(cardsForDisplay: CoreCardUtils.loadCoreCards(), whichBoxVal: self.whichBoxForCKAccept!, chosenCard: self.coreCard)
         let contentView = GridofCards(cardsForDisplay: CoreCardUtils.loadCoreCards(), whichBoxVal: self.whichBoxForCKAccept!, chosenCard: self.coreCard)
             .environmentObject(self.appDelegate)
             .environmentObject(self.networkMonitor)

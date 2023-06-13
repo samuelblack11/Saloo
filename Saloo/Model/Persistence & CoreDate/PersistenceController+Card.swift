@@ -92,7 +92,19 @@ extension PersistenceController {
         
     }
     
-    
+    func loadCoreCards() -> [CoreCard] {
+        let request = CoreCard.createFetchRequest()
+        let sort = NSSortDescriptor(key: "date", ascending: false)
+        request.sortDescriptors = [sort]
+        var cardsFromCore: [CoreCard] = []
+        var filteredCards: [CoreCard] = []
+        do {
+            cardsFromCore = try PersistenceController.shared.persistentContainer.viewContext.fetch(request)
+            //print("START MENU Got \(cardsFromCore.count) Cards From Core")
+        }
+        catch {print("Fetch failed")}
+        return cardsFromCore
+    }
     
     
     

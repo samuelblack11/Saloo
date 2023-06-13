@@ -270,7 +270,7 @@ extension MusicSearchView {
         print("CheckPoint1")
         var cleanAlbumName = String()
         var artistsInAlbumName = String()
-        cleanAlbumName = cleanMusicData.compileMusicString(songOrAlbum: chosenSong.songAlbumName, artist: nil, removeList: appDelegate.songFilterForSearch)
+        cleanAlbumName = cleanMusicData.compileMusicString(songOrAlbum: chosenSong.songAlbumName, artist: nil, removeList: appDelegate.songFilterForSearchRegex)
         var albumArtistList: [String] = []
         let pageSize = 50
         let totalAlbums = 150
@@ -333,7 +333,7 @@ extension MusicSearchView {
 
         group1.notify(queue: DispatchQueue.main) {
             var foundMatch = false
-            let words = cleanMusicData.cleanMusicString(input: chosenSong.spotArtistName, removeList:appDelegate.songFilterForSearch).components(separatedBy: " ")
+            let words = cleanMusicData.cleanMusicString(input: chosenSong.spotArtistName, removeList:appDelegate.songFilterForSearchRegex).components(separatedBy: " ")
             print("notified")
             for artistGroup in albumArtistList {
                 for word in words {
@@ -363,8 +363,8 @@ extension MusicSearchView {
     }
 
     func getAlbum(storeFront: String, userToken: String) {
-        var albumAndArtistForSearch = cleanMusicData.compileMusicString(songOrAlbum: chosenSong.songAlbumName, artist: chosenSong.artistName, removeList: appDelegate.songFilterForSearch)
-        var albumForSearch = cleanMusicData.compileMusicString(songOrAlbum: chosenSong.songAlbumName, artist: nil, removeList: appDelegate.songFilterForSearch)
+        var albumAndArtistForSearch = cleanMusicData.compileMusicString(songOrAlbum: chosenSong.songAlbumName, artist: chosenSong.artistName, removeList: appDelegate.songFilterForSearchRegex)
+        var albumForSearch = cleanMusicData.compileMusicString(songOrAlbum: chosenSong.songAlbumName, artist: nil, removeList: appDelegate.songFilterForSearchRegex)
         var songFound = false
         var albumArtistList: [String] = []
         SKCloudServiceController.requestAuthorization {(status) in if status == .authorized {
@@ -400,7 +400,7 @@ extension MusicSearchView {
                         } else {group1.leave()}
                         group1.notify(queue: DispatchQueue.main) {
                             var foundMatch = false;print("notified")
-                            let words = cleanMusicData.cleanMusicString(input: chosenSong.artistName, removeList:appDelegate.songFilterForSearch).components(separatedBy: " ")
+                            let words = cleanMusicData.cleanMusicString(input: chosenSong.artistName, removeList:appDelegate.songFilterForSearchRegex).components(separatedBy: " ")
                             for artistGroup in albumArtistList {
                                 print(artistGroup)
                                 print("The Words...")
@@ -463,8 +463,8 @@ extension MusicSearchView {
         print("!!!")
         print(spotifyManager.access_token)
         
-        let songTerm = cleanMusicData.cleanMusicString(input: self.songSearch, removeList: appDelegate.songFilterForSearch)
-        let artistTerm = cleanMusicData.cleanMusicString(input: self.artistSearch, removeList: appDelegate.songFilterForSearch)
+        let songTerm = cleanMusicData.cleanMusicString(input: self.songSearch, removeList: appDelegate.songFilterForSearchRegex)
+        let artistTerm = cleanMusicData.cleanMusicString(input: self.artistSearch, removeList: appDelegate.songFilterForSearchRegex)
 
         
         SpotifyAPI.shared.searchSpotify(songTerm, artistName: artistTerm, authToken: spotifyManager.access_token, completionHandler: {(response, error) in
@@ -496,7 +496,7 @@ extension MusicSearchView {
                             let songForList = SongForList(id: song.id, name: song.name, artistName: allArtists, albumName: song.album!.name, artImageData: artResponse!, durationInMillis: song.duration_ms, isPlaying: false, previewURL: songPrev!, disc_number: song.disc_number, url: (song.external_urls?.spotify!)!)
                             if song.restrictions?.reason == nil {
                                 //if containsString(listOfSubStrings: songKeyWordsToFilterOut, songName: songForList.name) || containsString(listOfSubStrings: songKeyWordsToFilterOut, songName: songForList.albumName) || song.album?.album_type == "single" {
-                                if cleanMusicData.containsString(listOfSubStrings: appDelegate.songFilterForSearch, songName: songForList.name) || cleanMusicData.containsString(listOfSubStrings: appDelegate.songFilterForSearch, songName: songForList.albumName) {
+                                if cleanMusicData.containsString(listOfSubStrings: appDelegate.songFilterForSearchRegex, songName: songForList.name) || cleanMusicData.containsString(listOfSubStrings: appDelegate.songFilterForSearchRegex, songName: songForList.albumName) {
                                     print("Contains prohibited substring")
                                 }
                                 else{searchResults.append(songForList)}
@@ -553,7 +553,7 @@ extension MusicSearchView {
         print("---")
         print(isLoading)
         SKCloudServiceController.requestAuthorization {(status) in if status == .authorized {
-            let amSearch = cleanMusicData.cleanMusicString(input: self.songSearch, removeList: appDelegate.songFilterForSearch)
+            let amSearch = cleanMusicData.cleanMusicString(input: self.songSearch, removeList: appDelegate.songFilterForSearchRegex)
             self.searchResults = AppleMusicAPI().searchAppleMusic(amSearch, storeFrontID: amAPI.storeFrontID!, userToken: amAPI.taskToken!, completionHandler: { (response, error) in
                 if response != nil {
                     DispatchQueue.main.async {
@@ -567,7 +567,7 @@ extension MusicSearchView {
                             let _ = getURLData(url: artURL!, completionHandler: { (artResponse, error2) in
                                 print("Song Name is...\(song.attributes.name)")
                                 let songForList = SongForList(id: song.attributes.playParams.id, name: song.attributes.name, artistName: song.attributes.artistName, albumName: song.attributes.albumName,artImageData: artResponse!, durationInMillis: song.attributes.durationInMillis, isPlaying: false, previewURL: songPrev!, disc_number: song.attributes.discNumber, url: song.attributes.url)
-                                if cleanMusicData.containsString(listOfSubStrings: appDelegate.songFilterForSearch, songName: songForList.name) || cleanMusicData.containsString(listOfSubStrings: appDelegate.songFilterForSearch, songName: songForList.albumName){
+                                if cleanMusicData.containsString(listOfSubStrings: appDelegate.songFilterForSearchRegex, songName: songForList.name) || cleanMusicData.containsString(listOfSubStrings: appDelegate.songFilterForSearchRegex, songName: songForList.albumName){
                                 print("Did Not Append....")
                                 print(songForList.name)
                             }

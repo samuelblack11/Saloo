@@ -258,7 +258,7 @@ extension AMPlayerView {
                 }
             else {
                 //if error != nil {foundMatch = "searchFailed"}
-                let cleanSpotString =  cleanMusicData.compileMusicString(songOrAlbum: spotName!, artist: spotArtistName!, removeList: appDelegate.songFilterForMatch)
+                let cleanSpotString =  cleanMusicData.compileMusicString(songOrAlbum: spotName!, artist: spotArtistName!, removeList: appDelegate.songFilterForMatchRegex)
                 if let albumList = albumResponse?.results.albums.data {
                     let group = DispatchGroup()
                     //let group2 = DispatchGroup()
@@ -275,7 +275,7 @@ extension AMPlayerView {
                                     for (trackIndex, track) in trackList.enumerated() {
                                         print("Track Index....\(trackIndex) of \(trackList.count - 1)")
                                         print("Album Index....\(albumIndex) of \(albumList.count - 1)")
-                                        let cleanAMString = cleanMusicData.compileMusicString(songOrAlbum: track.attributes.name, artist: track.attributes.artistName, removeList: appDelegate.songFilterForMatch)
+                                        let cleanAMString = cleanMusicData.compileMusicString(songOrAlbum: track.attributes.name, artist: track.attributes.artistName, removeList: appDelegate.songFilterForMatchRegex)
                                         if cleanMusicData.containsSameWords(cleanAMString, cleanSpotString) && foundMatch != "foundMatch" {
                                             foundMatch = "foundMatch"
                                             print("SSSSS")
