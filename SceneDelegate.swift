@@ -280,6 +280,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
             self.coreCard.cardName = record?.object(forKey: "CD_cardName") as! String
             self.coreCard.cardName = record?.object(forKey: "CD_cardName") as! String
             self.coreCard.cardType = record?.object(forKey: "CD_cardType") as! String
+            self.coreCard.appleSongURL = record?.object(forKey: "CD_appleSongURL") as! String
+            self.coreCard.spotSongURL = record?.object(forKey: "CD_spotSongURL") as! String
             self.appDelegate.chosenGridCard = self.coreCard
             self.determineWhichBox {}
             self.gotRecord = true

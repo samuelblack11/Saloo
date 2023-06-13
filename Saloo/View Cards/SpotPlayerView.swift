@@ -250,13 +250,18 @@ struct SpotPlayerView: View {
     
     func getSongViaAlbumSearch(completion: @escaping (Bool) -> Void) {
         let cleanAlbumNameForURL = cleanMusicData.compileMusicString(songOrAlbum: songAlbumName!, artist: nil, removeList: appDelegate.songFilterForMatch)
-        let appleAlbumArtistForURL = cleanMusicData.cleanMusicString(input: appleAlbumArtist!, removeList: appDelegate.songFilterForMatch)
+        var appleAlbumArtistForURL = String()
+        if appleAlbumArtist != "" {appleAlbumArtistForURL = cleanMusicData.cleanMusicString(input: appleAlbumArtist!, removeList: appDelegate.songFilterForMatch)}
+        else {appleAlbumArtistForURL = cleanMusicData.cleanMusicString(input: songArtistName!, removeList: appDelegate.songFilterForMatch)}
+        
+        
         let AMString = cleanMusicData.compileMusicString(songOrAlbum: songName!, artist: songArtistName!, removeList: appDelegate.songFilterForMatch)
         var foundMatch = false
         SpotifyAPI.shared.getAlbumID(albumName: cleanAlbumNameForURL, artistName: appleAlbumArtistForURL , authToken: spotifyManager.access_token, completion: { (albums, error) in
             var albumIndex = 0
             func processAlbum() {
                 guard albumIndex < albums!.count else {
+                    print("called guard statement")
                     // All albums processed or foundMatch4 is true
                     completion(foundMatch); return
                 }
@@ -272,9 +277,10 @@ struct SpotPlayerView: View {
                             if foundMatch4 == true {foundMatch = true; completion(foundMatch)}
                             else {processAlbum()}
                         })
-                    } else {processAlbum()}
+                    } else {print("fail1");processAlbum()}
                 }
             }
+            print("fail2")
             processAlbum()
         })
     }

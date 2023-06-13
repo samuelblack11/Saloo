@@ -233,6 +233,7 @@ struct eCardView: View {
             }
         .onAppear{
             print("Song URL is...")
+            print(songAddedUsing)
             print(appleSongURL)
         }
     }

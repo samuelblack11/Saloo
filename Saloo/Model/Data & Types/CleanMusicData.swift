@@ -17,18 +17,33 @@ class CleanMusicData {
         // musicString is songName followed by artistName
         //Run Away feat Felix Raphael Single Ben Bhmer Tinlicker
         var cleanString = String()
+        print("##")
+        print(songOrAlbum)
+        print(artist)
+        
+        
+        
         if artist != nil {
             let songOrAlbumNameOnly = removeArtistsFromSongOrAlbum(songOrAlbum: songOrAlbum).0
             let artistsInArtistField = removeArtistsFromSongOrAlbum(songOrAlbum: artist!).0
             let artistsInSongOrAlbumName = removeArtistsFromSongOrAlbum(songOrAlbum: songOrAlbum).1
+            
+            print("++")
+            print(songOrAlbumNameOnly)
+            print(artistsInArtistField)
+            print(artistsInSongOrAlbumName)
             cleanString = songOrAlbumNameOnly + " " + artistsInArtistField + " " + artistsInSongOrAlbumName
         }
         else {
+            print("else called...")
             cleanString = removeArtistsFromSongOrAlbum(songOrAlbum: songOrAlbum).0
+            print(cleanString)
         }
         
-        
+
         cleanString = cleanMusicString(input: cleanString, removeList: removeList)
+        print("FINAL")
+        print(cleanString)
         return cleanString
     }
     
