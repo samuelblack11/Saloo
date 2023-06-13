@@ -19,13 +19,13 @@ struct StartMenu: View {
     let defaults = UserDefaults.standard
     @EnvironmentObject var appDelegate: AppDelegate
     @EnvironmentObject var sceneDelegate: SceneDelegate
+    @EnvironmentObject var appState: AppState
+    @ObservedObject var gettingRecord = GettingRecord.shared
+    @ObservedObject var alertVars = AlertVars.shared
     @State var whichBoxForCKAccept: InOut.SendReceive?
     @State var userID = String()
     @State private var isBanned = false
-    @ObservedObject var gettingRecord = GettingRecord.shared
-    @ObservedObject var alertVars = AlertVars.shared
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate2
-    @EnvironmentObject var appState: AppState
     // @State var salooUserID: String = (UserDefaults.standard.object(forKey: "SalooUserID") as? String)!
     //@StateObject var audioManager = AudioSessionManager()
     var possibleSubscriptionValues = ["Apple Music", "Spotify", "Neither"]
@@ -44,7 +44,7 @@ struct StartMenu: View {
         NavigationView {
             ZStack {
                 List {
-                    Text(buildCardWorkFlow).onTapGesture {appState.currentScreen = .buildCard([.occasionsMenu])
+                    Text(buildCardWorkFlow).onTapGesture {appState.currentScreen = .buildCard([.occasionsMenu])}
                     Text("Drafts 📓").onTapGesture {appState.currentScreen = .draft}
                     Text("Inbox 📥").onTapGesture {appState.currentScreen = .inbox}
                     Text("Outbox 📥") .onTapGesture {appState.currentScreen = .outbox}
@@ -70,7 +70,6 @@ struct StartMenu: View {
             }
         }
     }
-}
 
 extension StartMenu {
     

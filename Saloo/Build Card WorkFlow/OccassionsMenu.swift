@@ -13,8 +13,8 @@ import CoreData
 
 struct OccassionsMenu: View {
     // Object to pass to Collage Menu if photo not selcted from UCV
-    @StateObject var chosenOccassion = Occassion()
-    @StateObject var chosenObject = ChosenCoverImageObject()
+    @EnvironmentObject var chosenOccassion: Occassion
+    @EnvironmentObject var chosenObject: ChosenCoverImageObject
     
     //@State private var showSentCards = false
     //@State private var showReceivedCards = false
@@ -124,8 +124,6 @@ struct OccassionsMenu: View {
         .listStyle(GroupedListStyle())
         .onAppear {createOccassionsFromUserCollections()}
         }
-        .environmentObject(chosenObject)
-        .environmentObject(chosenOccassion)
     }
 }
 

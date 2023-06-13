@@ -33,6 +33,7 @@ struct AMPlayerView: View {
     @State private var musicPlayer = MPMusicPlayerController.applicationMusicPlayer
     @EnvironmentObject var appDelegate: AppDelegate
     @EnvironmentObject var sceneDelegate: SceneDelegate
+    @Environment(\.presentationMode) var presentationMode
     var amAPI = AppleMusicAPI()
     @State private var ranAMStoreFront = false
     let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
@@ -52,6 +53,7 @@ struct AMPlayerView: View {
     let cleanMusicData = CleanMusicData()
     @EnvironmentObject var networkMonitor: NetworkMonitor
     @Binding var showAPV: Bool
+    @Binding var isLoading: Bool
     @State private var disableSelect = false
     @ObservedObject var gettingRecord = GettingRecord.shared
     @EnvironmentObject var chosenSong: ChosenSong
@@ -174,12 +176,15 @@ struct AMPlayerView: View {
     
     @ViewBuilder var selectButton: some View {
         if confirmButton == true {Button {
-            CardPrep.shared.chosenSong = chosenSong
-            appState.currentScreen = .buildCard([.finalizeCardView])
             musicPlayer.pause()
             songProgress = 0.0
-
-            
+            self.showAPV = false
+            self.isLoading = true
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) {
+                self.isLoading = false
+                CardPrep.shared.chosenSong = chosenSong
+                appState.currentScreen = .buildCard([.finalizeCardView])
+            }
         } label: {Text("Select Song For Card").foregroundColor(.blue).disabled(disableSelect)}}
         else {Text("")}
     }

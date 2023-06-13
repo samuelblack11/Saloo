@@ -18,7 +18,7 @@ struct CollageBuilder: View {
     @EnvironmentObject var chosenStyle: ChosenCollageStyle
     // Variable for collageImage object
     @EnvironmentObject var collageImage: CollageImage
-    @StateObject var chosenImagesObject = ChosenImages()
+    @EnvironmentObject var chosenImagesObject: ChosenImages
     @State var explicitPhotoAlert: Bool = false
     @State var showImagePicker: Bool
     // Counts the page of the response being viewed by the user. 30 images per page maximum
@@ -84,8 +84,6 @@ struct CollageBuilder: View {
                 }
             }
             .modifier(AlertViewMod(showAlert: alertVars.activateAlertBinding, activeAlert: alertVars.alertType))
-            .environmentObject(collageImage)
-            .environmentObject(chosenImagesObject)
         }
     }
         @ViewBuilder var chosenTemplate: some View {

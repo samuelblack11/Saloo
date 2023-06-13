@@ -14,17 +14,12 @@ struct WriteNoteView: View {
     @EnvironmentObject var collageImage: CollageImage
     @EnvironmentObject var chosenOccassion: Occassion
     @EnvironmentObject var appDelegate: AppDelegate
-    @StateObject var addMusic = AddMusic()
-    @StateObject var chosenSong = ChosenSong()
-    @StateObject var giftCard = GiftCard()
-
-    @StateObject var noteField = NoteField()
-    @StateObject var annotation = Annotation()
+    @EnvironmentObject var appState: AppState
+    @EnvironmentObject var annotation: Annotation
+    @EnvironmentObject var addMusic: AddMusic
+    @EnvironmentObject var chosenSong: ChosenSong
+    @EnvironmentObject var noteField: NoteField
     @ObservedObject var alertVars = AlertVars.shared
-
-    @State private var showMusic = false
-    @State private var showFinalize = false
-    @State private var showCollageBuilder = false
     @ObservedObject var message = MaximumText(limit: 225, value: "Write Your Note Here")
     @ObservedObject var recipient = MaximumText(limit: 20, value: "To:")
     @ObservedObject var sender = MaximumText(limit: 20, value: "From:")
@@ -49,17 +44,6 @@ struct WriteNoteView: View {
             }
             Spacer()
         }
-    }
-
-    func determineCardType() -> String {
-        var cardType2 = String()
-        if chosenSong.id != "" && giftCard.id != ""  {cardType2 = "musicAndGift"}
-        else if chosenSong.id != "" && giftCard.id == ""  {cardType2 = "musicNoGift"}
-        else if chosenSong.id == "" && giftCard.id != ""  {cardType2 = "giftNoMusic"}
-        else{cardType2 = "noMusicNoGift"}
-        
-        return cardType2
-        
     }
     
     var body: some View {
@@ -114,20 +98,15 @@ struct WriteNoteView: View {
                                     alertVars.alertType = .addMusicPrompt
                                     alertVars.activateAlert = true
                                 }
-                                if appDelegate.musicSub.type == .Neither {checkRequiredFields(); annotateIfNeeded();CardPrep.shared.chosenSong = chosenSong; showFinalize = true}
+                                if appDelegate.musicSub.type == .Neither {checkRequiredFields(); annotateIfNeeded();CardPrep.shared.chosenSong = chosenSong; appState.currentScreen = .buildCard([.finalizeCardView])}
                             }
                         }
                     }
                     .padding(.bottom, 30)
-                    .fullScreenCover(isPresented: $showMusic) {MusicSearchView().environmentObject(appDelegate)}
-                    .fullScreenCover(isPresented: $showFinalize) {
-                        FinalizeCardView(cardType: determineCardType()
-                        )}
-                    .fullScreenCover(isPresented: $showCollageBuilder) {CollageBuilder(showImagePicker: false)}
                 }
                 LoadingOverlay()
             }
-            .navigationBarItems(leading:Button {showCollageBuilder = true} label: {Image(systemName: "chevron.left").foregroundColor(.blue); Text("Back")}.disabled(gettingRecord.isShowingActivityIndicator))
+            .navigationBarItems(leading:Button {appState.currentScreen = .buildCard([.collageBuilder])} label: {Image(systemName: "chevron.left").foregroundColor(.blue); Text("Back")}.disabled(gettingRecord.isShowingActivityIndicator))
         }
         
         .modifier(AlertViewMod(showAlert: alertVars.activateAlertBinding, activeAlert: alertVars.alertType, alertDismissAction: {
@@ -140,16 +119,8 @@ struct WriteNoteView: View {
         }, secondDismissAction: {
             checkRequiredFields(); annotateIfNeeded(); addMusic.addMusic = false
             CardPrep.shared.chosenSong = chosenSong
-            showFinalize = true
+            appState.currentScreen = .buildCard([.finalizeCardView])
         }))
-        //.environmentObject(appDelegate)
-        .environmentObject(noteField)
-        .environmentObject(annotation)
-        .environmentObject(addMusic)
-        .environmentObject(chosenSong)
-        .environmentObject(giftCard)
-
-
     }
 }
 
@@ -176,10 +147,10 @@ extension WriteNoteView {
     func checkRequiredFields() {
         if noteField.recipient.value != "" && noteField.cardName.value != "" {
             //namesNotEntered = false
-            if addMusic.addMusic {showMusic = true}
+            if addMusic.addMusic {appState.currentScreen = .buildCard([.musicSearchView])}
             else {
                 CardPrep.shared.chosenSong = chosenSong
-                showFinalize = true
+                appState.currentScreen = .buildCard([.finalizeCardView])
             }
         }
         else {

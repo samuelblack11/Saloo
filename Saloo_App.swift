@@ -12,6 +12,7 @@ struct Saloo_App: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate3
     @StateObject var appDelegate = AppDelegate()
     @StateObject var sceneDelegate = SceneDelegate()
+    
     @ObservedObject var apiManager = APIManager.shared
     @ObservedObject var spotifyManager = SpotifyManager.shared
     @ObservedObject var alertVars = AlertVars.shared
@@ -24,7 +25,15 @@ struct Saloo_App: App {
     @State private var isCountdownShown: Bool = false
     @State private var isSignedIn = UserDefaults.standard.string(forKey: "SalooUserID") != nil
     @State private var userID = UserDefaults.standard.object(forKey: "SalooUserID") as? String
-
+    @StateObject var appState = AppState()
+    @StateObject var chosenOccassion = Occassion()
+    @StateObject var chosenObject = ChosenCoverImageObject()
+    @StateObject var chosenImagesObject = ChosenImages()
+    @StateObject var collageImage = CollageImage()
+    @StateObject var chosenSong = ChosenSong()
+    @StateObject var noteField = NoteField()
+    @StateObject var annotation = Annotation()
+    @StateObject var addMusic = AddMusic()
     var body: some Scene {
         WindowGroup {
             ContentView()
@@ -38,6 +47,15 @@ struct Saloo_App: App {
                 .environmentObject(showDetailView)
                 .environmentObject(gettingRecord)
                 .environmentObject(appDelegate)
+                .environmentObject(appState)
+                .environmentObject(chosenObject)
+                .environmentObject(chosenOccassion)
+                .environmentObject(collageImage)
+                .environmentObject(chosenImagesObject)
+                .environmentObject(chosenSong)
+                .environmentObject(noteField)
+                .environmentObject(annotation)
+                .environmentObject(addMusic)
         }
     }
 }

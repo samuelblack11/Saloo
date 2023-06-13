@@ -37,7 +37,7 @@ class AppState: ObservableObject {
 
 struct ContentView: View {
     @EnvironmentObject var apiManager: APIManager
-    @StateObject var appState = AppState()
+    @EnvironmentObject var appState: AppState
     @State private var isSignedIn = UserDefaults.standard.string(forKey: "SalooUserID") != nil
 
     var body: some View {

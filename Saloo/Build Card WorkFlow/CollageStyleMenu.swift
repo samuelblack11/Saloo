@@ -14,7 +14,7 @@ struct CollageStyleMenu: View {
     // Object for collection selected by user
     @EnvironmentObject var chosenObject: ChosenCoverImageObject
     @EnvironmentObject var chosenOccassion: Occassion
-    @StateObject var collageImage = CollageImage()
+    @EnvironmentObject var collageImage: CollageImage
     @State private var showImagePicker = false
     @State private var transitionVariable = false
     // Is front cover a personal photo? (selected from camera or library)

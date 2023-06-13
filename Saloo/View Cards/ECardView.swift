@@ -39,7 +39,6 @@ struct eCardView: View {
     @State var songArtImageData: Data?
     @State var songDuration: Double?
     @State var songPreviewURL: String?
-    @State var showFCV: Bool = false
     @State var inclMusic: Bool
     @State var spotImageData: Data?
     @State var spotSongDuration: Double?
@@ -60,6 +59,8 @@ struct eCardView: View {
     @Binding var chosenCard: CoreCard?
     @State var deferToPreview = false
     @State private var showAPV = true
+    @State private var showSPV = true
+    @State private var isLoading = false
     @ObservedObject var gettingRecord = GettingRecord.shared
     @EnvironmentObject var spotifyManager: SpotifyManager
     @ObservedObject var alertVars = AlertVars.shared
@@ -213,21 +214,21 @@ struct eCardView: View {
         VStack {
             if (deferToPreview == true || spotName == "LookupFailed"  || songName == "LookupFailed" || appDelegate.musicSub.type == .Neither) {
                 if songAddedUsing! == "Spotify"  {
-                    SongPreviewPlayer(songID: spotID, songName: spotName, songArtistName: spotArtistName, songArtImageData: spotImageData, songDuration: spotSongDuration, songPreviewURL: spotPreviewURL, songURL: spotSongURL,confirmButton: false, showFCV: $showFCV, songAddedUsing: songAddedUsing!, chosenCard: $chosenCard)
+                    SongPreviewPlayer(songID: spotID, songName: spotName, songArtistName: spotArtistName, songArtImageData: spotImageData, songDuration: spotSongDuration, songPreviewURL: spotPreviewURL, songURL: spotSongURL,confirmButton: false, songAddedUsing: songAddedUsing!, chosenCard: $chosenCard)
                         .frame(maxHeight: .infinity, alignment: .bottom)
                 }
                 else if songAddedUsing! == "Apple"  {
-                    SongPreviewPlayer(songID: songID, songName: songName, songArtistName: songArtistName, songArtImageData: songArtImageData, songDuration: songDuration, songPreviewURL: songPreviewURL,songURL: appleSongURL, confirmButton: false, showFCV: $showFCV, songAddedUsing: songAddedUsing!, chosenCard: $chosenCard)
+                    SongPreviewPlayer(songID: songID, songName: songName, songArtistName: songArtistName, songArtImageData: songArtImageData, songDuration: songDuration, songPreviewURL: songPreviewURL,songURL: appleSongURL, confirmButton: false, songAddedUsing: songAddedUsing!, chosenCard: $chosenCard)
                         .frame(maxHeight: .infinity, alignment: .bottom)
                  }
             }
              
             else if (appDelegate.musicSub.type == .Apple)  { // && (songName != "LookupFailed")
-                AMPlayerView(songID: songID, songName: songName, songArtistName: songArtistName, spotName: spotName, spotArtistName: spotArtistName, songAlbumName: songAlbumName, songArtImageData: songArtImageData, songDuration: songDuration, songPreviewURL: songPreviewURL, confirmButton: false, showFCV: $showFCV, fromFinalize: fromFinalize, coreCard: coreCard, appleAlbumArtist: appleAlbumArtist, spotAlbumArtist: spotAlbumArtist, chosenCard: $chosenCard, deferToPreview: $deferToPreview, showAPV: $showAPV)
+                AMPlayerView(songID: songID, songName: songName, songArtistName: songArtistName, spotName: spotName, spotArtistName: spotArtistName, songAlbumName: songAlbumName, songArtImageData: songArtImageData, songDuration: songDuration, songPreviewURL: songPreviewURL, confirmButton: false, fromFinalize: fromFinalize, coreCard: coreCard, appleAlbumArtist: appleAlbumArtist, spotAlbumArtist: spotAlbumArtist, chosenCard: $chosenCard, deferToPreview: $deferToPreview, showAPV: $showAPV, isLoading: $isLoading)
                         .frame(maxHeight: UIScreen.screenHeight/2.2)
                 }
             else if (appDelegate.musicSub.type == .Spotify) { // && (spotName != "LookupFailed")
-                SpotPlayerView(songID: spotID, songName: songName, songArtistName: songArtistName, spotName: spotName, spotArtistName: spotArtistName, songAlbumName: songAlbumName, songArtImageData: spotImageData, songDuration: spotSongDuration, songPreviewURL: spotPreviewURL, appleAlbumArtist: appleAlbumArtist, spotAlbumArtist: spotAlbumArtist, confirmButton: false, showFCV: $showFCV, accessedViaGrid: accessedViaGrid, coreCard: coreCard, chosenCard: $chosenCard, deferToPreview: $deferToPreview)
+                SpotPlayerView(songID: spotID, songName: songName, songArtistName: songArtistName, spotName: spotName, spotArtistName: spotArtistName, songAlbumName: songAlbumName, songArtImageData: spotImageData, songDuration: spotSongDuration, songPreviewURL: spotPreviewURL, appleAlbumArtist: appleAlbumArtist, spotAlbumArtist: spotAlbumArtist, confirmButton: false, accessedViaGrid: accessedViaGrid, coreCard: coreCard, chosenCard: $chosenCard, deferToPreview: $deferToPreview, showSPV: $showSPV, isLoading: $isLoading)
                         .frame(maxHeight: .infinity, alignment: .bottom)
                 }
             }

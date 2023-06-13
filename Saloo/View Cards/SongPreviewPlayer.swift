@@ -80,7 +80,6 @@ struct SongPreviewPlayer: View {
     @State private var songProgress = 0.0
     @State private var isPlaying = true
     @State var confirmButton: Bool
-    @Binding var showFCV: Bool
     @EnvironmentObject var appDelegate: AppDelegate
     @State var songAddedUsing: String
     @State var color: Color?
@@ -88,6 +87,7 @@ struct SongPreviewPlayer: View {
     @EnvironmentObject var avPlayer: PlayerWrapper
     @Binding var chosenCard: CoreCard?
     @ObservedObject var gettingRecord = GettingRecord.shared
+    @EnvironmentObject var appState: AppState
 
     
     //@State var audioManager = AudioSessionManager()
@@ -126,7 +126,7 @@ struct SongPreviewPlayer: View {
         
     
     @ViewBuilder var selectButtonPreview: some View {
-        if confirmButton == true {Button {showFCV = true; avPlayer.player!.pause(); songProgress = 0.0} label: {Text("Select Song For Card").foregroundColor(.blue)}}
+        if confirmButton == true {Button {appState.currentScreen = .buildCard([.finalizeCardView]); avPlayer.player!.pause(); songProgress = 0.0} label: {Text("Select Song For Card").foregroundColor(.blue)}}
         else {Text("")}
     }
     

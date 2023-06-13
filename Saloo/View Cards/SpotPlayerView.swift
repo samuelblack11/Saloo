@@ -34,6 +34,7 @@ struct SpotPlayerView: View {
     @State private var songProgress = 0.0
     @State private var isPlaying = false
     @State var confirmButton: Bool
+
     @EnvironmentObject var appDelegate: AppDelegate
     @EnvironmentObject var sceneDelegate: SceneDelegate
     //@State var spotifyAuth = SpotifyAuth()
@@ -61,6 +62,8 @@ struct SpotPlayerView: View {
     @State private var syncTimer: Timer? = nil
     @EnvironmentObject var chosenSong: ChosenSong
     @EnvironmentObject var appState: AppState
+    @Binding var showSPV: Bool
+    @Binding var isLoading: Bool
     var body: some View {
         SpotPlayerView2
             .onAppear{
@@ -81,10 +84,21 @@ struct SpotPlayerView: View {
     
     @ViewBuilder var selectButton: some View {
         if confirmButton == true {Button {
-            spotifyManager.appRemote?.playerAPI?.pause();CardPrep.shared.chosenSong = chosenSong
-            appState.currentScreen = .buildCard([.finalizeCardView]); spotifyManager.songID = songID!} label: {Text("Select Song For Card").foregroundColor(.blue)}}
+            spotifyManager.appRemote?.playerAPI?.pause()
+            songProgress = 0.0
+            self.showSPV = false
+            self.isLoading = true
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) {
+                self.isLoading = false
+                CardPrep.shared.chosenSong = chosenSong
+                appState.currentScreen = .buildCard([.finalizeCardView])
+            }
+        } label: {Text("Select Song For Card").foregroundColor(.blue)}}
         else {Text("")}
     }
+    
+    
+    
     
     func convertToMinutes(seconds: Int) -> String {
         let m = seconds / 60
