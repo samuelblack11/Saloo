@@ -34,7 +34,6 @@ struct SpotPlayerView: View {
     @State private var songProgress = 0.0
     @State private var isPlaying = false
     @State var confirmButton: Bool
-    @Binding var showFCV: Bool
     @EnvironmentObject var appDelegate: AppDelegate
     @EnvironmentObject var sceneDelegate: SceneDelegate
     //@State var spotifyAuth = SpotifyAuth()
@@ -61,7 +60,7 @@ struct SpotPlayerView: View {
     @ObservedObject var spotifyManager = SpotifyManager.shared
     @State private var syncTimer: Timer? = nil
     @EnvironmentObject var chosenSong: ChosenSong
-
+    @EnvironmentObject var appState: AppState
     var body: some View {
         SpotPlayerView2
             .onAppear{
@@ -83,7 +82,7 @@ struct SpotPlayerView: View {
     @ViewBuilder var selectButton: some View {
         if confirmButton == true {Button {
             spotifyManager.appRemote?.playerAPI?.pause();CardPrep.shared.chosenSong = chosenSong
-            showFCV = true; spotifyManager.songID = songID!} label: {Text("Select Song For Card").foregroundColor(.blue)}}
+            appState.currentScreen = .buildCard([.finalizeCardView]); spotifyManager.songID = songID!} label: {Text("Select Song For Card").foregroundColor(.blue)}}
         else {Text("")}
     }
     

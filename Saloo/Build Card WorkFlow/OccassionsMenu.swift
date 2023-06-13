@@ -16,13 +16,11 @@ struct OccassionsMenu: View {
     @StateObject var chosenOccassion = Occassion()
     @StateObject var chosenObject = ChosenCoverImageObject()
     
-    @State private var showStartMenu = false
     //@State private var showSentCards = false
     //@State private var showReceivedCards = false
     @State private var showGridOfCards = false
     @State private var showCameraCapture = false
     @State private var showImagePicker = false
-    @State private var showCollageMenu = false
     @State private var showUCV = false
     // Collection Variables. Use @State private for variables owned by this view and not accessible by external views
     @State private var collections: [CollectionPair] = []
@@ -38,7 +36,8 @@ struct OccassionsMenu: View {
     @State private var isImageLoading: Bool = false
     @ObservedObject var apiManager = APIManager.shared
     @State private var isLoadingMenu = false
-    
+    @EnvironmentObject var appState: AppState
+
     
     // Cover Image Variables used dependent on the image's source
     @State private var coverImage: UIImage?
@@ -73,10 +72,10 @@ struct OccassionsMenu: View {
                             .fullScreenCover(isPresented: $showImagePicker){ImagePicker(image: $coverImageFromLibrary, explicitPhotoAlert: $explicitPhotoAlert, isImageLoading: $isImageLoading)}
                             .onChange(of: coverImageFromLibrary) { _ in loadImage(pic: coverImageFromLibrary!)
                                 handlePersonalPhotoSelection()
-                                showCollageMenu = true; chosenObject.frontCoverIsPersonalPhoto = 1
+                                appState.currentScreen = .buildCard([.collageStyleMenu])
+                                chosenObject.frontCoverIsPersonalPhoto = 1
                                 chosenOccassion.occassion = "None"; chosenOccassion.collectionID = "None"
                             }
-                            .fullScreenCover(isPresented: $showCollageMenu){CollageStyleMenu()}
                         Text("Take Photo with Camera 📸 ")
                         //.listRowBackground(appDelegate.appColor)
                             .onTapGesture {
@@ -87,10 +86,9 @@ struct OccassionsMenu: View {
                         {CameraCapture(image: self.$coverImageFromCamera, isPresented: self.$showCameraCapture, explicitPhotoAlert: $explicitPhotoAlert, sourceType: .camera, isImageLoading: $isImageLoading)}
                             .onChange(of: coverImageFromCamera) { _ in loadImage(pic: coverImageFromCamera!)
                                 handlePersonalPhotoSelection()
-                                showCollageMenu = true; chosenObject.frontCoverIsPersonalPhoto = 1
+                                appState.currentScreen = .buildCard([.collageStyleMenu]); chosenObject.frontCoverIsPersonalPhoto = 1
                                 chosenOccassion.occassion = ""; chosenOccassion.collectionID = ""
                             }
-                            .fullScreenCover(isPresented: $showCollageMenu){CollageStyleMenu()}
                     }
                     Section(header: Text("Year-Round Occassions")) {ForEach(yearRoundCollection) {menuSection(for: $0, shareable: false)
                     }}
@@ -121,14 +119,13 @@ struct OccassionsMenu: View {
         .alert(isPresented: $explicitPhotoAlert) {
             Alert(title: Text("Error"), message: Text("The selected image contains explicit content and cannot be used."), dismissButton: .default(Text("OK")))
         }
-        .navigationBarItems(leading:Button {showStartMenu = true} label: {Image(systemName: "chevron.left").foregroundColor(.blue); Text("Back")}.disabled(gettingRecord.isShowingActivityIndicator))
+        .navigationBarItems(leading:Button {appState.currentScreen = .startMenu} label: {Image(systemName: "chevron.left").foregroundColor(.blue); Text("Back")}.disabled(gettingRecord.isShowingActivityIndicator))
         .font(.headline)
         .listStyle(GroupedListStyle())
         .onAppear {createOccassionsFromUserCollections()}
         }
         .environmentObject(chosenObject)
         .environmentObject(chosenOccassion)
-        .fullScreenCover(isPresented: $showStartMenu) {StartMenu()}
     }
 }
 
@@ -141,14 +138,13 @@ extension OccassionsMenu {
                     frontCoverIsPersonalPhoto = 0
                     self.chosenOccassion.occassion = collection.title
                     self.chosenOccassion.collectionID = collection.id
-                    showUCV.toggle()
+                    appState.currentScreen = .buildCard([.unsplashCollectionView])
                 }
                 else {
                     alertVars.alertType = .failedConnection
                     alertVars.activateAlert = true
                 }
             }
-            .fullScreenCover(isPresented: $showUCV) {UnsplashCollectionView()}
     }
     
     func groupCollections(collections: [CollectionPair]) {

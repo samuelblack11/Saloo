@@ -24,39 +24,22 @@ struct Saloo_App: App {
     @State private var isCountdownShown: Bool = false
     @State private var isSignedIn = UserDefaults.standard.string(forKey: "SalooUserID") != nil
     @State private var userID = UserDefaults.standard.object(forKey: "SalooUserID") as? String
-    @State private var showLaunchView = true
-    @StateObject var appState = AppState()
 
     var body: some Scene {
         WindowGroup {
-            ZStack {
-                ZStack {
-                    if isSignedIn {
-                        StartMenu()
-                        LaunchView()
-                            .offset(x: showLaunchView ? 0 : -UIScreen.main.bounds.width, y: 0)
-                            .animation(Animation.easeInOut(duration: 0.5))
-                    }
-                    else {LoginView()}
-                }
-                .onAppear {
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 1) {withAnimation{showLaunchView = false}}
-                    apiManager.initializeSpotifyManager(){}
-                }
-                    .environment(\.managedObjectContext, persistenceController.persistentContainer.viewContext)
-                    .environmentObject(spotifyManager)
-                    .environmentObject(networkMonitor)
-                    .environmentObject(sceneDelegate)
-                    .environmentObject(musicSub)
-                    .environmentObject(calViewModel)
-                    .environmentObject(showDetailView)
-                    .environmentObject(gettingRecord)
-                    .environmentObject(appDelegate)
-                    .environmentObject(appState)
-            }
+            ContentView()
+                .onAppear {apiManager.initializeSpotifyManager(){}}
+                .environment(\.managedObjectContext, persistenceController.persistentContainer.viewContext)
+                .environmentObject(spotifyManager)
+                .environmentObject(networkMonitor)
+                .environmentObject(sceneDelegate)
+                .environmentObject(musicSub)
+                .environmentObject(calViewModel)
+                .environmentObject(showDetailView)
+                .environmentObject(gettingRecord)
+                .environmentObject(appDelegate)
         }
     }
-
 }
 
 extension View {

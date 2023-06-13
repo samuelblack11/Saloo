@@ -20,9 +20,6 @@ struct CollageBuilder: View {
     @EnvironmentObject var collageImage: CollageImage
     @StateObject var chosenImagesObject = ChosenImages()
     @State var explicitPhotoAlert: Bool = false
-    @State private var showCollageMenu = false
-    @State private var showCollageBuilder = false
-    @State private var showWriteNote = false
     @State var showImagePicker: Bool
     // Counts the page of the response being viewed by the user. 30 images per page maximum
     // Is front cover a personal photo? (selected from camera or library)
@@ -30,11 +27,12 @@ struct CollageBuilder: View {
     @State private var cBB = CollageBlocksAndViews()
     @ObservedObject var gettingRecord = GettingRecord.shared
     @ObservedObject var alertVars = AlertVars.shared
-
+    
     // Create instance of CollageBuildingBlocks, with blocks sized to fit the CollageBuilder view (menuSize = false)
     @State private var image: Image?
     @State private var chosenImage: UIImage?
     @State var fillColor = Color.secondary
+    @EnvironmentObject var appState: AppState
     
     @State private var imageA: Image?
     @State private var imageB: Image?
@@ -50,9 +48,9 @@ struct CollageBuilder: View {
     var width = UIScreen.screenWidth/2
     var height = UIScreen.screenHeight/3
     @State private var blockCount: Int?
-
+    
     @State private var isImageLoading: Bool = false
-
+    
     
     var collageView: some View {
         VStack {chosenTemplate}.frame(width: width, height: height)
@@ -71,36 +69,34 @@ struct CollageBuilder: View {
                             alertVars.activateAlert = true
                         }
                         else {
-                            showWriteNote = true
+                            appState.currentScreen = .buildCard([.writeNoteView])
                             collageImage.collageImage = snap2()
                         }
-                    }.padding(.bottom, 30).fullScreenCover(isPresented: $showWriteNote ) {
-                        WriteNoteView()}
+                    }.padding(.bottom, 30)
+                        .navigationBarItems(leading: Button {appState.currentScreen = .buildCard([.collageStyleMenu])} label: {
+                            Image(systemName: "chevron.left").foregroundColor(.blue)
+                            Text("Back")}.disabled(gettingRecord.isShowingActivityIndicator))
+                    LoadingOverlay()
                 }
-                .navigationBarItems(leading: Button {showCollageMenu = true} label: {
-                    Image(systemName: "chevron.left").foregroundColor(.blue)
-                    Text("Back")}.disabled(gettingRecord.isShowingActivityIndicator))
-                LoadingOverlay()
+                .onAppear{countBlocks()}
+                .alert(isPresented: $explicitPhotoAlert) {
+                    Alert(title: Text("Error"), message: Text("The selected image contains explicit content and cannot be used."), dismissButton: .default(Text("OK")))
+                }
             }
-            .onAppear{countBlocks()}
-            .alert(isPresented: $explicitPhotoAlert) {
-                Alert(title: Text("Error"), message: Text("The selected image contains explicit content and cannot be used."), dismissButton: .default(Text("OK")))
-            }
+            .modifier(AlertViewMod(showAlert: alertVars.activateAlertBinding, activeAlert: alertVars.alertType))
+            .environmentObject(collageImage)
+            .environmentObject(chosenImagesObject)
         }
-        .modifier(AlertViewMod(showAlert: alertVars.activateAlertBinding, activeAlert: alertVars.alertType))
-        .environmentObject(collageImage)
-        .environmentObject(chosenImagesObject)
-        .fullScreenCover(isPresented: $showCollageMenu) {CollageStyleMenu()}
+    }
+        @ViewBuilder var chosenTemplate: some View {
+            if collageImage.chosenStyle == 1 {onePhotoView(block: block1())}
+            if collageImage.chosenStyle == 2 {twoPhotoWide(block1: block1(),block2: block2())}
+            if collageImage.chosenStyle == 3 {twoPhotoLong(block1: block1(),block2: block2())}
+            if collageImage.chosenStyle == 4 { twoShortOneLong(block1: block1(), block2: block2(), block3: block3())}
+            if collageImage.chosenStyle == 5 {twoNarrowOneWide(block1: block1(),block2: block2(),block3: block3())}
+            if collageImage.chosenStyle == 6 {fourPhoto(block1: block1(),block2: block2(), block3: block3(), block4: block4())}
         }
     
-    @ViewBuilder var chosenTemplate: some View {
-        if collageImage.chosenStyle == 1 {onePhotoView(block: block1())}
-        if collageImage.chosenStyle == 2 {twoPhotoWide(block1: block1(),block2: block2())}
-        if collageImage.chosenStyle == 3 {twoPhotoLong(block1: block1(),block2: block2())}
-        if collageImage.chosenStyle == 4 { twoShortOneLong(block1: block1(), block2: block2(), block3: block3())}
-        if collageImage.chosenStyle == 5 {twoNarrowOneWide(block1: block1(),block2: block2(),block3: block3())}
-        if collageImage.chosenStyle == 6 {fourPhoto(block1: block1(),block2: block2(), block3: block3(), block4: block4())}
-    }
 }
 
 extension CollageBuilder {

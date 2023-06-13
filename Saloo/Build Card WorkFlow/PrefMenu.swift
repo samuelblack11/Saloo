@@ -46,6 +46,7 @@ struct PrefMenu: View {
     @ObservedObject var gettingRecord = GettingRecord.shared
     @State private var authType = ""
     @ObservedObject var alertVars = AlertVars.shared
+    @EnvironmentObject var appState: AppState
 
     init() {
         if defaults.object(forKey: "MusicSubType") != nil {_currentSubSelection = State(initialValue: (defaults.object(forKey: "MusicSubType") as? String)!)}

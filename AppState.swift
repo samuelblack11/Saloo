@@ -36,26 +36,34 @@ class AppState: ObservableObject {
 }
 
 struct ContentView: View {
-    @EnvironmentObject var appState: AppState
+    @EnvironmentObject var apiManager: APIManager
+    @StateObject var appState = AppState()
+    @State private var isSignedIn = UserDefaults.standard.string(forKey: "SalooUserID") != nil
 
     var body: some View {
-        switch appState.currentScreen {
-        case .login:
-            LoginView()
-        case .launch:
-            LaunchView()
-        case .startMenu:
-            StartMenu()
-        case .buildCard(let steps):
-            BuildCardView(steps: steps)
-        case .draft:
-            GridofCards(cardsForDisplay: CoreCardUtils.loadCoreCards(), whichBoxVal: .draftbox)
-        case .inbox:
-            GridofCards(cardsForDisplay: CoreCardUtils.loadCoreCards(), whichBoxVal: .inbox)
-        case .outbox:
-            GridofCards(cardsForDisplay: CoreCardUtils.loadCoreCards(), whichBoxVal: .outbox)
-        case .preferences:
-            PrefMenu()
+        Group {
+            if isSignedIn {
+                switch appState.currentScreen {
+                case .login:
+                    LoginView()
+                case .launch:
+                    LaunchView()
+                case .startMenu:
+                    StartMenu()
+                case .buildCard(let steps):
+                    BuildCardView(steps: steps)
+                case .draft:
+                    GridofCards(cardsForDisplay: CoreCardUtils.loadCoreCards(), whichBoxVal: .draftbox)
+                case .inbox:
+                    GridofCards(cardsForDisplay: CoreCardUtils.loadCoreCards(), whichBoxVal: .inbox)
+                case .outbox:
+                    GridofCards(cardsForDisplay: CoreCardUtils.loadCoreCards(), whichBoxVal: .outbox)
+                case .preferences:
+                    PrefMenu()
+                }
+            } else {
+                LoginView()
+            }
         }
     }
 }

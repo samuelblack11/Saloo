@@ -23,12 +23,6 @@ struct FinalizeCardView: View {
     @EnvironmentObject var spotifyAuth: SpotifyAuth
     @EnvironmentObject var giftCard: GiftCard
     @State var showCloudShareController = false
-    @State private var showStartMenu = false
-    @State private var showUCV = false
-    @State private var showCollageMenu = false
-    @State private var showCollageBuilder = false
-    @State private var showWriteNote = false
-    @State private var showMusicSearch = false
     @EnvironmentObject var appDelegate: AppDelegate
     @State var coreCard: CoreCard!
     @State var savedCoreCardForView: CoreCard!
@@ -58,6 +52,7 @@ struct FinalizeCardView: View {
     @State private var enableShare = false
     @EnvironmentObject var networkMonitor: NetworkMonitor
     @EnvironmentObject var spotifyManager: SpotifyManager
+    @EnvironmentObject var appState: AppState
 
     
     
@@ -79,9 +74,6 @@ struct FinalizeCardView: View {
             alertVars.activateAlert = true
         }
         .frame(height: UIScreen.screenHeight/20)
-        .fullScreenCover(isPresented: $showStartMenu) {OccassionsMenu()}
-        .fullScreenCover(isPresented: $showCollageMenu) {CollageStyleMenu()}
-        .fullScreenCover(isPresented: $showUCV) {UnsplashCollectionView()}
         //.fullScreenCover(item: $sharingController) { controller in
         //    CloudSharingView(controller: controller)
         // }
@@ -124,7 +116,7 @@ struct FinalizeCardView: View {
                 .toolbar {
                     ToolbarItemGroup(placement: .navigationBarLeading) {
                         if addMusic.addMusic == false {
-                            Button {if addMusic.addMusic{showMusicSearch = true} else {showWriteNote = true}}label: {Image(systemName: "chevron.left").foregroundColor(.blue)
+                            Button {if addMusic.addMusic{appState.currentScreen = .buildCard([.musicSearchView])} else {appState.currentScreen = .buildCard([.writeNoteView])}}label: {Image(systemName: "chevron.left").foregroundColor(.blue)
                                 Text("Back")}
                         }
                     }
@@ -135,9 +127,6 @@ struct FinalizeCardView: View {
                 }
             }
             .modifier(AlertViewMod(showAlert: alertVars.activateAlertBinding, activeAlert: alertVars.alertType, alertDismissAction: {returnToMenu()}))
-            .fullScreenCover(isPresented: $showStartMenu) {StartMenu()}
-            .fullScreenCover(isPresented: $showMusicSearch) {MusicSearchView()}
-            .fullScreenCover(isPresented: $showWriteNote) {WriteNoteView()}
             .fullScreenCover(isPresented: $showShareSheet, content: {if let share = share {}})
             .fullScreenCover(isPresented: $showActivityController) {ActivityView(activityItems: $activityItemsArray, applicationActivities: nil)}
         }
@@ -149,8 +138,7 @@ struct FinalizeCardView: View {
 extension FinalizeCardView {
     
     func returnToMenu() {
-        //showCollageBuilder = false; showWriteNote = false; showCollageMenu = false; showUCV = false
-        showStartMenu = true
+        appState.currentScreen = .startMenu
         let rootViewController = UIApplication.shared.connectedScenes
                             .filter {$0.activationState == .foregroundActive }
                             .map {$0 as? UIWindowScene }

@@ -15,7 +15,6 @@ struct UnsplashCollectionView: View {
     @EnvironmentObject var chosenOccassion: Occassion
     @EnvironmentObject var chosenObject: ChosenCoverImageObject
     @State private var showOccassions = false
-    @State private var showConfirmFrontCover = false
     // Object holding Bools for all views to be displayed.
     // Array of all images displayed in the view
     @State var imageObjects: [CoverImageObject] = []
@@ -29,9 +28,7 @@ struct UnsplashCollectionView: View {
     @State public var chosenUserName: String!
     @State public var chosenDownloadLocation: String!
     @ObservedObject var gettingRecord = GettingRecord.shared
-
-    @State private var presentUCV2 = false
-    let timer = Timer.publish(every: 0.05, on: .main, in: .common).autoconnect()
+    @EnvironmentObject var appState: AppState
     let columns = [GridItem(.fixed(150)),GridItem(.fixed(150))]
     @EnvironmentObject var networkMonitor: NetworkMonitor
     @ObservedObject var alertVars = AlertVars.shared
@@ -56,7 +53,7 @@ struct UnsplashCollectionView: View {
                         }
                     }
                     .navigationTitle("Choose Front Cover")
-                    .navigationBarItems(leading:Button {showOccassions.toggle()} label: {Image(systemName: "chevron.left").foregroundColor(.blue); Text("Back")}.disabled(gettingRecord.isShowingActivityIndicator))
+                    .navigationBarItems(leading:Button {appState.currentScreen = .buildCard([.occasionsMenu])} label: {Image(systemName: "chevron.left").foregroundColor(.blue); Text("Back")}.disabled(gettingRecord.isShowingActivityIndicator))
                     Button("More...") {
                         if networkMonitor.isConnected {
                             getMorePhotos(); print("page count: \(chosenObject.pageCount)")
@@ -95,9 +92,6 @@ struct UnsplashCollectionView: View {
                 }
             }
         }
-        .fullScreenCover(isPresented: $showConfirmFrontCover) {ConfirmFrontCoverView()}
-        .fullScreenCover(isPresented: $showOccassions) {OccassionsMenu()}
-        .fullScreenCover(isPresented: $presentUCV2) {UnsplashCollectionView()}
     }
     
 }
@@ -123,7 +117,7 @@ extension UnsplashCollectionView {
                 chosenObject.downloadLocation = imageObjects[index].downloadLocation
                 chosenObject.index = index
                 print("Tap Handled....")
-                showConfirmFrontCover.toggle()
+                appState.currentScreen = .buildCard([.confirmFrontCoverView])
             }
         catch {debugPrint("Error handling tap .... : \(error)")}
     }
@@ -171,7 +165,7 @@ extension UnsplashCollectionView {
     
     func getMorePhotos() {
         chosenObject.pageCount = chosenObject.pageCount + 1
-        presentUCV2 = true
+        appState.currentScreen = .buildCard([.unsplashCollectionView])
         getUnsplashPhotos()
     }
 

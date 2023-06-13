@@ -13,11 +13,7 @@ struct ConfirmFrontCoverView: View {
     @EnvironmentObject var chosenObject: ChosenCoverImageObject
     @EnvironmentObject var chosenOccassion: Occassion
     @ObservedObject var alertVars = AlertVars.shared
-
-    
-    @State private var showUCV = false
-    @State private var showCollageMenu = false
-
+    @EnvironmentObject var appState: AppState
     @State var frontCoverImage: Image!
     @State var frontCoverPhotographer: String!
     @State var frontCoverUserName: String!
@@ -56,7 +52,7 @@ struct ConfirmFrontCoverView: View {
                     Spacer()
                     Button("Confirm Image for Front Cover") {
                         //segueToCollageMenu = true
-                        showCollageMenu = true
+                        appState.currentScreen = .buildCard([.collageStyleMenu])
                         PhotoAPI.pingDownloadURL(downloadLocation: chosenObject.downloadLocation, completionHandler: { (response, error) in
                             if response != nil {
                                 debugPrint("Ping Success!.......")
@@ -64,7 +60,7 @@ struct ConfirmFrontCoverView: View {
                             }
                             if response == nil {
                                 debugPrint("Ping Failed!.......")}})
-                    }.padding(.bottom, 10).fullScreenCover(isPresented: $showCollageMenu) {CollageStyleMenu()}
+                    }.padding(.bottom, 10)
                 }
                 LoadingOverlay()
             }
@@ -73,12 +69,11 @@ struct ConfirmFrontCoverView: View {
         .navigationBarItems(leading:
             Button {
                 print("Back button tapped")
-                showUCV = true
+                appState.currentScreen = .buildCard([.unsplashCollectionView])
             } label: {
                 Image(systemName: "chevron.left").foregroundColor(.blue)
                 Text("Back")
             }.disabled(gettingRecord.isShowingActivityIndicator))
-        .fullScreenCover(isPresented: $showUCV) {UnsplashCollectionView()}
         }
     }
 }

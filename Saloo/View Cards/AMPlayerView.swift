@@ -29,7 +29,6 @@ struct AMPlayerView: View {
     @State private var songProgress = 0.0
     @State private var isPlaying = true
     @State var confirmButton: Bool
-    @Binding var showFCV: Bool
     @State private var player: AVPlayer?
     @State private var musicPlayer = MPMusicPlayerController.applicationMusicPlayer
     @EnvironmentObject var appDelegate: AppDelegate
@@ -38,7 +37,6 @@ struct AMPlayerView: View {
     @State private var ranAMStoreFront = false
     let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
     @State var fromFinalize = false
-    @State var showWriteNote = false
     @State var showGrid = false
     @State var associatedRecord: CKRecord?
     @State var coreCard: CoreCard?
@@ -57,7 +55,7 @@ struct AMPlayerView: View {
     @State private var disableSelect = false
     @ObservedObject var gettingRecord = GettingRecord.shared
     @EnvironmentObject var chosenSong: ChosenSong
-
+    @EnvironmentObject var appState: AppState
     enum ActiveAlert: Identifiable {
         case songNotAvailable, noConnection
         var id: Int {
@@ -85,7 +83,6 @@ struct AMPlayerView: View {
         
         
         
-            .fullScreenCover(isPresented: $showWriteNote) {WriteNoteView()}
             .onAppear{print("AM PLAYER APPEARED...."); if songArtImageData == nil{
                 if networkMonitor.isConnected{getAMUserTokenAndStoreFront{}}
                 else{activeAlert = .noConnection}
@@ -94,7 +91,7 @@ struct AMPlayerView: View {
             }
 
             .navigationBarItems(leading:Button {
-                if fromFinalize {musicPlayer.pause(); showWriteNote = true}
+                if fromFinalize {musicPlayer.pause(); appState.currentScreen = .buildCard([.writeNoteView])}
                         print("Calling completion...")
                         musicPlayer.pause()
                         showGrid = true
@@ -178,7 +175,7 @@ struct AMPlayerView: View {
     @ViewBuilder var selectButton: some View {
         if confirmButton == true {Button {
             CardPrep.shared.chosenSong = chosenSong
-            showFCV = true
+            appState.currentScreen = .buildCard([.finalizeCardView])
             musicPlayer.pause()
             songProgress = 0.0
 

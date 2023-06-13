@@ -16,6 +16,7 @@ struct ReportOffensiveContentView: View {
     @State private var showGrid = false
     @Binding var card: CoreCard? // Assuming CoreCard is defined elsewhere
     //@Binding var cardToReport: CoreCard?
+    @EnvironmentObject var appState: AppState
 
     var body: some View {
         NavigationView {

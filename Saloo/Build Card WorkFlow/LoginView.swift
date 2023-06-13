@@ -15,6 +15,7 @@ struct LoginView: View {
     @EnvironmentObject var appDelegate: AppDelegate
     let defaults = UserDefaults.standard
     @ObservedObject var alertVars = AlertVars.shared
+    @EnvironmentObject var appState: AppState
 
     var body: some View {
         NavigationView {

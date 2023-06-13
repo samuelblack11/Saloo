@@ -30,11 +30,9 @@ struct MusicSearchView: View {
     let cleanMusicData = CleanMusicData()
     @ObservedObject var gettingRecord = GettingRecord.shared
     @State private var player: AVPlayer?
-    @State var showFCV: Bool = false
     @State private var showAPV = false
     @State private var showSPV = false
     @State private var showWebView = false
-    @State private var showWriteNote = false
     @State private var isPlaying = false
     @State private var songProgress = 0.0
     @EnvironmentObject var sceneDelegate: SceneDelegate
@@ -66,7 +64,7 @@ struct MusicSearchView: View {
         
     }
     @ObservedObject var alertVars = AlertVars.shared
-
+    @EnvironmentObject var appState: AppState
     var sortResults: some View {
         HStack {
             Text("Sort By:").padding(.leading, 5).font(Font.custom(sortByValue, size: 12))
@@ -147,17 +145,12 @@ struct MusicSearchView: View {
                             alertVars.alertType = .failedConnection
                             alertVars.activateAlert = true}}
                 }
-                .navigationBarItems(leading:Button {showWriteNote.toggle()} label: {Image(systemName: "chevron.left").foregroundColor(.blue); Text("Back")}.disabled(gettingRecord.isShowingActivityIndicator))
-                .fullScreenCover(isPresented: $showWriteNote){WriteNoteView()}
-                .popover(isPresented: $showAPV) {AMPlayerView(songID: chosenSong.id, songName: chosenSong.name, songArtistName: chosenSong.artistName, songArtImageData: chosenSong.artwork, songDuration: chosenSong.durationInSeconds, songPreviewURL: chosenSong.songPreviewURL, confirmButton: true, showFCV: $showFCV, chosenCard: $emptyCard, deferToPreview: $deferToPreview, showAPV: $showAPV)
+                .navigationBarItems(leading:Button {appState.currentScreen = .buildCard([.writeNoteView])} label: {Image(systemName: "chevron.left").foregroundColor(.blue); Text("Back")}.disabled(gettingRecord.isShowingActivityIndicator))
+                .popover(isPresented: $showAPV) {AMPlayerView(songID: chosenSong.id, songName: chosenSong.name, songArtistName: chosenSong.artistName, songArtImageData: chosenSong.artwork, songDuration: chosenSong.durationInSeconds, songPreviewURL: chosenSong.songPreviewURL, confirmButton: true, chosenCard: $emptyCard, deferToPreview: $deferToPreview, showAPV: $showAPV)
                         .presentationDetents([.fraction(0.4)])
-                        .fullScreenCover(isPresented: $showFCV) {FinalizeCardView(cardType: determineCardType())}
-                        .fullScreenCover(isPresented: $showWriteNote){WriteNoteView()}
                 }
-                .popover(isPresented: $showSPV) {SpotPlayerView(songID: chosenSong.spotID, spotName: chosenSong.spotName, spotArtistName: chosenSong.spotArtistName, songArtImageData: chosenSong.spotImageData, songDuration: chosenSong.spotSongDuration, songPreviewURL: chosenSong.spotPreviewURL, confirmButton: true, showFCV: $showFCV, accessedViaGrid: false, chosenCard: $emptyCard, deferToPreview: $deferToPreview)
+                .popover(isPresented: $showSPV) {SpotPlayerView(songID: chosenSong.spotID, spotName: chosenSong.spotName, spotArtistName: chosenSong.spotArtistName, songArtImageData: chosenSong.spotImageData, songDuration: chosenSong.spotSongDuration, songPreviewURL: chosenSong.spotPreviewURL, confirmButton: true, accessedViaGrid: false, chosenCard: $emptyCard, deferToPreview: $deferToPreview)
                         .presentationDetents([.fraction(0.4)])
-                        .fullScreenCover(isPresented: $showFCV) {FinalizeCardView(cardType: determineCardType())}
-                        .fullScreenCover(isPresented: $showWriteNote) {WriteNoteView()}
                 }
                 .modifier(AlertViewMod(showAlert: alertVars.activateAlertBinding, activeAlert: alertVars.alertType, alertDismissAction: {
                 // code to dismiss your view

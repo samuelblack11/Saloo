@@ -17,25 +17,16 @@ import WebKit
 
 struct StartMenu: View {
     let defaults = UserDefaults.standard
-    @EnvironmentObject var calViewModel: CalViewModel
-    @EnvironmentObject var showDetailView: ShowDetailView
     @EnvironmentObject var appDelegate: AppDelegate
     @EnvironmentObject var sceneDelegate: SceneDelegate
-    @State private var showOccassions = false
-    @State private var showInbox = false
-    @State private var showOutbox = false
-    @State private var showDraftBox = false
-    @State private var showCalendar = false
-    @State private var showPref = false
-    @State private var showEnlargeECard = false
-    @State var showPrefMenu = false
     @State var whichBoxForCKAccept: InOut.SendReceive?
     @State var userID = String()
     @State private var isBanned = false
     @ObservedObject var gettingRecord = GettingRecord.shared
     @ObservedObject var alertVars = AlertVars.shared
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate2
-   // @State var salooUserID: String = (UserDefaults.standard.object(forKey: "SalooUserID") as? String)!
+    @EnvironmentObject var appState: AppState
+    // @State var salooUserID: String = (UserDefaults.standard.object(forKey: "SalooUserID") as? String)!
     //@StateObject var audioManager = AudioSessionManager()
     var possibleSubscriptionValues = ["Apple Music", "Spotify", "Neither"]
     let buildCardWorkFlow = """
@@ -53,52 +44,33 @@ struct StartMenu: View {
         NavigationView {
             ZStack {
                 List {
-                    Text(buildCardWorkFlow)
-                    //.listRowBackground(appDelegate.appColor)
-                        .onTapGesture {self.showOccassions = true}
-                        .fullScreenCover(isPresented: $showOccassions){OccassionsMenu()}
-                    Text("Drafts 📓")
-                        .onTapGesture {self.showDraftBox = true}
-                        .fullScreenCover(isPresented: $showDraftBox) {GridofCards(cardsForDisplay: CoreCardUtils.loadCoreCards(), whichBoxVal: .draftbox)}
-                    Text("Inbox 📥")
-                        .onTapGesture {self.showInbox = true}
-                        .fullScreenCover(isPresented: $showInbox) {GridofCards(cardsForDisplay: CoreCardUtils.loadCoreCards(), whichBoxVal: .inbox)}
-                    Text("Outbox 📥")
-                    //.listRowBackground(appDelegate.appColor)
-                        .onTapGesture {self.showOutbox = true}
-                        .fullScreenCover(isPresented: $showOutbox) {GridofCards(cardsForDisplay: CoreCardUtils.loadCoreCards(), whichBoxVal: .outbox)}
-                    //Text("Calendar 🗓")
-                    //.onTapGesture {self.showCalendar = true}
-                    //.fullScreenCover(isPresented: $showCalendar) {CalendarParent(calViewModel: calViewModel, showDetailView: showDetailView)}
-                    Text("Preferences 📱")
-                        .onTapGesture {print("showPref sets to true"); self.showPref = true}
-                        .fullScreenCover(isPresented: $showPref) {PrefMenu()}
+                    Text(buildCardWorkFlow).onTapGesture {appState.currentScreen = .buildCard([.occasionsMenu])
+                    Text("Drafts 📓").onTapGesture {appState.currentScreen = .draft}
+                    Text("Inbox 📥").onTapGesture {appState.currentScreen = .inbox}
+                    Text("Outbox 📥") .onTapGesture {appState.currentScreen = .outbox}
+                    Text("Preferences 📱").onTapGesture {appState.currentScreen = .preferences}
                 }
                 LoadingOverlay()
             }
-
         }
-        .modifier(AlertViewMod(showAlert: alertVars.activateAlertBinding, activeAlert: alertVars.alertType))
-        .onAppear {
-            //deleteAllCoreCards()
-            var salooUserID = (UserDefaults.standard.object(forKey: "SalooUserID") as? String)!
-            checkUserBanned(userId: salooUserID) { (isBanned, error) in
-                if isBanned == true {alertVars.alertType = .userBanned; alertVars.activateAlert = true}
-                print("isBanned = \(isBanned) & error = \(error)")
+            .modifier(AlertViewMod(showAlert: alertVars.activateAlertBinding, activeAlert: alertVars.alertType))
+            .onAppear {
+                //deleteAllCoreCards()
+                var salooUserID = (UserDefaults.standard.object(forKey: "SalooUserID") as? String)!
+                checkUserBanned(userId: salooUserID) { (isBanned, error) in
+                    if isBanned == true {alertVars.alertType = .userBanned; alertVars.activateAlert = true}
+                    //print("isBanned = \(isBanned) & error = \(error)")
+                }
+                if (defaults.object(forKey: "MusicSubType") as? String) != nil {
+                    if (defaults.object(forKey: "MusicSubType") as? String)! == "Apple Music" {appDelegate.musicSub.type = .Apple}
+                    if (defaults.object(forKey: "MusicSubType") as? String)! == "Spotify" {appDelegate.musicSub.type = .Spotify}
+                    if (defaults.object(forKey: "MusicSubType") as? String)! == "Neither" {appDelegate.musicSub.type = .Neither}
+                }
+                else{appState.currentScreen = .preferences}
             }
-            if (defaults.object(forKey: "MusicSubType") as? String) != nil {
-                if (defaults.object(forKey: "MusicSubType") as? String)! == "Apple Music" {appDelegate.musicSub.type = .Apple}
-                if (defaults.object(forKey: "MusicSubType") as? String)! == "Spotify" {appDelegate.musicSub.type = .Spotify}
-                if (defaults.object(forKey: "MusicSubType") as? String)! == "Neither" {appDelegate.musicSub.type = .Neither}
-            }
-            else{showPrefMenu = true }
         }
-        .fullScreenCover(isPresented: $showPrefMenu) {PrefMenu()}
     }
 }
-
-
-
 
 extension StartMenu {
     
