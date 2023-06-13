@@ -245,13 +245,6 @@ class SpotifyAuth: ObservableObject {
     @Published var snapShotID = String()
 }
 
-class AppState: ObservableObject {
-    static let shared = AppState()
-    @Published var resetNavigation = false
-    private init() {}
-}
-
-
 class AlertVars: ObservableObject {
     static let shared = AlertVars()
     @Published var activateAlert: Bool = false
@@ -317,6 +310,20 @@ enum eCardType {
     case musicNoGift
     case giftNoMusic
     case noMusicNoGift
+}
+
+
+class CardPrep: ObservableObject {
+    static let shared = CardPrep()
+    var chosenSong =  ChosenSong()
+    func determineCardType() -> String {
+        var cardType2 = String()
+        if chosenSong.id != "" {cardType2 = "musicNoGift"}
+        else{cardType2 = "noMusicNoGift"}
+        
+        return cardType2
+        
+    }
 }
 
 

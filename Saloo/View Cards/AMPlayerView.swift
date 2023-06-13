@@ -56,6 +56,7 @@ struct AMPlayerView: View {
     @Binding var showAPV: Bool
     @State private var disableSelect = false
     @ObservedObject var gettingRecord = GettingRecord.shared
+    @EnvironmentObject var chosenSong: ChosenSong
 
     enum ActiveAlert: Identifiable {
         case songNotAvailable, noConnection
@@ -176,6 +177,7 @@ struct AMPlayerView: View {
     
     @ViewBuilder var selectButton: some View {
         if confirmButton == true {Button {
+            CardPrep.shared.chosenSong = chosenSong
             showFCV = true
             musicPlayer.pause()
             songProgress = 0.0

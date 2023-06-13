@@ -14,7 +14,6 @@ struct Saloo_App: App {
     @StateObject var sceneDelegate = SceneDelegate()
     @ObservedObject var apiManager = APIManager.shared
     @ObservedObject var spotifyManager = SpotifyManager.shared
-    @ObservedObject var appState = AppState.shared
     @ObservedObject var alertVars = AlertVars.shared
     @ObservedObject var gettingRecord = GettingRecord.shared
     let persistenceController = PersistenceController.shared
@@ -26,6 +25,7 @@ struct Saloo_App: App {
     @State private var isSignedIn = UserDefaults.standard.string(forKey: "SalooUserID") != nil
     @State private var userID = UserDefaults.standard.object(forKey: "SalooUserID") as? String
     @State private var showLaunchView = true
+    @StateObject var appState = AppState()
 
     var body: some Scene {
         WindowGroup {
@@ -51,8 +51,8 @@ struct Saloo_App: App {
                     .environmentObject(calViewModel)
                     .environmentObject(showDetailView)
                     .environmentObject(gettingRecord)
-                    .environmentObject(appState)
                     .environmentObject(appDelegate)
+                    .environmentObject(appState)
             }
         }
     }
@@ -142,7 +142,7 @@ struct AlertViewMod: ViewModifier {
                     return Alert(
                         title: Text("Feedback Received"),
                         message: Text("Thanks for your feedback. We will review these details along with the card itself and will be in touch about your concern."),
-                        dismissButton: .default(Text("Ok")) {AppState.shared.resetNavigation = false}
+                        dismissButton: .default(Text("Ok")) {}
                     )
             }
         }

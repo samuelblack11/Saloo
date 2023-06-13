@@ -24,6 +24,7 @@
 		26AD812B281F119A0069C3F0 /* ConfirmFrontCoverView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26AD812A281F119A0069C3F0 /* ConfirmFrontCoverView.swift */; };
 		C2075AFD295FDBA70048ECEB /* CollageBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2075AFC295FDBA70048ECEB /* CollageBuilder.swift */; };
 		C2075AFF295FDBC60048ECEB /* ImagePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2075AFE295FDBC60048ECEB /* ImagePicker.swift */; };
+		C208A3FC2A387C1F00F87739 /* AppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = C208A3FB2A387C1F00F87739 /* AppState.swift */; };
 		C20DEF602986C9F30080AE03 /* SpotifyAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = C20DEF5F2986C9F30080AE03 /* SpotifyAPI.swift */; };
 		C2163D0E28C1609C00DEE861 /* ScheduleDelivery.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2163D0D28C1609C00DEE861 /* ScheduleDelivery.swift */; };
 		C217021029AC0C9500BE48DC /* SongPreviewPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = C217020F29AC0C9500BE48DC /* SongPreviewPlayer.swift */; };
@@ -109,6 +110,7 @@
 		93AAAE1CF8AE1CB82C760293 /* Pods-GreetMe-2.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-GreetMe-2.debug.xcconfig"; path = "Target Support Files/Pods-GreetMe-2/Pods-GreetMe-2.debug.xcconfig"; sourceTree = "<group>"; };
 		C2075AFC295FDBA70048ECEB /* CollageBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollageBuilder.swift; sourceTree = "<group>"; };
 		C2075AFE295FDBC60048ECEB /* ImagePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagePicker.swift; sourceTree = "<group>"; };
+		C208A3FB2A387C1F00F87739 /* AppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppState.swift; sourceTree = "<group>"; };
 		C20DEF5F2986C9F30080AE03 /* SpotifyAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpotifyAPI.swift; sourceTree = "<group>"; };
 		C20DEF672986D4FD0080AE03 /* Saloo-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Saloo-Bridging-Header.h"; sourceTree = "<group>"; };
 		C2163D0D28C1609C00DEE861 /* ScheduleDelivery.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleDelivery.swift; sourceTree = "<group>"; };
@@ -215,6 +217,7 @@
 			children = (
 				C20DEF672986D4FD0080AE03 /* Saloo-Bridging-Header.h */,
 				26A7217F281DB8D500ADAE44 /* Saloo_App.swift */,
+				C208A3FB2A387C1F00F87739 /* AppState.swift */,
 				C28B13F728E3E106008E2C4C /* AppDelegate.swift */,
 				C22A84E929667929001244CC /* SceneDelegate.swift */,
 				26A7218A281DB8D900ADAE44 /* Saloo.xcdatamodeld */,
@@ -558,6 +561,7 @@
 				C23524D22896D5F80052494F /* PreSetCalendarDates.swift in Sources */,
 				26AD8127281F05160069C3F0 /* WriteNoteView.swift in Sources */,
 				26AD812B281F119A0069C3F0 /* ConfirmFrontCoverView.swift in Sources */,
+				C208A3FC2A387C1F00F87739 /* AppState.swift in Sources */,
 				C23A9D3A28989B630059B97C /* DateDetailView.swift in Sources */,
 				C23A9D3C28989C340059B97C /* CalendarView.swift in Sources */,
 				26AD8129281F05310069C3F0 /* FinalizeCardView.swift in Sources */,

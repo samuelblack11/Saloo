@@ -114,13 +114,15 @@ struct WriteNoteView: View {
                                     alertVars.alertType = .addMusicPrompt
                                     alertVars.activateAlert = true
                                 }
-                                if appDelegate.musicSub.type == .Neither {checkRequiredFields(); annotateIfNeeded(); showFinalize = true}
+                                if appDelegate.musicSub.type == .Neither {checkRequiredFields(); annotateIfNeeded();CardPrep.shared.chosenSong = chosenSong; showFinalize = true}
                             }
                         }
                     }
                     .padding(.bottom, 30)
                     .fullScreenCover(isPresented: $showMusic) {MusicSearchView().environmentObject(appDelegate)}
-                    .fullScreenCover(isPresented: $showFinalize) {FinalizeCardView(cardType: determineCardType())}
+                    .fullScreenCover(isPresented: $showFinalize) {
+                        FinalizeCardView(cardType: determineCardType()
+                        )}
                     .fullScreenCover(isPresented: $showCollageBuilder) {CollageBuilder(showImagePicker: false)}
                 }
                 LoadingOverlay()
@@ -135,7 +137,11 @@ struct WriteNoteView: View {
             appDelegate.musicSub.timeToAddMusic = true
             checkRequiredFields()
             annotateIfNeeded()
-        }, secondDismissAction: {checkRequiredFields(); annotateIfNeeded(); addMusic.addMusic = false; showFinalize = true}))
+        }, secondDismissAction: {
+            checkRequiredFields(); annotateIfNeeded(); addMusic.addMusic = false
+            CardPrep.shared.chosenSong = chosenSong
+            showFinalize = true
+        }))
         //.environmentObject(appDelegate)
         .environmentObject(noteField)
         .environmentObject(annotation)
@@ -171,7 +177,10 @@ extension WriteNoteView {
         if noteField.recipient.value != "" && noteField.cardName.value != "" {
             //namesNotEntered = false
             if addMusic.addMusic {showMusic = true}
-            else {showFinalize = true}
+            else {
+                CardPrep.shared.chosenSong = chosenSong
+                showFinalize = true
+            }
         }
         else {
             alertVars.alertType = .namesNotEntered
