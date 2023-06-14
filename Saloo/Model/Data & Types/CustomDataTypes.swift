@@ -245,6 +245,16 @@ enum MusicSubscriptionOptions {
     case Spotify
     case Neither
 }
+
+class UserSession: ObservableObject {
+    @Published var isSignedIn: Bool = UserDefaults.standard.string(forKey: "SalooUserID") != nil
+    
+    func updateLoginStatus() {
+        isSignedIn = UserDefaults.standard.string(forKey: "SalooUserID") != nil
+    }
+}
+
+
 class UnmanagedPlaceHolder: NSObject {}
 
 class ChosenCollageStyle: ObservableObject {@Published var chosenStyle: Int?}

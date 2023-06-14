@@ -90,7 +90,10 @@ struct PrefMenu: View {
             }
             .navigationBarItems(leading:Button {showStart.toggle()} label: {Image(systemName: "chevron.left").foregroundColor(.blue); Text("Back")}.disabled(gettingRecord.isShowingActivityIndicator))
         }
-        .onDisappear {if appDelegate.musicSub.type == .Spotify {spotifyManager.instantiateAppRemote()}}
+        .onDisappear {
+            UserDefaults.standard.set(false, forKey: "FirstLaunch")
+            if appDelegate.musicSub.type == .Spotify {spotifyManager.instantiateAppRemote()}
+        }
         .onAppear {
             //redirectToAppStore(musicvendor: "Spotify")
             if defaults.object(forKey: "MusicSubType") != nil {currentSubSelection = (defaults.object(forKey: "MusicSubType") as? String)!}
