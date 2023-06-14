@@ -44,14 +44,13 @@ struct GridofCards: View {
     @State private var sortByValue = "Card Name"
     @State private var searchText = ""
     @State private var nameToDisplay: String?
-    @State var userID = String()
+    @State private var userID = UserDefaults.standard.object(forKey: "SalooUserID") as? String
     @StateObject var audioManager = AudioSessionManager()
     @StateObject var avPlayer = PlayerWrapper()
     @State private var displayCard = false
     @State var chosenCard: CoreCard?
     @State var cardToReport: CoreCard?
     @State var cardToDelete: CoreCard?
-
     @State var shouldShareCard: Bool = false
     @EnvironmentObject var wrapper: CoreCardWrapper
     @State var cardQueuedForshare: CoreCard?
@@ -173,7 +172,14 @@ struct GridofCards: View {
                     Text(gridCard.cardName).font(.system(size: 8)).minimumScaleFactor(0.1)
                 }
             }
-            .contextMenu {contextMenuButtons(card: gridCard)}
+            .contextMenu {
+                contextMenuButtons(card: gridCard)
+                    .onAppear{
+                        print("***")
+                        print(UserDefaults.standard.object(forKey: "SalooUserID") as? String)
+                        print(gridCard.salooUserID)
+                    }
+            }
             .padding().overlay(RoundedRectangle(cornerRadius: 6).stroke(.blue, lineWidth: 2))
                 .font(.headline).padding(.horizontal).frame(maxHeight: 600)
                 
@@ -225,28 +231,23 @@ extension GridofCards {
         hasAnyShare = PersistenceController.shared.shareTitles().isEmpty ? false : true
     }
     
-    func getCurrentUserID() {
-        PersistenceController.shared.cloudKitContainer.fetchUserRecordID { ckRecordID, error in
-            self.userID = (ckRecordID?.recordName)!
-            //print("Current User ID: \((ckRecordID?.recordName)!)")
-        }
-        
-    }
+
     func cardsFilteredByBox(_ coreCards: [CoreCard], whichBox: InOut.SendReceive) -> [CoreCard] {
         var filteredCoreCards: [CoreCard] = []
             for coreCard in coreCards {
-                getCurrentUserID()
-                //print("Creator & Current User Record IDs....")
+                print(self.userID)
+                print(coreCard.salooUserID)
+                
                 switch whichBoxVal {
                 case .outbox:
-                    filteredCoreCards = coreCards.filter{_ in (coreCard.creator!.contains(self.userID))}
+                    filteredCoreCards = coreCards.filter{_ in (coreCard.salooUserID!.contains(self.userID!))}
                     filteredCoreCards = filteredCoreCards.filter{CoreCardUtils.shareStatus(card: $0).0}
                     return filteredCoreCards
                 case .inbox:
-                    filteredCoreCards = coreCards.filter{_ in (coreCard.creator!.contains(self.userID) == false)}
+                    filteredCoreCards = coreCards.filter{_ in (coreCard.salooUserID!.contains(self.userID!) == false)}
                     return filteredCoreCards
                 case .draftbox:
-                    filteredCoreCards = coreCards.filter{_ in (coreCard.creator!.contains(self.userID))}
+                    filteredCoreCards = coreCards.filter{_ in (coreCard.salooUserID!.contains(self.userID!))}
                     filteredCoreCards = filteredCoreCards.filter{!CoreCardUtils.shareStatus(card: $0).0}
                     return filteredCoreCards
                 }

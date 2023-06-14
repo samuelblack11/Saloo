@@ -176,10 +176,16 @@ struct SpotPlayerView: View {
                     .onAppear {startTimer()}
                     .onDisappear{stopTimer()}
                 HStack{
-                    Text(convertToMinutes(seconds:Int(songProgress)))
-                    Spacer()
-                    Text(convertToMinutes(seconds: Int(songDuration!)-Int(songProgress)))
-                        .padding(.trailing, 10)
+                    if songProgress >= 1.0 || songID == "" {
+                        Text(convertToMinutes(seconds:Int(songProgress)))
+                        Spacer()
+                        Text(convertToMinutes(seconds: Int(songDuration!)-Int(songProgress)))
+                            .padding(.trailing, 10)
+                    }
+                    else {
+                        ProgressView() // This is the built-in iOS activity indicator
+                            .progressViewStyle(CircularProgressViewStyle(tint: .green))
+                    }
                 }
                 selectButton
             }
@@ -242,16 +248,6 @@ struct SpotPlayerView: View {
         }
         else {print("Error: Could not retrieve player API.")}
     }
-
-
-    
-    
-    
-    
-    
-    
-    
-    
     
     func concatAllArtists(song: SpotItem) -> String {
         var allArtists = String()
@@ -259,7 +255,7 @@ struct SpotPlayerView: View {
             for (index, artist) in song.artists.enumerated() {
                 if index != 0 {
                     if song.name.lowercased().contains(artist.name.lowercased()) {}
-                    else {allArtists = allArtists + " , " + artist.name}
+                    else {allArtists = allArtists + " & " + artist.name}
                 }
                 else {allArtists = artist.name}
             }}
@@ -304,9 +300,6 @@ struct SpotPlayerView: View {
             processAlbum()
         })
     }
-
-    
-   
     
     func getSpotAlbumTracks(spotAlbumID: String, AMString: String, completion: @escaping (Bool) -> Void) {
         var foundMatch = false
@@ -319,6 +312,7 @@ struct SpotPlayerView: View {
             if cleanMusicData.containsSameWords(AMString, SPOTString) && foundMatch == false {
                 foundMatch = true
                 print("SSSSS")
+                print(allArtists)
                 print(song)
                 let artURL = URL(string: spotImageURL!)
                 let _ = getURLData(url: artURL!, completionHandler: {(artResponse, error2) in
@@ -358,6 +352,7 @@ struct SpotPlayerView: View {
         if let songID = songID {
             let trackURI = "spotify:track:\(songID)"
             if spotifyManager.appRemote?.isConnected == false {
+                spotifyManager.appRemote?.connect()
                 spotifyManager.appRemote?.authorizeAndPlayURI(trackURI)
                 //spotifyManager.appRemote?.connect()
                 DispatchQueue.main.asyncAfter(deadline: .now() + 2) {spotifyManager.appRemote?.connect()}
