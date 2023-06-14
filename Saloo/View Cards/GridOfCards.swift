@@ -12,15 +12,6 @@ import CoreData
 import AVFoundation
 import AVFAudio
 
-
-
-
-
-
-
-
-
-
 struct GridofCards: View {
     @State private var toggleProgress: Bool = false
     @State private var hasAnyShare: Bool?
@@ -174,11 +165,6 @@ struct GridofCards: View {
             }
             .contextMenu {
                 contextMenuButtons(card: gridCard)
-                    .onAppear{
-                        print("***")
-                        print(UserDefaults.standard.object(forKey: "SalooUserID") as? String)
-                        print(gridCard.salooUserID)
-                    }
             }
             .padding().overlay(RoundedRectangle(cornerRadius: 6).stroke(.blue, lineWidth: 2))
                 .font(.headline).padding(.horizontal).frame(maxHeight: 600)
@@ -233,27 +219,16 @@ extension GridofCards {
     
 
     func cardsFilteredByBox(_ coreCards: [CoreCard], whichBox: InOut.SendReceive) -> [CoreCard] {
-        var filteredCoreCards: [CoreCard] = []
-            for coreCard in coreCards {
-                print(self.userID)
-                print(coreCard.salooUserID)
-                
-                switch whichBoxVal {
-                case .outbox:
-                    filteredCoreCards = coreCards.filter{_ in (coreCard.salooUserID!.contains(self.userID!))}
-                    filteredCoreCards = filteredCoreCards.filter{CoreCardUtils.shareStatus(card: $0).0}
-                    return filteredCoreCards
-                case .inbox:
-                    filteredCoreCards = coreCards.filter{_ in (coreCard.salooUserID!.contains(self.userID!) == false)}
-                    return filteredCoreCards
-                case .draftbox:
-                    filteredCoreCards = coreCards.filter{_ in (coreCard.salooUserID!.contains(self.userID!))}
-                    filteredCoreCards = filteredCoreCards.filter{!CoreCardUtils.shareStatus(card: $0).0}
-                    return filteredCoreCards
-                }
+        switch whichBoxVal {
+        case .outbox:
+            return coreCards.filter { $0.salooUserID!.contains(self.userID!) && CoreCardUtils.shareStatus(card: $0).0 }
+        case .inbox:
+            return coreCards.filter { !$0.salooUserID!.contains(self.userID!) }
+        case .draftbox:
+            return coreCards.filter { $0.salooUserID!.contains(self.userID!) && !CoreCardUtils.shareStatus(card: $0).0 }
         }
-        return filteredCoreCards
     }
+
     
     
     func sortedCards(_ cards: [CoreCard], sortBy: String) -> [CoreCard] {
