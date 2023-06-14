@@ -106,6 +106,9 @@ struct WriteNoteView: View {
                 }
                 LoadingOverlay()
             }
+            .onAppear{
+                if noteField.noteText.value != "" && noteField.noteText.value != "Write Your Note Here"{message.value = noteField.noteText.value}
+            }
             .navigationBarItems(leading:Button {appState.currentScreen = .buildCard([.collageBuilder])} label: {Image(systemName: "chevron.left").foregroundColor(.blue); Text("Back")}.disabled(gettingRecord.isShowingActivityIndicator))
         }
         

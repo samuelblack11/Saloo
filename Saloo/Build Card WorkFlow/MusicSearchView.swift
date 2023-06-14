@@ -54,6 +54,7 @@ struct MusicSearchView: View {
     @State var emptyCard: CoreCard? = CoreCard()
     @State var deferToPreview = false
     @State private var isLoading = false
+    @Environment(\.colorScheme) var colorScheme
 
     
     @ObservedObject var alertVars = AlertVars.shared
@@ -121,7 +122,7 @@ struct MusicSearchView: View {
                         }
                         if isLoading {
                             ProgressView().frame(width: UIScreen.screenWidth/2,height: UIScreen.screenHeight/2)
-                                .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                                .progressViewStyle(CircularProgressViewStyle(tint: colorScheme == .dark ? .white : .black))
                                 .scaleEffect(2)
                         }
                     }
@@ -334,7 +335,7 @@ extension MusicSearchView {
                         print(artistGroup)
                         chosenSong.spotAlbumArtist = artistGroup
                         foundMatch = true
-                        disableTextField = true
+                        UIApplication.shared.endEditing()
                         showSPV = true
                         isLoading = false
                         isPlaying = false
@@ -348,7 +349,7 @@ extension MusicSearchView {
                 print("called !foundMatch")
                 chosenSong.spotAlbumArtist = albumArtistList[0]
                 chosenSong.spotAlbumArtist = albumArtistList.first ?? ""
-                disableTextField = true
+                UIApplication.shared.endEditing()
                 showSPV = true
                 isLoading = false
                 isPlaying = false
@@ -620,6 +621,7 @@ extension MusicSearchView {
                 alertVars.activateAlert = true
                 
             }
+            UIApplication.shared.endEditing()
             showAPV = true
             isLoading = false
             isPlaying = false
@@ -627,4 +629,11 @@ extension MusicSearchView {
     }
  
 }
+
+extension UIApplication {
+    func endEditing() {
+        sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+    }
+}
+
             

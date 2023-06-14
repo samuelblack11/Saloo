@@ -115,8 +115,10 @@ struct FinalizeCardView: View {
                 .onAppear {safeAreaHeight = geometry.size.height}
                 .toolbar {
                     ToolbarItemGroup(placement: .navigationBarLeading) {
+                        if addMusic.addMusic == false {
                             Button {if addMusic.addMusic{appState.currentScreen = .buildCard([.musicSearchView])} else {appState.currentScreen = .buildCard([.writeNoteView])}}label: {Image(systemName: "chevron.left").foregroundColor(.blue)
                                 Text("Back")}
+                        }
                     }
                     ToolbarItemGroup(placement: .navigationBarTrailing) {
                         Button {appState.currentScreen = .startMenu} label: {Image(systemName: "menucard.fill").foregroundColor(.blue)
@@ -148,6 +150,10 @@ extension FinalizeCardView {
                 createNewShare(coreCard: savedCoreCard)
                 //}
             }
+            noteField.recipient.value = ""
+            noteField.sender.value = ""
+            noteField.cardName.value = ""
+            noteField.noteText.value = "Write Your Note Here"
             //else {PersistenceController.shared.createCKShare(unsharedCoreCard: savedCoreCard, persistenceController: PersistenceController.shared)}
             //else {print("Do Not Share card right now")}
         }))
