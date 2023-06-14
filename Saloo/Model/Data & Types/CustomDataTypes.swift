@@ -333,14 +333,7 @@ enum eCardType {
 class CardPrep: ObservableObject {
     static let shared = CardPrep()
     var chosenSong =  ChosenSong()
-    func determineCardType() -> String {
-        var cardType2 = String()
-        if chosenSong.id != "" {cardType2 = "musicNoGift"}
-        else{cardType2 = "noMusicNoGift"}
-        
-        return cardType2
-        
-    }
+    var cardType = String()
 }
 
 

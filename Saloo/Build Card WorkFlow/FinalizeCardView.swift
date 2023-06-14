@@ -115,18 +115,16 @@ struct FinalizeCardView: View {
                 .onAppear {safeAreaHeight = geometry.size.height}
                 .toolbar {
                     ToolbarItemGroup(placement: .navigationBarLeading) {
-                        if addMusic.addMusic == false {
                             Button {if addMusic.addMusic{appState.currentScreen = .buildCard([.musicSearchView])} else {appState.currentScreen = .buildCard([.writeNoteView])}}label: {Image(systemName: "chevron.left").foregroundColor(.blue)
                                 Text("Back")}
-                        }
                     }
                     ToolbarItemGroup(placement: .navigationBarTrailing) {
-                        Button {returnToMenu()} label: {Image(systemName: "menucard.fill").foregroundColor(.blue)
+                        Button {appState.currentScreen = .startMenu} label: {Image(systemName: "menucard.fill").foregroundColor(.blue)
                             Text("Menu")}
                     }
                 }
             }
-            .modifier(AlertViewMod(showAlert: alertVars.activateAlertBinding, activeAlert: alertVars.alertType, alertDismissAction: {returnToMenu()}))
+            .modifier(AlertViewMod(showAlert: alertVars.activateAlertBinding, activeAlert: alertVars.alertType, alertDismissAction: {appState.currentScreen = .startMenu}))
             .fullScreenCover(isPresented: $showShareSheet, content: {if let share = share {}})
             .fullScreenCover(isPresented: $showActivityController) {ActivityView(activityItems: $activityItemsArray, applicationActivities: nil)}
         }
@@ -136,17 +134,6 @@ struct FinalizeCardView: View {
 
 
 extension FinalizeCardView {
-    
-    func returnToMenu() {
-        appState.currentScreen = .startMenu
-        let rootViewController = UIApplication.shared.connectedScenes
-                            .filter {$0.activationState == .foregroundActive }
-                            .map {$0 as? UIWindowScene }
-                            .compactMap { $0 }
-                            .first?.windows
-                            .filter({$0.isKeyWindow }).first?.rootViewController
-                        rootViewController?.dismiss(animated: true)
-    }
     
     private func saveCard(noteField: NoteField, chosenOccassion: Occassion, an1: String, an2: String, an2URL: String, an3: String, an4: String, chosenObject: ChosenCoverImageObject, collageImage: CollageImage, songID: String?, spotID: String?, spotName: String?, spotArtistName: String?, songName: String?, songArtistName: String?, songAlbumName: String?, songArtImageData: Data?, songPreviewURL: String?, songDuration: String?, inclMusic: Bool, spotImageData: Data?, spotSongDuration: String?, spotPreviewURL: String?, songAddedUsing: String?, cardType: String, appleAlbumArtist: String?,spotAlbumArtist: String?, salooUserID: String, appleSongURL: String?, spotSongURL: String?) {
         let controller = PersistenceController.shared

@@ -61,6 +61,7 @@ struct eCardView: View {
     @State private var showAPV = true
     @State private var showSPV = true
     @State private var isLoading = false
+    @State private var disableTextField = false
     @ObservedObject var gettingRecord = GettingRecord.shared
     @EnvironmentObject var spotifyManager: SpotifyManager
     @ObservedObject var alertVars = AlertVars.shared

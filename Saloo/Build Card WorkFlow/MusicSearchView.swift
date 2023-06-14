@@ -54,16 +54,8 @@ struct MusicSearchView: View {
     @State var emptyCard: CoreCard? = CoreCard()
     @State var deferToPreview = false
     @State private var isLoading = false
-    func determineCardType() -> String {
-        var cardType2 = String()
-        if chosenSong.id != nil && giftCard.id != ""  {cardType2 = "musicAndGift"}
-        else if chosenSong.id != nil && giftCard.id == ""  {cardType2 = "musicNoGift"}
-        else if chosenSong.id == nil && giftCard.id != ""  {cardType2 = "giftNoMusic"}
-        else{cardType2 = "noMusicNoGift"}
-        
-        return cardType2
-        
-    }
+
+    
     @ObservedObject var alertVars = AlertVars.shared
     @EnvironmentObject var appState: AppState
     var sortResults: some View {
@@ -156,7 +148,7 @@ struct MusicSearchView: View {
                 .modifier(AlertViewMod(showAlert: alertVars.activateAlertBinding, activeAlert: alertVars.alertType, alertDismissAction: {
                 // code to dismiss your view
                 showAPV = false
-            }))
+                }))
             //environmentObject(spotifyAuth)
             .sheet(isPresented: $showWebView){WebVCView(authURLForView: spotifyManager.authForRedirect, authCode: $authCode)}
         }
@@ -342,6 +334,7 @@ extension MusicSearchView {
                         print(artistGroup)
                         chosenSong.spotAlbumArtist = artistGroup
                         foundMatch = true
+                        disableTextField = true
                         showSPV = true
                         isLoading = false
                         isPlaying = false
@@ -355,6 +348,7 @@ extension MusicSearchView {
                 print("called !foundMatch")
                 chosenSong.spotAlbumArtist = albumArtistList[0]
                 chosenSong.spotAlbumArtist = albumArtistList.first ?? ""
+                disableTextField = true
                 showSPV = true
                 isLoading = false
                 isPlaying = false
@@ -594,7 +588,6 @@ extension MusicSearchView {
             chosenSong.spotPreviewURL = song.previewURL
             chosenSong.songAddedUsing = "Spotify"
             chosenSong.spotSongURL = song.url
-            //showSPV = true
             if networkMonitor.isConnected{
                 print("Checking network & credentials before getSpotAlbum...")
                 print(spotifyManager.access_token)

@@ -188,29 +188,36 @@ struct LoadingOverlay: View {
                 Color.black.opacity(0.7)
                     .ignoresSafeArea() // This will make the semi-transparent view cover the entire screen
                 VStack {
-                    Text("We're Still Saving Your Card to the Cloud. It'll Be Ready In Just a Minute")
-                        .font(.system(size: 20))
-                        .foregroundColor(.white)
-                        .multilineTextAlignment(.center)
-                    Text("Time Remaining: \(remainingTime)")
-                        .font(.system(size: 12))
-                        .foregroundColor(.gray)
-                        .multilineTextAlignment(.center)
-                        .onReceive(timer) { _ in if remainingTime > 0 {remainingTime -= 1}}
-                        .onReceive(NotificationCenter.default.publisher(for: UIApplication.willResignActiveNotification)) { _ in
-                            backgroundTime = Date()
-                        }
-                        .onReceive(NotificationCenter.default.publisher(for: UIApplication.willEnterForegroundNotification)) { _ in
-                            let elapsedSeconds = Int(Date().timeIntervalSince(backgroundTime))
-                            remainingTime = max(remainingTime - elapsedSeconds, 0)
-                        }
+                    if remainingTime > 0 {
+                        Text("We're Still Saving Your Card to the Cloud. It'll Be Ready In Just a Minute")
+                            .font(.system(size: 20))
+                            .foregroundColor(.white)
+                            .multilineTextAlignment(.center)
+                        Text("Time Remaining: \(remainingTime)")
+                            .font(.system(size: 12))
+                            .foregroundColor(.gray)
+                            .multilineTextAlignment(.center)
+                            .onReceive(timer) { _ in if remainingTime > 0 {remainingTime -= 1}}
+                            .onReceive(NotificationCenter.default.publisher(for: UIApplication.willResignActiveNotification)) { _ in
+                                backgroundTime = Date()
+                            }
+                            .onReceive(NotificationCenter.default.publisher(for: UIApplication.willEnterForegroundNotification)) { _ in
+                                let elapsedSeconds = Int(Date().timeIntervalSince(backgroundTime))
+                                remainingTime = max(remainingTime - elapsedSeconds, 0)
+                            }
+                    } else {
+                        Text("Hold On...This is Taking Longer Than Expected")
+                            .font(.system(size: 20))
+                            .foregroundColor(.white)
+                            .multilineTextAlignment(.center)
+                    }
                     ProgressView() // This is the built-in iOS activity indicator
                         .progressViewStyle(CircularProgressViewStyle(tint: .white))
                         .scaleEffect(2)
                 }
-                }
-                .opacity(gettingRecord.isShowingActivityIndicator ? 1 : 0)
-                .allowsHitTesting(gettingRecord.isShowingActivityIndicator) // This will block interaction when the activity indicator is showing
+            }
+            .opacity(gettingRecord.isShowingActivityIndicator ? 1 : 0)
+            .allowsHitTesting(gettingRecord.isShowingActivityIndicator) // This will block interaction when the activity indicator is showing
             }
         }
     }

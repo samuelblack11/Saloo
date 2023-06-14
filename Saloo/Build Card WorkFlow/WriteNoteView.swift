@@ -116,8 +116,10 @@ struct WriteNoteView: View {
             appDelegate.musicSub.timeToAddMusic = true
             checkRequiredFields()
             annotateIfNeeded()
+            CardPrep.shared.cardType = "musicNoGift"
         }, secondDismissAction: {
             checkRequiredFields(); annotateIfNeeded(); addMusic.addMusic = false
+            CardPrep.shared.cardType = "noMusicNoGift"
             CardPrep.shared.chosenSong = chosenSong
             appState.currentScreen = .buildCard([.finalizeCardView])
         }))

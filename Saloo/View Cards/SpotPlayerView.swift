@@ -64,6 +64,8 @@ struct SpotPlayerView: View {
     @EnvironmentObject var appState: AppState
     @Binding var showSPV: Bool
     @Binding var isLoading: Bool
+    //@Binding var disableTextField: Bool
+
     var body: some View {
         SpotPlayerView2
             .onAppear{
@@ -84,6 +86,7 @@ struct SpotPlayerView: View {
     
     @ViewBuilder var selectButton: some View {
         if confirmButton == true {Button {
+            //disableTextField = true
             spotifyManager.appRemote?.playerAPI?.pause()
             songProgress = 0.0
             self.showSPV = false
@@ -91,6 +94,8 @@ struct SpotPlayerView: View {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) {
                 self.isLoading = false
                 CardPrep.shared.chosenSong = chosenSong
+                print("::::")
+                print(CardPrep.shared.chosenSong)
                 appState.currentScreen = .buildCard([.finalizeCardView])
             }
         } label: {Text("Select Song For Card").foregroundColor(.blue)}}

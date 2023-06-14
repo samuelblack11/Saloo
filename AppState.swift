@@ -90,7 +90,7 @@ struct BuildCardView: View {
             case .musicSearchView:
                 MusicSearchView()//.environmentObject(appDelegate)
             case .finalizeCardView:
-                FinalizeCardView(cardType: CardPrep.shared.determineCardType())
+                FinalizeCardView(cardType: CardPrep.shared.cardType)
                 
             }
         }
