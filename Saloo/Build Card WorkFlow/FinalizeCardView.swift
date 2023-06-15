@@ -53,6 +53,7 @@ struct FinalizeCardView: View {
     @EnvironmentObject var networkMonitor: NetworkMonitor
     @EnvironmentObject var spotifyManager: SpotifyManager
     @EnvironmentObject var appState: AppState
+    @EnvironmentObject var cardsForDisplay: CardsForDisplay
 
     
     
@@ -154,6 +155,7 @@ extension FinalizeCardView {
             noteField.sender.value = ""
             noteField.cardName.value = ""
             noteField.noteText.value = "Write Your Note Here"
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {cardsForDisplay.cardsForDisplay = cardsForDisplay.loadCoreCards()}
             //else {PersistenceController.shared.createCKShare(unsharedCoreCard: savedCoreCard, persistenceController: PersistenceController.shared)}
             //else {print("Do Not Share card right now")}
         }))

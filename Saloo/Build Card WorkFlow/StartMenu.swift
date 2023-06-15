@@ -57,12 +57,7 @@ struct StartMenu: View {
             .modifier(AlertViewMod(showAlert: alertVars.activateAlertBinding, activeAlert: alertVars.alertType))
             .onAppear {
                 //deleteAllCoreCards()
-                cardsForDisplay.cardsForDisplay = cardsForDisplay.loadCoreCards()
-                var salooUserID = (UserDefaults.standard.object(forKey: "SalooUserID") as? String)!
-                checkUserBanned(userId: salooUserID) { (isBanned, error) in
-                    if isBanned == true {alertVars.alertType = .userBanned; alertVars.activateAlert = true}
-                    //print("isBanned = \(isBanned) & error = \(error)")
-                }
+                //cardsForDisplay.cardsForDisplay = cardsForDisplay.loadCoreCards()
                 if (defaults.object(forKey: "MusicSubType") as? String) != nil {
                     if (defaults.object(forKey: "MusicSubType") as? String)! == "Apple Music" {appDelegate.musicSub.type = .Apple}
                     if (defaults.object(forKey: "MusicSubType") as? String)! == "Spotify" {appDelegate.musicSub.type = .Spotify}
@@ -74,51 +69,6 @@ struct StartMenu: View {
     }
 
 extension StartMenu {
-    
-    func checkUserBanned(userId: String, completion: @escaping (Bool, Error?) -> Void) {
-        guard let url = URL(string: "https://saloouserstatus.azurewebsites.net/is_banned?user_id=\(userId)") else {
-            // Handle invalid URL error
-            print("Invalid URL")
-            completion(false, nil)
-            return
-        }
-
-        
-        let task = URLSession.shared.dataTask(with: url) { (data, response, error) in
-            if let error = error {
-                // Handle error
-                completion(false, error)
-                return
-            }
-
-            if let data = data {
-                do {
-                    if let responseDict = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any] {
-                        let value: Optional<Any> = responseDict["is_banned"]
-                        if let stringValue = value as? String {
-                            let stringValue2 = stringValue.lowercased()
-                            if let isBanned = Bool(stringValue2) {
-                                completion(isBanned, nil)
-                                return
-                            }
-                        }
-                    }
-                }
-                catch {
-                    // Handle JSON parsing error
-                    completion(false, error)
-                    return
-                }
-            }
-
-            // Invalid response or data
-            completion(false, nil)
-        }
-
-        task.resume()
-    }
-
-    
     func createNewShare(coreCard: CoreCard) {
        print("CreateNewShare called")
        if PersistenceController.shared.privatePersistentStore.contains(manageObject: coreCard) {
