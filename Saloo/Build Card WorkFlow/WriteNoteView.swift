@@ -140,10 +140,10 @@ extension WriteNoteView {
         print("annotateIfNeeded was Called")
         print(chosenObject.frontCoverIsPersonalPhoto)
         if chosenObject.frontCoverIsPersonalPhoto == 0 {
-            annotation.text1 = "Front Cover By "
+            annotation.text1 = "Photograph by"
             annotation.text2 = String(chosenObject.coverImagePhotographer)
             annotation.text2URL = URL(string: "https://unsplash.com/@\(chosenObject.coverImageUserName)")!
-            annotation.text3 = "On "
+            annotation.text3 = " On "
             annotation.text4 = "Unsplash"
         }
         else {annotation.text2URL = URL(string: "https://google.com")!}

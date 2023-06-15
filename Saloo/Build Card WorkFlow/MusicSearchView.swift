@@ -122,7 +122,7 @@ struct MusicSearchView: View {
                         }
                         if isLoading {
                             ProgressView().frame(width: UIScreen.screenWidth/2,height: UIScreen.screenHeight/2)
-                                .progressViewStyle(CircularProgressViewStyle(tint: colorScheme == .dark ? .white : .black))
+                                .progressViewStyle(CircularProgressViewStyle(tint: colorScheme == .dark ? .white : appDelegate.appColor))
                                 .scaleEffect(2)
                         }
                     }
@@ -131,7 +131,6 @@ struct MusicSearchView: View {
                     if appDelegate.musicSub.type == .Spotify {getSpotCredentials{success in
                         print("Got SPOT Credentials...\(success)")
                         print(spotifyManager.access_token)
-                        
                     }}
                     if appDelegate.musicSub.type == .Apple {
                         if networkMonitor.isConnected {getAMUserTokenAndStoreFront{}}
@@ -160,11 +159,15 @@ struct MusicSearchView: View {
 
 extension MusicSearchView {
     
+    func searchWithAM() {
+        if amAPI.storeFrontID == nil {isLoading = true; getAMUserTokenAndStoreFront{performAMSearch()}}
+        else {performAMSearch()}
+    }
+    
     func getSpotCredentials(completion: @escaping (Bool) -> Void) {
         if networkMonitor.isConnected {
-            if let refreshToken = defaults.object(forKey: "SpotifyRefreshToken") as? String, counter == 0 {
-                refreshTokenAndRun(completion: completion)
-            } else {requestAndRunToken(completion: completion)}
+            if let refreshToken = defaults.object(forKey: "SpotifyRefreshToken") as? String, counter == 0 {refreshTokenAndRun(completion: completion)}
+            else {requestAndRunToken(completion: completion)}
         } else {
             alertVars.alertType = .failedConnection
             alertVars.activateAlert = true
@@ -455,13 +458,11 @@ extension MusicSearchView {
     
     
     func performSPOTSearch() {
+        isLoading = true
         print("!!!")
         print(spotifyManager.access_token)
-        
         let songTerm = cleanMusicData.cleanMusicString(input: self.songSearch, removeList: appDelegate.songFilterForSearchRegex)
         let artistTerm = cleanMusicData.cleanMusicString(input: self.artistSearch, removeList: appDelegate.songFilterForSearchRegex)
-
-        
         SpotifyAPI.shared.searchSpotify(songTerm, artistName: artistTerm, authToken: spotifyManager.access_token, completionHandler: {(response, error) in
             if response != nil {
                 searchResults = []
@@ -497,7 +498,7 @@ extension MusicSearchView {
                                 else{searchResults.append(songForList)}
                             }
                         })
-                    }}}; if response != nil {print("No Response!")}
+                    }; isLoading = false}}; if response != nil {print("No Response!")}
                         else{debugPrint(error?.localizedDescription)}
         })
     }
@@ -538,15 +539,12 @@ extension MusicSearchView {
         }
     }
     
-    func searchWithAM() {
-        if amAPI.storeFrontID == nil {isLoading = true; getAMUserTokenAndStoreFront{performAMSearch()}}
-        else {performAMSearch()}
-    }
+
     
     func performAMSearch() {
         isLoading = true
         print("---")
-        print(isLoading)
+        print("isLoading...\(isLoading)");
         SKCloudServiceController.requestAuthorization {(status) in if status == .authorized {
             let amSearch = cleanMusicData.cleanMusicString(input: self.songSearch, removeList: appDelegate.songFilterForSearchRegex)
             self.searchResults = AppleMusicAPI().searchAppleMusic(amSearch, storeFrontID: amAPI.storeFrontID!, userToken: amAPI.taskToken!, completionHandler: { (response, error) in
@@ -567,10 +565,10 @@ extension MusicSearchView {
                                 print(songForList.name)
                             }
                             else {searchResults.append(songForList)}
-                            })}}}; if response != nil {print("No Response!")}
+                            })}; isLoading = false}
+                }; if response != nil {print("No Response!")}
                 else {debugPrint(error?.localizedDescription)}}
             )}}
-        isLoading = false
     }
     
     func createChosenSong(song: SongForList) {

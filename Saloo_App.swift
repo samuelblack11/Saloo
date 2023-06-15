@@ -173,6 +173,7 @@ class ShareMD: ObservableObject {
 struct LoadingOverlay: View {
     @Environment(\.colorScheme) var colorScheme
     @ObservedObject var gettingRecord = GettingRecord.shared
+    @EnvironmentObject var appDelegate: AppDelegate
     @State private var remainingTime: Int
     init(startTime: Int = 60) { _remainingTime = State(initialValue: startTime)}
     let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
@@ -181,7 +182,7 @@ struct LoadingOverlay: View {
         if gettingRecord.isLoadingAlert == true {
             ZStack {
                 ProgressView() // This is the built-in iOS activity indicator
-                    .progressViewStyle(CircularProgressViewStyle(tint: colorScheme == .dark ? .white : .black))
+                    .progressViewStyle(CircularProgressViewStyle(tint: colorScheme == .dark ? .white : appDelegate.appColor))
                     .scaleEffect(2)
             }
         }

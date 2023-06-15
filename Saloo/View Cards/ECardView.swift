@@ -174,31 +174,24 @@ struct eCardView: View {
     
     func CollageAndAnnotationView() -> some View {
         return VStack {
+            Spacer()
             Image(uiImage: UIImage(data: collageImage)!)
                 .interpolation(.high).resizable().scaledToFit()
                 .frame(alignment: .bottom)
                 .padding([.bottom, .top], 5)
-            HStack(spacing: 0) {
-                Spacer()
-                VStack(spacing:0){
-                    Text(text1)
-                        .font(.system(size: 10)).frame(alignment: .center)
+            VStack(spacing: 0) {
+                Text(text1)
+                    .font(.system(size: 10)).frame(alignment: .center)
+                HStack(spacing:0){
                     Link(text2, destination: text2URL)
                         .font(.system(size: 10)).frame(alignment: .center)
                     HStack(spacing: 0) {
-                        Text(text3).font(.system(size: 4))
+                        Text(text3).font(.system(size: 8))
                             .frame(alignment: .center)
                         Link(text4, destination: URL(string: "https://unsplash.com")!)
-                            .font(.system(size: 12)).frame(alignment: .center)
+                            .font(.system(size: 10)).frame(alignment: .center)
                     }
                 }
-                Spacer()
-                VStack(spacing:0) {
-                    Text("Greeting Card").font(.system(size: 10))
-                    Text("by").font(.system(size: 10))
-                    Text("Saloo").font(.system(size: 10)).padding(.bottom,10).padding(.leading, 5)
-                }
-                Spacer()
             } .frame(alignment: .bottom)
         }
         .frame(maxWidth: UIScreen.main.bounds.height / 2.2, maxHeight: UIScreen.main.bounds.height / 2.3)
