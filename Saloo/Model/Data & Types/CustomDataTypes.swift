@@ -386,27 +386,36 @@ class APIManager: ObservableObject {
 
 
     init() {
-        getSecret(keyName: "unsplashAPIKey"){keyval in print("UnsplashAPIKey is \(String(describing: keyval))")
-           self.unsplashAPIKey = keyval!
-        }
+        DispatchQueue.global(qos: .background).async {
+            self.getSecret(keyName: "unsplashAPIKey") { keyval in
+                print("UnsplashAPIKey is \(String(describing: keyval))")
+                DispatchQueue.main.async {self.unsplashAPIKey = keyval ?? ""}
+            }
 
-        getSecret(keyName: "appleMusicDevToken"){keyval in print("appleMusicDevToken is \(String(describing: keyval))")
-           self.appleMusicDevToken = keyval!
+            self.getSecret(keyName: "appleMusicDevToken") { keyval in
+                print("appleMusicDevToken is \(String(describing: keyval))")
+                DispatchQueue.main.async {self.appleMusicDevToken = keyval ?? ""}
+            }
         }
     }
+
     
     func initializeSpotifyManager(completion: @escaping () -> Void) {
         // Here, you're getting the keys for Spotify API
-        getSecret(keyName: "spotClientIdentifier") { keyval in
-            print("spotClientIdentifier is \(String(describing: keyval))")
-            self.spotClientIdentifier = keyval!
-            self.getSecret(keyName: "spotSecretKey"){keyval in print("spotSecretKey is \(String(describing: keyval))")
-                self.spotSecretKey = keyval!
-                // After setting the key, initialize SpotifyManager
-                SpotifyManager.shared.initializeConfiguration()
-                //self.spotifyManager = SpotifyManager.shared
-                // Call the completion handler
-                completion()
+        DispatchQueue.global(qos: .background).async {
+            self.getSecret(keyName: "spotClientIdentifier") { keyval in
+                print("spotClientIdentifier is \(String(describing: keyval))")
+                DispatchQueue.main.async {
+                self.spotClientIdentifier = keyval!
+                    self.getSecret(keyName: "spotSecretKey"){keyval in print("spotSecretKey is \(String(describing: keyval))")
+                        self.spotSecretKey = keyval!
+                        // After setting the key, initialize SpotifyManager
+                        SpotifyManager.shared.initializeConfiguration()
+                        //self.spotifyManager = SpotifyManager.shared
+                        // Call the completion handler
+                        completion()
+                    }
+                }
             }
         }
     }

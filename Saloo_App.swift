@@ -25,7 +25,7 @@ struct Saloo_App: App {
     @State private var isCountdownShown: Bool = false
     @State private var isSignedIn = UserDefaults.standard.string(forKey: "SalooUserID") != nil
     @State private var userID = UserDefaults.standard.object(forKey: "SalooUserID") as? String
-    @StateObject var appState = AppState()
+    @StateObject var appState = AppState.shared
     @StateObject var chosenOccassion = Occassion()
     @StateObject var chosenObject = ChosenCoverImageObject()
     @StateObject var chosenImagesObject = ChosenImages()
@@ -64,7 +64,7 @@ struct Saloo_App: App {
                 .environmentObject(userSession)
                 .onChange(of: scenePhase) { newPhase in
                     if newPhase == .active {
-                        //cardsForDisplay.cardsForDisplay = cardsForDisplay.loadCoreCards()
+                        cardsForDisplay.cardsForDisplay = cardsForDisplay.loadCoreCards()
                         // Check if user is banned when the app comes to foreground
                         let salooUserID = (UserDefaults.standard.object(forKey: "SalooUserID") as? String)!
                         checkUserBanned(userId: salooUserID) { (isBanned, error) in
