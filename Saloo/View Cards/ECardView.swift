@@ -1,10 +1,3 @@
-//
-//  ECardView.swift
-//  GreetMe-2
-//
-//  Created by Sam Black on 1/10/23.
-//
-
 import Foundation
 import SwiftUI
 import CoreData
@@ -91,7 +84,9 @@ struct eCardView: View {
                 HStack {
                     VStack {CoverViewTall(); Spacer(); CollageAndAnnotationView()}
                     VStack {
-                        NoteViewSquare()
+                        VStack{NoteViewSquare()}.frame(height: UIScreen.main.bounds.height / 2.3)
+
+                        Spacer()
                         MusicView
                     }
                 }
@@ -109,6 +104,7 @@ struct eCardView: View {
             }
         }
     }
+    
     
     var NoMusicNoGiftView: some View {
         return GeometryReader { geometry in
@@ -169,68 +165,56 @@ struct eCardView: View {
         return
         Text(eCardText)
             .font(Font.custom(font, size: 500)).minimumScaleFactor(0.01)
-            .frame(width: UIScreen.screenWidth/2.2, height: UIScreen.screenHeight/2.3)
+            .frame(maxWidth: UIScreen.main.bounds.height / 2.2, maxHeight: UIScreen.main.bounds.height / 2.3)
+            //.frame(width: UIScreen.screenWidth/2.2, height: UIScreen.screenHeight/2.3)
     }
     
     func CollageAndAnnotationView() -> some View {
-        return VStack {
-            Spacer()
+        return VStack(spacing: 5) {
             Image(uiImage: UIImage(data: collageImage)!)
-                .interpolation(.high).resizable().scaledToFit()
-                .frame(alignment: .bottom)
-                .padding([.bottom, .top], 5)
-            VStack(spacing: 0) {
-                Text(text1)
-                    .font(.system(size: 10)).frame(alignment: .center)
-                HStack(spacing:0){
-                    Link(text2, destination: text2URL)
-                        .font(.system(size: 10)).frame(alignment: .center)
-                    HStack(spacing: 0) {
-                        Text(text3).font(.system(size: 8))
-                            .frame(alignment: .center)
-                        Link(text4, destination: URL(string: "https://unsplash.com")!)
-                            .font(.system(size: 10)).frame(alignment: .center)
-                    }
+                .interpolation(.high)
+                .resizable()
+                .scaledToFit()
+            Text(text1)
+                .font(.system(size: 10))
+            HStack(spacing:0){
+                Link(text2, destination: text2URL)
+                    .font(.system(size: 10))
+                HStack(spacing: 0) {
+                    Text(text3)
+                        .font(.system(size: 8))
+                    Link(text4, destination: URL(string: "https://unsplash.com")!)
+                        .font(.system(size: 10))
                 }
-            } .frame(alignment: .bottom)
+            }
         }
-        .frame(maxWidth: UIScreen.main.bounds.height / 2.2, maxHeight: UIScreen.main.bounds.height / 2.3)
+        .frame(maxWidth: UIScreen.main.bounds.height / 2.2, maxHeight: UIScreen.main.bounds.height / 2.3, alignment: .center)
     }
-    
-    func GiftView() -> some View {
-      return Text("{Gift Card Will Go Here}")
-            .font(.system(size: 24)).frame(alignment: .center)
-            .multilineTextAlignment(.center)
-            .frame(maxHeight: .infinity)
-    }
+
     
     var MusicView: some View {
         VStack {
             if (deferToPreview == true || spotName == "LookupFailed"  || songName == "LookupFailed" || appDelegate.musicSub.type == .Neither) {
                 if songAddedUsing! == "Spotify"  {
                     SongPreviewPlayer(songID: spotID, songName: spotName, songArtistName: spotArtistName, songArtImageData: spotImageData, songDuration: spotSongDuration, songPreviewURL: spotPreviewURL, songURL: spotSongURL,confirmButton: false, songAddedUsing: songAddedUsing!, chosenCard: $chosenCard)
-                        .frame(maxHeight: .infinity, alignment: .bottom)
+                        .frame(maxHeight: UIScreen.main.bounds.height / 2.3, alignment: .bottom)
                 }
                 else if songAddedUsing! == "Apple"  {
                     SongPreviewPlayer(songID: songID, songName: songName, songArtistName: songArtistName, songArtImageData: songArtImageData, songDuration: songDuration, songPreviewURL: songPreviewURL,songURL: appleSongURL, confirmButton: false, songAddedUsing: songAddedUsing!, chosenCard: $chosenCard)
-                        .frame(maxHeight: .infinity, alignment: .bottom)
+                        .frame(maxHeight: UIScreen.main.bounds.height / 2.3, alignment: .bottom)
                  }
             }
              
             else if (appDelegate.musicSub.type == .Apple)  { // && (songName != "LookupFailed")
                 AMPlayerView(songID: songID, songName: songName, songArtistName: songArtistName, spotName: spotName, spotArtistName: spotArtistName, songAlbumName: songAlbumName, songArtImageData: songArtImageData, songDuration: songDuration, songPreviewURL: songPreviewURL, confirmButton: false, fromFinalize: fromFinalize, coreCard: coreCard, appleAlbumArtist: appleAlbumArtist, spotAlbumArtist: spotAlbumArtist, chosenCard: $chosenCard, deferToPreview: $deferToPreview, showAPV: $showAPV, isLoading: $isLoading)
-                        .frame(maxHeight: UIScreen.screenHeight/2.2)
+                        .frame(maxHeight: UIScreen.main.bounds.height / 2.3, alignment: .bottom)
+
                 }
             else if (appDelegate.musicSub.type == .Spotify) { // && (spotName != "LookupFailed")
                 SpotPlayerView(songID: spotID, songName: songName, songArtistName: songArtistName, spotName: spotName, spotArtistName: spotArtistName, songAlbumName: songAlbumName, songArtImageData: spotImageData, songDuration: spotSongDuration, songPreviewURL: spotPreviewURL, appleAlbumArtist: appleAlbumArtist, spotAlbumArtist: spotAlbumArtist, confirmButton: false, accessedViaGrid: accessedViaGrid, coreCard: coreCard, chosenCard: $chosenCard, deferToPreview: $deferToPreview, showSPV: $showSPV, isLoading: $isLoading)
-                        .frame(maxHeight: .infinity, alignment: .bottom)
+                    .frame(maxHeight: UIScreen.main.bounds.height / 2.3, alignment: .bottom)
                 }
             }
-        .onAppear{
-            print("Song URL is...")
-            print(songAddedUsing)
-            print(appleSongURL)
-        }
     }
     
     
@@ -289,33 +273,6 @@ struct eCardView: View {
 
 
 extension eCardView {
-    func MusicAndGiftView() -> some View {
-        
-        HStack {
-            VStack {
-                CoverView()
-                NoteView()
-                CollageAndAnnotationView()
-            }
-            VStack {
-                GiftView()
-                MusicView
-            }
-        }
-    }
-    
-    func GiftNoMusicView() -> some View {
-        HStack {
-            VStack {
-                CoverView()
-                CollageAndAnnotationView()
-            }
-            VStack {
-                NoteView()
-                GiftView()
-            }
-        }
-    }
     
     func NoMusicNoGift() -> some View {
         VStack {
