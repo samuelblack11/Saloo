@@ -11,7 +11,6 @@ import SwiftUI
 import CloudKit
 import Network
 
-
 struct ChosenCollection {@State var occassion: String!; @State var collectionID: String!}
 class ChosenCoreCard: ObservableObject {@Published var chosenCard = CoreCard()}
 class Occassion: ObservableObject {@Published var occassion = String(); @Published var collectionID = String()}
@@ -374,7 +373,7 @@ class UCVImageObjectModel: ObservableObject {
 class APIManager: ObservableObject {
     static let shared = APIManager()
     let baseURL = "https://getSalooKeys.azurewebsites.net/getkey"
-    var unsplashAPIKey = String()
+    @Published var unsplashAPIKey = String()
     var unsplashSecretKey = String()
     var spotSecretKey = String()
     var spotClientIdentifier = String()
@@ -391,7 +390,6 @@ class APIManager: ObservableObject {
                 print("UnsplashAPIKey is \(String(describing: keyval))")
                 DispatchQueue.main.async {
                     self.unsplashAPIKey = keyval ?? ""
-                    //CollectionManager.shared.createOccassionsFromUserCollections()
                 }
             }
 
@@ -487,7 +485,13 @@ class APIManager: ObservableObject {
 class CollectionManager: ObservableObject {
     static let shared = CollectionManager()
     @Published var collectionsDict: [String: [CollectionPair]] = [:]
-    
+    @Published var yearRoundCollections: [CollectionPair] = []
+    @Published var winterCollections: [CollectionPair] = []
+    @Published var springCollections: [CollectionPair] = []
+    @Published var summerCollections: [CollectionPair] = []
+    @Published var fallCollections: [CollectionPair] = []
+    @Published var otherCollections: [CollectionPair] = []
+    private var timer: Timer?
     enum CollectionType: String, CaseIterable {
         case yearRound = "Year-Round Occassions"
         case winter = "Winter Holidays"
@@ -497,73 +501,86 @@ class CollectionManager: ObservableObject {
         case other = "Other Collections"
     }
     
-    @Published var yearRoundCollections: [CollectionPair] = []
-    @Published var winterCollections: [CollectionPair] = []
-    @Published var springCollections: [CollectionPair] = []
-    @Published var summerCollections: [CollectionPair] = []
-    @Published var fallCollections: [CollectionPair] = []
-    @Published var otherCollections: [CollectionPair] = []
+    let titleToType = [
+        "Birthday 🎈": CollectionType.yearRound,
+        "Postcard ✈️": CollectionType.yearRound,
+        "Anniversary 💒": CollectionType.yearRound,
+        "Graduation 🎓": CollectionType.yearRound,
+        "Christmas 🎄": CollectionType.winter,
+        "Hanukkah 🕎": CollectionType.winter,
+        "New Years Eve 🎆": CollectionType.winter,
+        "Mother's Day 🌸": CollectionType.spring,
+        "4th of July 🎇": CollectionType.summer,
+        "Father's Day 🍻": CollectionType.summer,
+        "Thanksgiving 🍁": CollectionType.fall,
+        "Rosh Hashanah 🔯": CollectionType.fall,
+        "Animals 🐼": CollectionType.other
+    ]
     
-
-    @Published var collections: [CollectionPair] = []
-    
-    func getCollections(for type: String) -> [CollectionPair] {
-        return collectionsDict[type, default: []]
+    init() {
+        startObservingAPIKey()
     }
     
-    func groupCollections(collections: [CollectionPair]) {
-        let titleToType = [
-            "Birthday 🎈": CollectionType.yearRound,
-            "Postcard ✈️": CollectionType.yearRound,
-            "Anniversary 💒": CollectionType.yearRound,
-            "Graduation 🎓": CollectionType.yearRound,
-            "Christmas 🎄": CollectionType.winter,
-            "Hanukkah 🕎": CollectionType.winter,
-            "New Years Eve 🎆": CollectionType.winter,
-            "Mother's Day 🌸": CollectionType.spring,
-            "4th of July 🎇": CollectionType.summer,
-            "Father's Day 🍻": CollectionType.summer,
-            "Thanksgiving 🍁": CollectionType.fall,
-            "Rosh Hashanah 🔯": CollectionType.fall,
-            "Animals 🐼": CollectionType.other
-        ]
-        for collection in collections {
-            if let type = titleToType[collection.title] {
-                switch type {
-                case .yearRound:
-                    yearRoundCollections.append(collection)
-                case .winter:
-                    winterCollections.append(collection)
-                case .spring:
-                    springCollections.append(collection)
-                case .summer:
-                    summerCollections.append(collection)
-                case .fall:
-                    fallCollections.append(collection)
-                case .other:
-                    otherCollections.append(collection)
-                }
-            }
+    private func startObservingAPIKey() {
+        timer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { timer in
+            guard APIManager.shared.unsplashAPIKey != "" else { return }
+            timer.invalidate()
+            self.createOccassionsFromUserCollections()
         }
-
-
     }
     
     func createOccassionsFromUserCollections() {
-            PhotoAPI.getUserCollections(username: "samuelblack11", completionHandler: { (response, error) in
-                if response != nil {
-                    DispatchQueue.main.async {
-                        
-                        for collection in response! {
-                            self.collections.append(CollectionPair(title: collection.title, id: collection.id))
-                            }
-                        self.groupCollections(collections: self.collections)
+        print("Calling....")
+        PhotoAPI.getUserCollections(username: "samuelblack11", completionHandler: { (response, error) in
+            if response != nil {
+                // Use local variables to build collections
+                var yearRoundCollections = [CollectionPair]()
+                var winterCollections = [CollectionPair]()
+                var springCollections = [CollectionPair]()
+                var summerCollections = [CollectionPair]()
+                var fallCollections = [CollectionPair]()
+                var otherCollections = [CollectionPair]()
+
+                for collection in response! {
+                    let collectionPair = CollectionPair(title: collection.title, id: collection.id)
+                    // Categorize and store collections immediately upon creation
+                    if let type = self.titleToType[collectionPair.title] {
+                        switch type {
+                        case .yearRound:
+                            yearRoundCollections.append(collectionPair)
+                        case .winter:
+                            winterCollections.append(collectionPair)
+                            print("Appended to Winter....")
+                            print(collectionPair)
+                        case .spring:
+                            springCollections.append(collectionPair)
+                        case .summer:
+                            summerCollections.append(collectionPair)
+                        case .fall:
+                            fallCollections.append(collectionPair)
+                        case .other:
+                            otherCollections.append(collectionPair)
+                        }
                     }
                 }
-                if response != nil {print("No Response!")}
-                else {debugPrint(error?.localizedDescription)}
-            })
+                DispatchQueue.main.async {
+                    // Update Published properties with built collections
+                    self.yearRoundCollections = yearRoundCollections
+                    self.winterCollections = winterCollections
+                    self.springCollections = springCollections
+                    self.summerCollections = summerCollections
+                    self.fallCollections = fallCollections
+                    self.otherCollections = otherCollections
+                }
+            }
+            else if error != nil {
+                print("No Response!")
+                debugPrint(error?.localizedDescription)
+            }
+        })
     }
+
+
 }
 
 

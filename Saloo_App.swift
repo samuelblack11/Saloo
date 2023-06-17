@@ -37,6 +37,7 @@ struct Saloo_App: App {
     @StateObject var cardsForDisplay = CardsForDisplay()
     @StateObject var userSession = UserSession()
     @Environment(\.scenePhase) private var scenePhase
+    @ObservedObject var collectionManager = CollectionManager.shared
 
     var body: some Scene {
         WindowGroup {
@@ -62,6 +63,7 @@ struct Saloo_App: App {
                 .environmentObject(addMusic)
                 .environmentObject(cardsForDisplay)
                 .environmentObject(userSession)
+                .environmentObject(collectionManager)
                 .onChange(of: scenePhase) { newPhase in
                     if newPhase == .active {
                         cardsForDisplay.cardsForDisplay = cardsForDisplay.loadCoreCards()

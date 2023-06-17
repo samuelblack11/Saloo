@@ -51,7 +51,7 @@ struct OccassionsMenu: View {
     @State var loadedImagefromLibraryOrCamera: Bool?
     @EnvironmentObject var networkMonitor: NetworkMonitor
     @ObservedObject var alertVars = AlertVars.shared
-    @ObservedObject var collectionManager = CollectionManager.shared
+    @EnvironmentObject var collectionManager: CollectionManager
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -65,45 +65,41 @@ struct OccassionsMenu: View {
                         .progressViewStyle(CircularProgressViewStyle(tint: .white))
                         .scaleEffect(2)
                 }
-                List {
-                    Section(header: Text("Personal & Search")) {
-                        Text("Select from Photo Library ")
-                        //.listRowBackground(appDelegate.appColor)
-                            .onTapGesture {self.showCameraCapture = false; self.showImagePicker = true}
-                            .fullScreenCover(isPresented: $showImagePicker){ImagePicker(image: $coverImageFromLibrary, explicitPhotoAlert: $explicitPhotoAlert, isImageLoading: $isImageLoading)}
-                            .onChange(of: coverImageFromLibrary) { _ in loadImage(pic: coverImageFromLibrary!)
-                                handlePersonalPhotoSelection()
-                                appState.currentScreen = .buildCard([.collageStyleMenu])
-                                chosenObject.frontCoverIsPersonalPhoto = 1
-                                chosenOccassion.occassion = "None"; chosenOccassion.collectionID = "None"
-                            }
-                        Text("Take Photo with Camera 📸 ")
-                        //.listRowBackground(appDelegate.appColor)
-                            .onTapGesture {
-                                self.showImagePicker = false
-                                self.showCameraCapture = true
-                            }
-                            .fullScreenCover(isPresented: $showCameraCapture)
-                        {CameraCapture(image: self.$coverImageFromCamera, isPresented: self.$showCameraCapture, explicitPhotoAlert: $explicitPhotoAlert, sourceType: .camera, isImageLoading: $isImageLoading)}
-                            .onChange(of: coverImageFromCamera) { _ in loadImage(pic: coverImageFromCamera!)
-                                handlePersonalPhotoSelection()
-                                appState.currentScreen = .buildCard([.collageStyleMenu]); chosenObject.frontCoverIsPersonalPhoto = 1
-                                chosenOccassion.occassion = ""; chosenOccassion.collectionID = ""
-                            }
+                    List {
+                        Section(header: Text("Personal & Search")) {
+                            Text("Select from Photo Library ")
+                            //.listRowBackground(appDelegate.appColor)
+                                .onTapGesture {self.showCameraCapture = false; self.showImagePicker = true}
+                                .fullScreenCover(isPresented: $showImagePicker){ImagePicker(image: $coverImageFromLibrary, explicitPhotoAlert: $explicitPhotoAlert, isImageLoading: $isImageLoading)}
+                                .onChange(of: coverImageFromLibrary) { _ in loadImage(pic: coverImageFromLibrary!)
+                                    handlePersonalPhotoSelection()
+                                    appState.currentScreen = .buildCard([.collageStyleMenu])
+                                    chosenObject.frontCoverIsPersonalPhoto = 1
+                                    chosenOccassion.occassion = "None"; chosenOccassion.collectionID = "None"
+                                }
+                            Text("Take Photo with Camera 📸 ")
+                            //.listRowBackground(appDelegate.appColor)
+                                .onTapGesture {
+                                    self.showImagePicker = false
+                                    self.showCameraCapture = true
+                                }
+                                .fullScreenCover(isPresented: $showCameraCapture)
+                            {CameraCapture(image: self.$coverImageFromCamera, isPresented: self.$showCameraCapture, explicitPhotoAlert: $explicitPhotoAlert, sourceType: .camera, isImageLoading: $isImageLoading)}
+                                .onChange(of: coverImageFromCamera) { _ in loadImage(pic: coverImageFromCamera!)
+                                    handlePersonalPhotoSelection()
+                                    appState.currentScreen = .buildCard([.collageStyleMenu]); chosenObject.frontCoverIsPersonalPhoto = 1
+                                    chosenOccassion.occassion = ""; chosenOccassion.collectionID = ""
+                                }
+                        }
+                        
+                        collectionSection(type: .yearRound, collections: collectionManager.yearRoundCollections)
+                        collectionSection(type: .winter, collections: collectionManager.winterCollections)
+                        collectionSection(type: .spring, collections: collectionManager.springCollections)
+                        collectionSection(type: .summer, collections: collectionManager.summerCollections)
+                        collectionSection(type: .fall, collections: collectionManager.fallCollections)
+                        collectionSection(type: .other, collections: collectionManager.otherCollections)
                     }
-                    
-                    
-                    
-                    
-                    Section(header: Text("Year-Round Occassions")) {ForEach(collectionManager.yearRoundCollections) {menuSection(for: $0, shareable: false)
-                    }}
-                    Section(header: Text("Winter Holidays")) {ForEach(collectionManager.winterCollections) {menuSection(for: $0, shareable: false)}}
-                    Section(header: Text("Spring Holidays")) {ForEach(collectionManager.springCollections) {menuSection(for: $0, shareable: false)}}
-                    Section(header: Text("Summer Holidays")) {ForEach(collectionManager.summerCollections) {menuSection(for: $0, shareable: false)}}
-                    Section(header: Text("Fall Holidays")) {ForEach(collectionManager.fallCollections) {menuSection(for: $0, shareable: false)}}
-                    Section(header: Text("Ohter Holidays")) {ForEach(collectionManager.otherCollections) {menuSection(for: $0, shareable: false)}}
-                }
-                LoadingOverlay()
+                    LoadingOverlay()
             }
         .onAppear {
             if networkMonitor.isConnected == false {
@@ -116,7 +112,6 @@ struct OccassionsMenu: View {
                     isLoadingMenu = false
                 }
             }
-            collectionManager.createOccassionsFromUserCollections()
         }
         .modifier(AlertViewMod(showAlert: alertVars.activateAlertBinding, activeAlert: alertVars.alertType))
 
@@ -131,7 +126,17 @@ struct OccassionsMenu: View {
 }
 
 extension OccassionsMenu {
-        
+    
+    
+    func collectionSection(type: CollectionManager.CollectionType, collections: [CollectionPair]) -> some View {
+         Section(header: Text(type.rawValue)) {
+             ForEach(collections, id: \.id) { collection in
+                 self.menuSection(for: collection, shareable: false)
+             }
+         }
+     }
+
+
     
     func menuSection(for collection: CollectionPair, shareable: Bool) -> some View {
         Text(collection.title)
