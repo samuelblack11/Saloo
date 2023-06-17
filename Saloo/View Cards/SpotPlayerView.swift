@@ -68,6 +68,7 @@ struct SpotPlayerView: View {
 
     var body: some View {
         SpotPlayerView2
+            .frame(maxHeight: .infinity)
             .onAppear{
                 if accessedViaGrid && appDelegate.musicSub.type == .Spotify {getSpotCredentials{success in}}
                 else{

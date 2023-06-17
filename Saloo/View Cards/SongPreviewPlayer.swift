@@ -95,6 +95,7 @@ struct SongPreviewPlayer: View {
         //NavigationView {
         PreviewPlayerView()
         //}
+            .frame(maxHeight: .infinity)
             .onAppear {
                 startCheckingPlaybackState()
                 print("PREVIEW PLAYER APPEARED....")

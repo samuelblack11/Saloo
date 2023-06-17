@@ -389,7 +389,10 @@ class APIManager: ObservableObject {
         DispatchQueue.global(qos: .background).async {
             self.getSecret(keyName: "unsplashAPIKey") { keyval in
                 print("UnsplashAPIKey is \(String(describing: keyval))")
-                DispatchQueue.main.async {self.unsplashAPIKey = keyval ?? ""}
+                DispatchQueue.main.async {
+                    self.unsplashAPIKey = keyval ?? ""
+                    //CollectionManager.shared.createOccassionsFromUserCollections()
+                }
             }
 
             self.getSecret(keyName: "appleMusicDevToken") { keyval in
@@ -479,6 +482,88 @@ class APIManager: ObservableObject {
      }
     
     
+}
+
+class CollectionManager: ObservableObject {
+    static let shared = CollectionManager()
+    @Published var collectionsDict: [String: [CollectionPair]] = [:]
+    
+    enum CollectionType: String, CaseIterable {
+        case yearRound = "Year-Round Occassions"
+        case winter = "Winter Holidays"
+        case spring = "Spring Holidays"
+        case summer = "Summer Holidays"
+        case fall = "Fall Holidays"
+        case other = "Other Collections"
+    }
+    
+    @Published var yearRoundCollections: [CollectionPair] = []
+    @Published var winterCollections: [CollectionPair] = []
+    @Published var springCollections: [CollectionPair] = []
+    @Published var summerCollections: [CollectionPair] = []
+    @Published var fallCollections: [CollectionPair] = []
+    @Published var otherCollections: [CollectionPair] = []
+    
+
+    @Published var collections: [CollectionPair] = []
+    
+    func getCollections(for type: String) -> [CollectionPair] {
+        return collectionsDict[type, default: []]
+    }
+    
+    func groupCollections(collections: [CollectionPair]) {
+        let titleToType = [
+            "Birthday 🎈": CollectionType.yearRound,
+            "Postcard ✈️": CollectionType.yearRound,
+            "Anniversary 💒": CollectionType.yearRound,
+            "Graduation 🎓": CollectionType.yearRound,
+            "Christmas 🎄": CollectionType.winter,
+            "Hanukkah 🕎": CollectionType.winter,
+            "New Years Eve 🎆": CollectionType.winter,
+            "Mother's Day 🌸": CollectionType.spring,
+            "4th of July 🎇": CollectionType.summer,
+            "Father's Day 🍻": CollectionType.summer,
+            "Thanksgiving 🍁": CollectionType.fall,
+            "Rosh Hashanah 🔯": CollectionType.fall,
+            "Animals 🐼": CollectionType.other
+        ]
+        for collection in collections {
+            if let type = titleToType[collection.title] {
+                switch type {
+                case .yearRound:
+                    yearRoundCollections.append(collection)
+                case .winter:
+                    winterCollections.append(collection)
+                case .spring:
+                    springCollections.append(collection)
+                case .summer:
+                    summerCollections.append(collection)
+                case .fall:
+                    fallCollections.append(collection)
+                case .other:
+                    otherCollections.append(collection)
+                }
+            }
+        }
+
+
+    }
+    
+    func createOccassionsFromUserCollections() {
+            PhotoAPI.getUserCollections(username: "samuelblack11", completionHandler: { (response, error) in
+                if response != nil {
+                    DispatchQueue.main.async {
+                        
+                        for collection in response! {
+                            self.collections.append(CollectionPair(title: collection.title, id: collection.id))
+                            }
+                        self.groupCollections(collections: self.collections)
+                    }
+                }
+                if response != nil {print("No Response!")}
+                else {debugPrint(error?.localizedDescription)}
+            })
+    }
 }
 
 

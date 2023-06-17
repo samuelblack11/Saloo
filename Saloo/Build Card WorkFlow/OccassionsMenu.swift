@@ -51,6 +51,7 @@ struct OccassionsMenu: View {
     @State var loadedImagefromLibraryOrCamera: Bool?
     @EnvironmentObject var networkMonitor: NetworkMonitor
     @ObservedObject var alertVars = AlertVars.shared
+    @ObservedObject var collectionManager = CollectionManager.shared
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -90,13 +91,17 @@ struct OccassionsMenu: View {
                                 chosenOccassion.occassion = ""; chosenOccassion.collectionID = ""
                             }
                     }
-                    Section(header: Text("Year-Round Occassions")) {ForEach(yearRoundCollection) {menuSection(for: $0, shareable: false)
+                    
+                    
+                    
+                    
+                    Section(header: Text("Year-Round Occassions")) {ForEach(collectionManager.yearRoundCollections) {menuSection(for: $0, shareable: false)
                     }}
-                    Section(header: Text("Winter Holidays")) {ForEach(winterCollection) {menuSection(for: $0, shareable: false)}}
-                    Section(header: Text("Spring Holidays")) {ForEach(springCollection) {menuSection(for: $0, shareable: false)}}
-                    Section(header: Text("Summer Holidays")) {ForEach(summerCollection) {menuSection(for: $0, shareable: false)}}
-                    Section(header: Text("Fall Holidays")) {ForEach(fallCollection) {menuSection(for: $0, shareable: false)}}
-                    Section(header: Text("Other Collections")) {ForEach(otherCollection) {menuSection(for: $0, shareable: false)}}
+                    Section(header: Text("Winter Holidays")) {ForEach(collectionManager.winterCollections) {menuSection(for: $0, shareable: false)}}
+                    Section(header: Text("Spring Holidays")) {ForEach(collectionManager.springCollections) {menuSection(for: $0, shareable: false)}}
+                    Section(header: Text("Summer Holidays")) {ForEach(collectionManager.summerCollections) {menuSection(for: $0, shareable: false)}}
+                    Section(header: Text("Fall Holidays")) {ForEach(collectionManager.fallCollections) {menuSection(for: $0, shareable: false)}}
+                    Section(header: Text("Ohter Holidays")) {ForEach(collectionManager.otherCollections) {menuSection(for: $0, shareable: false)}}
                 }
                 LoadingOverlay()
             }
@@ -108,11 +113,10 @@ struct OccassionsMenu: View {
             if apiManager.unsplashAPIKey == "" {
                 isLoadingMenu = true
                 apiManager.getSecret(keyName: "unsplashAPIKey"){keyval in print("UnsplashAPIKey is \(String(describing: keyval))")
-                    apiManager.unsplashAPIKey = keyval!
-                    createOccassionsFromUserCollections()
                     isLoadingMenu = false
                 }
             }
+            collectionManager.createOccassionsFromUserCollections()
         }
         .modifier(AlertViewMod(showAlert: alertVars.activateAlertBinding, activeAlert: alertVars.alertType))
 
@@ -122,7 +126,6 @@ struct OccassionsMenu: View {
         .navigationBarItems(leading:Button {appState.currentScreen = .startMenu} label: {Image(systemName: "chevron.left").foregroundColor(.blue); Text("Back")}.disabled(gettingRecord.isShowingActivityIndicator))
         .font(.headline)
         .listStyle(GroupedListStyle())
-        .onAppear {createOccassionsFromUserCollections()}
         }
     }
 }
@@ -130,51 +133,19 @@ struct OccassionsMenu: View {
 extension OccassionsMenu {
         
     
-    private func menuSection(for collection: CollectionPair, shareable: Bool = true) -> some View {
-            Text(collection.title).onTapGesture {
+    func menuSection(for collection: CollectionPair, shareable: Bool) -> some View {
+        Text(collection.title)
+            .onTapGesture {
                 if networkMonitor.isConnected {
                     frontCoverIsPersonalPhoto = 0
-                    self.chosenOccassion.occassion = collection.title
-                    self.chosenOccassion.collectionID = collection.id
+                    chosenOccassion.occassion = collection.title
+                    chosenOccassion.collectionID = collection.id
                     appState.currentScreen = .buildCard([.unsplashCollectionView])
-                }
-                else {
+                } else {
                     alertVars.alertType = .failedConnection
                     alertVars.activateAlert = true
                 }
             }
-    }
-    
-    func groupCollections(collections: [CollectionPair]) {
-        let yearRoundOccassions = ["Birthday 🎈", "Postcard ✈️", "Anniversary 💒", "Graduation 🎓"]
-        let winterOccassions = ["Christmas 🎄", "Hanukkah 🕎", "New Years Eve 🎆"]
-        let springOccassions = ["Mother's Day 🌸"]
-        let summerOccassions = ["4th of July 🎇", "Father's Day 🍻"]
-        let fallOccassions = ["Thanksgiving 🍁","Rosh Hashanah 🔯"]
-        let otherOccassions = ["Animals 🐼"]
-        
-        for collection in collections {
-            if yearRoundOccassions.contains(collection.title) {yearRoundCollection.append(collection)}
-            if winterOccassions.contains(collection.title) {winterCollection.append(collection)}
-            if springOccassions.contains(collection.title) {springCollection.append(collection)}
-            if summerOccassions.contains(collection.title) {summerCollection.append(collection)}
-            if fallOccassions.contains(collection.title) {fallCollection.append(collection)}
-            if otherOccassions.contains(collection.title) {otherCollection.append(collection)}
-        }
-    }
-    
-    func createOccassionsFromUserCollections() {
-            PhotoAPI.getUserCollections(username: "samuelblack11", completionHandler: { (response, error) in
-                if response != nil {
-                    DispatchQueue.main.async {
-                        for collection in response! {collections.append(CollectionPair(title: collection.title, id: collection.id))
-                            }
-                        groupCollections(collections: collections)
-                    }
-                }
-                if response != nil {print("No Response!")}
-                else {debugPrint(error?.localizedDescription)}
-            })
     }
     
     func loadImage(pic: UIImage) {

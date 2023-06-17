@@ -73,6 +73,7 @@ struct AMPlayerView: View {
 
     var body: some View {
             AMPlayerView
+            .frame(maxHeight: .infinity)
             .alert(item: $activeAlert) { alertType -> Alert in
                 switch alertType {
                 case .songNotAvailable:
