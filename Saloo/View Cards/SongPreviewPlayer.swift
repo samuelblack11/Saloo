@@ -95,7 +95,6 @@ struct SongPreviewPlayer: View {
         //NavigationView {
         PreviewPlayerView()
         //}
-            .frame(maxHeight: .infinity)
             .onAppear {
                 startCheckingPlaybackState()
                 print("PREVIEW PLAYER APPEARED....")
@@ -127,8 +126,7 @@ struct SongPreviewPlayer: View {
         
     
     @ViewBuilder var selectButtonPreview: some View {
-        if confirmButton == true {Button {appState.currentScreen = .buildCard([.finalizeCardView]); avPlayer.player!.pause(); songProgress = 0.0} label: {Text("Select Song For Card").foregroundColor(.blue)}}
-        else {Text("")}
+        Button {appState.currentScreen = .buildCard([.finalizeCardView]); avPlayer.player!.pause(); songProgress = 0.0} label: {Text("Select Song For Card").foregroundColor(.blue)}
     }
     
     func createPlayer() {
@@ -162,7 +160,7 @@ struct SongPreviewPlayer: View {
 
     func PreviewPlayerView() -> some View {
         let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
-        return  VStack {
+        return  VStack(alignment: .center) {
             Image(uiImage: UIImage(data: songArtImageData!)!)
             Link(songName!, destination: URL(string: songURL!)!)
                 .font(.headline)
@@ -219,8 +217,9 @@ struct SongPreviewPlayer: View {
                 Text(convertToMinutes(seconds: 30 - Int(songProgress)))
                     .padding(.trailing, 10)
             }
-            selectButtonPreview
+            if confirmButton == true {selectButtonPreview}
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
         .onAppear{
             if songAddedUsing == "Spotify" {color = .green}
             else {color = .pink}

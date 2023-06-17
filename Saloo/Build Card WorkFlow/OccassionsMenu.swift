@@ -128,13 +128,24 @@ struct OccassionsMenu: View {
 extension OccassionsMenu {
     
     
+    @ViewBuilder
     func collectionSection(type: CollectionManager.CollectionType, collections: [CollectionPair]) -> some View {
-         Section(header: Text(type.rawValue)) {
-             ForEach(collections, id: \.id) { collection in
-                 self.menuSection(for: collection, shareable: false)
-             }
-         }
-     }
+        VStack(alignment: .center) {
+            Text(type.rawValue)
+                .font(.headline)
+                .foregroundColor(Color.gray.opacity(0.7))
+                .padding(.top, 10)
+                .padding(.leading, 10)
+            ForEach(collections, id: \.id) { collection in
+                menuSection(for: collection, shareable: false)
+                Divider()
+            }
+        }
+        .background(Color.black.opacity(0.75))
+        .cornerRadius(5)
+        .padding(.horizontal, 10)
+        .padding(.vertical, 5)
+    }
 
 
     

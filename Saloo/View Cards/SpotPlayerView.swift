@@ -68,7 +68,6 @@ struct SpotPlayerView: View {
 
     var body: some View {
         SpotPlayerView2
-            .frame(maxHeight: .infinity)
             .onAppear{
                 if accessedViaGrid && appDelegate.musicSub.type == .Spotify {getSpotCredentials{success in}}
                 else{
@@ -86,7 +85,7 @@ struct SpotPlayerView: View {
     }
     
     @ViewBuilder var selectButton: some View {
-        if confirmButton == true {Button {
+        Button {
             //disableTextField = true
             spotifyManager.appRemote?.playerAPI?.pause()
             songProgress = 0.0
@@ -99,8 +98,7 @@ struct SpotPlayerView: View {
                 print(CardPrep.shared.chosenSong)
                 appState.currentScreen = .buildCard([.finalizeCardView])
             }
-        } label: {Text("Select Song For Card").foregroundColor(.blue)}}
-        else {Text("")}
+        } label: {Text("Select Song For Card").foregroundColor(.blue)}
     }
     
     
@@ -116,7 +114,7 @@ struct SpotPlayerView: View {
     var SpotPlayerView2: some View {
         ZStack {
             //if showProgressView {ProgressView().progressViewStyle(.circular) .tint(.green).frame(maxWidth: UIScreen.screenHeight/9, maxHeight: UIScreen.screenHeight/9)}
-            VStack {
+            VStack(alignment: .center) {
                 if songArtImageData != nil {Image(uiImage: UIImage(data: songArtImageData!)!) }
                 Text(spotName!)
                     .font(.headline)
@@ -188,8 +186,9 @@ struct SpotPlayerView: View {
                             .progressViewStyle(CircularProgressViewStyle(tint: .green))
                     }
                 }
-                selectButton
+                if confirmButton == true {selectButton}
             }
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
         }
         .onDisappear{spotifyManager.appRemote?.playerAPI?.seek(toPosition: 0)}
     }

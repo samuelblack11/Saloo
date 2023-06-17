@@ -73,7 +73,6 @@ struct AMPlayerView: View {
 
     var body: some View {
             AMPlayerView
-            .frame(maxHeight: .infinity)
             .alert(item: $activeAlert) { alertType -> Alert in
                 switch alertType {
                 case .songNotAvailable:
@@ -103,7 +102,7 @@ struct AMPlayerView: View {
     }
     
     var AMPlayerView: some View {
-        VStack {
+        VStack(alignment: .center) {
             if songArtImageData != nil {Image(uiImage: UIImage(data: songArtImageData!)!)}
             Text(songName!)
                 .font(.headline)
@@ -158,8 +157,9 @@ struct AMPlayerView: View {
                         .padding(.trailing, 10)
                 //}
             }
-            selectButton
+            if confirmButton == true {selectButton}
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center) // This should make the VStack take up all available space and align its contents to the center.
         .onAppear{songProgress = 0.0;
             if networkMonitor.isConnected {
                 self.musicPlayer.setQueue(with: [songID!]);
@@ -176,7 +176,7 @@ struct AMPlayerView: View {
     }
     
     @ViewBuilder var selectButton: some View {
-        if confirmButton == true {Button {
+        Button {
             musicPlayer.pause()
             songProgress = 0.0
             self.showAPV = false
@@ -186,8 +186,8 @@ struct AMPlayerView: View {
                 CardPrep.shared.chosenSong = chosenSong
                 appState.currentScreen = .buildCard([.finalizeCardView])
             }
-        } label: {Text("Select Song For Card").foregroundColor(.blue).disabled(disableSelect)}}
-        else {Text("")}
+        } label: {Text("Select Song For Card").foregroundColor(.blue).disabled(disableSelect)}
+        //else {Text("")}
     }
     
     func convertToMinutes(seconds: Int) -> String {
