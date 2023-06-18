@@ -484,22 +484,8 @@ class APIManager: ObservableObject {
 
 class CollectionManager: ObservableObject {
     static let shared = CollectionManager()
-    @Published var collectionsDict: [String: [CollectionPair]] = [:]
-    @Published var yearRoundCollections: [CollectionPair] = []
-    @Published var winterCollections: [CollectionPair] = []
-    @Published var springCollections: [CollectionPair] = []
-    @Published var summerCollections: [CollectionPair] = []
-    @Published var fallCollections: [CollectionPair] = []
-    @Published var otherCollections: [CollectionPair] = []
+    @Published var collections: [CollectionPair2] = []
     private var timer: Timer?
-    enum CollectionType: String, CaseIterable {
-        case yearRound = "Year-Round Occassions"
-        case winter = "Winter Holidays"
-        case spring = "Spring Holidays"
-        case summer = "Summer Holidays"
-        case fall = "Fall Holidays"
-        case other = "Other Collections"
-    }
     
     let titleToType = [
         "Birthday 🎈": CollectionType.yearRound,
@@ -514,12 +500,9 @@ class CollectionManager: ObservableObject {
         "Father's Day 🍻": CollectionType.summer,
         "Thanksgiving 🍁": CollectionType.fall,
         "Rosh Hashanah 🔯": CollectionType.fall,
-        "Animals 🐼": CollectionType.other
     ]
     
-    init() {
-        startObservingAPIKey()
-    }
+    init() {startObservingAPIKey()}
     
     private func startObservingAPIKey() {
         timer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { timer in
@@ -533,52 +516,27 @@ class CollectionManager: ObservableObject {
         print("Calling....")
         PhotoAPI.getUserCollections(username: "samuelblack11", completionHandler: { (response, error) in
             if response != nil {
-                // Use local variables to build collections
-                var yearRoundCollections = [CollectionPair]()
-                var winterCollections = [CollectionPair]()
-                var springCollections = [CollectionPair]()
-                var summerCollections = [CollectionPair]()
-                var fallCollections = [CollectionPair]()
-                var otherCollections = [CollectionPair]()
+                var allCollections = [CollectionPair2]()
 
                 for collection in response! {
-                    let collectionPair = CollectionPair(title: collection.title, id: collection.id)
-                    // Categorize and store collections immediately upon creation
-                    if let type = self.titleToType[collectionPair.title] {
-                        switch type {
-                        case .yearRound:
-                            yearRoundCollections.append(collectionPair)
-                        case .winter:
-                            winterCollections.append(collectionPair)
-                            print("Appended to Winter....")
-                            print(collectionPair)
-                        case .spring:
-                            springCollections.append(collectionPair)
-                        case .summer:
-                            summerCollections.append(collectionPair)
-                        case .fall:
-                            fallCollections.append(collectionPair)
-                        case .other:
-                            otherCollections.append(collectionPair)
-                        }
+                    if self.titleToType.contains(where: { $0.key == collection.title }) {
+                        // Look up the type, defaulting to yearRound if not found
+                        let type = self.titleToType[collection.title] ?? .yearRound
+                        let collectionPair = CollectionPair2(title: collection.title, id: collection.id, type: type.rawValue)
+                        allCollections.append(collectionPair)
                     }
                 }
+
                 DispatchQueue.main.async {
-                    // Update Published properties with built collections
-                    self.yearRoundCollections = yearRoundCollections
-                    self.winterCollections = winterCollections
-                    self.springCollections = springCollections
-                    self.summerCollections = summerCollections
-                    self.fallCollections = fallCollections
-                    self.otherCollections = otherCollections
+                    self.collections = allCollections
                 }
-            }
-            else if error != nil {
+            } else if error != nil {
                 print("No Response!")
                 debugPrint(error?.localizedDescription)
             }
         })
     }
+
 
 
 }

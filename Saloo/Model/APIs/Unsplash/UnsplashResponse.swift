@@ -18,6 +18,20 @@ struct CollectionPair: Decodable, Identifiable {
     let id: String
 }
 
+struct CollectionPair2: Decodable, Identifiable {
+    let title: String
+    let id: String
+    let type: String
+}
+
+enum CollectionType: String, CaseIterable {
+    case yearRound = "Year-Round Occassions"
+    case winter = "Winter Holidays"
+    case spring = "Spring Holidays"
+    case summer = "Summer Holidays"
+    case fall = "Fall Holidays"
+}
+
 struct PhotoCollection: Decodable {
     let id: String
     let title: String

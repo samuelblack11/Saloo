@@ -23,13 +23,12 @@ struct OccassionsMenu: View {
     @State private var showImagePicker = false
     @State private var showUCV = false
     // Collection Variables. Use @State private for variables owned by this view and not accessible by external views
-    @State private var collections: [CollectionPair] = []
-    @State private var yearRoundCollection: [CollectionPair] = []
-    @State private var winterCollection: [CollectionPair] = []
-    @State private var springCollection: [CollectionPair] = []
-    @State private var summerCollection: [CollectionPair] = []
-    @State private var fallCollection: [CollectionPair] = []
-    @State private var otherCollection: [CollectionPair] = []
+    //@State private var collections: [CollectionPair] = []
+    @State private var yearRoundCollection: [CollectionPair2] = []
+    @State private var winterCollection: [CollectionPair2] = []
+    @State private var springCollection: [CollectionPair2] = []
+    @State private var summerCollection: [CollectionPair2] = []
+    @State private var fallCollection: [CollectionPair2] = []
     @EnvironmentObject var appDelegate: AppDelegate
     @ObservedObject var gettingRecord = GettingRecord.shared
     @State var explicitPhotoAlert: Bool = false
@@ -91,13 +90,29 @@ struct OccassionsMenu: View {
                                     chosenOccassion.occassion = ""; chosenOccassion.collectionID = ""
                                 }
                         }
-                        
-                        collectionSection(type: .yearRound, collections: collectionManager.yearRoundCollections)
-                        collectionSection(type: .winter, collections: collectionManager.winterCollections)
-                        collectionSection(type: .spring, collections: collectionManager.springCollections)
-                        collectionSection(type: .summer, collections: collectionManager.summerCollections)
-                        collectionSection(type: .fall, collections: collectionManager.fallCollections)
-                        collectionSection(type: .other, collections: collectionManager.otherCollections)
+                
+                        Section(header: Text("Year-Round Occassions")) {
+                            menuSection(for: "Birthday 🎈")
+                            menuSection(for: "Postcard ✈️")
+                            menuSection(for: "Anniversary 💒")
+                            menuSection(for: "Graduation 🎓")
+                        }
+                        Section(header: Text("Summer Holidays")) {
+                            menuSection(for: "Father's Day 🍻")
+                            menuSection(for: "4th of July 🎇")
+                        }
+                        Section(header: Text("Fall Holidays")) {
+                            menuSection(for: "Thanksgiving 🍁")
+                            menuSection(for: "Rosh Hashanah 🔯")
+                        }
+                        Section(header: Text("Winter Holidays")) {
+                            menuSection(for: "Christmas 🎄")
+                            menuSection(for: "Hanukkah 🕎")
+                            menuSection(for: "New Years Eve 🎆")
+                        }
+                        Section(header: Text("Spring Holidays")) {
+                            menuSection(for: "Mother's Day 🌸")
+                        }
                     }
                     LoadingOverlay()
             }
@@ -127,42 +142,25 @@ struct OccassionsMenu: View {
 
 extension OccassionsMenu {
     
-    
-    @ViewBuilder
-    func collectionSection(type: CollectionManager.CollectionType, collections: [CollectionPair]) -> some View {
-        VStack(alignment: .center) {
-            Text(type.rawValue)
-                .font(.headline)
-                .foregroundColor(Color.gray.opacity(0.7))
-                .padding(.top, 10)
-                .padding(.leading, 10)
-            ForEach(collections, id: \.id) { collection in
-                menuSection(for: collection, shareable: false)
-                Divider()
-            }
-        }
-        .background(Color.black.opacity(0.75))
-        .cornerRadius(5)
-        .padding(.horizontal, 10)
-        .padding(.vertical, 5)
-    }
-
-
-    
-    func menuSection(for collection: CollectionPair, shareable: Bool) -> some View {
-        Text(collection.title)
+    func menuSection(for collectionTitle: String) -> some View {
+        let collection = collectionManager.collections.first(where: { $0.title == collectionTitle })
+        
+        return Text(collectionTitle)
             .onTapGesture {
-                if networkMonitor.isConnected {
+                print(collection)
+                if let collection = collection, networkMonitor.isConnected {
+                    print(collection.id)
                     frontCoverIsPersonalPhoto = 0
-                    chosenOccassion.occassion = collection.title
-                    chosenOccassion.collectionID = collection.id
-                    appState.currentScreen = .buildCard([.unsplashCollectionView])
-                } else {
+                    self.chosenOccassion.occassion = collectionTitle
+                    self.chosenOccassion.collectionID = collection.id
+                } else if !networkMonitor.isConnected {
                     alertVars.alertType = .failedConnection
                     alertVars.activateAlert = true
                 }
             }
     }
+
+
     
     func loadImage(pic: UIImage) {
         coverImage = pic
