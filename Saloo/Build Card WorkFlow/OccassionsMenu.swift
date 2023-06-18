@@ -153,6 +153,7 @@ extension OccassionsMenu {
                     frontCoverIsPersonalPhoto = 0
                     self.chosenOccassion.occassion = collectionTitle
                     self.chosenOccassion.collectionID = collection.id
+                    appState.currentScreen = .buildCard([.unsplashCollectionView])
                 } else if !networkMonitor.isConnected {
                     alertVars.alertType = .failedConnection
                     alertVars.activateAlert = true

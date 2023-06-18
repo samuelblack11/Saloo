@@ -135,7 +135,7 @@ struct SpotPlayerView: View {
                         ZStack {
                             Circle()
                                 .accentColor(.green)
-                                .shadow(radius: 8)
+                                .shadow(radius: 10)
                             Image(systemName: "arrow.uturn.backward" )
                                 .foregroundColor(.white)
                                 .font(.system(.title))
@@ -150,7 +150,7 @@ struct SpotPlayerView: View {
                         ZStack {
                             Circle()
                                 .accentColor(.green)
-                                .shadow(radius: 8)
+                                .shadow(radius: 10)
                             Image(systemName: isPlaying ? "pause.fill" : "play.fill")
                                 .foregroundColor(.white)
                                 .font(.system(.title))
@@ -207,7 +207,7 @@ struct SpotPlayerView: View {
 
             // If the song is playing, then start the timer
             if !playerState {
-                // Instantiate and start the timer, syncing every 10 seconds
+                // Instantiate and start the timer, syncing every 10 secondsf
                 self.syncTimer = Timer.scheduledTimer(withTimeInterval: 10.0, repeats: true) { _ in
                     self.syncSongProgress()
                 }
@@ -347,9 +347,10 @@ struct SpotPlayerView: View {
     }
 
     func playSong() {
-        print("network connected")
+        print("called playSong....")
         print(APIManager.shared.spotClientIdentifier)
         if let songID = songID {
+            print("songID = songID")
             let trackURI = "spotify:track:\(songID)"
             if spotifyManager.appRemote?.isConnected == false {
                 spotifyManager.appRemote?.connect()
