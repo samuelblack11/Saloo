@@ -390,6 +390,7 @@ class APIManager: ObservableObject {
                 print("UnsplashAPIKey is \(String(describing: keyval))")
                 DispatchQueue.main.async {
                     self.unsplashAPIKey = keyval ?? ""
+                    CollectionManager.shared.createOccassionsFromUserCollections()
                 }
             }
 
@@ -501,16 +502,7 @@ class CollectionManager: ObservableObject {
         "Thanksgiving 🍁": CollectionType.fall,
         "Rosh Hashanah 🔯": CollectionType.fall,
     ]
-    
-    init() {startObservingAPIKey()}
-    
-    private func startObservingAPIKey() {
-        timer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { timer in
-            guard APIManager.shared.unsplashAPIKey != "" else { return }
-            timer.invalidate()
-            self.createOccassionsFromUserCollections()
-        }
-    }
+
     
     func createOccassionsFromUserCollections() {
         print("Calling....")

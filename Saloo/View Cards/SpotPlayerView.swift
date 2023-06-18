@@ -70,8 +70,12 @@ struct SpotPlayerView: View {
         SpotPlayerView2
             .onAppear{
                 
-                if SpotifyAPI.shared.hasTokenExpired() {getSpotCredentials{success in}}
-                else{checkIfGetSongIsNeeded()}
+                if SpotifyAPI.shared.hasTokenExpired() {
+                    print("Token expired....")
+                    getSpotCredentials{success in}}
+                else{
+                    print("get song if needed...")
+                    checkIfGetSongIsNeeded()}
             }
             .onDisappear{spotifyManager.appRemote?.playerAPI?.pause()}
             .navigationBarItems(leading:Button {chosenCard = nil
