@@ -438,6 +438,8 @@ extension SpotPlayerView {
                     spotifyManager.appRemote?.connectionParameters.accessToken = spotifyManager.access_token
                     spotifyManager.refresh_token = response!.refresh_token
                     defaults.set(response!.access_token, forKey: "SpotifyAccessToken")
+                    let expirationDate = Date().addingTimeInterval(response!.expires_in)
+                    defaults.set(expirationDate, forKey: "SpotifyAccessTokenExpirationDate")
                     defaults.set(response!.refresh_token, forKey: "SpotifyRefreshToken")
                     if songID!.count == 0 {getSongViaAlbumSearch(completion: {(foundMatchBool)
                         in print("Did Find Match? \(foundMatchBool)")
@@ -473,6 +475,8 @@ extension SpotPlayerView {
                     spotifyManager.access_token = response!.access_token
                     spotifyManager.appRemote?.connectionParameters.accessToken = spotifyManager.access_token
                     defaults.set(response!.access_token, forKey: "SpotifyAccessToken")
+                    let expirationDate = Date().addingTimeInterval(response!.expires_in)
+                    defaults.set(expirationDate, forKey: "SpotifyAccessTokenExpirationDate")
                     if songID!.count == 0 {getSongViaAlbumSearch(completion: {(foundMatchBool)
                         in print("Did Find Match? \(foundMatchBool)")
                         if foundMatchBool == false {

@@ -363,6 +363,8 @@ extension PrefMenu {
                     print("Set Spot Refresh Token to: \(spotifyManager.refresh_token)")
 
                     defaults.set(response.access_token, forKey: "SpotifyAccessToken")
+                    let expirationDate = Date().addingTimeInterval(response.expires_in)
+                    defaults.set(expirationDate, forKey: "SpotifyAccessTokenExpirationDate")
                     defaults.set(response.refresh_token, forKey: "SpotifyRefreshToken")
                     completion(true)
                 }
@@ -386,6 +388,8 @@ extension PrefMenu {
                     spotifyManager.access_token = response.access_token
                     spotifyManager.appRemote?.connectionParameters.accessToken = spotifyManager.access_token
                     defaults.set(response.access_token, forKey: "SpotifyAccessToken")
+                    let expirationDate = Date().addingTimeInterval(response.expires_in)
+                    defaults.set(expirationDate, forKey: "SpotifyAccessTokenExpirationDate")
                     completion(true)
                 }
             } else if let error = error {
