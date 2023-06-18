@@ -69,11 +69,9 @@ struct SpotPlayerView: View {
     var body: some View {
         SpotPlayerView2
             .onAppear{
-                if accessedViaGrid && appDelegate.musicSub.type == .Spotify {getSpotCredentials{success in}}
-                else{
-                    if networkMonitor.isConnected{playSong()}
-                    else {print("Connection failed3");showFailedConnectionAlert = true}
-                }
+                
+                if SpotifyAPI.shared.hasTokenExpired() {getSpotCredentials{success in}}
+                else{checkIfGetSongIsNeeded()}
             }
             .onDisappear{spotifyManager.appRemote?.playerAPI?.pause()}
             .navigationBarItems(leading:Button {chosenCard = nil
@@ -321,13 +319,9 @@ struct SpotPlayerView: View {
                     songID = song.id
                     songArtImageData = artResponse!
                     songDuration = Double(song.duration_ms) * 0.001
-                    playSong()
-                    DispatchQueue.main.async {
-                        //updateRecordWithNewSPOTData(spotName: song.name, spotArtistName: allArtists, spotID: song.id, songArtImageData: artResponse!, songDuration: String(Double(song.duration_ms) * 0.001)); return
-                    }
+                    if networkMonitor.isConnected{playSong()}
+                    else {showFailedConnectionAlert = true}
                     completion(foundMatch)
-
-                    
                 }); break innerLoop
             }}
             completion(foundMatch)
@@ -427,6 +421,28 @@ extension SpotPlayerView {
         }
     }
     
+    
+    
+    func checkIfGetSongIsNeeded() {
+        if songID!.count == 0 {getSongViaAlbumSearch(completion: {(foundMatchBool)
+            in print("Did Find Match? \(foundMatchBool)")
+            if foundMatchBool == false {
+                if songPreviewURL != nil {
+                    deferToPreview = true
+                    //DispatchQueue.main.async {updateRecordWithNewSPOTData(spotName: "LookupFailed", spotArtistName: "LookupFailed", spotID: "LookupFailed", songArtImageData: Data(), songDuration: String(0))}
+                }
+                else { print("Else called to change card type...")
+                    //appDelegate.chosenGridCard?.cardType = "noMusicNoGift"
+                }
+            }
+        })}
+        else {
+            if networkMonitor.isConnected{playSong()}
+            else {showFailedConnectionAlert = true}
+        }
+    }
+    
+    
     func getSpotToken() {
         print("called....requestSpotToken")
         tokenCounter = 1
@@ -441,19 +457,7 @@ extension SpotPlayerView {
                     let expirationDate = Date().addingTimeInterval(response!.expires_in)
                     defaults.set(expirationDate, forKey: "SpotifyAccessTokenExpirationDate")
                     defaults.set(response!.refresh_token, forKey: "SpotifyRefreshToken")
-                    if songID!.count == 0 {getSongViaAlbumSearch(completion: {(foundMatchBool)
-                        in print("Did Find Match? \(foundMatchBool)")
-                        if foundMatchBool == false {
-                            if songPreviewURL != nil {
-                                deferToPreview = true
-                                //DispatchQueue.main.async {updateRecordWithNewSPOTData(spotName: "LookupFailed", spotArtistName: "LookupFailed", spotID: "LookupFailed", songArtImageData: Data(), songDuration: String(0))}
-                            }
-                            else { print("Else called to change card type...")
-                                //appDelegate.chosenGridCard?.cardType = "noMusicNoGift"
-                            }
-                        }
-                    })}
-                    else {if accessedViaGrid {playSong()}}
+                    checkIfGetSongIsNeeded()
                 }
             }
             if error != nil {
@@ -477,19 +481,7 @@ extension SpotPlayerView {
                     defaults.set(response!.access_token, forKey: "SpotifyAccessToken")
                     let expirationDate = Date().addingTimeInterval(response!.expires_in)
                     defaults.set(expirationDate, forKey: "SpotifyAccessTokenExpirationDate")
-                    if songID!.count == 0 {getSongViaAlbumSearch(completion: {(foundMatchBool)
-                        in print("Did Find Match? \(foundMatchBool)")
-                        if foundMatchBool == false {
-                            if songPreviewURL != nil {
-                                deferToPreview = true
-                                //DispatchQueue.main.async {updateRecordWithNewSPOTData(spotName: "LookupFailed", spotArtistName: "LookupFailed", spotID: "LookupFailed", songArtImageData: Data(), songDuration: String(0))}
-                            }
-                            else { print("Else called to change card type...")
-                                //appDelegate.chosenGridCard?.cardType = "noMusicNoGift"
-                            }
-                        }
-                    })}
-                    else {if accessedViaGrid {playSong()}}
+                    checkIfGetSongIsNeeded()
                 }
             }
             if error != nil {
