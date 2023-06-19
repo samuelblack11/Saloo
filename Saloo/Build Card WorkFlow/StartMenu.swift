@@ -58,7 +58,6 @@ struct StartMenu: View {
             .modifier(AlertViewMod(showAlert: alertVars.activateAlertBinding, activeAlert: alertVars.alertType))
             .onAppear {
                 //deleteAllCoreCards()
-                //cardsForDisplay.cardsForDisplay = cardsForDisplay.loadCoreCards()
                 if (defaults.object(forKey: "MusicSubType") as? String) != nil {
                     if (defaults.object(forKey: "MusicSubType") as? String)! == "Apple Music" {appDelegate.musicSub.type = .Apple}
                     if (defaults.object(forKey: "MusicSubType") as? String)! == "Spotify" {appDelegate.musicSub.type = .Spotify}

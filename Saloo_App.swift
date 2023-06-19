@@ -68,13 +68,7 @@ struct Saloo_App: App {
                 .environmentObject(screenManager)
                 .onChange(of: scenePhase) { newPhase in
                     if newPhase == .active {
-                        //DispatchQueue.global(qos: .background).async {
-                            let loadedCards = cardsForDisplay.loadCoreCards()
-                            //DispatchQueue.main.async {
-                                cardsForDisplay.cardsForDisplay = loadedCards
-                                
-                            //}
-                        //}
+                        cardsForDisplay.loadCoreCards()
                         // Check if user is banned when the app comes to foreground
                         let salooUserID = (UserDefaults.standard.object(forKey: "SalooUserID") as? String)!
                         checkUserBanned(userId: salooUserID) { (isBanned, error) in

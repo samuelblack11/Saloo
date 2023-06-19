@@ -10,6 +10,7 @@ import UIKit
 import SwiftUI
 import CloudKit
 import Network
+import Security
 
 struct ChosenCollection {@State var occassion: String!; @State var collectionID: String!}
 class ChosenCoreCard: ObservableObject {@Published var chosenCard = CoreCard()}
@@ -111,21 +112,21 @@ class ScreenManager: ObservableObject {
 
 class CardsForDisplay: ObservableObject {
     static let shared = CardsForDisplay()
-    @Published var cardsForDisplay: [CoreCard] = []
     @Published var inboxCards: [CoreCard] = []
     @Published var outboxCards: [CoreCard] = []
     @Published var draftboxCards: [CoreCard] = []
     
     let userID = UserDefaults.standard.object(forKey: "SalooUserID") as? String
     
-    func loadCoreCards() -> [CoreCard] {
+    func loadCoreCards() {
         print("LoadCoreCards called...")
         let request = CoreCard.createFetchRequest()
         let sort = NSSortDescriptor(key: "date", ascending: false)
         request.sortDescriptors = [sort]
-        var cardsFromCore: [CoreCard] = []
+        
         do {
-            cardsFromCore = try PersistenceController.shared.persistentContainer.viewContext.fetch(request)
+            let cardsFromCore = try PersistenceController.shared.persistentContainer.viewContext.fetch(request)
+            
             // Split the cards into separate lists
             inboxCards = cardsFromCore.filter { !$0.salooUserID!.contains(self.userID!) }
             outboxCards = cardsFromCore.filter { card in
@@ -140,8 +141,6 @@ class CardsForDisplay: ObservableObject {
         catch {
             print("Fetch failed")
         }
-        print("return complete")
-        return cardsFromCore
     }
     
     func shareStatus(card: CoreCard) -> (Bool, Bool) {
@@ -474,6 +473,10 @@ class APIManager: ObservableObject {
 
     func getSecret(keyName: String, completion: @escaping (String?) -> Void) {
         //let url = baseURL.appendingPathComponent("getkey")
+        if let storedKey = loadFromKeychain(key: keyName) {
+            completion(storedKey)
+            return
+        }
         
         let fullURL = baseURL + "?keyName=\(keyName)"
         print(fullURL)
@@ -492,6 +495,8 @@ class APIManager: ObservableObject {
                         // Make sure that the Decoder Setup matches your JSON Structure
                         let json = try JSONDecoder().decode([String: String].self, from: data)
                         if let value = json["value"] {
+                            // Save the key to Keychain
+                            self.saveToKeychain(key: keyName, value: value)
                             completion(value)
                         }
                     } catch {
@@ -505,32 +510,41 @@ class APIManager: ObservableObject {
     }
     
     
-    func getSecrets(keyNames: [String], completion: @escaping ([String: String]) -> Void) {
-         let keyNamesString = keyNames.joined(separator: ",")
-         let fullURL = baseURL + "?keyNames=\(keyNamesString)"
-         print(fullURL)
-         guard let url = URL(string: fullURL) else {fatalError("Invalid URL")}
-         let task = URLSession.shared.dataTask(with: url) { (data, response, error) in
-             print(response)
-             print(String(data: data!, encoding: .utf8))
-             if let error = error {
-                 print("Error: \(error)")
-                 completion([:])
-             } else if let data = data {
-                 do {
-                     let decodedData = try JSONDecoder().decode([String: String].self, from: data)
-                     completion(decodedData)
-                 } catch {
-                     print("Error decoding data: \(error)")
-                     completion([:])
-                 }
-             }
-         }
+    
+    func saveToKeychain(key: String, value: String) {
+        let keyData = key.data(using: .utf8)!
+        let valueData = value.data(using: .utf8)!
+        
+        let query: [String: Any] = [kSecClass as String: kSecClassGenericPassword,
+                                    kSecAttrAccount as String: keyData,
+                                    kSecValueData as String: valueData]
+        
+        let status = SecItemAdd(query as CFDictionary, nil)
+        guard status == errSecSuccess else {
+            print("Failed to save data to Keychain")
+            return
+        }
+    }
 
-         task.resume()
-     }
-    
-    
+    func loadFromKeychain(key: String) -> String? {
+        let keyData = key.data(using: .utf8)!
+        
+        let query: [String: Any] = [kSecClass as String: kSecClassGenericPassword,
+                                    kSecAttrAccount as String: keyData,
+                                    kSecReturnData as String: kCFBooleanTrue!,
+                                    kSecMatchLimit as String: kSecMatchLimitOne]
+        
+        var item: CFTypeRef?
+        let status = SecItemCopyMatching(query as CFDictionary, &item)
+        guard status == errSecSuccess else {
+            print("Failed to load data from Keychain")
+            return nil
+        }
+        
+        let valueData = item as! Data
+        print("Got Key \(String(data: valueData, encoding: .utf8)) for \(key)")
+        return String(data: valueData, encoding: .utf8)
+    }
 }
 
 class CollectionManager: ObservableObject {
