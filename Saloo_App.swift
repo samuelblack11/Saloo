@@ -39,11 +39,19 @@ struct Saloo_App: App {
     @Environment(\.scenePhase) private var scenePhase
     @ObservedObject var collectionManager = CollectionManager.shared
     @ObservedObject var screenManager = ScreenManager.shared
+    let defaults = UserDefaults.standard
 
     var body: some Scene {
         WindowGroup {
             ContentView()
-                .onAppear {apiManager.initializeSpotifyManager(){}}
+                .onAppear {
+                    if let musicSub = (defaults.object(forKey: "MusicSubType") as? String) {
+                        print("[[[[")
+                        print(musicSub)
+                        if musicSub == "Spotify"{apiManager.initializeSpotifyManager(){}}
+                        if musicSub == "Apple Music"{apiManager.initializeAM(){}}
+                    }
+                }
                 .environment(\.managedObjectContext, persistenceController.persistentContainer.viewContext)
                 .environmentObject(spotifyManager)
                 .environmentObject(networkMonitor)
@@ -66,16 +74,19 @@ struct Saloo_App: App {
                 .environmentObject(userSession)
                 .environmentObject(collectionManager)
                 .environmentObject(screenManager)
+                .environmentObject(apiManager)
                 .onChange(of: scenePhase) { newPhase in
                     if newPhase == .active {
                         cardsForDisplay.loadCoreCards()
                         // Check if user is banned when the app comes to foreground
-                        let salooUserID = (UserDefaults.standard.object(forKey: "SalooUserID") as? String)!
-                        checkUserBanned(userId: salooUserID) { (isBanned, error) in
-                            print("Checking banned status...")
-                            if isBanned == true {alertVars.alertType = .userBanned; alertVars.activateAlert = true}
-                            // Other error handling goes here
+                        if let salooUserID = (UserDefaults.standard.object(forKey: "SalooUserID") as? String) {
+                            checkUserBanned(userId: salooUserID) { (isBanned, error) in
+                                print("Checking banned status...isBanned = \(isBanned)")
+                                if isBanned == true {alertVars.alertType = .userBanned; alertVars.activateAlert = true}
+                                // Other error handling goes here
+                            }
                         }
+                        else{print("no salooUserID due to first launch")}
                     }
                 }
         }

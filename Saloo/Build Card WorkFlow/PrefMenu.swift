@@ -47,6 +47,7 @@ struct PrefMenu: View {
     @State private var authType = ""
     @ObservedObject var alertVars = AlertVars.shared
     @EnvironmentObject var appState: AppState
+    @EnvironmentObject var apiManager: APIManager
 
     init() {
         if defaults.object(forKey: "MusicSubType") != nil {_currentSubSelection = State(initialValue: (defaults.object(forKey: "MusicSubType") as? String)!)}
@@ -67,15 +68,18 @@ struct PrefMenu: View {
                             .onTapGesture {
                                 musicColor = .pink
                                 hideProgressView = false
-                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.3){getAMUserTokenAndStoreFront{}}
+                                apiManager.initializeAM() {
+                                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.3){getAMUserTokenAndStoreFront{}}
+                                }
                             }
                         Text("Spotify")
                             .onTapGesture {
                                 musicColor = .green
                                 hideProgressView = false
-                                if spotifyManager.auth_code == "AuthFailed" {spotifyManager.auth_code = ""}
-                                counter = 0; tokenCounter = 0; showWebView = false; refreshAccessToken = false; getSpotCredentials{_ in}
-                                
+                                apiManager.initializeSpotifyManager {
+                                    if spotifyManager.auth_code == "AuthFailed" {spotifyManager.auth_code = ""}
+                                    counter = 0; tokenCounter = 0; showWebView = false; refreshAccessToken = false; getSpotCredentials{_ in}
+                                }
                             }
                         Text("I don't subscribe to either")
                             .onTapGesture {appDelegate.musicSub.type = .Neither; defaults.set("Neither", forKey: "MusicSubType"); showStart = true}

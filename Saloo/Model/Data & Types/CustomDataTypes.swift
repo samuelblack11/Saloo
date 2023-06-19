@@ -115,8 +115,9 @@ class CardsForDisplay: ObservableObject {
     @Published var inboxCards: [CoreCard] = []
     @Published var outboxCards: [CoreCard] = []
     @Published var draftboxCards: [CoreCard] = []
-    
-    let userID = UserDefaults.standard.object(forKey: "SalooUserID") as? String
+    @State private var userID = UserDefaults.standard.object(forKey: "SalooUserID") as? String
+
+    //let userID = UserDefaults.standard.object(forKey: "SalooUserID") as? String
     
     func loadCoreCards() {
         print("LoadCoreCards called...")
@@ -436,26 +437,27 @@ class APIManager: ObservableObject {
     init() {
         DispatchQueue.global(qos: .background).async {
             self.getSecret(keyName: "unsplashAPIKey") { keyval in
-                print("UnsplashAPIKey is \(String(describing: keyval))")
                 DispatchQueue.main.async {
                     self.unsplashAPIKey = keyval ?? ""
                     CollectionManager.shared.createOccassionsFromUserCollections()
                 }
             }
-
-            self.getSecret(keyName: "appleMusicDevToken") { keyval in
-                print("appleMusicDevToken is \(String(describing: keyval))")
-                DispatchQueue.main.async {self.appleMusicDevToken = keyval ?? ""}
-            }
         }
     }
+    
+    
+    func initializeAM(completion: @escaping () -> Void) {
+        self.getSecret(keyName: "appleMusicDevToken") { keyval in
+            DispatchQueue.main.async {self.appleMusicDevToken = keyval ?? ""; completion()}
+        }
+    }
+    
 
     
     func initializeSpotifyManager(completion: @escaping () -> Void) {
         // Here, you're getting the keys for Spotify API
         DispatchQueue.global(qos: .background).async {
             self.getSecret(keyName: "spotClientIdentifier") { keyval in
-                print("spotClientIdentifier is \(String(describing: keyval))")
                 DispatchQueue.main.async {
                 self.spotClientIdentifier = keyval!
                     self.getSecret(keyName: "spotSecretKey"){keyval in print("spotSecretKey is \(String(describing: keyval))")
@@ -484,16 +486,16 @@ class APIManager: ObservableObject {
         let task = URLSession.shared.dataTask(with: url) { (data, response, error) in
             //print(response)
             //print(String(data: data!, encoding: .utf8))
+            
             if let error = error {
                 print("Error: \(error)")
                 completion(nil)
             } else if let data = data {
                 let jsonData = String(data: data, encoding: .utf8)
                 if let jsonData = jsonData {
-                    let data = Data(jsonData.utf8)
+                    let data: Data? = Data(jsonData.utf8)
                     do {
-                        // Make sure that the Decoder Setup matches your JSON Structure
-                        let json = try JSONDecoder().decode([String: String].self, from: data)
+                        let json = try JSONDecoder().decode([String: String].self, from: data!)
                         if let value = json["value"] {
                             // Save the key to Keychain
                             self.saveToKeychain(key: keyName, value: value)
@@ -555,16 +557,25 @@ class CollectionManager: ObservableObject {
     let titleToType = [
         "Birthday 🎈": CollectionType.yearRound,
         "Postcard ✈️": CollectionType.yearRound,
-        "Anniversary 💒": CollectionType.yearRound,
+        "Wedding and Anniversary 💒": CollectionType.yearRound,
         "Graduation 🎓": CollectionType.yearRound,
         "Christmas 🎄": CollectionType.winter,
         "Hanukkah 🕎": CollectionType.winter,
         "New Years Eve 🎆": CollectionType.winter,
         "Mother's Day 🌸": CollectionType.spring,
-        "4th of July 🎇": CollectionType.summer,
+        "4th of July 🇺🇸": CollectionType.summer,
         "Father's Day 🍻": CollectionType.summer,
         "Thanksgiving 🍁": CollectionType.fall,
         "Rosh Hashanah 🔯": CollectionType.fall,
+        "Juneteenth ✊🏿" : CollectionType.summer,
+        "Pride 🏳️‍🌈": CollectionType.summer,
+        "Easter 🐇": CollectionType.spring,
+        "Mardi Gras 🎭": CollectionType.winter,
+        "Eid al-Fitr ☪️": CollectionType.spring,
+        "St. Patrick's Day 🍀": CollectionType.spring,
+        "Cinco De Mayo 🇲🇽": CollectionType.spring,
+        "Halloween 🎃": CollectionType.fall,
+        "Lunar New Year 🐉": CollectionType.winter
     ]
 
     
