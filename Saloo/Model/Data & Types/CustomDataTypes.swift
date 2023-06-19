@@ -580,7 +580,6 @@ class CollectionManager: ObservableObject {
 
     
     func createOccassionsFromUserCollections() {
-        print("Calling....")
         PhotoAPI.getUserCollections(username: "samuelblack11", completionHandler: { (response, error) in
             if response != nil {
                 var allCollections = [CollectionPair2]()
