@@ -23,13 +23,13 @@ struct GridofCards: View {
     @State var activeContainer: CKContainer?
     @State private var showStartMenu = false
     @State var cards = [Card]()
+    @State private var coreCards: [CoreCard] = []
     @State var segueToEnlarge = false
     @State var share: CKShare?
     @State var showShareSheet = false
     @State var showEditSheet = false
     @State var returnRecord: CKRecord?
     @State var showDeliveryScheduler = false
-    @State var cardsForDisplay: [CoreCard]
     @State var whichBoxVal: InOut.SendReceive
     let columns = [GridItem(.adaptive(minimum: 120))]
     @State private var sortByValue = "Card Name"
@@ -50,18 +50,19 @@ struct GridofCards: View {
     @State private var showReportOffensiveContentView = false
     @EnvironmentObject var spotifyManager: SpotifyManager
     var cardsFilteredBySearch: [CoreCard] {
-        if searchText.isEmpty { return cardsForDisplay}
+        if searchText.isEmpty { return coreCards}
         //else if sortByValue == "Card Name" {return privateCards.filter { $0.cardName.contains(searchText)}}
         //else if sortByValue == "Date" {return privateCards.filter { $0.cardName.contains(searchText)}}
         //else if sortByValue == "Occassion" {return privateCards.filter { $0.occassion!.contains(searchText)}}
-        else {return cardsForDisplay.filter {$0.cardName.contains(searchText)}}
+        else {return coreCards.filter {$0.cardName.contains(searchText)}}
     }
     @State var cardSelectionNumber: Int?
     @State var chosenGridCard: CoreCard? = nil
     @EnvironmentObject var appDelegate: AppDelegate
     @State var chosenGridCardType: String?
     @ObservedObject var alertVars = AlertVars.shared
-    
+    @EnvironmentObject var cardsForDisplayEnv: CardsForDisplay
+
     @State private var currentUserRecordID: CKRecord.ID?
 
     func fetchCurrentUserRecordID() {
@@ -92,19 +93,23 @@ struct GridofCards: View {
                 ScrollView {
                     sortResults
                     LazyVGrid(columns: columns, spacing: 10) {
-                        ForEach(cardsFilteredByBox(sortedCards(cardsFilteredBySearch, sortBy: sortByValue), whichBox: whichBoxVal), id: \.self) { gridCard in
+                        ForEach(sortedCards(cardsFilteredBySearch, sortBy: sortByValue), id: \.self) { gridCard in
                             cardView(for: gridCard, shareable: false)
                         }
                     }
                 }
                 LoadingOverlay()
             }
-            .onAppear{fetchCurrentUserRecordID()}
+            .onAppear{
+            print("Grid Appeared...")
+            fetchCurrentUserRecordID()
+            loadCards()
+                
+            }
             .fullScreenCover(item: $cardToReport, onDismiss: didDismiss) {cardToReport in
                 ReportOffensiveContentView(card: $cardToReport)}
             .fullScreenCover(item: $chosenCard, onDismiss: didDismiss) {chosenCard in
                 NavigationView {
-                        //EnlargeECardView(chosenCard: $chosenCard, cardsForDisplay: cardsForDisplay, whichBoxVal: whichBoxVal)
                     eCardView(eCardText: chosenCard.message, font: chosenCard.font, coverImage: chosenCard.coverImage!, collageImage: chosenCard.collage!, text1: chosenCard.an1, text2: chosenCard.an2, text2URL: URL(string: chosenCard.an2URL)!, text3: chosenCard.an3, text4: chosenCard.an4, songID: chosenCard.songID, spotID: chosenCard.spotID, spotName: chosenCard.spotName, spotArtistName: chosenCard.spotArtistName, songName: chosenCard.songName, songArtistName: chosenCard.songArtistName, songAlbumName: chosenCard.songAlbumName, appleAlbumArtist: chosenCard.appleAlbumArtist, spotAlbumArtist: chosenCard.spotAlbumArtist, songArtImageData: chosenCard.songArtImageData, songDuration: Double(chosenCard.songDuration!)!, songPreviewURL: chosenCard.songPreviewURL, inclMusic: chosenCard.inclMusic, spotImageData: chosenCard.spotImageData, spotSongDuration: Double(chosenCard.spotSongDuration!)!, spotPreviewURL: chosenCard.spotPreviewURL, songAddedUsing: chosenCard.songAddedUsing, cardType: chosenCard.cardType!, associatedRecord: chosenCard.associatedRecord, coreCard: chosenCard, chosenCard: $chosenCard, appleSongURL: chosenCard.appleSongURL, spotSongURL: chosenCard.spotSongURL)
                     }
             }
@@ -121,10 +126,7 @@ struct GridofCards: View {
         
     }
     
-    func didDismiss() {
-        print("Did Dismiss.....")
-        chosenCard = nil
-    }
+    func didDismiss() {chosenCard = nil}
     
     private func cardView(for gridCard: CoreCard, shareable: Bool = true) -> some View {
             VStack(spacing: 0) {
@@ -176,13 +178,25 @@ struct GridofCards: View {
 // MARK: Returns CKShare participant permission, methods and properties to share
 extension GridofCards {
     
+    private func loadCards() {
+        // use whichBoxVal to determine which cards to load
+        switch whichBoxVal {
+        case .draftbox:
+            coreCards = cardsForDisplayEnv.draftboxCards
+        case .inbox:
+            coreCards = cardsForDisplayEnv.inboxCards
+        case .outbox:
+            coreCards = cardsForDisplayEnv.outboxCards
+        }
+    }
+    
     @ViewBuilder func contextMenuButtons(card: CoreCard) -> some View {
         if let currentUserRecordID = self.currentUserRecordID, card.creator == currentUserRecordID.recordName {
             if PersistenceController.shared.privatePersistentStore.contains(manageObject: card) {
                 Button("Create New Share") {showCloudShareController = true;
                     if networkMonitor.isConnected{createNewShare(coreCard: card)}
                     else{alertVars.alertType = .failedConnection; alertVars.activateAlert = true}}
-                .disabled(CoreCardUtils.shareStatus(card: card).0)
+                .disabled(cardsForDisplayEnv.shareStatus(card: card).0)
             }
             Button {
                 if networkMonitor.isConnected{manageParticipation(coreCard: card)}
@@ -216,21 +230,7 @@ extension GridofCards {
         //isCardShared = (PersistenceController.shared.existingShare(coreCard: card) != nil)
         hasAnyShare = PersistenceController.shared.shareTitles().isEmpty ? false : true
     }
-    
 
-    func cardsFilteredByBox(_ coreCards: [CoreCard], whichBox: InOut.SendReceive) -> [CoreCard] {
-        switch whichBoxVal {
-        case .outbox:
-            return coreCards.filter { $0.salooUserID!.contains(self.userID!) && CoreCardUtils.shareStatus(card: $0).0 }
-        case .inbox:
-            return coreCards.filter { !$0.salooUserID!.contains(self.userID!) }
-        case .draftbox:
-            return coreCards.filter { $0.salooUserID!.contains(self.userID!) && !CoreCardUtils.shareStatus(card: $0).0 }
-        }
-    }
-
-    
-    
     func sortedCards(_ cards: [CoreCard], sortBy: String) -> [CoreCard] {
         var sortedCards = cards
         if sortBy == "Date" {sortedCards.sort {$0.date < $1.date}}
@@ -251,7 +251,7 @@ extension GridofCards {
         let request = CoreCard.createFetchRequest()
         let sort = NSSortDescriptor(key: "date", ascending: false)
         request.sortDescriptors = [sort]
-        do {cardsForDisplay = try PersistenceController.shared.persistentContainer.viewContext.fetch(request)}
+        do {coreCards = try PersistenceController.shared.persistentContainer.viewContext.fetch(request)}
         catch {print("Fetch failed")}
     }
     

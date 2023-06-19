@@ -15,11 +15,12 @@ class AppState: ObservableObject {
         case launch
         case startMenu
         case buildCard([BuildCardSteps]) // BuildCardSteps is an enum representing each step of the workflow
-        case draft// parameters required for GridofCards
+        case draft
         case inbox
         case outbox
         case preferences
     }
+    
     
     enum BuildCardSteps {
         case occasionsMenu
@@ -41,8 +42,14 @@ struct ContentView: View {
     @EnvironmentObject var appState: AppState
     @EnvironmentObject var cardsForDisplay: CardsForDisplay
     @EnvironmentObject var userSession: UserSession
+    @EnvironmentObject var screenManager: ScreenManager
     @State private var hasShownLaunchView = false
     @State private var offsetLaunchView = CGFloat.zero
+    // An array of IDs to cycle through
+    private let ids = Array(1...5)
+    // The current index in the ID array
+    @State private var currentIndex = 0
+    
 
     var body: some View {
         ZStack {
@@ -58,11 +65,14 @@ struct ContentView: View {
                     case .buildCard(let steps):
                         BuildCardView(steps: steps)
                     case .draft:
-                        GridofCards(cardsForDisplay: cardsForDisplay.cardsForDisplay, whichBoxVal: .draftbox)
+                        GridofCards(whichBoxVal: .draftbox)
+                            .id(screenManager.currentId)
                     case .inbox:
-                        GridofCards(cardsForDisplay: cardsForDisplay.cardsForDisplay, whichBoxVal: .inbox)
+                        GridofCards(whichBoxVal: .inbox)
+                            .id(screenManager.currentId)
                     case .outbox:
-                        GridofCards(cardsForDisplay: cardsForDisplay.cardsForDisplay, whichBoxVal: .outbox)
+                        GridofCards(whichBoxVal: .outbox)
+                            .id(screenManager.currentId)
                     case .preferences:
                         PrefMenu()
                     }

@@ -34,10 +34,11 @@ struct Saloo_App: App {
     @StateObject var noteField = NoteField()
     @StateObject var annotation = Annotation()
     @StateObject var addMusic = AddMusic()
-    @StateObject var cardsForDisplay = CardsForDisplay()
+    @ObservedObject var cardsForDisplay = CardsForDisplay.shared
     @StateObject var userSession = UserSession()
     @Environment(\.scenePhase) private var scenePhase
     @ObservedObject var collectionManager = CollectionManager.shared
+    @ObservedObject var screenManager = ScreenManager.shared
 
     var body: some Scene {
         WindowGroup {
@@ -64,9 +65,16 @@ struct Saloo_App: App {
                 .environmentObject(cardsForDisplay)
                 .environmentObject(userSession)
                 .environmentObject(collectionManager)
+                .environmentObject(screenManager)
                 .onChange(of: scenePhase) { newPhase in
                     if newPhase == .active {
-                        cardsForDisplay.cardsForDisplay = cardsForDisplay.loadCoreCards()
+                        //DispatchQueue.global(qos: .background).async {
+                            let loadedCards = cardsForDisplay.loadCoreCards()
+                            //DispatchQueue.main.async {
+                                cardsForDisplay.cardsForDisplay = loadedCards
+                                
+                            //}
+                        //}
                         // Check if user is banned when the app comes to foreground
                         let salooUserID = (UserDefaults.standard.object(forKey: "SalooUserID") as? String)!
                         checkUserBanned(userId: salooUserID) { (isBanned, error) in

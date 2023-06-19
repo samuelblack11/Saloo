@@ -21,6 +21,7 @@ struct StartMenu: View {
     @EnvironmentObject var sceneDelegate: SceneDelegate
     @EnvironmentObject var appState: AppState
     @EnvironmentObject var cardsForDisplay: CardsForDisplay
+    @EnvironmentObject var screenManager: ScreenManager
     @ObservedObject var gettingRecord = GettingRecord.shared
     @ObservedObject var alertVars = AlertVars.shared
     @State var whichBoxForCKAccept: InOut.SendReceive?
@@ -46,9 +47,9 @@ struct StartMenu: View {
             ZStack {
                 List {
                     Text(buildCardWorkFlow).onTapGesture {appState.currentScreen = .buildCard([.occasionsMenu])}
-                    Text("Drafts 📓").onTapGesture {appState.currentScreen = .draft}
-                    Text("Inbox 📥").onTapGesture {appState.currentScreen = .inbox}
-                    Text("Outbox 📥") .onTapGesture {appState.currentScreen = .outbox}
+                    Text("Drafts 📓").onTapGesture {screenManager.advance(); appState.currentScreen = .draft}
+                    Text("Inbox 📥").onTapGesture {screenManager.advance(); appState.currentScreen = .inbox}
+                    Text("Outbox 📥") .onTapGesture {screenManager.advance(); appState.currentScreen = .outbox}
                     Text("Preferences 📱").onTapGesture {appState.currentScreen = .preferences}
                 }
                 LoadingOverlay()

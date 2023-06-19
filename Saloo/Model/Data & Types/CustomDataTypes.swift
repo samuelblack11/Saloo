@@ -88,23 +88,73 @@ class CoreCardWrapper: ObservableObject {
 }
 
 
+class ScreenManager: ObservableObject {
+    static let shared = ScreenManager()
+    // The range of IDs to cycle through
+    let ids = Array(1...5)
+    // The current index in the ID array
+    @Published var currentIndex = 0
+
+    var currentId: Int { ids[currentIndex] }
+
+    func advance() {
+        print("Pre-Advance Index \(currentIndex)")
+        currentIndex = (currentIndex + 1) % ids.count
+        print("Post-Advance Index \(currentIndex)")
+    }
+}
+
+
+
+
+
+
 class CardsForDisplay: ObservableObject {
+    static let shared = CardsForDisplay()
     @Published var cardsForDisplay: [CoreCard] = []
+    @Published var inboxCards: [CoreCard] = []
+    @Published var outboxCards: [CoreCard] = []
+    @Published var draftboxCards: [CoreCard] = []
+    
+    let userID = UserDefaults.standard.object(forKey: "SalooUserID") as? String
     
     func loadCoreCards() -> [CoreCard] {
+        print("LoadCoreCards called...")
         let request = CoreCard.createFetchRequest()
         let sort = NSSortDescriptor(key: "date", ascending: false)
         request.sortDescriptors = [sort]
         var cardsFromCore: [CoreCard] = []
-        var filteredCards: [CoreCard] = []
         do {
             cardsFromCore = try PersistenceController.shared.persistentContainer.viewContext.fetch(request)
-            //print("START MENU Got \(cardsFromCore.count) Cards From Core")
+            // Split the cards into separate lists
+            inboxCards = cardsFromCore.filter { !$0.salooUserID!.contains(self.userID!) }
+            outboxCards = cardsFromCore.filter { card in
+                let (isCardShared, _) = shareStatus(card: card)
+                return self.userID!.contains(card.salooUserID!) && isCardShared
+            }
+            draftboxCards = cardsFromCore.filter { card in
+                let (isCardShared, _) = shareStatus(card: card)
+                return self.userID!.contains(card.salooUserID!) && !isCardShared
+            }
         }
-        catch {print("Fetch failed")}
+        catch {
+            print("Fetch failed")
+        }
+        print("return complete")
         return cardsFromCore
     }
+    
+    func shareStatus(card: CoreCard) -> (Bool, Bool) {
+        var isCardShared: Bool?
+        var hasAnyShare: Bool?
+        isCardShared = (PersistenceController.shared.existingShare(coreCard: card) != nil)
+        hasAnyShare = PersistenceController.shared.shareTitles().isEmpty ? false : true
+        
+        return (isCardShared!, hasAnyShare!)
+    }
 }
+
+
 
 class ChosenSong: ObservableObject {
     @Published var id = String()

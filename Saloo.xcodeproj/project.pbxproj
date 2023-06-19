@@ -47,7 +47,6 @@
 		C22CAE4A298EAA3F003302C4 /* PrefMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = C22CAE49298EAA3F003302C4 /* PrefMenu.swift */; };
 		C23340EB28C3D589006222F5 /* FutureDelivery+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = C23340EA28C3D589006222F5 /* FutureDelivery+CoreDataProperties.swift */; };
 		C23340ED28C3D58D006222F5 /* FutureDelivery+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = C23340EC28C3D58D006222F5 /* FutureDelivery+CoreDataClass.swift */; };
-		C23403E42A0C4F62001A33F6 /* CoreCardUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = C23403E32A0C4F62001A33F6 /* CoreCardUtils.swift */; };
 		C23524D22896D5F80052494F /* PreSetCalendarDates.swift in Sources */ = {isa = PBXBuildFile; fileRef = C23524D12896D5F80052494F /* PreSetCalendarDates.swift */; };
 		C237E6E1294E453600E472AD /* GridOfCards.swift in Sources */ = {isa = PBXBuildFile; fileRef = C237E6E0294E453600E472AD /* GridOfCards.swift */; };
 		C23A9D222897ECA90059B97C /* Card.swift in Sources */ = {isa = PBXBuildFile; fileRef = C23A9D212897ECA90059B97C /* Card.swift */; };
@@ -134,7 +133,6 @@
 		C22CAE49298EAA3F003302C4 /* PrefMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrefMenu.swift; sourceTree = "<group>"; };
 		C23340EA28C3D589006222F5 /* FutureDelivery+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "FutureDelivery+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		C23340EC28C3D58D006222F5 /* FutureDelivery+CoreDataClass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "FutureDelivery+CoreDataClass.swift"; sourceTree = "<group>"; };
-		C23403E32A0C4F62001A33F6 /* CoreCardUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreCardUtils.swift; sourceTree = "<group>"; };
 		C23524D12896D5F80052494F /* PreSetCalendarDates.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreSetCalendarDates.swift; sourceTree = "<group>"; };
 		C237E6E0294E453600E472AD /* GridOfCards.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GridOfCards.swift; sourceTree = "<group>"; };
 		C23A9D212897ECA90059B97C /* Card.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Card.swift; sourceTree = "<group>"; };
@@ -367,7 +365,6 @@
 				C22A1814296D981700A7E9B8 /* SharePickerView.swift */,
 				C22A1816296D983E00A7E9B8 /* ManagingSharesView.swift */,
 				C22A1818296D985700A7E9B8 /* AddToExistingShareView.swift */,
-				C23403E32A0C4F62001A33F6 /* CoreCardUtils.swift */,
 			);
 			path = "Persistence & CoreDate";
 			sourceTree = "<group>";
@@ -567,7 +564,6 @@
 				260F68FA281DBE61002E864B /* PhotoAPI.swift in Sources */,
 				C21EACE02998525000401DC8 /* WebVC.swift in Sources */,
 				C26890B0299E572900EA63A4 /* SpotPlayerView.swift in Sources */,
-				C23403E42A0C4F62001A33F6 /* CoreCardUtils.swift in Sources */,
 				C23A9D222897ECA90059B97C /* Card.swift in Sources */,
 				C2075AFD295FDBA70048ECEB /* CollageBuilder.swift in Sources */,
 				C22A84DD29666C0F001244CC /* PersistenceController+Share.swift in Sources */,
