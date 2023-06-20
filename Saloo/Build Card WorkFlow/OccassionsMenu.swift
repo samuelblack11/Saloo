@@ -98,19 +98,29 @@ struct OccassionsMenu: View {
                             menuSection(for: "Graduation 🎓")
                         }
                         Section(header: Text("Summer Holidays")) {
+                            menuSection(for: "Juneteenth ✊🏿")
+                            menuSection(for: "Pride 🏳️‍🌈")
                             menuSection(for: "Father's Day 🍻")
                             menuSection(for: "4th of July 🎇")
                         }
                         Section(header: Text("Fall Holidays")) {
-                            menuSection(for: "Thanksgiving 🍁")
                             menuSection(for: "Rosh Hashanah 🔯")
+                            menuSection(for: "Halloween 🎃")
+                            menuSection(for: "Thanksgiving 🍁")
                         }
                         Section(header: Text("Winter Holidays")) {
                             menuSection(for: "Christmas 🎄")
                             menuSection(for: "Hanukkah 🕎")
                             menuSection(for: "New Years Eve 🎆")
+                            menuSection(for: "Valentine's Day ❤️")
+                            menuSection(for: "Mardi Gras 🎭")
+                            menuSection(for: "Lunar New Year 🐉")
                         }
                         Section(header: Text("Spring Holidays")) {
+                            menuSection(for: "St. Patrick's Day 🍀")
+                            menuSection(for: "Easter 🐇")
+                            menuSection(for: "Eid al-Fitr ☪️")
+                            menuSection(for: "Cinco De Mayo 🇲🇽")
                             menuSection(for: "Mother's Day 🌸")
                         }
                     }

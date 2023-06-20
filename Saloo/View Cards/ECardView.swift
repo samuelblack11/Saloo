@@ -54,12 +54,15 @@ struct eCardView: View {
     @State private var showAPV = true
     @State private var showSPV = true
     @State private var isLoading = false
+    @State private var showLoginView = false
     @State private var disableTextField = false
     @ObservedObject var gettingRecord = GettingRecord.shared
     @EnvironmentObject var spotifyManager: SpotifyManager
     @ObservedObject var alertVars = AlertVars.shared
     @State var appleSongURL: String?
     @State var spotSongURL: String?
+    @EnvironmentObject var userSession: UserSession
+
     var body: some View {
         ZStack {
             if cardType == "musicNoGift" {MusicNoGiftView.modifier(AlertViewMod(showAlert: alertVars.activateAlertBinding, activeAlert: alertVars.alertType))}
@@ -67,13 +70,18 @@ struct eCardView: View {
                 if fromFinalize == false {
                     NoMusicNoGiftView
                         .modifier(AlertViewMod(showAlert: alertVars.activateAlertBinding, activeAlert: alertVars.alertType))
-                        .navigationBarItems(leading:Button {chosenCard = nil
+                        .navigationBarItems(leading:Button {
+                            print("isSignedIn?")
+                            print(userSession.isSignedIn)
+                            if userSession.isSignedIn == false {showLoginView = true}
+                            else{chosenCard = nil}
                         } label: {Image(systemName: "chevron.left").foregroundColor(.blue); Text("Back")}.disabled(gettingRecord.isShowingActivityIndicator))
                 }
                 else {NoMusicNoGiftView.modifier(AlertViewMod(showAlert: alertVars.activateAlertBinding, activeAlert: alertVars.alertType))}
             }
             LoadingOverlay()
         }
+        .fullScreenCover(isPresented: $showLoginView) {LaunchView(isFirstLaunch: true, isPresentedFromECardView: $showLoginView)}
     }
     
     

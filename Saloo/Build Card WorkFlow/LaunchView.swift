@@ -17,13 +17,15 @@ struct LaunchView: View {
     @ObservedObject var alertVars = AlertVars.shared
     @EnvironmentObject var appState: AppState
     @EnvironmentObject var userSession: UserSession
-
+    @Binding var isPresentedFromECardView: Bool
+    
     var body: some View {
         NavigationView {
             ZStack {
                 appDelegate.appColor.ignoresSafeArea()
                 Image("logo180").frame(maxWidth: UIScreen.screenWidth/2,maxHeight: UIScreen.screenHeight/3, alignment: .center)
-                if isFirstLaunch{SignInButtonView()}
+                if isFirstLaunch{SignInButtonView(isPresentedFromECardView: $isPresentedFromECardView)}
+                LoadingOverlay()
             }
             .background(appDelegate.appColor)
             .modifier(AlertViewMod(showAlert: alertVars.activateAlertBinding, activeAlert: alertVars.alertType))
@@ -36,8 +38,9 @@ struct SignInButtonView: View {
     @EnvironmentObject var appState: AppState
     @ObservedObject var alertVars = AlertVars.shared
     @EnvironmentObject var userSession: UserSession
+    @EnvironmentObject var cardsForDisplay: CardsForDisplay
     let defaults = UserDefaults.standard
-
+    @Binding var isPresentedFromECardView: Bool
     var body: some View {
         VStack {
             Spacer()
@@ -47,6 +50,7 @@ struct SignInButtonView: View {
                         request.requestedScopes = [.fullName, .email]
                     },
                     onCompletion: { result in
+                        print("RESULT")
                         switch result {
                         case .success(let authResults):
                             // Successful authorization
@@ -59,11 +63,13 @@ struct SignInButtonView: View {
                                 createUser(userID: userId) { (createdUser, error) in
                                     print("CreateUser completion  called...")
                                     print(createdUser)
+                                    cardsForDisplay.userID = userId
                                 }
                                 signInSuccess = true
-                                self.userSession.updateLoginStatus()
+                                UserSession.shared.updateLoginStatus()
                                 UserDefaults.standard.register(defaults: ["FirstLaunch": true])
-                                self.appState.currentScreen = .preferences
+                                AppState.shared.currentScreen = .preferences
+                                isPresentedFromECardView = false
                             default:
                                 break
                             }
@@ -127,6 +133,7 @@ extension SignInButtonView {
             
             if httpResponse.statusCode == 200 {
                 // User created successfully
+                print("User Created Successfully")
                 completion(true, nil)
             } else {
                 // Handle non-200 status code

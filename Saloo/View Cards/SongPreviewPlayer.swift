@@ -88,6 +88,7 @@ struct SongPreviewPlayer: View {
     @Binding var chosenCard: CoreCard?
     @ObservedObject var gettingRecord = GettingRecord.shared
     @EnvironmentObject var appState: AppState
+    @State private var showLoginView = false
 
     
     //@State var audioManager = AudioSessionManager()
@@ -112,8 +113,13 @@ struct SongPreviewPlayer: View {
                 }
             }
             .navigationBarItems(leading:Button {
-                avPlayer.player! .pause();avPlayer.player!.replaceCurrentItem(with: nil); chosenCard = nil
+                avPlayer.player! .pause();avPlayer.player!.replaceCurrentItem(with: nil)
+                print("isSignedIn?")
+                print(UserSession.shared.isSignedIn)
+                if UserSession.shared.isSignedIn == false {showLoginView = true}
+                else{chosenCard = nil}
             } label: {Image(systemName: "chevron.left").foregroundColor(.blue); Text("Back")}.disabled(gettingRecord.isShowingActivityIndicator))
+            .fullScreenCover(isPresented: $showLoginView) {LaunchView(isFirstLaunch: true, isPresentedFromECardView: $showLoginView)}
             .onDisappear{
                 AudioSessionManager.shared.deactivateAudioSession()
                 avPlayer.player!.pause();avPlayer.player!.replaceCurrentItem(with: nil);

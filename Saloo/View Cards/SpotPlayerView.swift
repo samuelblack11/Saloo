@@ -271,8 +271,7 @@ struct SpotPlayerView: View {
         var appleAlbumArtistForURL = String()
         if appleAlbumArtist != "" {appleAlbumArtistForURL = cleanMusicData.cleanMusicString(input: appleAlbumArtist!, removeList: appDelegate.songFilterForMatchRegex)}
         else {appleAlbumArtistForURL = cleanMusicData.cleanMusicString(input: songArtistName!, removeList: appDelegate.songFilterForMatchRegex)}
-        
-        
+
         let AMString = cleanMusicData.compileMusicString(songOrAlbum: songName!, artist: songArtistName!, removeList: appDelegate.songFilterForMatchRegex)
         var foundMatch = false
         SpotifyAPI.shared.getAlbumID(albumName: cleanAlbumNameForURL, artistName: appleAlbumArtistForURL , authToken: spotifyManager.access_token, completion: { (albums, error) in

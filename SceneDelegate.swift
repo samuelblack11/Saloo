@@ -88,6 +88,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
         print("called* handleGridofCardsDisplay")
         guard self.gotRecord && self.connectToScene else { return }
         if self.appDelegate.musicSub.type == .Neither {self.updateMusicSubType()}
+        AppState.shared.currentScreen = .startMenu
         let contentView = GridofCards(whichBoxVal: self.whichBoxForCKAccept!, chosenCard: self.coreCard)
                 .environmentObject(AppState.shared)
                 .environmentObject(CardsForDisplay.shared)
@@ -114,6 +115,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
      */
     func windowScene(_ windowScene: UIWindowScene, userDidAcceptCloudKitShareWith cloudKitShareMetadata: CKShare.Metadata) {
         print("called* userDidAcceptCloudKitShareWith")
+        AppState.shared.currentScreen = .startMenu
         self.processShareMetadata(cloudKitShareMetadata)
         }
     

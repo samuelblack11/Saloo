@@ -115,7 +115,7 @@ class CardsForDisplay: ObservableObject {
     @Published var inboxCards: [CoreCard] = []
     @Published var outboxCards: [CoreCard] = []
     @Published var draftboxCards: [CoreCard] = []
-    @State private var userID = UserDefaults.standard.object(forKey: "SalooUserID") as? String
+    @Published var userID = UserDefaults.standard.object(forKey: "SalooUserID") as? String
 
     //let userID = UserDefaults.standard.object(forKey: "SalooUserID") as? String
     
@@ -124,6 +124,12 @@ class CardsForDisplay: ObservableObject {
         let request = CoreCard.createFetchRequest()
         let sort = NSSortDescriptor(key: "date", ascending: false)
         request.sortDescriptors = [sort]
+        
+        if userID == nil {
+            
+        }
+        
+        
         
         do {
             let cardsFromCore = try PersistenceController.shared.persistentContainer.viewContext.fetch(request)
@@ -296,6 +302,7 @@ enum MusicSubscriptionOptions {
 }
 
 class UserSession: ObservableObject {
+    static let shared = UserSession()
     @Published var isSignedIn: Bool = UserDefaults.standard.string(forKey: "SalooUserID") != nil
     
     func updateLoginStatus() {
@@ -575,7 +582,8 @@ class CollectionManager: ObservableObject {
         "St. Patrick's Day 🍀": CollectionType.spring,
         "Cinco De Mayo 🇲🇽": CollectionType.spring,
         "Halloween 🎃": CollectionType.fall,
-        "Lunar New Year 🐉": CollectionType.winter
+        "Lunar New Year 🐉": CollectionType.winter,
+        "Valentine's Day ❤️": CollectionType.winter
     ]
 
     
@@ -614,6 +622,7 @@ class SpotifyManager: ObservableObject {
     var auth_code = String()
     var refresh_token = String()
     var access_token = String()
+    var accessExpiresAt = Date()
     var authForRedirect = String()
     var songID = String()
     var appRemote: SPTAppRemote? = nil
@@ -634,6 +643,11 @@ class SpotifyManager: ObservableObject {
             print("Error: Spotify client identifier is not available")
             return
         }
+        
+        
+        
+        
+        
         config = SPTConfiguration(clientID: spotClientIdentifier, redirectURL: URL(string: "saloo://")!)
         instantiateAppRemote()
     }

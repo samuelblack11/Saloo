@@ -17,6 +17,10 @@ struct Saloo_App: App {
     @ObservedObject var spotifyManager = SpotifyManager.shared
     @ObservedObject var alertVars = AlertVars.shared
     @ObservedObject var gettingRecord = GettingRecord.shared
+    @ObservedObject var collectionManager = CollectionManager.shared
+    @ObservedObject var screenManager = ScreenManager.shared
+    @ObservedObject var cardsForDisplay = CardsForDisplay.shared
+    @ObservedObject var userSession = UserSession.shared
     let persistenceController = PersistenceController.shared
     @StateObject var musicSub = MusicSubscription()
     @StateObject var calViewModel = CalViewModel()
@@ -34,11 +38,7 @@ struct Saloo_App: App {
     @StateObject var noteField = NoteField()
     @StateObject var annotation = Annotation()
     @StateObject var addMusic = AddMusic()
-    @ObservedObject var cardsForDisplay = CardsForDisplay.shared
-    @StateObject var userSession = UserSession()
     @Environment(\.scenePhase) private var scenePhase
-    @ObservedObject var collectionManager = CollectionManager.shared
-    @ObservedObject var screenManager = ScreenManager.shared
     let defaults = UserDefaults.standard
 
     var body: some Scene {
@@ -46,11 +46,11 @@ struct Saloo_App: App {
             ContentView()
                 .onAppear {
                     if let musicSub = (defaults.object(forKey: "MusicSubType") as? String) {
-                        print("[[[[")
-                        print(musicSub)
                         if musicSub == "Spotify"{apiManager.initializeSpotifyManager(){}}
                         if musicSub == "Apple Music"{apiManager.initializeAM(){}}
                     }
+                    print(screenManager)
+                    
                 }
                 .environment(\.managedObjectContext, persistenceController.persistentContainer.viewContext)
                 .environmentObject(spotifyManager)
@@ -77,7 +77,7 @@ struct Saloo_App: App {
                 .environmentObject(apiManager)
                 .onChange(of: scenePhase) { newPhase in
                     if newPhase == .active {
-                        cardsForDisplay.loadCoreCards()
+                        if userSession.isSignedIn{cardsForDisplay.loadCoreCards()}
                         // Check if user is banned when the app comes to foreground
                         if let salooUserID = (UserDefaults.standard.object(forKey: "SalooUserID") as? String) {
                             checkUserBanned(userId: salooUserID) { (isBanned, error) in

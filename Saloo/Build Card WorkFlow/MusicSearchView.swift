@@ -180,8 +180,9 @@ extension MusicSearchView {
         SpotifyAPI.shared.getTokenViaRefresh(refresh_token: refresh_token!) { response, error in
             if let response = response {
                 spotifyManager.access_token = response.access_token
-                defaults.set(response.access_token, forKey: "SpotifyAccessToken")
                 let expirationDate = Date().addingTimeInterval(response.expires_in)
+                spotifyManager.accessExpiresAt = expirationDate
+                defaults.set(response.access_token, forKey: "SpotifyAccessToken")
                 defaults.set(expirationDate, forKey: "SpotifyAccessTokenExpirationDate")
                 completion(true)
             } else {
@@ -200,10 +201,11 @@ extension MusicSearchView {
             SpotifyAPI.shared.getToken(authCode: spotifyManager.auth_code) { response, error in
                 if let response = response {
                     spotifyManager.access_token = response.access_token
+                    let expirationDate = Date().addingTimeInterval(response.expires_in)
+                    spotifyManager.accessExpiresAt = expirationDate
                     spotifyManager.appRemote?.connectionParameters.accessToken = spotifyManager.access_token
                     spotifyManager.refresh_token = response.refresh_token
                     defaults.set(response.access_token, forKey: "SpotifyAccessToken")
-                    let expirationDate = Date().addingTimeInterval(response.expires_in)
                     defaults.set(expirationDate, forKey: "SpotifyAccessTokenExpirationDate")
 
                     defaults.set(response.refresh_token, forKey: "SpotifyRefreshToken")
@@ -235,6 +237,7 @@ extension MusicSearchView {
                     spotifyManager.appRemote?.connectionParameters.accessToken = spotifyManager.access_token
                     defaults.set(response.access_token, forKey: "SpotifyAccessToken")
                     let expirationDate = Date().addingTimeInterval(response.expires_in)
+                    spotifyManager.accessExpiresAt = expirationDate
                     defaults.set(expirationDate, forKey: "SpotifyAccessTokenExpirationDate")
                     completion(true)
                 }

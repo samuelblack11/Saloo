@@ -49,7 +49,7 @@ struct ContentView: View {
     private let ids = Array(1...5)
     // The current index in the ID array
     @State private var currentIndex = 0
-    
+    @State var falseBool = false
 
     var body: some View {
         ZStack {
@@ -78,7 +78,7 @@ struct ContentView: View {
                     }
 
                     if !hasShownLaunchView {
-                        LaunchView(isFirstLaunch: false)
+                        LaunchView(isFirstLaunch: false, isPresentedFromECardView: $falseBool)
                             .offset(x: offsetLaunchView, y: 0)
                             .onAppear {
                                 DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
@@ -90,7 +90,7 @@ struct ContentView: View {
                                 }
                             }
                     }
-                } else {LaunchView(isFirstLaunch: true)}
+                } else {LaunchView(isFirstLaunch: true, isPresentedFromECardView: $falseBool)}
             }
         }
     }

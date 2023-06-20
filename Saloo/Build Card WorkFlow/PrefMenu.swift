@@ -361,13 +361,14 @@ extension PrefMenu {
             if let response = response {
                 DispatchQueue.main.async {
                     spotifyManager.access_token = response.access_token
+                    let expirationDate = Date().addingTimeInterval(response.expires_in)
+                    spotifyManager.accessExpiresAt = expirationDate
                     spotifyManager.appRemote?.connectionParameters.accessToken = spotifyManager.access_token
                     spotifyManager.refresh_token = response.refresh_token
                     print("Set Spot Access Token to: \(spotifyManager.access_token)")
+                    print("Spot Access Expires at: \(spotifyManager.accessExpiresAt)")
                     print("Set Spot Refresh Token to: \(spotifyManager.refresh_token)")
-
                     defaults.set(response.access_token, forKey: "SpotifyAccessToken")
-                    let expirationDate = Date().addingTimeInterval(response.expires_in)
                     defaults.set(expirationDate, forKey: "SpotifyAccessTokenExpirationDate")
                     defaults.set(response.refresh_token, forKey: "SpotifyRefreshToken")
                     completion(true)
@@ -390,9 +391,10 @@ extension PrefMenu {
             if let response = response {
                 DispatchQueue.main.async {
                     spotifyManager.access_token = response.access_token
+                    let expirationDate = Date().addingTimeInterval(response.expires_in)
+                    spotifyManager.accessExpiresAt = expirationDate
                     spotifyManager.appRemote?.connectionParameters.accessToken = spotifyManager.access_token
                     defaults.set(response.access_token, forKey: "SpotifyAccessToken")
-                    let expirationDate = Date().addingTimeInterval(response.expires_in)
                     defaults.set(expirationDate, forKey: "SpotifyAccessTokenExpirationDate")
                     completion(true)
                 }
