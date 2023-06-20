@@ -72,7 +72,7 @@ struct SpotPlayerView: View {
                 
                 if spotifyManager.hasTokenExpired() {
                     print("Token expired....")
-                    spotifyManager.getSpotCredentials{success in
+                    spotifyManager.updateCredentialsIfNeeded{success in
                         if success == false {
                             if networkMonitor.isConnected == false {showFailedConnectionAlert = true}
                         }

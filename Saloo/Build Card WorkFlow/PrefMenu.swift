@@ -29,7 +29,6 @@ struct PrefMenu: View {
     @State var refreshAccessToken = false
     @State private var invalidAuthCode = false
     var amAPI = AppleMusicAPI()
-    @State private var showWebView = false
     @State private var authCode: String? = ""
     @State private var ranAMStoreFront = false
     //@State var spotifyAuth = SpotifyAuth()
@@ -78,7 +77,9 @@ struct PrefMenu: View {
                                 hideProgressView = false
                                 apiManager.initializeSpotifyManager {
                                     if spotifyManager.auth_code == "AuthFailed" {spotifyManager.auth_code = ""}
-                                    counter = 0; tokenCounter = 0; showWebView = false; refreshAccessToken = false; spotifyManager.updateCredentialsIfNeeded{_ in}
+                                    counter = 0; tokenCounter = 0
+                                    //showWebView = false
+                                    refreshAccessToken = false; spotifyManager.updateCredentialsIfNeeded{_ in}
                                 }
                             }
                         Text("I don't subscribe to either")
@@ -105,14 +106,16 @@ struct PrefMenu: View {
         }
         .modifier(AlertViewMod(showAlert: alertVars.activateAlertBinding, activeAlert: alertVars.alertType))
         //.environmentObject(appDelegate)
-        .sheet(isPresented: $showWebView) {
+        .sheet(isPresented: $spotifyManager.showWebView) {
             WebVCView(authURLForView: spotifyManager.authForRedirect, authCode: $authCode)
                 .onReceive(Just(authCode)) { newAuthCode in
-                    if let authCode = newAuthCode, !authCode.isEmpty {
-                        if authType == "code", !authCode.isEmpty {
+                    
+                    if let unwrappedAuthCode = newAuthCode, !unwrappedAuthCode.isEmpty  {
+                        spotifyManager.auth_code = newAuthCode!
+                        if authType == "code", !spotifyManager.auth_code.isEmpty {
                             spotifyManager.getSpotToken { success in
                                 print("Called getSpotToken from auth....")
-                                print(authCode)
+                                print(newAuthCode)
                                 print(success)
                                 counter += 1
                                 currentSubSelection = "Spotify"
