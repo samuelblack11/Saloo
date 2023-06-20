@@ -13,31 +13,12 @@ struct Saloo_App: App {
     @StateObject var appDelegate = AppDelegate()
     @StateObject var sceneDelegate = SceneDelegate()
     
-    @ObservedObject var apiManager = APIManager.shared
-    @ObservedObject var spotifyManager = SpotifyManager.shared
     @ObservedObject var alertVars = AlertVars.shared
-    @ObservedObject var gettingRecord = GettingRecord.shared
-    @ObservedObject var collectionManager = CollectionManager.shared
-    @ObservedObject var screenManager = ScreenManager.shared
-    @ObservedObject var cardsForDisplay = CardsForDisplay.shared
-    @ObservedObject var userSession = UserSession.shared
     let persistenceController = PersistenceController.shared
-    @ObservedObject var musicSub = MusicSubscription.shared
-    @StateObject var calViewModel = CalViewModel()
-    @ObservedObject var showDetailView = ShowDetailView.shared
-    @ObservedObject var networkMonitor = NetworkMonitor.shared
     @State private var isCountdownShown: Bool = false
     @State private var isSignedIn = UserDefaults.standard.string(forKey: "SalooUserID") != nil
     @State private var userID = UserDefaults.standard.object(forKey: "SalooUserID") as? String
     @StateObject var appState = AppState.shared
-    @ObservedObject var chosenOccassion = Occassion.shared
-    @ObservedObject var chosenObject = ChosenCoverImageObject.shared
-    @ObservedObject var chosenImagesObject = ChosenImages.shared
-    @ObservedObject var collageImage = CollageImage.shared
-    @ObservedObject var chosenSong = ChosenSong.shared
-    @ObservedObject var noteField = NoteField.shared
-    @ObservedObject var annotation = Annotation.shared
-    @ObservedObject var addMusic = AddMusic.shared
     @Environment(\.scenePhase) private var scenePhase
     let defaults = UserDefaults.standard
 
@@ -46,39 +27,38 @@ struct Saloo_App: App {
             ContentView()
                 .onAppear {
                     if let musicSub = (defaults.object(forKey: "MusicSubType") as? String) {
-                        if musicSub == "Spotify"{apiManager.initializeSpotifyManager(){}}
-                        if musicSub == "Apple Music"{apiManager.initializeAM(){}}
+                        if musicSub == "Spotify"{APIManager.shared.initializeSpotifyManager(){}}
+                        if musicSub == "Apple Music"{APIManager.shared.initializeAM(){}}
                     }
                     print(";;;")
                     print(appState.currentScreen)
                     
                 }
                 .environment(\.managedObjectContext, persistenceController.persistentContainer.viewContext)
-                .environmentObject(spotifyManager)
-                .environmentObject(networkMonitor)
+                .environmentObject(SpotifyManager.shared)
+                .environmentObject(NetworkMonitor.shared)
                 .environmentObject(sceneDelegate)
-                .environmentObject(musicSub)
-                .environmentObject(calViewModel)
-                .environmentObject(showDetailView)
-                .environmentObject(gettingRecord)
+                .environmentObject(MusicSubscription.shared)
+                .environmentObject(ShowDetailView.shared)
+                .environmentObject(GettingRecord.shared)
                 .environmentObject(appDelegate)
                 .environmentObject(appState)
-                .environmentObject(chosenObject)
-                .environmentObject(chosenOccassion)
-                .environmentObject(collageImage)
-                .environmentObject(chosenImagesObject)
-                .environmentObject(chosenSong)
-                .environmentObject(noteField)
-                .environmentObject(annotation)
-                .environmentObject(addMusic)
-                .environmentObject(cardsForDisplay)
-                .environmentObject(userSession)
-                .environmentObject(collectionManager)
-                .environmentObject(screenManager)
-                .environmentObject(apiManager)
+                .environmentObject(ChosenCoverImageObject.shared)
+                .environmentObject(Occassion.shared)
+                .environmentObject(CollageImage.shared)
+                .environmentObject(ChosenImages.shared)
+                .environmentObject(ChosenSong.shared)
+                .environmentObject(NoteField.shared)
+                .environmentObject(Annotation.shared)
+                .environmentObject(AddMusic.shared)
+                .environmentObject(CardsForDisplay.shared)
+                .environmentObject(UserSession.shared)
+                .environmentObject(CollectionManager.shared)
+                .environmentObject(ScreenManager.shared)
+                .environmentObject(APIManager.shared)
                 .onChange(of: scenePhase) { newPhase in
                     if newPhase == .active {
-                        if userSession.isSignedIn{cardsForDisplay.loadCoreCards()}
+                        if UserSession.shared.isSignedIn{CardsForDisplay.shared.loadCoreCards()}
                         else {appState.currentScreen = .login}
                         // Check if user is banned when the app comes to foreground
                         if let salooUserID = (UserDefaults.standard.object(forKey: "SalooUserID") as? String) {
@@ -144,7 +124,7 @@ extension View {
 }
 
 enum ActiveAlert {
-    case failedConnection, signInFailure, explicitPhoto, offensiveText, namesNotEntered, showCardComplete, showFailedToShare, addMusicPrompt, spotAuthFailed, amAuthFailed, AMSongNotAvailable, gettingRecord, userBanned, reportComplete, deleteCard, mustSelectPic
+    case failedConnection, signInFailure, explicitPhoto, offensiveText, namesNotEntered, showCardComplete, showFailedToShare, addMusicPrompt, spotAuthFailed, amAuthFailed, AMSongNotAvailable, gettingRecord, userBanned, reportComplete, deleteCard, mustSelectPic, musicAuthSuccessful
 }
 
 struct AlertViewMod: ViewModifier {
@@ -159,6 +139,8 @@ struct AlertViewMod: ViewModifier {
         content
             .alert(isPresented: $showAlert) {
                 switch activeAlert {
+                case .musicAuthSuccessful:
+                    return Alert(title: Text("Authorization Successful"), dismissButton: .default(Text("Ok")))
                 case .mustSelectPic:
                     return Alert(title: Text("Please select a Picture!"), dismissButton: .default(Text("Ok")))
                 case .deleteCard:

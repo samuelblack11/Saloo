@@ -79,7 +79,8 @@ struct PrefMenu: View {
                                     if spotifyManager.auth_code == "AuthFailed" {spotifyManager.auth_code = ""}
                                     counter = 0; tokenCounter = 0
                                     //showWebView = false
-                                    refreshAccessToken = false; spotifyManager.updateCredentialsIfNeeded{_ in}
+                                    refreshAccessToken = false
+                                    spotifyManager.updateCredentialsIfNeeded{_ in}
                                 }
                             }
                         Text("I don't subscribe to either")
@@ -109,32 +110,27 @@ struct PrefMenu: View {
         .sheet(isPresented: $spotifyManager.showWebView) {
             WebVCView(authURLForView: spotifyManager.authForRedirect, authCode: $authCode)
                 .onReceive(Just(authCode)) { newAuthCode in
-                    
                     if let unwrappedAuthCode = newAuthCode, !unwrappedAuthCode.isEmpty  {
                         spotifyManager.auth_code = newAuthCode!
-                        if authType == "code", !spotifyManager.auth_code.isEmpty {
-                            spotifyManager.getSpotToken { success in
-                                print("Called getSpotToken from auth....")
-                                print(newAuthCode)
+                        spotifyManager.getSpotToken { success in
+                            if newAuthCode == "AuthFailed" {
+                                currentSubSelection = "Neither"
+                                appDelegate.musicSub.type = .Neither
+                                alertVars.alertType = .spotAuthFailed
+                                alertVars.activateAlert = true
+                            }
+                            else {
+                                print("getSpotToken completion called...")
                                 print(success)
-                                counter += 1
                                 currentSubSelection = "Spotify"
                                 appDelegate.musicSub.type = .Spotify
                                 defaults.set("Spotify", forKey: "MusicSubType")
+                                spotifyManager.instantiateAppRemote()
                                 hideProgressView = true
-                                if appDelegate.musicSub.type == .Spotify {print("Called instan..."); spotifyManager.instantiateAppRemote()}
-                                showStart = true
-                                //completion(success)
+                                alertVars.alertType = .musicAuthSuccessful
+                                alertVars.activateAlert = true
+                                appState.currentScreen = .startMenu
                             }
-                        } else if authType == "refresh_token", !refresh_token!.isEmpty {
-                            spotifyManager.getSpotTokenViaRefresh()
-                        } else if authCode == "AuthFailed" {
-                            print("Unable to authorize")
-                            currentSubSelection = "Neither"
-                            appDelegate.musicSub.type = .Neither
-                            alertVars.alertType = .spotAuthFailed
-                            alertVars.activateAlert = true
-                            //completion(false)
                         }
                     }
                 }

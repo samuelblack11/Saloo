@@ -26,7 +26,7 @@ struct MusicSearchView: View {
     @State private var searchResults: [SongForList] = []
     @EnvironmentObject var giftCard: GiftCard
     @EnvironmentObject var networkMonitor: NetworkMonitor
-    @ObservedObject var spotifyManager = SpotifyManager.shared
+    @EnvironmentObject var spotifyManager: SpotifyManager
     let cleanMusicData = CleanMusicData()
     @ObservedObject var gettingRecord = GettingRecord.shared
     @State private var player: AVPlayer?
