@@ -90,6 +90,13 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
         if self.appDelegate.musicSub.type == .Neither {self.updateMusicSubType()}
         AppState.shared.currentScreen = .startMenu
         let contentView = ContentView(hasShownLaunchView: true,cardFromShare: self.coreCard)
+                            .onAppear {
+                                if let musicSub = (self.defaults.object(forKey: "MusicSubType") as? String) {
+                                    if musicSub == "Spotify"{APIManager.shared.initializeSpotifyManager(){}}
+                                    if musicSub == "Apple Music"{APIManager.shared.initializeAM(){}}
+                                }
+                            }
+        
                             .environmentObject(AppState.shared)
                             .environmentObject(CardsForDisplay.shared)
                             .environmentObject(self.appDelegate)

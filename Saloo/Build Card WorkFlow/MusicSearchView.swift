@@ -128,7 +128,7 @@ struct MusicSearchView: View {
                     }
                 }
                 .onAppear{
-                    if appDelegate.musicSub.type == .Spotify {getSpotCredentials{success in
+                    if appDelegate.musicSub.type == .Spotify {spotifyManager.updateCredentialsIfNeeded{success in
                         print("Got SPOT Credentials...\(success)")
                         print(spotifyManager.access_token)
                     }}
@@ -163,115 +163,7 @@ extension MusicSearchView {
         if amAPI.storeFrontID == nil {isLoading = true; getAMUserTokenAndStoreFront{performAMSearch()}}
         else {performAMSearch()}
     }
-    
-    func getSpotCredentials(completion: @escaping (Bool) -> Void) {
-        if networkMonitor.isConnected {
-            if let refreshToken = defaults.object(forKey: "SpotifyRefreshToken") as? String, counter == 0 {refreshTokenAndRun(completion: completion)}
-            else {requestAndRunToken(completion: completion)}
-        } else {
-            alertVars.alertType = .failedConnection
-            alertVars.activateAlert = true
-            completion(false)
-        }
-    }
-    
-    func refreshTokenAndRun(completion: @escaping (Bool) -> Void) {
-        refresh_token = (defaults.object(forKey: "SpotifyRefreshToken") as? String)!
-        SpotifyAPI.shared.getTokenViaRefresh(refresh_token: refresh_token!) { response, error in
-            if let response = response {
-                spotifyManager.access_token = response.access_token
-                let expirationDate = Date().addingTimeInterval(response.expires_in)
-                spotifyManager.accessExpiresAt = expirationDate
-                defaults.set(response.access_token, forKey: "SpotifyAccessToken")
-                defaults.set(expirationDate, forKey: "SpotifyAccessTokenExpirationDate")
-                completion(true)
-            } else {
-                alertVars.alertType = .failedConnection
-                alertVars.activateAlert = true
-                completion(false)
-            }
-        }
-    }
-    
-    
-    func getSpotToken(completion: @escaping (Bool) -> Void) {
-        tokenCounter = 1
-        spotifyManager.auth_code = authCode!
-        if let authCode = authCode {
-            SpotifyAPI.shared.getToken(authCode: spotifyManager.auth_code) { response, error in
-                if let response = response {
-                    spotifyManager.access_token = response.access_token
-                    let expirationDate = Date().addingTimeInterval(response.expires_in)
-                    spotifyManager.accessExpiresAt = expirationDate
-                    spotifyManager.appRemote?.connectionParameters.accessToken = spotifyManager.access_token
-                    spotifyManager.refresh_token = response.refresh_token
-                    defaults.set(response.access_token, forKey: "SpotifyAccessToken")
-                    defaults.set(expirationDate, forKey: "SpotifyAccessTokenExpirationDate")
 
-                    defaults.set(response.refresh_token, forKey: "SpotifyRefreshToken")
-                    completion(true)
-                } else {
-                    invalidAuthCode = true
-                    //authCode = ""
-                    spotifyManager.auth_code = ""
-                    completion(false)
-                }
-            }
-        }
-    }
-    
-    
-    
-    
-    
-
-    func getSpotTokenViaRefresh(completion: @escaping (Bool) -> Void) {
-        print("called....requestSpotTokenViaRefresh")
-        tokenCounter = 1
-        spotifyManager.auth_code = authCode!
-        refresh_token = (defaults.object(forKey: "SpotifyRefreshToken") as? String)!
-        SpotifyAPI.shared.getTokenViaRefresh(refresh_token: refresh_token!, completionHandler: {(response, error) in
-            if let response = response {
-                DispatchQueue.main.async {
-                    spotifyManager.access_token = response.access_token
-                    spotifyManager.appRemote?.connectionParameters.accessToken = spotifyManager.access_token
-                    defaults.set(response.access_token, forKey: "SpotifyAccessToken")
-                    let expirationDate = Date().addingTimeInterval(response.expires_in)
-                    spotifyManager.accessExpiresAt = expirationDate
-                    defaults.set(expirationDate, forKey: "SpotifyAccessTokenExpirationDate")
-                    completion(true)
-                }
-            } else if let error = error {
-                print("Error... \(error.localizedDescription)!")
-                invalidAuthCode = true
-                authCode = ""
-                completion(false)
-            }
-        })
-    }
-
-    func requestAndRunToken(completion: @escaping (Bool) -> Void) {
-        SpotifyAPI.shared.requestAuth { response, error in
-            guard let response = response else {
-                completion(false)
-                return
-            }
-            spotifyManager.authForRedirect = response
-            showWebView = true
-            getSpotToken { success in
-                if success {
-                    
-                    completion(true)
-                } else {
-                    alertVars.alertType = .failedConnection
-                    alertVars.activateAlert = true
-                    completion(false)
-                }
-            }
-        }
-    }
-
-    
     func getSpotAlbum() {
         print("CheckPoint1")
         var cleanAlbumName = String()
@@ -457,7 +349,7 @@ extension MusicSearchView {
     func searchWithSpotify() {
         print("searchWithSpotifyCalled...")
         print(spotifyManager.access_token)
-        if spotifyManager.access_token == "" || spotifyManager.access_token == nil {isLoading = true; getSpotCredentials{success in performSPOTSearch()}}
+        if spotifyManager.access_token == "" || spotifyManager.access_token == nil {isLoading = true; spotifyManager.updateCredentialsIfNeeded{success in performSPOTSearch()}}
         else {
             print("Else called...")
             performSPOTSearch()
@@ -601,7 +493,7 @@ extension MusicSearchView {
                 print("Checking network & credentials before getSpotAlbum...")
                 print(spotifyManager.access_token)
                 if !spotifyManager.access_token.isEmpty {print("Going to get album");getSpotAlbum()}
-                else {getSpotCredentials{_ in print("Getting credentials, then album");getSpotAlbum()}}
+                else {spotifyManager.updateCredentialsIfNeeded{_ in print("Getting credentials, then album");getSpotAlbum()}}
             }
             else{
                 alertVars.alertType = .failedConnection

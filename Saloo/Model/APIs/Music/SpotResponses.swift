@@ -97,14 +97,10 @@ struct SpotAuthCode: Decodable {
 
 struct SpotTokenResponse: Decodable {
     let access_token: String
-    let refresh_token: String
+    let refresh_token: String?
     let expires_in: Double
 }
 
-struct SpotTokenRefreshResponse: Decodable {
-    let access_token: String
-    let expires_in: Double
-}
 
 struct SpotPlayBackState: Decodable {
     let is_playing: Bool

@@ -647,7 +647,11 @@ class SpotifyManager: ObservableObject {
     var songID = String()
     var appRemote: SPTAppRemote? = nil
     let spotPlayerDelegate = SpotPlayerViewDelegate()
-    
+    let defaults = UserDefaults.standard
+    @State private var invalidAuthCode = false
+    @State private var tokenCounter = 0
+    @State var refreshAccessToken = false
+
     init() {
         enum UserDefaultsError: Error {case noMusicSubType}
         do {
@@ -656,22 +660,6 @@ class SpotifyManager: ObservableObject {
             }
         } catch {print("Caught error: \(error)")}
     }
-    
-    func initializeConfiguration() {
-        let spotClientIdentifier = APIManager.shared.spotClientIdentifier
-        if spotClientIdentifier.isEmpty {
-            print("Error: Spotify client identifier is not available")
-            return
-        }
-        
-        
-        
-        
-        
-        config = SPTConfiguration(clientID: spotClientIdentifier, redirectURL: URL(string: "saloo://")!)
-        instantiateAppRemote()
-    }
-
     
     func instantiateAppRemote() {
         self.appRemote = SPTAppRemote(configuration: self.config!, logLevel: .debug)
@@ -693,6 +681,101 @@ class SpotifyManager: ObservableObject {
                 }
             }
         }
+    }
+    
+    func initializeConfiguration() {
+        let spotClientIdentifier = APIManager.shared.spotClientIdentifier
+        if spotClientIdentifier.isEmpty {
+            print("Error: Spotify client identifier is not available")
+            return
+        }
+        config = SPTConfiguration(clientID: spotClientIdentifier, redirectURL: URL(string: "saloo://")!)
+        instantiateAppRemote()
+        auth_code = defaults.object(forKey: "SpotifyAuthCode") as? String ?? ""
+        refresh_token = defaults.object(forKey: "SpotifyAccessToken") as? String ?? ""
+        access_token = defaults.object(forKey: "SpotifyRefreshToken") as? String ?? ""
+        accessExpiresAt = defaults.object(forKey: "SpotifyAccessTokenExpirationDate") as? Date ?? Date.distantPast
+        updateCredentialsIfNeeded{success in}
+    }
+    
+    func hasTokenExpired() -> Bool {
+        if let expirationDate = defaults.object(forKey: "SpotifyAccessTokenExpirationDate") as? Date {
+            print(":::")
+            print(expirationDate)
+            print()
+            return Date() > expirationDate
+        } else {
+            return true
+        }
+    }
+    
+    func updateCredentialsIfNeeded(completion: @escaping (Bool) -> Void) {
+        if NetworkMonitor.shared.isConnected {
+            if auth_code.isEmpty {
+                requestSpotAuth()
+                getToken { self.getSpotToken(){success in} }
+                completion(true)
+            }
+            else if hasTokenExpired() {
+                refresh_token = (defaults.object(forKey: "SpotifyRefreshToken") as? String)!
+                getToken { self.getSpotTokenViaRefresh() }
+                completion(true)
+            }
+        } else {
+            completion(false)
+        }
+    }
+
+    func getToken(tokenFunction: () -> Void) {
+        if self.tokenCounter == 0 && self.refreshAccessToken {
+            tokenFunction()
+        }
+    }
+
+    func getSpotToken(completion: @escaping (Bool) -> Void) {
+        SpotifyAPI.shared.getToken(authCode: auth_code) { (response, error) in
+            self.processTokenRequest(response: response, error: error)
+        }
+    }
+
+    func getSpotTokenViaRefresh() {
+        SpotifyAPI.shared.getTokenViaRefresh(refresh_token: refresh_token) { (response, error) in
+            self.processTokenRequest(response: response, error: error)
+        }
+    }
+
+    func processTokenRequest(response: SpotTokenResponse?, error: Error?) {
+        if let response = response {updateTokenData(with: response)}
+        if let error = error {
+            print("Error... \(error.localizedDescription)!")
+            self.invalidAuthCode = true
+            self.auth_code = ""
+        }
+    }
+
+
+    func updateTokenData(with response: SpotTokenResponse) {
+        let expirationDate = Date().addingTimeInterval(response.expires_in)
+        self.access_token = response.access_token
+        if let refreshToken = response.refresh_token {self.refresh_token = refreshToken}
+        self.accessExpiresAt = expirationDate
+        self.appRemote?.connectionParameters.accessToken = self.access_token
+        self.defaults.set(response.access_token, forKey: "SpotifyAccessToken")
+        self.defaults.set(expirationDate, forKey: "SpotifyAccessTokenExpirationDate")
+        self.defaults.set(response.refresh_token, forKey: "SpotifyRefreshToken")
+    }
+
+    
+    func requestSpotAuth() {
+        print("called....requestSpotAuth")
+        invalidAuthCode = false
+        SpotifyAPI.shared.requestAuth(completionHandler: {(response, error) in
+            if response != nil {
+                DispatchQueue.main.async {
+                    if response!.contains("https://www.google.com/?code="){}
+                    //else{authForRedirect = response!; showWebView = true}
+                    self.refreshAccessToken = true
+                }}})
     }
 }
 

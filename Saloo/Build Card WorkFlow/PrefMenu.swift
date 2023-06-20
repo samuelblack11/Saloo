@@ -78,7 +78,7 @@ struct PrefMenu: View {
                                 hideProgressView = false
                                 apiManager.initializeSpotifyManager {
                                     if spotifyManager.auth_code == "AuthFailed" {spotifyManager.auth_code = ""}
-                                    counter = 0; tokenCounter = 0; showWebView = false; refreshAccessToken = false; getSpotCredentials{_ in}
+                                    counter = 0; tokenCounter = 0; showWebView = false; refreshAccessToken = false; spotifyManager.updateCredentialsIfNeeded{_ in}
                                 }
                             }
                         Text("I don't subscribe to either")
@@ -110,7 +110,7 @@ struct PrefMenu: View {
                 .onReceive(Just(authCode)) { newAuthCode in
                     if let authCode = newAuthCode, !authCode.isEmpty {
                         if authType == "code", !authCode.isEmpty {
-                            getSpotToken { success in
+                            spotifyManager.getSpotToken { success in
                                 print("Called getSpotToken from auth....")
                                 print(authCode)
                                 print(success)
@@ -124,9 +124,7 @@ struct PrefMenu: View {
                                 //completion(success)
                             }
                         } else if authType == "refresh_token", !refresh_token!.isEmpty {
-                            getSpotTokenViaRefresh { success in
-                                //completion(success)
-                            }
+                            spotifyManager.getSpotTokenViaRefresh()
                         } else if authCode == "AuthFailed" {
                             print("Unable to authorize")
                             currentSubSelection = "Neither"
@@ -230,183 +228,6 @@ extension PrefMenu {
             }
         }
     }
-
-    func getSpotCredentials(completion: @escaping (Bool) -> Void) {
-        print("Run1")
-        if defaults.object(forKey: "SpotifyAuthCode") != nil && counter == 0 {
-            print("Run2")
-            refresh_token = (defaults.object(forKey: "SpotifyRefreshToken") as? String)!
-            refreshAccessToken = true
-            if networkMonitor.isConnected {
-                getSpotTokenViaRefresh { success in
-                    if success {
-                        counter += 1
-                        currentSubSelection = "Spotify"
-                        appDelegate.musicSub.type = .Spotify
-                        defaults.set("Spotify", forKey: "MusicSubType")
-                        hideProgressView = true
-                        if appDelegate.musicSub.type == .Spotify {spotifyManager.instantiateAppRemote()}
-                        showStart = true
-                        completion(true)
-                    } else {
-                        alertVars.alertType = .spotAuthFailed
-                        alertVars.activateAlert = true
-                        //currentSubSelection = "Neither"
-                        //appDelegate.musicSub.type = .Neither
-                        hideProgressView = true
-                        completion(false)
-                    }
-                }
-            } else {
-                alertVars.alertType = .failedConnection
-                alertVars.activateAlert = true
-                //currentSubSelection = "Neither"
-                //appDelegate.musicSub.type = .Neither
-                hideProgressView = true
-                completion(false)
-            }
-        } else {
-            print("Run3")
-            if networkMonitor.isConnected {
-                authType = "code"
-                requestAndRunToken(authType: authType) { success in
-                    print("Checking...")
-                    print(success)
-                    if success {
-                        currentSubSelection = "Spotify"
-                        appDelegate.musicSub.type = .Spotify
-                        defaults.set("Spotify", forKey: "MusicSubType")
-                        hideProgressView = true
-                        if appDelegate.musicSub.type == .Spotify {spotifyManager.instantiateAppRemote()}
-                        showStart = true
-                        completion(true)
-                    } else {
-                        alertVars.alertType = .spotAuthFailed
-                        alertVars.activateAlert = true
-                        //currentSubSelection = "Neither"
-                        //appDelegate.musicSub.type = .Neither
-                        hideProgressView = true
-                        completion(false)
-                    }
-                }
-            } else {
-                alertVars.alertType = .failedConnection
-                alertVars.activateAlert = true
-                //currentSubSelection = "Neither"
-                //appDelegate.musicSub.type = .Neither
-                hideProgressView = true
-                completion(false)
-            }
-        }
-    }
-    
-    func requestAndRunToken(authType: String, completion: @escaping (Bool) -> Void) {
-        print("called....requestSpotAuth")
-        invalidAuthCode = false
-        SpotifyAPI.shared.requestAuth { response, error in
-            guard let response = response else {
-                // handle error
-                print(error ?? "Unknown error")
-                completion(false)
-                return
-            }
-            
-            DispatchQueue.main.async {
-                print("ccccccc")
-                print(response)
-                print(authType)
-                print(authCode)
-                spotifyManager.authForRedirect = response
-                showWebView = true
-                refreshAccessToken = true
-                if authType == "refresh_token", !refresh_token!.isEmpty {
-                    getSpotTokenViaRefresh { success in
-                        completion(success)
-                    }
-                } else if authCode == "AuthFailed" {
-                    print("Unable to authorize")
-                    currentSubSelection = "Neither"
-                    appDelegate.musicSub.type = .Neither
-                    alertVars.alertType = .spotAuthFailed
-                    alertVars.activateAlert = true
-                    completion(false)
-                }
-            }
-        }
-    }
-    
-    
-    
-    func requestSpotAuth() {
-        print("called....requestSpotAuth")
-        invalidAuthCode = false
-        SpotifyAPI.shared.requestAuth(completionHandler: {(response, error) in
-            if response != nil {
-                DispatchQueue.main.async {
-                    print("ccccccc")
-                    print(response!)
-                    if response!.contains("https://www.google.com/?code="){}
-                    else{spotifyManager.authForRedirect = response!; showWebView = true}
-                    refreshAccessToken = true
-                }}})
-    }
-    
-
-    
-    func getSpotToken(completion: @escaping (Bool) -> Void) {
-        print("called....requestSpotToken")
-        tokenCounter = 1
-        spotifyManager.auth_code = authCode!
-        SpotifyAPI.shared.getToken(authCode: authCode!, completionHandler: {(response, error) in
-            if let response = response {
-                DispatchQueue.main.async {
-                    spotifyManager.access_token = response.access_token
-                    let expirationDate = Date().addingTimeInterval(response.expires_in)
-                    spotifyManager.accessExpiresAt = expirationDate
-                    spotifyManager.appRemote?.connectionParameters.accessToken = spotifyManager.access_token
-                    spotifyManager.refresh_token = response.refresh_token
-                    print("Set Spot Access Token to: \(spotifyManager.access_token)")
-                    print("Spot Access Expires at: \(spotifyManager.accessExpiresAt)")
-                    print("Set Spot Refresh Token to: \(spotifyManager.refresh_token)")
-                    defaults.set(response.access_token, forKey: "SpotifyAccessToken")
-                    defaults.set(expirationDate, forKey: "SpotifyAccessTokenExpirationDate")
-                    defaults.set(response.refresh_token, forKey: "SpotifyRefreshToken")
-                    completion(true)
-                }
-            } else if let error = error {
-                print("Error... \(error.localizedDescription)!")
-                invalidAuthCode = true
-                authCode = ""
-                completion(false)
-            }
-        })
-    }
-
-    func getSpotTokenViaRefresh(completion: @escaping (Bool) -> Void) {
-        print("called....requestSpotTokenViaRefresh")
-        tokenCounter = 1
-        spotifyManager.auth_code = authCode!
-        refresh_token = (defaults.object(forKey: "SpotifyRefreshToken") as? String)!
-        SpotifyAPI.shared.getTokenViaRefresh(refresh_token: refresh_token!, completionHandler: {(response, error) in
-            if let response = response {
-                DispatchQueue.main.async {
-                    spotifyManager.access_token = response.access_token
-                    let expirationDate = Date().addingTimeInterval(response.expires_in)
-                    spotifyManager.accessExpiresAt = expirationDate
-                    spotifyManager.appRemote?.connectionParameters.accessToken = spotifyManager.access_token
-                    defaults.set(response.access_token, forKey: "SpotifyAccessToken")
-                    defaults.set(expirationDate, forKey: "SpotifyAccessTokenExpirationDate")
-                    completion(true)
-                }
-            } else if let error = error {
-                print("Error... \(error.localizedDescription)!")
-                invalidAuthCode = true
-                authCode = ""
-                completion(false)
-            }
-        })
-    }
-
     
  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
