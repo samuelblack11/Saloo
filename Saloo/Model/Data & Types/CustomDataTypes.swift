@@ -14,12 +14,19 @@ import Security
 
 struct ChosenCollection {@State var occassion: String!; @State var collectionID: String!}
 class ChosenCoreCard: ObservableObject {@Published var chosenCard = CoreCard()}
-class Occassion: ObservableObject {@Published var occassion = String(); @Published var collectionID = String()}
-public class ShowDetailView: ObservableObject {@Published public var showDetailView: Bool = false}
+class Occassion: ObservableObject {
+    static let shared = Occassion()
+    @Published var occassion = String(); @Published var collectionID = String()
+    
+}
+public class ShowDetailView: ObservableObject {
+    static let shared = ShowDetailView()
+    @Published public var showDetailView: Bool = false}
 class TaskToken: ObservableObject {@Published var taskToken = String()}
 
 
 class NetworkMonitor: ObservableObject {
+    static let shared = NetworkMonitor()
     let monitor = NWPathMonitor()
     let queue = DispatchQueue(label: "Monitor")
     
@@ -126,7 +133,9 @@ class CardsForDisplay: ObservableObject {
         request.sortDescriptors = [sort]
         
         if userID == nil {
-            
+            userID = UserSession.shared.salooID
+            print("**")
+            print(userID)
         }
         
         
@@ -163,6 +172,7 @@ class CardsForDisplay: ObservableObject {
 
 
 class ChosenSong: ObservableObject {
+    static let shared = ChosenSong()
     @Published var id = String()
     @Published var name = String()
     @Published var artistName = String()
@@ -187,6 +197,7 @@ class ChosenSong: ObservableObject {
 }
 
 class ChosenCoverImageObject: ObservableObject {
+    static let shared = ChosenCoverImageObject()
     @Published var id = UUID()
     @Published var coverImage = Data()
     @Published var smallImageURLString = String()
@@ -202,6 +213,7 @@ class ChosenCoverImageObject: ObservableObject {
 }
 
 class NoteField: ObservableObject  {
+    static let shared = NoteField()
     @Published var noteText = MaximumText(limit: 225, value:  "Write Your Note Here")
     @Published var recipient = MaximumText(limit: 20, value: "To:")
     @Published var sender = MaximumText(limit: 20, value: "From:")
@@ -249,6 +261,7 @@ struct CoverImageObject: Identifiable, Hashable {
 }
 
 class Annotation: ObservableObject {
+    static let shared = Annotation()
     @Published var text1 = String()
     @Published var text2 = String()
     @Published var text2URL = URL(string: "https://google.com")!
@@ -259,6 +272,7 @@ class Annotation: ObservableObject {
 //class CollageImage: ObservableObject {@Published var collageImage = UIImage()}
 
 class CollageImage: ObservableObject {
+    static let shared = CollageImage()
     @Published var chosenStyle = Int()
     @Published var collageImage = Data()
     @Published var image1 = Data()
@@ -269,12 +283,17 @@ class CollageImage: ObservableObject {
 }
 
 
-class AddMusic: ObservableObject {@Published var addMusic: Bool = false}
+class AddMusic: ObservableObject {
+    static let shared = AddMusic()
+    @Published var addMusic: Bool = false
+    
+}
 
 
 
 
 public class ChosenImages: ObservableObject {
+    static let shared = ChosenImages()
     @Published var imagePlaceHolder: Image?
     @Published var chosenImageA: UIImage?
     @Published var chosenImageB: UIImage?
@@ -291,6 +310,7 @@ class InOut: ObservableObject {
 }
 
 class MusicSubscription: ObservableObject {
+    static let shared = MusicSubscription()
     @Published var timeToAddMusic = false
     @Published var type: MusicSubscriptionOptions = .Neither
 }
@@ -304,7 +324,7 @@ enum MusicSubscriptionOptions {
 class UserSession: ObservableObject {
     static let shared = UserSession()
     @Published var isSignedIn: Bool = UserDefaults.standard.string(forKey: "SalooUserID") != nil
-    
+    @Published var salooID = String()
     func updateLoginStatus() {
         isSignedIn = UserDefaults.standard.string(forKey: "SalooUserID") != nil
     }

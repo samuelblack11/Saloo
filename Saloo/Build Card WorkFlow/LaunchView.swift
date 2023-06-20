@@ -18,13 +18,14 @@ struct LaunchView: View {
     @EnvironmentObject var appState: AppState
     @EnvironmentObject var userSession: UserSession
     @Binding var isPresentedFromECardView: Bool
-    
+    @Binding var cardFromShare: CoreCard?
+
     var body: some View {
         NavigationView {
             ZStack {
                 appDelegate.appColor.ignoresSafeArea()
                 Image("logo180").frame(maxWidth: UIScreen.screenWidth/2,maxHeight: UIScreen.screenHeight/3, alignment: .center)
-                if isFirstLaunch{SignInButtonView(isPresentedFromECardView: $isPresentedFromECardView)}
+                if isFirstLaunch{SignInButtonView(isPresentedFromECardView: $isPresentedFromECardView, cardFromShare: $cardFromShare)}
                 LoadingOverlay()
             }
             .background(appDelegate.appColor)
@@ -41,6 +42,7 @@ struct SignInButtonView: View {
     @EnvironmentObject var cardsForDisplay: CardsForDisplay
     let defaults = UserDefaults.standard
     @Binding var isPresentedFromECardView: Bool
+    @Binding var cardFromShare: CoreCard?
     var body: some View {
         VStack {
             Spacer()
@@ -64,12 +66,14 @@ struct SignInButtonView: View {
                                     print("CreateUser completion  called...")
                                     print(createdUser)
                                     cardsForDisplay.userID = userId
+                                    userSession.salooID = userId
                                 }
                                 signInSuccess = true
                                 UserSession.shared.updateLoginStatus()
                                 UserDefaults.standard.register(defaults: ["FirstLaunch": true])
                                 AppState.shared.currentScreen = .preferences
                                 isPresentedFromECardView = false
+                                cardFromShare = nil
                             default:
                                 break
                             }

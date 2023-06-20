@@ -81,7 +81,7 @@ struct eCardView: View {
             }
             LoadingOverlay()
         }
-        .fullScreenCover(isPresented: $showLoginView) {LaunchView(isFirstLaunch: true, isPresentedFromECardView: $showLoginView)}
+        .fullScreenCover(isPresented: $showLoginView) {LaunchView(isFirstLaunch: true, isPresentedFromECardView: $showLoginView, cardFromShare: $chosenCard)}
     }
     
     

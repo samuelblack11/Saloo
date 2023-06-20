@@ -43,13 +43,22 @@ struct ContentView: View {
     @EnvironmentObject var cardsForDisplay: CardsForDisplay
     @EnvironmentObject var userSession: UserSession
     @EnvironmentObject var screenManager: ScreenManager
-    @State private var hasShownLaunchView = false
+    @State private var hasShownLaunchView: Bool
     @State private var offsetLaunchView = CGFloat.zero
     // An array of IDs to cycle through
     private let ids = Array(1...5)
     // The current index in the ID array
     @State private var currentIndex = 0
     @State var falseBool = false
+    @State var emptyCard: CoreCard? = CoreCard()
+    @State var cardFromShare: CoreCard?
+    func didDismiss() {cardFromShare = nil}
+    
+    // custom initializer
+    init(hasShownLaunchView: Bool? = nil, cardFromShare: CoreCard? = nil) {
+        _hasShownLaunchView = State(initialValue: hasShownLaunchView ?? false)
+        _cardFromShare = State(initialValue: cardFromShare)
+    }
 
     var body: some View {
         ZStack {
@@ -76,9 +85,9 @@ struct ContentView: View {
                     case .preferences:
                         PrefMenu()
                     }
-
-                    if !hasShownLaunchView {
-                        LaunchView(isFirstLaunch: false, isPresentedFromECardView: $falseBool)
+                    
+                    if !hasShownLaunchView  && userSession.isSignedIn {
+                        LaunchView(isFirstLaunch: false, isPresentedFromECardView: $falseBool, cardFromShare: $emptyCard)
                             .offset(x: offsetLaunchView, y: 0)
                             .onAppear {
                                 DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
@@ -90,8 +99,14 @@ struct ContentView: View {
                                 }
                             }
                     }
-                } else {LaunchView(isFirstLaunch: true, isPresentedFromECardView: $falseBool)}
+                } else {LaunchView(isFirstLaunch: true, isPresentedFromECardView: $falseBool, cardFromShare: $cardFromShare)}
+
             }
+        }
+        .fullScreenCover(item: $cardFromShare, onDismiss: didDismiss) {cardFromShare in
+            NavigationView {
+                eCardView(eCardText: cardFromShare.message, font: cardFromShare.font, coverImage: cardFromShare.coverImage!, collageImage: cardFromShare.collage!, text1: cardFromShare.an1, text2: cardFromShare.an2, text2URL: URL(string: cardFromShare.an2URL)!, text3: cardFromShare.an3, text4: cardFromShare.an4, songID: cardFromShare.songID, spotID: cardFromShare.spotID, spotName: cardFromShare.spotName, spotArtistName: cardFromShare.spotArtistName, songName: cardFromShare.songName, songArtistName: cardFromShare.songArtistName, songAlbumName: cardFromShare.songAlbumName, appleAlbumArtist: cardFromShare.appleAlbumArtist, spotAlbumArtist: cardFromShare.spotAlbumArtist, songArtImageData: cardFromShare.songArtImageData, songDuration: Double(cardFromShare.songDuration!)!, songPreviewURL: cardFromShare.songPreviewURL, inclMusic: cardFromShare.inclMusic, spotImageData: cardFromShare.spotImageData, spotSongDuration: Double(cardFromShare.spotSongDuration!)!, spotPreviewURL: cardFromShare.spotPreviewURL, songAddedUsing: cardFromShare.songAddedUsing, cardType: cardFromShare.cardType!, associatedRecord: cardFromShare.associatedRecord, coreCard: cardFromShare, chosenCard: $cardFromShare, appleSongURL: cardFromShare.appleSongURL, spotSongURL: cardFromShare.spotSongURL)
+                }
         }
     }
 }

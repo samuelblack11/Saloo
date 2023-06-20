@@ -22,22 +22,22 @@ struct Saloo_App: App {
     @ObservedObject var cardsForDisplay = CardsForDisplay.shared
     @ObservedObject var userSession = UserSession.shared
     let persistenceController = PersistenceController.shared
-    @StateObject var musicSub = MusicSubscription()
+    @ObservedObject var musicSub = MusicSubscription.shared
     @StateObject var calViewModel = CalViewModel()
-    @StateObject var showDetailView = ShowDetailView()
-    @StateObject var networkMonitor = NetworkMonitor()
+    @ObservedObject var showDetailView = ShowDetailView.shared
+    @ObservedObject var networkMonitor = NetworkMonitor.shared
     @State private var isCountdownShown: Bool = false
     @State private var isSignedIn = UserDefaults.standard.string(forKey: "SalooUserID") != nil
     @State private var userID = UserDefaults.standard.object(forKey: "SalooUserID") as? String
     @StateObject var appState = AppState.shared
-    @StateObject var chosenOccassion = Occassion()
-    @StateObject var chosenObject = ChosenCoverImageObject()
-    @StateObject var chosenImagesObject = ChosenImages()
-    @StateObject var collageImage = CollageImage()
-    @StateObject var chosenSong = ChosenSong()
-    @StateObject var noteField = NoteField()
-    @StateObject var annotation = Annotation()
-    @StateObject var addMusic = AddMusic()
+    @ObservedObject var chosenOccassion = Occassion.shared
+    @ObservedObject var chosenObject = ChosenCoverImageObject.shared
+    @ObservedObject var chosenImagesObject = ChosenImages.shared
+    @ObservedObject var collageImage = CollageImage.shared
+    @ObservedObject var chosenSong = ChosenSong.shared
+    @ObservedObject var noteField = NoteField.shared
+    @ObservedObject var annotation = Annotation.shared
+    @ObservedObject var addMusic = AddMusic.shared
     @Environment(\.scenePhase) private var scenePhase
     let defaults = UserDefaults.standard
 
@@ -49,7 +49,8 @@ struct Saloo_App: App {
                         if musicSub == "Spotify"{apiManager.initializeSpotifyManager(){}}
                         if musicSub == "Apple Music"{apiManager.initializeAM(){}}
                     }
-                    print(screenManager)
+                    print(";;;")
+                    print(appState.currentScreen)
                     
                 }
                 .environment(\.managedObjectContext, persistenceController.persistentContainer.viewContext)
@@ -78,6 +79,7 @@ struct Saloo_App: App {
                 .onChange(of: scenePhase) { newPhase in
                     if newPhase == .active {
                         if userSession.isSignedIn{cardsForDisplay.loadCoreCards()}
+                        else {appState.currentScreen = .login}
                         // Check if user is banned when the app comes to foreground
                         if let salooUserID = (UserDefaults.standard.object(forKey: "SalooUserID") as? String) {
                             checkUserBanned(userId: salooUserID) { (isBanned, error) in

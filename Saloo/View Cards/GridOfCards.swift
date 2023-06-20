@@ -37,7 +37,7 @@ struct GridofCards: View {
     @State private var nameToDisplay: String?
     @State private var userID = UserDefaults.standard.object(forKey: "SalooUserID") as? String
     @StateObject var audioManager = AudioSessionManager()
-    @StateObject var avPlayer = PlayerWrapper()
+    @ObservedObject var avPlayer = PlayerWrapper.shared
     @State private var displayCard = false
     @State var chosenCard: CoreCard?
     @State var cardToReport: CoreCard?

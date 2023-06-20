@@ -16,6 +16,7 @@ import AVFoundation
 import AVFAudio
 // 
 class PlayerWrapper: NSObject, ObservableObject {
+    static let shared = PlayerWrapper()
     @Published var player: AVPlayer?
     
     override init() {
@@ -119,7 +120,7 @@ struct SongPreviewPlayer: View {
                 if UserSession.shared.isSignedIn == false {showLoginView = true}
                 else{chosenCard = nil}
             } label: {Image(systemName: "chevron.left").foregroundColor(.blue); Text("Back")}.disabled(gettingRecord.isShowingActivityIndicator))
-            .fullScreenCover(isPresented: $showLoginView) {LaunchView(isFirstLaunch: true, isPresentedFromECardView: $showLoginView)}
+            .fullScreenCover(isPresented: $showLoginView) {LaunchView(isFirstLaunch: true, isPresentedFromECardView: $showLoginView, cardFromShare: $chosenCard)}
             .onDisappear{
                 AudioSessionManager.shared.deactivateAudioSession()
                 avPlayer.player!.pause();avPlayer.player!.replaceCurrentItem(with: nil);
