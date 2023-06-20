@@ -128,10 +128,14 @@ struct MusicSearchView: View {
                     }
                 }
                 .onAppear{
-                    if appDelegate.musicSub.type == .Spotify {spotifyManager.updateCredentialsIfNeeded{success in
-                        print("Got SPOT Credentials...\(success)")
-                        print(spotifyManager.access_token)
-                    }}
+                    if appDelegate.musicSub.type == .Spotify {
+                            spotifyManager.updateCredentialsIfNeeded{success in
+                                spotifyManager.noInternet = {
+                                    alertVars.alertType = .failedConnection
+                                    alertVars.activateAlert = true
+                                }
+                        }
+                    }
                     if appDelegate.musicSub.type == .Apple {
                         if networkMonitor.isConnected {getAMUserTokenAndStoreFront{}}
                         else {

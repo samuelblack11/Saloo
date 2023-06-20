@@ -653,6 +653,9 @@ class SpotifyManager: ObservableObject {
     @State private var tokenCounter = 0
     @State var refreshAccessToken = false
     var onTokenUpdate: (() -> Void)?
+    var noNewTokenNeeded: (() -> Void)?
+    var noInternet: (() -> Void)?
+
     
     init() {
         enum UserDefaultsError: Error {case noMusicSubType}
@@ -675,10 +678,6 @@ class SpotifyManager: ObservableObject {
         refresh_token = defaults.object(forKey: "SpotifyRefreshToken") as? String ?? ""
         access_token = defaults.object(forKey: "SpotifyAccessToken") as? String ?? ""
         accessExpiresAt = defaults.object(forKey: "SpotifyAccessTokenExpirationDate") as? Date ?? Date.distantPast
-        print("Auth Code...\(auth_code)")
-        print("Access Token...\(access_token)")
-        print("Access Token expires at...\(accessExpiresAt)")
-        print("Refresh Token...\(refresh_token)")
         updateCredentialsIfNeeded{success in}
     }
     
@@ -705,9 +704,14 @@ class SpotifyManager: ObservableObject {
                 self.getSpotTokenViaRefresh{success in }
                 completion(true)
             }
+            else {
+                completion(true)
+                self.noNewTokenNeeded?()
+            }
         } else {
             print("Else called in udpateSpotCredentials...")
             completion(false)
+            self.noInternet?()
         }
     }
 
@@ -724,9 +728,12 @@ class SpotifyManager: ObservableObject {
         SpotifyAPI.shared.getTokenViaRefresh(refresh_token: refresh_token) { (response, error) in
             let success = self.processTokenRequest(response: response, error: error)
             completion(success)
-
+            
+            // Call the onTokenUpdate handler
+            self.onTokenUpdate?()
         }
     }
+
 
     func processTokenRequest(response: SpotTokenResponse?, error: Error?) -> Bool {
         if let response = response {
@@ -745,10 +752,6 @@ class SpotifyManager: ObservableObject {
 
     func updateTokenData(with response: SpotTokenResponse) {
         let expirationDate = Date().addingTimeInterval(response.expires_in)
-        print("Udpated token Data...")
-        print("Access Token...\(response.access_token)")
-        print("Access Token expires at...\(expirationDate)")
-        print("Refresh Token...\(response.refresh_token)")
         self.access_token = response.access_token
         if let refreshToken = response.refresh_token {self.refresh_token = refreshToken}
         self.accessExpiresAt = expirationDate
@@ -756,7 +759,6 @@ class SpotifyManager: ObservableObject {
         self.defaults.set(response.access_token, forKey: "SpotifyAccessToken")
         self.defaults.set(expirationDate, forKey: "SpotifyAccessTokenExpirationDate")
         self.defaults.set(response.refresh_token, forKey: "SpotifyRefreshToken")
-        print("Defaults are set...")
     }
 
     func requestSpotAuth(completion: @escaping (String?) -> Void) {
@@ -767,7 +769,6 @@ class SpotifyManager: ObservableObject {
                 DispatchQueue.main.async {
                     if response!.contains("https://www.google.com/?code="){}
                     else{self.authForRedirect = response!; self.showWebView = true}
-                    //self.onTokenUpdate?()
                     self.refreshAccessToken = true
                     completion(response)
                 }

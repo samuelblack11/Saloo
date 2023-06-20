@@ -64,28 +64,20 @@ struct SpotPlayerView: View {
     @EnvironmentObject var appState: AppState
     @Binding var showSPV: Bool
     @Binding var isLoading: Bool
+    @ObservedObject var alertVars = AlertVars.shared
+
     //@Binding var disableTextField: Bool
 
     var body: some View {
         SpotPlayerView2
             .onAppear{
-                
-                if spotifyManager.hasTokenExpired() {
-                    print("Token expired....")
                     spotifyManager.updateCredentialsIfNeeded{success in
-                        if success == false {
-                            if networkMonitor.isConnected == false {showFailedConnectionAlert = true}
+                        spotifyManager.noInternet = {
+                            alertVars.alertType = .failedConnection
+                            alertVars.activateAlert = true
                         }
-                        
-                        
-                        
-                    }}
-                else{
-                    print("get song if needed...")
-                    print(spotifyManager.accessExpiresAt)
-                    print(spotifyManager.access_token)
-                    print((defaults.object(forKey: "SpotifyAccessToken") as? String)!)
-                    checkIfGetSongIsNeeded()}
+                        if networkMonitor.isConnected {checkIfGetSongIsNeeded()}
+                }
             }
             .onDisappear{spotifyManager.appRemote?.playerAPI?.pause()}
             .navigationBarItems(leading:Button {chosenCard = nil

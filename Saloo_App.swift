@@ -140,7 +140,7 @@ struct AlertViewMod: ViewModifier {
             .alert(isPresented: $showAlert) {
                 switch activeAlert {
                 case .musicAuthSuccessful:
-                    return Alert(title: Text("Authorization Successful"), dismissButton: .default(Text("Ok")))
+                    return Alert(title: Text("You're All Set 🎶"), dismissButton: .default(Text("Ok")))
                 case .mustSelectPic:
                     return Alert(title: Text("Please select a Picture!"), dismissButton: .default(Text("Ok")))
                 case .deleteCard:

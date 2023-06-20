@@ -80,7 +80,37 @@ struct PrefMenu: View {
                                     counter = 0; tokenCounter = 0
                                     //showWebView = false
                                     refreshAccessToken = false
-                                    spotifyManager.updateCredentialsIfNeeded{_ in}
+                                    spotifyManager.updateCredentialsIfNeeded{success in
+                                        print("updateCredentials success \(success)")
+                                        if success {
+                                            spotifyManager.onTokenUpdate = {
+                                                currentSubSelection = "Spotify"
+                                                appDelegate.musicSub.type = .Spotify
+                                                defaults.set("Spotify", forKey: "MusicSubType")
+                                                hideProgressView = true
+                                                appState.currentScreen = .startMenu
+                                            }
+                                            spotifyManager.noNewTokenNeeded = {
+                                                print("No New Token Needed...")
+                                                hideProgressView = true
+                                                alertVars.alertType = .musicAuthSuccessful
+                                                alertVars.activateAlert = true
+                                            }
+                                        }
+                                        else {
+                                            spotifyManager.onTokenUpdate = {
+                                                alertVars.alertType = .spotAuthFailed
+                                                alertVars.activateAlert = true
+                                                currentSubSelection = "Neither"
+                                                appDelegate.musicSub.type = .Neither
+                                                hideProgressView = true
+                                            }
+                                            spotifyManager.noInternet = {
+                                                alertVars.alertType = .failedConnection
+                                                alertVars.activateAlert = true
+                                            }
+                                        }
+                                    }
                                 }
                             }
                         Text("I don't subscribe to either")
@@ -200,7 +230,9 @@ extension PrefMenu {
                     appDelegate.musicSub.type = .Apple
                     defaults.set("Apple Music", forKey: "MusicSubType")
                     hideProgressView = true
-                    showStart = true
+                    alertVars.alertType = .musicAuthSuccessful
+                    alertVars.activateAlert = true
+                    appState.currentScreen = .startMenu
                     completion()
                 }
             }
