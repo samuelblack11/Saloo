@@ -76,12 +76,12 @@ struct CollageBuilder: View {
                         .navigationBarItems(leading: Button {appState.currentScreen = .buildCard([.collageStyleMenu])} label: {
                             Image(systemName: "chevron.left").foregroundColor(.blue)
                             Text("Back")}.disabled(gettingRecord.isShowingActivityIndicator))
-                    LoadingOverlay()
                 }
                 .onAppear{countBlocks()}
                 .alert(isPresented: $explicitPhotoAlert) {
                     Alert(title: Text("Error"), message: Text("The selected image contains explicit content and cannot be used."), dismissButton: .default(Text("OK")))
                 }
+                LoadingOverlay()
             }
             .modifier(AlertViewMod(showAlert: alertVars.activateAlertBinding, activeAlert: alertVars.alertType))
         }
