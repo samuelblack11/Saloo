@@ -226,7 +226,6 @@ class ShareMD: ObservableObject {
 }
 
 struct LoadingOverlay: View {
-    @Binding var hasShownLaunchView: Bool
     @Environment(\.colorScheme) var colorScheme
     @ObservedObject var gettingRecord = GettingRecord.shared
     @EnvironmentObject var appDelegate: AppDelegate

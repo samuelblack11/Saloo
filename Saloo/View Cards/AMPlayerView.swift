@@ -255,7 +255,7 @@ extension AMPlayerView {
                         DispatchQueue.main.async {
                                 //updateRecordWithNewAMData(songName: "LookupFailed", songArtistName: "LookupFailed", songID: "LookupFailed", songArtImageData: Data(), songDuration: String(0))
                     }}
-                
+                    else {chosenCard?.cardType = "noMusicNoGift"}
                 }
             else {
                 //if error != nil {foundMatch = "searchFailed"}
@@ -312,7 +312,9 @@ extension AMPlayerView {
                                 deferToPreview = true
                                 DispatchQueue.main.async {
                                     //updateRecordWithNewAMData(songName: "LookupFailed", songArtistName: "LookupFailed", songID: "LookupFailed", songArtImageData: Data(), songDuration: String(0))
-                                }}}}
+                                }}
+                            else {chosenCard?.cardType = "noMusicNoGift"}
+                        }}
                     }}})}
 
 

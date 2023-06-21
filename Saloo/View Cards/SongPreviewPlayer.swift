@@ -98,6 +98,7 @@ struct SongPreviewPlayer: View {
         PreviewPlayerView()
         //}
             .onAppear {
+                if songPreviewURL == nil || songPreviewURL!.isEmpty {chosenCard?.cardType = "noMusicNoGift"}
                 startCheckingPlaybackState()
                 print("PREVIEW PLAYER APPEARED....")
                 if !appDelegate.isPlayerCreated {

@@ -387,9 +387,7 @@ extension SpotPlayerView {
                     deferToPreview = true
                     //DispatchQueue.main.async {updateRecordWithNewSPOTData(spotName: "LookupFailed", spotArtistName: "LookupFailed", spotID: "LookupFailed", songArtImageData: Data(), songDuration: String(0))}
                 }
-                else { print("Else called to change card type...")
-                    //appDelegate.chosenGridCard?.cardType = "noMusicNoGift"
-                }
+                else {chosenCard?.cardType = "noMusicNoGift"}
             }
         })}
         else {
