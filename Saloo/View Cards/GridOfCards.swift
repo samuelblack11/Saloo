@@ -247,20 +247,10 @@ extension GridofCards {
         }
     }
     
-    func reloadCoreCards() {
-        let request = CoreCard.createFetchRequest()
-        let sort = NSSortDescriptor(key: "date", ascending: false)
-        request.sortDescriptors = [sort]
-        do {coreCards = try PersistenceController.shared.persistentContainer.viewContext.fetch(request)}
-        catch {print("Fetch failed")}
-    }
-    
-    
     func deleteCoreCard(coreCard: CoreCard) {
-        print("DELETE THE CARD")
         do {PersistenceController.shared.persistentContainer.viewContext.delete(coreCard);try PersistenceController.shared.persistentContainer.viewContext.save()}
         catch {}
-        self.reloadCoreCards()
+        cardsForDisplayEnv.loadCoreCards{loadCards()}
     }
     
     func deleteAllCoreCards() {

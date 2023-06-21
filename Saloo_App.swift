@@ -58,7 +58,7 @@ struct Saloo_App: App {
                 .environmentObject(APIManager.shared)
                 .onChange(of: scenePhase) { newPhase in
                     if newPhase == .active {
-                        if UserSession.shared.isSignedIn{CardsForDisplay.shared.loadCoreCards()}
+                        if UserSession.shared.isSignedIn{CardsForDisplay.shared.loadCoreCards{}}
                         else {appState.currentScreen = .login}
                         // Check if user is banned when the app comes to foreground
                         if let salooUserID = (UserDefaults.standard.object(forKey: "SalooUserID") as? String) {
@@ -226,6 +226,7 @@ class ShareMD: ObservableObject {
 }
 
 struct LoadingOverlay: View {
+    @Binding var hasShownLaunchView: Bool
     @Environment(\.colorScheme) var colorScheme
     @ObservedObject var gettingRecord = GettingRecord.shared
     @EnvironmentObject var appDelegate: AppDelegate

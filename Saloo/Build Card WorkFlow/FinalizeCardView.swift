@@ -122,7 +122,12 @@ struct FinalizeCardView: View {
                         }
                     }
                     ToolbarItemGroup(placement: .navigationBarTrailing) {
-                        Button {appState.currentScreen = .startMenu} label: {Image(systemName: "menucard.fill").foregroundColor(.blue)
+                        Button {
+                            noteField.noteText = MaximumText(limit: 225, value:  "Write Your Note Here")
+                            noteField.recipient = MaximumText(limit: 20, value: "To:")
+                            noteField.sender = MaximumText(limit: 20, value: "From:")
+                            noteField.cardName = MaximumText(limit: 20, value: "Name Your Card")
+                            appState.currentScreen = .startMenu} label: {Image(systemName: "menucard.fill").foregroundColor(.blue)
                             Text("Menu")}
                     }
                 }
@@ -155,7 +160,7 @@ extension FinalizeCardView {
             noteField.sender.value = ""
             noteField.cardName.value = ""
             noteField.noteText.value = "Write Your Note Here"
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {cardsForDisplay.loadCoreCards()}
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {cardsForDisplay.loadCoreCards{}}
             //else {PersistenceController.shared.createCKShare(unsharedCoreCard: savedCoreCard, persistenceController: PersistenceController.shared)}
             //else {print("Do Not Share card right now")}
         }))

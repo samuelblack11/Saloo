@@ -96,6 +96,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
                                     if musicSub == "Apple Music"{APIManager.shared.initializeAM(){}}
                                 }
                             }
+                            //.environmentObject(PersistenceController.shared)
                             .environmentObject(AppState.shared)
                             .environmentObject(CardsForDisplay.shared)
                             .environmentObject(self.appDelegate)

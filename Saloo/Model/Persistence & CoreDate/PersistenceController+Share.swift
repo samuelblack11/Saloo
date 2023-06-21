@@ -34,23 +34,30 @@ extension PersistenceController {
                 cloudKitContainer.privateCloudDatabase.add(modifyOperation)
             }
         }
-
-        let sharingController: UICloudSharingController
-        if coreCardShare == nil {
-            print("called new sharing controller...")
-            sharingController = newSharingController(unsharedCoreCard: coreCard, persistenceController: self)
-        } else {
-            print("----"); print(coreCardShare)
-            sharingController = UICloudSharingController(share: coreCardShare!, container: cloudKitContainer)
-        }
-
-        sharingController.delegate = self
-        //Setting the presentation style to .formSheet so there's no need to specify sourceView, sourceItem, or sourceRect.
-        guard var topVC = UIApplication.shared.windows.first?.rootViewController else {return}
-        while let presentedVC = topVC.presentedViewController {topVC = presentedVC }
-        sharingController.modalPresentationStyle = .formSheet
-        topVC.present(sharingController, animated: true)
+        
+            let sharingController: UICloudSharingController
+            if coreCardShare == nil {
+                print("called new sharing controller1...")
+                print(coreCard)
+                print(self)
+                print(PersistenceController.shared)
+                sharingController = self.newSharingController(unsharedCoreCard: coreCard, persistenceController: self)
+            } else {
+                print("----"); print(coreCardShare)
+                sharingController = UICloudSharingController(share: coreCardShare!, container: self.cloudKitContainer)
+            }
+            
+            sharingController.delegate = self
+            print("1111")
+            //Setting the presentation style to .formSheet so there's no need to specify sourceView, sourceItem, or sourceRect.
+            guard var topVC = UIApplication.shared.windows.first?.rootViewController else {return}
+            print("//////")
+            print(topVC)
+            while let presentedVC = topVC.presentedViewController {topVC = presentedVC }
+            sharingController.modalPresentationStyle = .formSheet
+            topVC.present(sharingController, animated: true)
     }
+
 
 
 
@@ -83,7 +90,7 @@ extension PersistenceController {
     private func newSharingController(unsharedCoreCard: CoreCard, persistenceController: PersistenceController) -> UICloudSharingController {
         let sharingController = UICloudSharingController { (controller, completion: @escaping (CKShare?, CKContainer?, Error?) -> Void) in
             DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-            print("Called new sharing controller...")
+            print("Called new sharing controller2...")
             /**
              The app doesn't specify a share intentionally, so Core Data creates a new share (zone).
              CloudKit has a limit on how many zones a database can have, so this app provides an option for users to use an existing share.
@@ -117,7 +124,7 @@ extension PersistenceController {
     func createCKShare(unsharedCoreCard: CoreCard, persistenceController: PersistenceController) {
         let sharingController = UICloudSharingController { (controller, completion: @escaping (CKShare?, CKContainer?, Error?) -> Void) in
             DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-            print("Called new sharing controller...")
+            print("Called new sharing controller3...")
             
             self.persistentContainer.share([unsharedCoreCard], to: nil) { objectIDs, share, container, error in
                 print("Beginning share completion handler...")

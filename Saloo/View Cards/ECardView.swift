@@ -174,7 +174,6 @@ struct eCardView: View {
         Text(eCardText)
             .font(Font.custom(font, size: 500)).minimumScaleFactor(0.01)
             .frame(maxWidth: UIScreen.main.bounds.height / 2.2, maxHeight: UIScreen.main.bounds.height / 2.3)
-            //.frame(width: UIScreen.screenWidth/2.2, height: UIScreen.screenHeight/2.3)
     }
     
     func CollageAndAnnotationView() -> some View {

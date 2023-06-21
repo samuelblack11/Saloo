@@ -126,7 +126,7 @@ class CardsForDisplay: ObservableObject {
 
     //let userID = UserDefaults.standard.object(forKey: "SalooUserID") as? String
     
-    func loadCoreCards() {
+    func loadCoreCards(completion: @escaping () -> Void) {
         print("LoadCoreCards called...")
         let request = CoreCard.createFetchRequest()
         let sort = NSSortDescriptor(key: "date", ascending: false)
@@ -153,9 +153,11 @@ class CardsForDisplay: ObservableObject {
                 let (isCardShared, _) = shareStatus(card: card)
                 return self.userID!.contains(card.salooUserID!) && !isCardShared
             }
+            completion()
         }
         catch {
             print("Fetch failed")
+            completion()
         }
     }
     
@@ -673,7 +675,7 @@ class SpotifyManager: ObservableObject {
             return
         }
         config = SPTConfiguration(clientID: spotClientIdentifier, redirectURL: URL(string: "saloo://")!)
-        instantiateAppRemote()
+        if appRemote == nil {instantiateAppRemote()} else if appRemote?.isConnected == false {appRemote?.connect()}
         auth_code = defaults.object(forKey: "SpotifyAuthCode") as? String ?? ""
         refresh_token = defaults.object(forKey: "SpotifyRefreshToken") as? String ?? ""
         access_token = defaults.object(forKey: "SpotifyAccessToken") as? String ?? ""
@@ -719,6 +721,7 @@ class SpotifyManager: ObservableObject {
         print("getSpotToken called")
         SpotifyAPI.shared.getToken(authCode: auth_code) { (response, error) in
             let success = self.processTokenRequest(response: response, error: error)
+            self.instantiateAppRemote()
             completion(success)
         }
     }
@@ -727,6 +730,7 @@ class SpotifyManager: ObservableObject {
         print("getSpotTokenViaRefresh called")
         SpotifyAPI.shared.getTokenViaRefresh(refresh_token: refresh_token) { (response, error) in
             let success = self.processTokenRequest(response: response, error: error)
+            self.instantiateAppRemote()
             completion(success)
             
             // Call the onTokenUpdate handler
@@ -784,6 +788,7 @@ class SpotifyManager: ObservableObject {
         if (UserDefaults.standard.object(forKey: "SpotifyAccessToken") as? String) != nil {
             self.appRemote?.connectionParameters.accessToken = (UserDefaults.standard.object(forKey: "SpotifyAccessToken") as? String)!
             self.appRemote?.delegate = self.spotPlayerDelegate
+            appRemote?.connect()
             print("instantiated app remote...")
         }
     }
