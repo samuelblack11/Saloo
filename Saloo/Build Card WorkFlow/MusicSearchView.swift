@@ -74,16 +74,24 @@ struct MusicSearchView: View {
                     VStack {
                         TextField("Track", text: $songSearch)
                         TextField("Artist", text: $artistSearch)
-                        Button("Search"){
-                            if networkMonitor.isConnected {searchWithSpotify()}
-                            else {
-                                alertVars.alertType = .failedConnection
-                                alertVars.activateAlert = true
+                        HStack{
+                            Image("Spotify_Icon_RGB_Green")
+                                .resizable()
+                                .aspectRatio(contentMode: .fit)
+                                .frame(height: 24) // height as per your text field
+                            Button("Search"){
+                                if networkMonitor.isConnected {searchWithSpotify()}
+                                else {
+                                    alertVars.alertType = .failedConnection
+                                    alertVars.activateAlert = true
+                                }
                             }
                         }
                     }
                 }
                 else {
+                    //HStack {
+                    //Image("AMLogo")
                     TextField("Search Songs", text: $songSearch, onCommit: {
                         UIApplication.shared.resignFirstResponder()
                         if networkMonitor.isConnected {
@@ -101,6 +109,7 @@ struct MusicSearchView: View {
                             alertVars.activateAlert = true
                         }
                     }).padding(.top, 15)
+                //}
                 }
                 LoadingOverlay()
             }

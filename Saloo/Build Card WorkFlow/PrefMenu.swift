@@ -73,7 +73,7 @@ struct PrefMenu: View {
                                 }
                             }
                         HStack{
-                            Image("spotLogoLight")
+                            Image("Spotify_Logo_RGB_Green")
                                 .resizable()
                                 .aspectRatio(contentMode: .fit) // Keep aspect ratio
                                 .frame(height: 44)
