@@ -34,7 +34,7 @@ struct SpotPlayerView: View {
     @State private var songProgress = 0.0
     @State private var isPlaying = false
     @State var confirmButton: Bool
-
+    @State var songURL: String?
     @EnvironmentObject var appDelegate: AppDelegate
     @EnvironmentObject var sceneDelegate: SceneDelegate
     //@State var spotifyAuth = SpotifyAuth()
@@ -120,7 +120,7 @@ struct SpotPlayerView: View {
             //if showProgressView {ProgressView().progressViewStyle(.circular) .tint(.green).frame(maxWidth: UIScreen.screenHeight/9, maxHeight: UIScreen.screenHeight/9)}
             VStack(alignment: .center) {
                 if songArtImageData != nil {Image(uiImage: UIImage(data: songArtImageData!)!) }
-                Text(spotName!)
+                Link(spotName!, destination: URL(string: songURL!)!)
                     .font(.headline)
                     .lineLimit(2)
                     .multilineTextAlignment(.center)

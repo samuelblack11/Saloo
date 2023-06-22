@@ -64,6 +64,7 @@ struct PrefMenu: View {
                 ZStack {
                     List {
                         Text("Apple Music")
+                            .frame(height: 44)
                             .onTapGesture {
                                 musicColor = .pink
                                 hideProgressView = false
@@ -71,7 +72,12 @@ struct PrefMenu: View {
                                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.3){getAMUserTokenAndStoreFront{}}
                                 }
                             }
-                        Text("Spotify")
+                        HStack{
+                            Image("spotLogoLight")
+                                .resizable()
+                                .aspectRatio(contentMode: .fit) // Keep aspect ratio
+                                .frame(height: 44)
+                            }
                             .onTapGesture {
                                 musicColor = .green
                                 hideProgressView = false
@@ -114,6 +120,7 @@ struct PrefMenu: View {
                                 }
                             }
                         Text("I don't subscribe to either")
+                            .frame(height: 44)
                             .onTapGesture {appDelegate.musicSub.type = .Neither; defaults.set("Neither", forKey: "MusicSubType"); showStart = true}
                     }
                     ProgressView()

@@ -123,41 +123,89 @@ class CardsForDisplay: ObservableObject {
     @Published var outboxCards: [CoreCard] = []
     @Published var draftboxCards: [CoreCard] = []
     @Published var userID = UserDefaults.standard.object(forKey: "SalooUserID") as? String
+    @Published var isLoading = false
 
     //let userID = UserDefaults.standard.object(forKey: "SalooUserID") as? String
+    func addCoreCard(card: CoreCard, box: InOut.SendReceive) {
+        switch box {
+        case .inbox:
+            if !self.inboxCards.contains(card) {
+                self.inboxCards.append(card)
+            }
+        case .outbox:
+            if !self.outboxCards.contains(card) {
+                self.outboxCards.append(card)
+            }
+        case .draftbox:
+            if !self.draftboxCards.contains(card) {
+                self.draftboxCards.append(card)
+            }
+        default:
+            print("Invalid box type")
+        }
+    }
+
+
+    func deleteCoreCard(card: CoreCard, box: InOut.SendReceive) {
+        switch box {
+        case .inbox:
+            if let index = self.inboxCards.firstIndex(of: card) {
+                self.inboxCards.remove(at: index)
+            }
+        case .outbox:
+            if let index = self.outboxCards.firstIndex(of: card) {
+                self.outboxCards.remove(at: index)
+            }
+        case .draftbox:
+            if let index = self.draftboxCards.firstIndex(of: card) {
+                self.draftboxCards.remove(at: index)
+            }
+        default:
+            print("Invalid box type")
+        }
+    }
+
+    
+    
+    
+    
+    
     
     func loadCoreCards(completion: @escaping () -> Void) {
         print("LoadCoreCards called...")
+        isLoading = true
+        print(isLoading)
         let request = CoreCard.createFetchRequest()
         let sort = NSSortDescriptor(key: "date", ascending: false)
         request.sortDescriptors = [sort]
-        
         if userID == nil {
             userID = UserSession.shared.salooID
             print("**")
             print(userID)
         }
-        
-        
-        
-        do {
-            let cardsFromCore = try PersistenceController.shared.persistentContainer.viewContext.fetch(request)
-            
-            // Split the cards into separate lists
-            inboxCards = cardsFromCore.filter { !$0.salooUserID!.contains(self.userID!) }
-            outboxCards = cardsFromCore.filter { card in
-                let (isCardShared, _) = shareStatus(card: card)
-                return self.userID!.contains(card.salooUserID!) && isCardShared
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
+            do {
+                let cardsFromCore = try PersistenceController.shared.persistentContainer.viewContext.fetch(request)
+                
+                // Split the cards into separate lists
+                self.inboxCards = cardsFromCore.filter { !$0.salooUserID!.contains(self.userID!) }
+                self.outboxCards = cardsFromCore.filter { card in
+                    let (isCardShared, _) = self.shareStatus(card: card)
+                    return self.userID!.contains(card.salooUserID!) && isCardShared
+                }
+                self.draftboxCards = cardsFromCore.filter { card in
+                    let (isCardShared, _) = self.shareStatus(card: card)
+                    return self.userID!.contains(card.salooUserID!) && !isCardShared
+                }
+                self.isLoading = false
+                print(self.isLoading)
+                completion()
             }
-            draftboxCards = cardsFromCore.filter { card in
-                let (isCardShared, _) = shareStatus(card: card)
-                return self.userID!.contains(card.salooUserID!) && !isCardShared
+            catch {
+                print("Fetch failed")
+                self.isLoading = false
+                completion()
             }
-            completion()
-        }
-        catch {
-            print("Fetch failed")
-            completion()
         }
     }
     
@@ -680,8 +728,22 @@ class SpotifyManager: ObservableObject {
         refresh_token = defaults.object(forKey: "SpotifyRefreshToken") as? String ?? ""
         access_token = defaults.object(forKey: "SpotifyAccessToken") as? String ?? ""
         accessExpiresAt = defaults.object(forKey: "SpotifyAccessTokenExpirationDate") as? Date ?? Date.distantPast
-        updateCredentialsIfNeeded{success in}
+        updateCredentialsIfNeeded{success in self.checkifSpotifyIsInstalled()}
     }
+    
+    func checkifSpotifyIsInstalled() {
+        let spotifyURL = URL(string: "spotify:")!
+            
+        if UIApplication.shared.canOpenURL(spotifyURL) {
+            // Spotify is installed, you can add further code if needed
+            print("Spotify App installed on device.")
+        } else {
+            // Spotify is not installed, redirect to App Store
+            let spotifyAppStoreURL = URL(string: "https://apps.apple.com/app/spotify-music/id324684580")!
+            UIApplication.shared.open(spotifyAppStoreURL)
+        }
+    }
+
     
     func hasTokenExpired() -> Bool {
         if let expirationDate = defaults.object(forKey: "SpotifyAccessTokenExpirationDate") as? Date {
@@ -702,6 +764,8 @@ class SpotifyManager: ObservableObject {
             }
             else if hasTokenExpired() {
                 print("Token Expired...")
+                print(defaults.object(forKey: "SpotifyAccessToken"))
+                print(defaults.object(forKey: "SpotifyRefreshToken"))
                 refresh_token = (defaults.object(forKey: "SpotifyRefreshToken") as? String)!
                 self.getSpotTokenViaRefresh{success in }
                 completion(true)
@@ -762,7 +826,7 @@ class SpotifyManager: ObservableObject {
         self.appRemote?.connectionParameters.accessToken = self.access_token
         self.defaults.set(response.access_token, forKey: "SpotifyAccessToken")
         self.defaults.set(expirationDate, forKey: "SpotifyAccessTokenExpirationDate")
-        self.defaults.set(response.refresh_token, forKey: "SpotifyRefreshToken")
+        self.defaults.set(self.refresh_token, forKey: "SpotifyRefreshToken")
     }
 
     func requestSpotAuth(completion: @escaping (String?) -> Void) {
@@ -813,6 +877,7 @@ class SpotPlayerViewDelegate: NSObject, SPTAppRemoteDelegate {
 
     func appRemote(_ appRemote: SPTAppRemote, didFailConnectionAttemptWithError error: Error?) {
         print("Failed to connect appRemote")
+        SpotifyManager.shared.checkifSpotifyIsInstalled()
         if let error = error {print("Error: \(error)")}
     }
 }

@@ -227,14 +227,19 @@ class ShareMD: ObservableObject {
 
 struct LoadingOverlay: View {
     @Environment(\.colorScheme) var colorScheme
-    @ObservedObject var gettingRecord = GettingRecord.shared
+    @State private var hasShownLaunchView: Bool
+    @EnvironmentObject var gettingRecord: GettingRecord
+    @EnvironmentObject var cardsForDisplay: CardsForDisplay
     @EnvironmentObject var appDelegate: AppDelegate
-    @State private var remainingTime: Int
-    init(startTime: Int = 60) { _remainingTime = State(initialValue: startTime)}
+    @State private var remainingTime: Int    
+    init(hasShownLaunchView: Bool = true, startTime: Int = 60) {
+        _hasShownLaunchView = State(initialValue: hasShownLaunchView)
+        _remainingTime = State(initialValue: startTime)
+    }
     let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
     @State private var backgroundTime = Date()
     var body: some View {
-        if gettingRecord.isLoadingAlert == true {
+        if gettingRecord.isLoadingAlert == true && hasShownLaunchView {
             ZStack {
                 ProgressView() // This is the built-in iOS activity indicator
                     .progressViewStyle(CircularProgressViewStyle(tint: colorScheme == .dark ? .white : appDelegate.appColor))
@@ -277,5 +282,15 @@ struct LoadingOverlay: View {
             .opacity(gettingRecord.isShowingActivityIndicator ? 1 : 0)
             .allowsHitTesting(gettingRecord.isShowingActivityIndicator) // This will block interaction when the activity indicator is showing
             }
+        if (cardsForDisplay.isLoading == true) || (gettingRecord.isLoadingAlert == true && !hasShownLaunchView) {
+            VStack {
+                Spacer()
+                ProgressView() // This is the built-in iOS activity indicator
+                    .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                    .scaleEffect(2)
+                Spacer()
+                .frame(height: UIScreen.screenHeight/5)
+            }
+        }
         }
     }

@@ -17,16 +17,17 @@ struct LaunchView: View {
     @ObservedObject var alertVars = AlertVars.shared
     @EnvironmentObject var appState: AppState
     @EnvironmentObject var userSession: UserSession
+    @EnvironmentObject var cardsForDisplay: CardsForDisplay
     @Binding var isPresentedFromECardView: Bool
     @Binding var cardFromShare: CoreCard?
-
+    
     var body: some View {
         NavigationView {
             ZStack {
                 appDelegate.appColor.ignoresSafeArea()
                 Image("logo180").frame(maxWidth: UIScreen.screenWidth/2,maxHeight: UIScreen.screenHeight/3, alignment: .center)
                 if isFirstLaunch{SignInButtonView(isPresentedFromECardView: $isPresentedFromECardView, cardFromShare: $cardFromShare)}
-                LoadingOverlay()
+                LoadingOverlay(hasShownLaunchView: false)
             }
             .background(appDelegate.appColor)
             .modifier(AlertViewMod(showAlert: alertVars.activateAlertBinding, activeAlert: alertVars.alertType))

@@ -94,7 +94,7 @@ struct OccassionsMenu: View {
                         Section(header: Text("Year-Round Occassions")) {
                             menuSection(for: "Birthday 🎈")
                             menuSection(for: "Postcard ✈️")
-                            menuSection(for: "Anniversary 💒")
+                            menuSection(for: "Wedding and Anniversary 💒")
                             menuSection(for: "Graduation 🎓")
                         }
                         Section(header: Text("Summer Holidays")) {

@@ -250,7 +250,8 @@ extension GridofCards {
     func deleteCoreCard(coreCard: CoreCard) {
         do {PersistenceController.shared.persistentContainer.viewContext.delete(coreCard);try PersistenceController.shared.persistentContainer.viewContext.save()}
         catch {}
-        cardsForDisplayEnv.loadCoreCards{loadCards()}
+        cardsForDisplayEnv.deleteCoreCard(card: coreCard, box: whichBoxVal)
+        loadCards()
     }
     
     func deleteAllCoreCards() {

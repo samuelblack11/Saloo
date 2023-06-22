@@ -394,3 +394,11 @@ extension CKShare {
     }
 }
 
+class MyCloudSharingController: UICloudSharingController {
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        // Run your function here
+        AlertVars.shared.alertType = .showCardComplete
+        AlertVars.shared.activateAlert = true
+    }
+}

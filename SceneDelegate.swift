@@ -91,6 +91,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
         AppState.shared.currentScreen = .startMenu
         let contentView = ContentView(hasShownLaunchView: true,cardFromShare: self.coreCard)
                             .onAppear {
+                                CardsForDisplay.shared.addCoreCard(card: self.coreCard, box: self.whichBoxForCKAccept!)
                                 if let musicSub = (self.defaults.object(forKey: "MusicSubType") as? String) {
                                     if musicSub == "Spotify"{APIManager.shared.initializeSpotifyManager(){}}
                                     if musicSub == "Apple Music"{APIManager.shared.initializeAM(){}}
@@ -128,7 +129,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
         let navigationController = UINavigationController(rootViewController: initialViewController)
         navigationController.isNavigationBarHidden = true
         window.rootViewController = navigationController
-        print("called* handleGridofCardsDisplay2")
         window.makeKeyAndVisible()
         // Customize the transition animation
         let transition = CATransition()

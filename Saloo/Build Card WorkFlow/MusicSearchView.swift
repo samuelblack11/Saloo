@@ -143,10 +143,10 @@ struct MusicSearchView: View {
                             alertVars.activateAlert = true}}
                 }
                 .navigationBarItems(leading:Button {appState.currentScreen = .buildCard([.writeNoteView])} label: {Image(systemName: "chevron.left").foregroundColor(.blue); Text("Back")}.disabled(gettingRecord.isShowingActivityIndicator))
-                .popover(isPresented: $showAPV) {AMPlayerView(songID: chosenSong.id, songName: chosenSong.name, songArtistName: chosenSong.artistName, songArtImageData: chosenSong.artwork, songDuration: chosenSong.durationInSeconds, songPreviewURL: chosenSong.songPreviewURL, confirmButton: true, chosenCard: $emptyCard, deferToPreview: $deferToPreview, showAPV: $showAPV, isLoading: $isLoading)
+                .popover(isPresented: $showAPV) {AMPlayerView(songID: chosenSong.id, songName: chosenSong.name, songArtistName: chosenSong.artistName, songArtImageData: chosenSong.artwork, songDuration: chosenSong.durationInSeconds, songPreviewURL: chosenSong.songPreviewURL, confirmButton: true, chosenCard: $emptyCard, deferToPreview: $deferToPreview, showAPV: $showAPV, isLoading: $isLoading, songURL: chosenSong.appleSongURL)
                         .presentationDetents([.fraction(0.435)])
                 }
-                .popover(isPresented: $showSPV) {SpotPlayerView(songID: chosenSong.spotID, spotName: chosenSong.spotName, spotArtistName: chosenSong.spotArtistName, songArtImageData: chosenSong.spotImageData, songDuration: chosenSong.spotSongDuration, songPreviewURL: chosenSong.spotPreviewURL, confirmButton: true, accessedViaGrid: false, chosenCard: $emptyCard, deferToPreview: $deferToPreview, showSPV: $showSPV, isLoading: $isLoading)
+                .popover(isPresented: $showSPV) {SpotPlayerView(songID: chosenSong.spotID, spotName: chosenSong.spotName, spotArtistName: chosenSong.spotArtistName, songArtImageData: chosenSong.spotImageData, songDuration: chosenSong.spotSongDuration, songPreviewURL: chosenSong.spotPreviewURL, confirmButton: true, songURL: chosenSong.spotSongURL, accessedViaGrid: false, chosenCard: $emptyCard, deferToPreview: $deferToPreview, showSPV: $showSPV, isLoading: $isLoading)
                         .presentationDetents([.fraction(0.435)])
                 }
                 .modifier(AlertViewMod(showAlert: alertVars.activateAlertBinding, activeAlert: alertVars.alertType, alertDismissAction: {

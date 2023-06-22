@@ -54,6 +54,7 @@ struct AMPlayerView: View {
     @EnvironmentObject var networkMonitor: NetworkMonitor
     @Binding var showAPV: Bool
     @Binding var isLoading: Bool
+    @State var songURL: String?
     @State private var disableSelect = false
     @ObservedObject var gettingRecord = GettingRecord.shared
     @EnvironmentObject var chosenSong: ChosenSong
@@ -104,7 +105,7 @@ struct AMPlayerView: View {
     var AMPlayerView: some View {
         VStack(alignment: .center) {
             if songArtImageData != nil {Image(uiImage: UIImage(data: songArtImageData!)!)}
-            Text(songName!)
+            Link(songName!, destination: URL(string: songURL!)!)
                 .font(.headline)
                 .lineLimit(2)
                 .multilineTextAlignment(.center)
