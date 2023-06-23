@@ -120,48 +120,69 @@ struct SpotPlayerView: View {
             //if showProgressView {ProgressView().progressViewStyle(.circular) .tint(.green).frame(maxWidth: UIScreen.screenHeight/9, maxHeight: UIScreen.screenHeight/9)}
             VStack(alignment: .center) {
                 if songArtImageData != nil {Image(uiImage: UIImage(data: songArtImageData!)!) }
-                Link(spotName!, destination: URL(string: songURL!)!)
-                    .font(.headline)
-                    .lineLimit(2)
-                    .multilineTextAlignment(.center)
+                if let name = spotName, let urlString = songURL, let url = URL(string: urlString) {
+                    Link(name, destination: url)
+                }
+                else{
+                    Text(spotName ?? "Loading...")
+                        .font(.headline)
+                        .lineLimit(2)
+                        .multilineTextAlignment(.center)
+                }
                 Text(spotArtistName!)
                     .font(.headline)
                     .lineLimit(2)
                     .multilineTextAlignment(.center)
                 HStack {
-                    Button {
-                        songProgress = 0.0
-                        spotifyManager.appRemote?.playerAPI?.pause()
-                        spotifyManager.appRemote?.playerAPI?.skip(toPrevious: spotifyManager.defaultCallback)
-                        spotifyManager.appRemote?.playerAPI?.resume()
-                        isPlaying = true
-                    } label: {
-                        ZStack {
-                            Circle()
-                                .accentColor(.green)
-                                .shadow(radius: 10)
-                            Image(systemName: "arrow.uturn.backward" )
-                                .foregroundColor(.white)
-                                .font(.system(.title))
+                    Spacer()
+
+                    // Nested HStack for buttons
+                    HStack {
+                        Button {
+                            songProgress = 0.0
+                            spotifyManager.appRemote?.playerAPI?.pause()
+                            spotifyManager.appRemote?.playerAPI?.skip(toPrevious: spotifyManager.defaultCallback)
+                            spotifyManager.appRemote?.playerAPI?.resume()
+                            isPlaying = true
+                        } label: {
+                            ZStack {
+                                Circle()
+                                    .accentColor(.green)
+                                    .shadow(radius: 7)
+                                Image(systemName: "arrow.uturn.backward" )
+                                    .foregroundColor(.white)
+                                    .font(.system(.title))
+                            }
                         }
-                    }
-                    .frame(maxWidth: UIScreen.screenHeight/12, maxHeight: UIScreen.screenHeight/12)
-                    Button {
-                        if isPlaying {spotifyManager.appRemote?.playerAPI?.pause()}
-                        else {spotifyManager.appRemote?.playerAPI?.resume()}
-                        isPlaying.toggle()
-                    } label: {
-                        ZStack {
-                            Circle()
-                                .accentColor(.green)
-                                .shadow(radius: 10)
-                            Image(systemName: isPlaying ? "pause.fill" : "play.fill")
-                                .foregroundColor(.white)
-                                .font(.system(.title))
+                        .frame(maxWidth: UIScreen.screenHeight/12, maxHeight: UIScreen.screenHeight/12)
+                        Button {
+                            if isPlaying {spotifyManager.appRemote?.playerAPI?.pause()}
+                            else {spotifyManager.appRemote?.playerAPI?.resume()}
+                            isPlaying.toggle()
+                        } label: {
+                            ZStack {
+                                Circle()
+                                    .accentColor(.green)
+                                    .shadow(radius: 7)
+                                Image(systemName: isPlaying ? "pause.fill" : "play.fill")
+                                    .foregroundColor(.white)
+                                    .font(.system(.title))
+                            }
                         }
+                        .frame(maxWidth: UIScreen.screenHeight/12, maxHeight: UIScreen.screenHeight/12)
                     }
-                    .frame(maxWidth: UIScreen.screenHeight/12, maxHeight: UIScreen.screenHeight/12)
+
+                    Spacer()
                 }
+                .overlay(
+                    Image("Spotify_Icon_RGB_Green")
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(height: 24) // height as per your text field
+                        .padding([.top, .leading]), // add padding to top and leading
+                    alignment: .bottomTrailing //
+                )
+
                 ProgressView(value: songProgress, total: songDuration!)
                     .onReceive(Timer.publish(every: 1, on: .main, in: .common).autoconnect()) { _ in
                         syncSongProgress()
@@ -182,6 +203,11 @@ struct SpotPlayerView: View {
                     if songProgress >= 1.0 || songID == "" {
                         Text(convertToMinutes(seconds:Int(songProgress)))
                         Spacer()
+                        //Image("Spotify_Icon_RGB_Green")
+                        //    .resizable()
+                        //    .aspectRatio(contentMode: .fit)
+                        //    .frame(height: 24)
+                        //Spacer()
                         Text(convertToMinutes(seconds: Int(songDuration!)-Int(songProgress)))
                             .padding(.trailing, 10)
                     }
@@ -322,6 +348,7 @@ struct SpotPlayerView: View {
                     spotName = song.name
                     spotArtistName = allArtists
                     songID = song.id
+                    songURL = song.external_urls?.spotify
                     songArtImageData = artResponse!
                     songDuration = Double(song.duration_ms) * 0.001
                     if networkMonitor.isConnected{playSong()}

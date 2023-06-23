@@ -130,4 +130,6 @@ struct TrackAttributes: Codable {
     let trackNumber: Int
     let durationInMillis: Int
     let discNumber: Int?
+    let url: String
+
 }

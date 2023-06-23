@@ -224,6 +224,15 @@ extension PersistenceController: UICloudSharingControllerDelegate {
         return csc.share
     }
     
+    func cloudSharingControllerDidDismiss(_ csc: UICloudSharingController) {
+        DispatchQueue.main.async {
+            print("Did call cloud sharing controller dismiss...")
+            AlertVars.shared.alertType = .showCardComplete
+            AlertVars.shared.activateAlert = true
+        }
+    }
+    
+    
 }
 #endif
 

@@ -91,7 +91,10 @@ struct MusicSearchView: View {
                 }
                 else {
                     //HStack {
-                    //Image("AMLogo")
+                    //Image("AMLogoLarge")
+                    //    .resizable()
+                    //    .aspectRatio(contentMode: .fit)
+                     //   .frame(height: 24) // height as per your text field
                     TextField("Search Songs", text: $songSearch, onCommit: {
                         UIApplication.shared.resignFirstResponder()
                         if networkMonitor.isConnected {

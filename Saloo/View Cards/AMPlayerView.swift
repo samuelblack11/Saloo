@@ -55,6 +55,7 @@ struct AMPlayerView: View {
     @Binding var showAPV: Bool
     @Binding var isLoading: Bool
     @State var songURL: String?
+
     @State private var disableSelect = false
     @ObservedObject var gettingRecord = GettingRecord.shared
     @EnvironmentObject var chosenSong: ChosenSong
@@ -105,10 +106,15 @@ struct AMPlayerView: View {
     var AMPlayerView: some View {
         VStack(alignment: .center) {
             if songArtImageData != nil {Image(uiImage: UIImage(data: songArtImageData!)!)}
-            Link(songName!, destination: URL(string: songURL!)!)
-                .font(.headline)
-                .lineLimit(2)
-                .multilineTextAlignment(.center)
+            if let name = songName, let urlString = songURL, let url = URL(string: urlString) {
+                Link(name, destination: url)
+            }
+            else{
+                Text(songName ?? "Loading...")
+                    .font(.headline)
+                    .lineLimit(2)
+                    .multilineTextAlignment(.center)
+            }
             Text(songArtistName!)
                 .multilineTextAlignment(.center)
             HStack {
@@ -287,6 +293,7 @@ extension AMPlayerView {
                                                 songName = track.attributes.name
                                                 songArtistName = track.attributes.artistName
                                                 songID = track.id
+                                                songURL = track.attributes.url
                                                 songArtImageData = artResponse!
                                                 songDuration = Double(track.attributes.durationInMillis) * 0.001
                                                 musicPlayer.setQueue(with: [songID!])

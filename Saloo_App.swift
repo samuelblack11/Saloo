@@ -161,9 +161,9 @@ struct AlertViewMod: ViewModifier {
                 case .namesNotEntered:
                     return Alert(title: Text("Please Enter Values for All Fields!"), dismissButton: .default(Text("Ok")))
                 case .spotAuthFailed:
-                    return Alert(title: Text("Spotify Authorization Failed. If you have a Spotify Subscription, please try authorizing again"), dismissButton: .default(Text("OK")){})
+                    return Alert(title: Text("Spotify Authorization Failed. If you have a Spotify Subscription, please try authorizing again"), dismissButton: .default(Text("OK"), action: {alertDismissAction?()}))
                 case .amAuthFailed:
-                    return Alert(title: Text("Apple Music Authorization Failed. If you have a Apple Music Subscription, please try authorizing again"), dismissButton: .default(Text("OK")){})
+                    return Alert(title: Text("Apple Music Authorization Failed. If you have a Apple Music Subscription, please try authorizing again"), dismissButton: .default(Text("OK"), action: {alertDismissAction?()}))
                 case .gettingRecord:
                     return Alert(
                         title: Text("We're Saving Your Card to the Cloud."),

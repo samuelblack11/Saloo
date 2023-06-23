@@ -30,6 +30,8 @@ struct TransactionAuthor {
 
 class PersistenceController: NSObject, ObservableObject {
     static let shared = PersistenceController()
+    var cloudSharingControllerDelegate: UICloudSharingControllerDelegate?
+    
     lazy var persistentContainer: NSPersistentCloudKitContainer = {
         /**
          Prepare the containing folder for the Core Data stores.

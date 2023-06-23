@@ -16,7 +16,7 @@ import WebKit
 import Combine
 
 struct PrefMenu: View {
-    @State private var showStart = false
+    @Environment(\.colorScheme) var colorScheme
     @EnvironmentObject var appDelegate: AppDelegate
     @EnvironmentObject var sceneDelegate: SceneDelegate
     //@UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
@@ -47,24 +47,34 @@ struct PrefMenu: View {
     @ObservedObject var alertVars = AlertVars.shared
     @EnvironmentObject var appState: AppState
     @EnvironmentObject var apiManager: APIManager
+    let appleBlack = Color(red: 11.0 / 255.0, green: 11.0 / 255.0, blue: 9.0 / 255.0)
 
+    var listItemHeight: CGFloat = 95
     init() {
         if defaults.object(forKey: "MusicSubType") != nil {_currentSubSelection = State(initialValue: (defaults.object(forKey: "MusicSubType") as? String)!)}
         else {_currentSubSelection = State(initialValue: "Neither")}
     }
     
     
-    
     var body: some View {
         NavigationStack {
             VStack {
-                Text("Do you subscribe to either of these services?")
-                Text("This will help optimize your experience")
-                Text("Current Selection: \(currentSubSelection)")
+                Text("Do you subscribe to either of these services?").foregroundColor(.black)
+                Text("This will help optimize your experience").foregroundColor(.black)
+                Text("Current Selection: \(currentSubSelection)").foregroundColor(.black)
+
                 ZStack {
-                    List {
-                        Text("Apple Music")
-                            .frame(height: 44)
+                    ScrollView {
+                        VStack {
+                            Divider()
+                                VStack {
+                                    Image("AMLogoBlack")
+                                        .resizable()
+                                        .scaledToFit()
+                                        .frame(width: UIScreen.main.bounds.width)
+                                        .clipped()
+                                }
+                                .background(colorScheme == .dark ? Color.black : Color.white) // Setting the background color
                             .onTapGesture {
                                 musicColor = .pink
                                 hideProgressView = false
@@ -72,12 +82,15 @@ struct PrefMenu: View {
                                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.3){getAMUserTokenAndStoreFront{}}
                                 }
                             }
-                        HStack{
-                            Image("Spotify_Logo_RGB_Green")
-                                .resizable()
-                                .aspectRatio(contentMode: .fit) // Keep aspect ratio
-                                .frame(height: 44)
+                            Divider()
+                            HStack{
+                                Image("SpotifyLogo")
+                                    .resizable()
+                                    .scaledToFit()
+                                    .frame(width: UIScreen.main.bounds.width)
+                                    .clipped()
                             }
+                            .frame(height: listItemHeight)
                             .onTapGesture {
                                 musicColor = .green
                                 hideProgressView = false
@@ -119,9 +132,14 @@ struct PrefMenu: View {
                                     }
                                 }
                             }
-                        Text("I don't subscribe to either")
-                            .frame(height: 44)
-                            .onTapGesture {appDelegate.musicSub.type = .Neither; defaults.set("Neither", forKey: "MusicSubType"); showStart = true}
+                            Divider()
+                            Text("I don't subscribe to either")
+                                .font(.system(size: 24))
+                                .foregroundColor(.black)
+                                .frame(height: listItemHeight)
+                                .onTapGesture {appDelegate.musicSub.type = .Neither; defaults.set("Neither", forKey: "MusicSubType"); appState.currentScreen = .startMenu}
+                            Divider()
+                        }
                     }
                     ProgressView()
                         .hidden(hideProgressView)
@@ -130,8 +148,10 @@ struct PrefMenu: View {
                         .progressViewStyle(CircularProgressViewStyle())
                     LoadingOverlay()
                 }
+                
             }
-            .navigationBarItems(leading:Button {showStart.toggle()} label: {Image(systemName: "chevron.left").foregroundColor(.blue); Text("Back")}.disabled(gettingRecord.isShowingActivityIndicator))
+            .background(Color.white.edgesIgnoringSafeArea(.all))
+            .navigationBarItems(leading:Button {appState.currentScreen = .startMenu} label: {Image(systemName: "chevron.left").foregroundColor(.blue); Text("Back")}.disabled(gettingRecord.isShowingActivityIndicator))
         }
         .onDisappear {
             UserDefaults.standard.set(false, forKey: "FirstLaunch")
@@ -142,7 +162,9 @@ struct PrefMenu: View {
             if defaults.object(forKey: "MusicSubType") != nil {currentSubSelection = (defaults.object(forKey: "MusicSubType") as? String)!}
             else {currentSubSelection = "Neither"; appDelegate.musicSub.type = .Neither; defaults.set("Neither", forKey: "MusicSubType")}
         }
-        .modifier(AlertViewMod(showAlert: alertVars.activateAlertBinding, activeAlert: alertVars.alertType))
+        .modifier(AlertViewMod(showAlert: alertVars.activateAlertBinding, activeAlert: alertVars.alertType, alertDismissAction: {
+            hideProgressView = true
+            }))
         //.environmentObject(appDelegate)
         .sheet(isPresented: $spotifyManager.showWebView) {
             WebVCView(authURLForView: spotifyManager.authForRedirect, authCode: $authCode)
@@ -172,8 +194,6 @@ struct PrefMenu: View {
                     }
                 }
         }
-
-        .fullScreenCover(isPresented: $showStart) {StartMenu()}
     }
 }
 
