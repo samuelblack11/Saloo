@@ -174,7 +174,6 @@ class CardsForDisplay: ObservableObject {
     func loadCoreCards(completion: @escaping () -> Void) {
         print("LoadCoreCards called...")
         isLoading = true
-        print(isLoading)
         let request = CoreCard.createFetchRequest()
         let sort = NSSortDescriptor(key: "date", ascending: false)
         request.sortDescriptors = [sort]
@@ -198,7 +197,6 @@ class CardsForDisplay: ObservableObject {
                     return self.userID!.contains(card.salooUserID!) && !isCardShared
                 }
                 self.isLoading = false
-                print(self.isLoading)
                 completion()
             }
             catch {

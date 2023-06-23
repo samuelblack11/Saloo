@@ -95,6 +95,7 @@ struct MusicSearchView: View {
                         .resizable()
                         .aspectRatio(contentMode: .fit)
                         .frame(height: 24)
+                        .padding(.top, 15)
                     TextField("Search Songs", text: $songSearch, onCommit: {
                         UIApplication.shared.resignFirstResponder()
                         if networkMonitor.isConnected {
