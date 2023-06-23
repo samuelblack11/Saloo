@@ -17,6 +17,7 @@ import MediaPlayer
 //import CleanMusicData
 
 struct AMPlayerView: View {
+    @Environment(\.colorScheme) var colorScheme
     @State var songID: String?
     @State var songName: String?
     @State var songArtistName: String?
@@ -118,38 +119,51 @@ struct AMPlayerView: View {
             Text(songArtistName!)
                 .multilineTextAlignment(.center)
             HStack {
-                Button {
-                    musicPlayer.setQueue(with: [songID!])
-                    musicPlayer.play()
-                    songProgress = 0.0
-                    isPlaying = true
-                } label: {
-                    ZStack {
-                        Circle()
-                            .accentColor(.pink)
-                            .shadow(radius: 10)
-                        Image(systemName: "arrow.uturn.backward" )
-                            .foregroundColor(.white)
-                            .font(.system(.title))
+                Spacer()
+                HStack {
+                    Button {
+                        musicPlayer.setQueue(with: [songID!])
+                        musicPlayer.play()
+                        songProgress = 0.0
+                        isPlaying = true
+                    } label: {
+                        ZStack {
+                            Circle()
+                                .accentColor(.pink)
+                                .shadow(radius: 10)
+                            Image(systemName: "arrow.uturn.backward" )
+                                .foregroundColor(.white)
+                                .font(.system(.title))
+                        }
                     }
-                }
-                .frame(maxWidth: UIScreen.screenHeight/12, maxHeight: UIScreen.screenHeight/12)
-                Button {
-                    isPlaying.toggle()
-                    if musicPlayer.playbackState.rawValue == 1 {musicPlayer.pause()}
-                    else {musicPlayer.play()}
-                } label: {
-                    ZStack {
-                        Circle()
-                            .accentColor(.pink)
-                            .shadow(radius: 10)
-                        Image(systemName: isPlaying ? "pause.fill" : "play.fill")
-                            .foregroundColor(.white)
-                            .font(.system(.title))
+                    .frame(maxWidth: UIScreen.screenHeight/12, maxHeight: UIScreen.screenHeight/12)
+                    Button {
+                        isPlaying.toggle()
+                        if musicPlayer.playbackState.rawValue == 1 {musicPlayer.pause()}
+                        else {musicPlayer.play()}
+                    } label: {
+                        ZStack {
+                            Circle()
+                                .accentColor(.pink)
+                                .shadow(radius: 10)
+                            Image(systemName: isPlaying ? "pause.fill" : "play.fill")
+                                .foregroundColor(.white)
+                                .font(.system(.title))
+                        }
                     }
+                    .frame(maxWidth: UIScreen.screenHeight/12, maxHeight: UIScreen.screenHeight/12)
                 }
-                .frame(maxWidth: UIScreen.screenHeight/12, maxHeight: UIScreen.screenHeight/12)
+                Spacer()
             }
+            .overlay(
+                Image("AMIconRedOnWhite")
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(height: 24) // height as per your text field
+                    .padding([.top, .leading]), // add padding to top and leading
+                alignment: .bottomTrailing //
+            )
+
             ProgressView(value: songProgress, total: songDuration!)
                 .onReceive(timer) {_ in
                     //if songProgress < songDuration! && musicPlayer.playbackState.rawValue == 1 {songProgress += 1}

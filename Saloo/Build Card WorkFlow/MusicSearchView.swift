@@ -90,11 +90,11 @@ struct MusicSearchView: View {
                     }
                 }
                 else {
-                    //HStack {
-                    //Image("AMLogoLarge")
-                    //    .resizable()
-                    //    .aspectRatio(contentMode: .fit)
-                     //   .frame(height: 24) // height as per your text field
+                    HStack {
+                    Image("AMIconRedOnWhite")
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(height: 24)
                     TextField("Search Songs", text: $songSearch, onCommit: {
                         UIApplication.shared.resignFirstResponder()
                         if networkMonitor.isConnected {
@@ -112,7 +112,7 @@ struct MusicSearchView: View {
                             alertVars.activateAlert = true
                         }
                     }).padding(.top, 15)
-                //}
+                }
                 }
                 LoadingOverlay()
             }
