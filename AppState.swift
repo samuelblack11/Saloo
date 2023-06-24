@@ -10,6 +10,7 @@ import SwiftUI
 
 class AppState: ObservableObject {
     static let shared = AppState()
+    @Published var pauseMusic = false
     enum Screen {
         case login
         case launch

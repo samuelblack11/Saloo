@@ -53,13 +53,6 @@ struct FinalizeCardView: View {
     @EnvironmentObject var spotifyManager: SpotifyManager
     @EnvironmentObject var appState: AppState
     @EnvironmentObject var cardsForDisplay: CardsForDisplay
-
-    
-    
-    
-    
-    
-    //let emptyCard = CoreCard(id: "", cardName: "", occassion: "", recipient: "", sender: "", associatedRecord: CKRecord(recordType: ""), an1: "", an2: "", an2URL: "", an3: "", an4: "", collage: Data(), coverImage: Data(), date: Date(), font: "", message: "", uniqueName: "", songID: "", spotID: "", spotName: "", spotArtistName: "", songName: "", songArtistName: "", songArtImageData: Data(), songPreviewURL: "", songDuration: Int(), inclMusic: Bool, spotImageData: Data(), spotSongDuration: Int(), spotPreviewURL: "", creator: "", songAddedUsing: "", collage1: Data(), collage2: Data(), collage3: Data(), collage4: Data(), cardType: "", recordID: "", songAlbumName: "", appleAlbumArtist: "", spotAlbumArtist: "")
     @State private var safeAreaHeight: CGFloat = 0
     
 
@@ -150,6 +143,7 @@ extension FinalizeCardView {
             
             savedCoreCard in
             if enableShare == true {
+                self.appState.pauseMusic.toggle()
                 cardsForDisplay.addCoreCard(card: savedCoreCard, box: .outbox)
                 //DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) {
                 createNewShare(coreCard: savedCoreCard)
@@ -177,15 +171,14 @@ extension UIScreen{
    static let screenSize = UIScreen.main.bounds.size
 }
     
-    struct ActivityView: UIViewControllerRepresentable {
-       @Binding var activityItems: [Any]
-       let applicationActivities: [UIActivity]?
-       func makeUIViewController(context: UIViewControllerRepresentableContext<ActivityView>) -> UIActivityViewController {
-          UIActivityViewController(activityItems: activityItems,
-                                applicationActivities: applicationActivities)
-       }
-       func updateUIViewController(_ uiViewController: UIActivityViewController,
-                                   context: UIViewControllerRepresentableContext<ActivityView>) {}
-       }
+struct ActivityView: UIViewControllerRepresentable {
+    @Binding var activityItems: [Any]
+    let applicationActivities: [UIActivity]?
+    func makeUIViewController(context: UIViewControllerRepresentableContext<ActivityView>) -> UIActivityViewController {
+        UIActivityViewController(activityItems: activityItems, applicationActivities: applicationActivities)
+    }
+    func updateUIViewController(_ uiViewController: UIActivityViewController,
+                                context: UIViewControllerRepresentableContext<ActivityView>) {}
+    }
     
 

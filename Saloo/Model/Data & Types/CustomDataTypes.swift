@@ -167,12 +167,19 @@ class CardsForDisplay: ObservableObject {
 
     
     
-    
+    func needToLoadCards() -> Bool {
+        var needToLoad = Bool()
+        var cardCount = self.inboxCards.count + self.outboxCards.count + self.draftboxCards.count
+        if cardCount > 0 {needToLoad = false}
+        else {needToLoad = true}
+        return needToLoad
+    }
     
     
     
     func loadCoreCards(completion: @escaping () -> Void) {
         print("LoadCoreCards called...")
+        print(self.inboxCards)
         isLoading = true
         let request = CoreCard.createFetchRequest()
         let sort = NSSortDescriptor(key: "date", ascending: false)
@@ -729,7 +736,6 @@ class SpotifyManager: ObservableObject {
         //print(refresh_token)
         //print(access_token)
         //print(accessExpiresAt)
-
         
         updateCredentialsIfNeeded{success in}
             //self.checkifSpotifyIsInstalled()

@@ -62,6 +62,7 @@ struct eCardView: View {
     @State var appleSongURL: String?
     @State var spotSongURL: String?
     @EnvironmentObject var userSession: UserSession
+    @State private var hasShownLaunchView: Bool = true
 
     var body: some View {
         ZStack {
@@ -79,7 +80,8 @@ struct eCardView: View {
                 }
                 else {NoMusicNoGiftView.modifier(AlertViewMod(showAlert: alertVars.activateAlertBinding, activeAlert: alertVars.alertType))}
             }
-            LoadingOverlay()
+            LoadingOverlay(hasShownLaunchView: $hasShownLaunchView)
+
         }
         .fullScreenCover(isPresented: $showLoginView) {LaunchView(isFirstLaunch: true, isPresentedFromECardView: $showLoginView, cardFromShare: $chosenCard)}
     }

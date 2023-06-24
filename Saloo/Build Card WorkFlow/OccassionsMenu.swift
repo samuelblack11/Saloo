@@ -36,6 +36,7 @@ struct OccassionsMenu: View {
     @ObservedObject var apiManager = APIManager.shared
     @State private var isLoadingMenu = false
     @EnvironmentObject var appState: AppState
+    @State private var hasShownLaunchView: Bool = true
 
     
     // Cover Image Variables used dependent on the image's source
@@ -124,7 +125,8 @@ struct OccassionsMenu: View {
                             menuSection(for: "Mother's Day 🌸")
                         }
                     }
-                    LoadingOverlay()
+                LoadingOverlay(hasShownLaunchView: $hasShownLaunchView)
+
             }
         .onAppear {
             if networkMonitor.isConnected == false {

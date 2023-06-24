@@ -27,7 +27,8 @@ struct CollageBuilder: View {
     @State private var cBB = CollageBlocksAndViews()
     @ObservedObject var gettingRecord = GettingRecord.shared
     @ObservedObject var alertVars = AlertVars.shared
-    
+    @State private var hasShownLaunchView: Bool = true
+
     // Create instance of CollageBuildingBlocks, with blocks sized to fit the CollageBuilder view (menuSize = false)
     @State private var image: Image?
     @State private var chosenImage: UIImage?
@@ -81,7 +82,8 @@ struct CollageBuilder: View {
                 .alert(isPresented: $explicitPhotoAlert) {
                     Alert(title: Text("Error"), message: Text("The selected image contains explicit content and cannot be used."), dismissButton: .default(Text("OK")))
                 }
-                LoadingOverlay()
+                LoadingOverlay(hasShownLaunchView: $hasShownLaunchView)
+
             }
             .modifier(AlertViewMod(showAlert: alertVars.activateAlertBinding, activeAlert: alertVars.alertType))
         }

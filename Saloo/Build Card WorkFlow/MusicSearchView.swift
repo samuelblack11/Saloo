@@ -55,6 +55,7 @@ struct MusicSearchView: View {
     @State var deferToPreview = false
     @State private var isLoading = false
     @Environment(\.colorScheme) var colorScheme
+    @State private var hasShownLaunchView: Bool = true
 
     
     @ObservedObject var alertVars = AlertVars.shared
@@ -115,7 +116,8 @@ struct MusicSearchView: View {
                     }).padding(.top, 15)
                 }
                 }
-                LoadingOverlay()
+                LoadingOverlay(hasShownLaunchView: $hasShownLaunchView)
+
             }
                 NavigationView {
                     ZStack {
@@ -417,7 +419,7 @@ extension MusicSearchView {
                                 for (index, artist) in song.artists.enumerated() {
                                     if index != 0 {
                                         if song.name.lowercased().contains(artist.name.lowercased()) {}
-                                        else {allArtists = allArtists + " & " + artist.name}
+                                        else {allArtists = allArtists + ", " + artist.name}
                                     }
                                     else {allArtists = artist.name}
                                 }

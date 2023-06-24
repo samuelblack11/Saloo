@@ -50,6 +50,8 @@ struct GridofCards: View {
     @State private var showReportOffensiveContentView = false
     @EnvironmentObject var spotifyManager: SpotifyManager
     @EnvironmentObject var persistenceController: PersistenceController
+    @State private var hasShownLaunchView: Bool = true
+
     var cardsFilteredBySearch: [CoreCard] {
         if searchText.isEmpty { return coreCards}
         //else if sortByValue == "Card Name" {return privateCards.filter { $0.cardName.contains(searchText)}}
@@ -99,7 +101,8 @@ struct GridofCards: View {
                         }
                     }
                 }
-                LoadingOverlay()
+                LoadingOverlay(hasShownLaunchView: $hasShownLaunchView)
+
             }
             .onAppear{
             print("Grid Appeared...")

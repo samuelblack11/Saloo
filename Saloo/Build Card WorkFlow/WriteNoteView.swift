@@ -30,6 +30,7 @@ struct WriteNoteView: View {
     @FocusState private var isNoteFieldFocused: Bool
     @ObservedObject var gettingRecord = GettingRecord.shared
     @State private var isEditing = false
+    @State private var hasShownLaunchView: Bool = true
 
     var fonts = ["Zapfino","Papyrus","American-Typewriter-Bold"]
     var fontMenu: some View {
@@ -104,7 +105,8 @@ struct WriteNoteView: View {
                     }
                     .padding(.bottom, 30)
                 }
-                LoadingOverlay()
+                LoadingOverlay(hasShownLaunchView: $hasShownLaunchView)
+
             }
             .onAppear{
                 if noteField.noteText.value != "" && noteField.noteText.value != "Write Your Note Here"{message.value = noteField.noteText.value}

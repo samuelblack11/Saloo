@@ -48,6 +48,7 @@ struct PrefMenu: View {
     @EnvironmentObject var appState: AppState
     @EnvironmentObject var apiManager: APIManager
     let appleBlack = Color(red: 11.0 / 255.0, green: 11.0 / 255.0, blue: 9.0 / 255.0)
+    @State private var hasShownLaunchView: Bool = true
 
     var listItemHeight: CGFloat = 95
     init() {
@@ -158,7 +159,8 @@ struct PrefMenu: View {
                         .tint(musicColor)
                         .scaleEffect(3)
                         .progressViewStyle(CircularProgressViewStyle())
-                    LoadingOverlay()
+                    LoadingOverlay(hasShownLaunchView: $hasShownLaunchView)
+
                 }
                 
             }

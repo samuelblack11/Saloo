@@ -20,6 +20,7 @@ struct ConfirmFrontCoverView: View {
     @State private var segueToCollageMenu = false
     @State private var presentPrior = false
     @ObservedObject var gettingRecord = GettingRecord.shared
+    @State private var hasShownLaunchView: Bool = true
 
     func getCoverSize() -> (CGSize, Double) {
         var size = CGSize()
@@ -62,7 +63,8 @@ struct ConfirmFrontCoverView: View {
                                 debugPrint("Ping Failed!.......")}})
                     }.padding(.bottom, 10)
                 }
-                LoadingOverlay()
+                LoadingOverlay(hasShownLaunchView: $hasShownLaunchView)
+
             }
         .onAppear{getCoverSize()}
         .modifier(AlertViewMod(showAlert: alertVars.activateAlertBinding, activeAlert: alertVars.alertType))

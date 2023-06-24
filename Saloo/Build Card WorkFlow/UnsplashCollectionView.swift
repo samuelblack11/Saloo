@@ -32,6 +32,7 @@ struct UnsplashCollectionView: View {
     let columns = [GridItem(.fixed(150)),GridItem(.fixed(150))]
     @EnvironmentObject var networkMonitor: NetworkMonitor
     @ObservedObject var alertVars = AlertVars.shared
+    @State private var hasShownLaunchView: Bool = true
 
     var body: some View {
         NavigationView {
@@ -70,7 +71,8 @@ struct UnsplashCollectionView: View {
                     }.disabled(setButtonStatus(imageObjects: imageObjectModel.imageObjects))
                 }
                 .modifier(AlertViewMod(showAlert: alertVars.activateAlertBinding, activeAlert: alertVars.alertType))
-                LoadingOverlay()
+                LoadingOverlay(hasShownLaunchView: $hasShownLaunchView)
+
             }
         }
         

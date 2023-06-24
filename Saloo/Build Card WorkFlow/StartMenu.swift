@@ -27,6 +27,8 @@ struct StartMenu: View {
     @State var whichBoxForCKAccept: InOut.SendReceive?
     @State var userID = String()
     @State private var isBanned = false
+    @State private var hasShownLaunchView: Bool = true
+
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate2
     // @State var salooUserID: String = (UserDefaults.standard.object(forKey: "SalooUserID") as? String)!
     //@StateObject var audioManager = AudioSessionManager()
@@ -52,7 +54,8 @@ struct StartMenu: View {
                     Text("Outbox 📥") .onTapGesture {screenManager.advance(); appState.currentScreen = .outbox}
                     Text("Preferences 📱").onTapGesture {appState.currentScreen = .preferences}
                 }
-                LoadingOverlay()
+                LoadingOverlay(hasShownLaunchView: $hasShownLaunchView)
+
             }
         }
             .modifier(AlertViewMod(showAlert: alertVars.activateAlertBinding, activeAlert: alertVars.alertType))

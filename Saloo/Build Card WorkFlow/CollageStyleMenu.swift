@@ -25,6 +25,7 @@ struct CollageStyleMenu: View {
     @ObservedObject var alertVars = AlertVars.shared
     let columns = [GridItem(.flexible()),GridItem(.flexible())]
     @EnvironmentObject var appState: AppState
+    @State private var hasShownLaunchView: Bool = true
 
     var body: some View {
         NavigationStack {
@@ -48,7 +49,8 @@ struct CollageStyleMenu: View {
                         collageBlocks.fourPhoto(block: collageBlocks.blockForStyle()).onTapGesture{collageImage.chosenStyle = 6; appState.currentScreen = .buildCard([.collageBuilder])}
                     }
                 }
-                LoadingOverlay()
+                LoadingOverlay(hasShownLaunchView: $hasShownLaunchView)
+
             }
             .navigationTitle("Pick Collage Style").font(.headline).padding(.horizontal)
             .navigationBarItems(leading:Button {appState.currentScreen = .buildCard([.confirmFrontCoverView])} label: {Image(systemName: "chevron.left").foregroundColor(.blue); Text("Back")}.disabled(gettingRecord.isShowingActivityIndicator))

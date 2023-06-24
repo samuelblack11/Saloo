@@ -4,10 +4,6 @@
 //
 //  Created by Sam Black on 2/16/23.
 //
-
-import Foundation
-
-// 
 import Foundation
 import Foundation
 import SwiftUI
@@ -15,8 +11,6 @@ import CoreData
 import CloudKit
 import StoreKit
 import MediaPlayer
-
-
 
 struct SpotPlayerView: View {
     let cleanMusicData = CleanMusicData()
@@ -37,7 +31,6 @@ struct SpotPlayerView: View {
     @State var songURL: String?
     @EnvironmentObject var appDelegate: AppDelegate
     @EnvironmentObject var sceneDelegate: SceneDelegate
-    //@State var spotifyAuth = SpotifyAuth()
     @State private var showProgressView = true
     let defaults = UserDefaults.standard
     @State var accessedViaGrid = true
@@ -66,7 +59,6 @@ struct SpotPlayerView: View {
     @Binding var isLoading: Bool
     @ObservedObject var alertVars = AlertVars.shared
     let spotGreen = Color(red: 29.0 / 255.0, green: 185.0 / 255.0, blue: 84.0 / 255.0)
-
     //@Binding var disableTextField: Bool
 
     var body: some View {
@@ -86,6 +78,7 @@ struct SpotPlayerView: View {
                         if networkMonitor.isConnected {checkIfGetSongIsNeeded()}
                 }
             }
+            .onChange(of: appState.pauseMusic) {shouldPause in if shouldPause{spotifyManager.appRemote?.playerAPI?.pause()}}
             .onDisappear{spotifyManager.appRemote?.playerAPI?.pause()}
             .navigationBarItems(leading:Button {chosenCard = nil
             } label: {Image(systemName: "chevron.left").foregroundColor(.blue); Text("Back")}.disabled(gettingRecord.isShowingActivityIndicator))
@@ -292,7 +285,7 @@ struct SpotPlayerView: View {
             for (index, artist) in song.artists.enumerated() {
                 if index != 0 {
                     if song.name.lowercased().contains(artist.name.lowercased()) {}
-                    else {allArtists = allArtists + " & " + artist.name}
+                    else {allArtists = allArtists + ", " + artist.name}
                 }
                 else {allArtists = artist.name}
             }}
@@ -306,10 +299,9 @@ struct SpotPlayerView: View {
         var appleAlbumArtistForURL = String()
         if appleAlbumArtist != "" {appleAlbumArtistForURL = cleanMusicData.cleanMusicString(input: appleAlbumArtist!, removeList: appDelegate.songFilterForMatchRegex)}
         else {appleAlbumArtistForURL = cleanMusicData.cleanMusicString(input: songArtistName!, removeList: appDelegate.songFilterForMatchRegex)}
-
         let AMString = cleanMusicData.compileMusicString(songOrAlbum: songName!, artist: songArtistName!, removeList: appDelegate.songFilterForMatchRegex)
         var foundMatch = false
-        SpotifyAPI.shared.getAlbumID(albumName: cleanAlbumNameForURL, artistName: appleAlbumArtistForURL , authToken: spotifyManager.access_token, completion: { (albums, error) in
+        SpotifyAPI.shared.getAlbumID(albumName: cleanAlbumNameForURL, artistName: appleAlbumArtistForURL, authToken: spotifyManager.access_token, completion: { (albums, error) in
             var albumIndex = 0
             func processAlbum() {
                 guard albumIndex < albums!.count else {
@@ -349,7 +341,6 @@ struct SpotPlayerView: View {
                 foundMatch = true
                 print("SSSSS")
                 print(allArtists)
-                print(song)
                 let artURL = URL(string: spotImageURL!)
                 let _ = getURLData(url: artURL!, completionHandler: {(artResponse, error2) in
                     spotName = song.name

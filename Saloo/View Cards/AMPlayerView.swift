@@ -56,7 +56,10 @@ struct AMPlayerView: View {
     @Binding var showAPV: Bool
     @Binding var isLoading: Bool
     @State var songURL: String?
-
+    
+    
+    
+    
     @State private var disableSelect = false
     @ObservedObject var gettingRecord = GettingRecord.shared
     @EnvironmentObject var chosenSong: ChosenSong
@@ -180,6 +183,7 @@ struct AMPlayerView: View {
             }
             if confirmButton == true {selectButton}
         }
+        .onChange(of: appState.pauseMusic) {shouldPause in if shouldPause{self.musicPlayer.pause()}}
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center) // This should make the VStack take up all available space and align its contents to the center.
         .onAppear{songProgress = 0.0;
             if networkMonitor.isConnected {
@@ -193,7 +197,10 @@ struct AMPlayerView: View {
             else {activeAlert = .noConnection}
             startCheckingPlaybackState()
         }
-        .onDisappear{self.musicPlayer.pause(); self.$musicPlayer.wrappedValue.currentPlaybackTime = 0}
+        .onDisappear{
+            print("AMPlayerView did disappear")
+            self.musicPlayer.pause(); self.$musicPlayer.wrappedValue.currentPlaybackTime = 0}
+        
     }
     
     @ViewBuilder var selectButton: some View {
