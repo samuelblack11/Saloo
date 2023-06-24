@@ -232,11 +232,13 @@ struct LoadingOverlay: View {
     @EnvironmentObject var gettingRecord: GettingRecord
     @EnvironmentObject var cardsForDisplay: CardsForDisplay
     @EnvironmentObject var appDelegate: AppDelegate
-    @State private var remainingTime: Int    
-    init(hasShownLaunchView: Bool = true, startTime: Int = 60) {
-        _hasShownLaunchView = State(initialValue: hasShownLaunchView)
+    @State private var remainingTime: Int
+    
+    init(hasShownLaunchView: Bool? = nil, startTime: Int = 60) {
+        _hasShownLaunchView = State(initialValue: hasShownLaunchView ?? false)
         _remainingTime = State(initialValue: startTime)
     }
+    
     let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
     @State private var backgroundTime = Date()
     var body: some View {
@@ -283,7 +285,7 @@ struct LoadingOverlay: View {
             .opacity(gettingRecord.isShowingActivityIndicator ? 1 : 0)
             .allowsHitTesting(gettingRecord.isShowingActivityIndicator) // This will block interaction when the activity indicator is showing
             }
-        if (cardsForDisplay.isLoading == true) || (gettingRecord.isLoadingAlert == true && !hasShownLaunchView) {
+        if !(gettingRecord.isLoadingAlert == true && hasShownLaunchView) && (cardsForDisplay.isLoading == true) || (gettingRecord.isLoadingAlert == true && !hasShownLaunchView) {
             VStack {
                 Spacer()
                 ProgressView() // This is the built-in iOS activity indicator

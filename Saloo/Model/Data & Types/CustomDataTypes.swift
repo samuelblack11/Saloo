@@ -537,10 +537,7 @@ class APIManager: ObservableObject {
                 self.spotClientIdentifier = keyval!
                     self.getSecret(keyName: "spotSecretKey"){keyval in print("spotSecretKey is \(String(describing: keyval))")
                         self.spotSecretKey = keyval!
-                        // After setting the key, initialize SpotifyManager
                         SpotifyManager.shared.initializeConfiguration()
-                        //self.spotifyManager = SpotifyManager.shared
-                        // Call the completion handler
                         completion()
                     }
                 }
@@ -726,22 +723,27 @@ class SpotifyManager: ObservableObject {
         refresh_token = defaults.object(forKey: "SpotifyRefreshToken") as? String ?? ""
         access_token = defaults.object(forKey: "SpotifyAccessToken") as? String ?? ""
         accessExpiresAt = defaults.object(forKey: "SpotifyAccessTokenExpirationDate") as? Date ?? Date.distantPast
-        updateCredentialsIfNeeded{success in self.checkifSpotifyIsInstalled()}
-    }
-    
-    func checkifSpotifyIsInstalled() {
-        let spotifyURL = URL(string: "spotify:")!
-            
-        if UIApplication.shared.canOpenURL(spotifyURL) {
-            // Spotify is installed, you can add further code if needed
-            print("Spotify App installed on device.")
-        } else {
-            // Spotify is not installed, redirect to App Store
-            let spotifyAppStoreURL = URL(string: "https://apps.apple.com/app/spotify-music/id324684580")!
-            UIApplication.shared.open(spotifyAppStoreURL)
-        }
-    }
+        //print("----")
+        //print(auth_code)
+        //print(refresh_token)
+        //print(access_token)
+        //print(accessExpiresAt)
 
+        
+        updateCredentialsIfNeeded{success in
+            print("CREDENTIALS....\(success)")
+            print(self.access_token)
+            if success {
+                SpotifyAPI.shared.getCurrentUserProfile(accessToken: self.access_token) { (profile, error) in
+                    print("----")
+                    //if profile?.product != "premium" {
+                    //
+                    //}
+                }
+            }
+        }
+            //self.checkifSpotifyIsInstalled()
+    }
     
     func hasTokenExpired() -> Bool {
         if let expirationDate = defaults.object(forKey: "SpotifyAccessTokenExpirationDate") as? Date {
@@ -752,7 +754,7 @@ class SpotifyManager: ObservableObject {
     func updateCredentialsIfNeeded(completion: @escaping (Bool) -> Void) {
 
         if NetworkMonitor.shared.isConnected {
-            if auth_code.isEmpty {
+            if auth_code.isEmpty || auth_code == "AuthFailed" {
                 print("auth_code is empty")
                 requestSpotAuth {response in
                     self.authForRedirect = response!
@@ -762,8 +764,6 @@ class SpotifyManager: ObservableObject {
             }
             else if hasTokenExpired() {
                 print("Token Expired...")
-                print(defaults.object(forKey: "SpotifyAccessToken"))
-                print(defaults.object(forKey: "SpotifyRefreshToken"))
                 refresh_token = (defaults.object(forKey: "SpotifyRefreshToken") as? String)!
                 self.getSpotTokenViaRefresh{success in }
                 completion(true)
@@ -800,6 +800,18 @@ class SpotifyManager: ObservableObject {
         }
     }
 
+    func checkifSpotifyIsInstalled() {
+        let spotifyURL = URL(string: "spotify://")!
+            
+        if UIApplication.shared.canOpenURL(spotifyURL) {
+            // Spotify is installed, you can add further code if needed
+            print("Spotify App installed on device.")
+        } else {
+            // Spotify is not installed, redirect to App Store
+            let spotifyAppStoreURL = URL(string: "https://apps.apple.com/app/spotify-music/id324684580")!
+            UIApplication.shared.open(spotifyAppStoreURL)
+        }
+    }
 
     func processTokenRequest(response: SpotTokenResponse?, error: Error?) -> Bool {
         if let response = response {

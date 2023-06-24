@@ -65,6 +65,7 @@ struct SpotPlayerView: View {
     @Binding var showSPV: Bool
     @Binding var isLoading: Bool
     @ObservedObject var alertVars = AlertVars.shared
+    let spotGreen = Color(red: 29.0 / 255.0, green: 185.0 / 255.0, blue: 84.0 / 255.0)
 
     //@Binding var disableTextField: Bool
 
@@ -147,7 +148,7 @@ struct SpotPlayerView: View {
                         } label: {
                             ZStack {
                                 Circle()
-                                    .accentColor(.green)
+                                    .accentColor(spotGreen)
                                     .shadow(radius: 7)
                                 Image(systemName: "arrow.uturn.backward" )
                                     .foregroundColor(.white)
@@ -162,7 +163,7 @@ struct SpotPlayerView: View {
                         } label: {
                             ZStack {
                                 Circle()
-                                    .accentColor(.green)
+                                    .accentColor(spotGreen)
                                     .shadow(radius: 7)
                                 Image(systemName: isPlaying ? "pause.fill" : "play.fill")
                                     .foregroundColor(.white)

@@ -8,6 +8,10 @@
 import Foundation
 
 
+struct SpotProfile: Decodable {
+    let id: String
+    let product: String
+}
 
 
 struct SpotResponse: Decodable {
@@ -112,11 +116,6 @@ struct QueueResponse: Decodable {
 struct QueueItem: Decodable {
     let id: String
 }
-
-struct SpotProfile: Decodable {
-    let id: String
-}
-
 
 struct SpotPlaylist: Decodable {
     let id: String

@@ -53,10 +53,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
     func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
         print("called* openURLContexts")
         guard let url = URLContexts.first?.url else { return }
-        if url.absoluteString.contains("spotify_version") {
-            print("URL is from Spotify, ignoring")
-            return
-        }
+        //if url.absoluteString.contains("spotify_version") {
+        //    print("URL is from Spotify, ignoring")
+        //    return
+       // }
         let container = CKContainer.default()
         container.fetchShareMetadata(with: url) { metadata, error in
             guard error == nil, let metadata = metadata else {
