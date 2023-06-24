@@ -49,6 +49,7 @@ struct GridofCards: View {
     @ObservedObject var gettingRecord = GettingRecord.shared
     @State private var showReportOffensiveContentView = false
     @EnvironmentObject var spotifyManager: SpotifyManager
+    @EnvironmentObject var persistenceController: PersistenceController
     var cardsFilteredBySearch: [CoreCard] {
         if searchText.isEmpty { return coreCards}
         //else if sortByValue == "Card Name" {return privateCards.filter { $0.cardName.contains(searchText)}}
@@ -66,7 +67,7 @@ struct GridofCards: View {
     @State private var currentUserRecordID: CKRecord.ID?
 
     func fetchCurrentUserRecordID() {
-        PersistenceController.shared.cloudKitContainer.fetchUserRecordID { ckRecordID, error in
+        persistenceController.cloudKitContainer.fetchUserRecordID { ckRecordID, error in
             DispatchQueue.main.async {self.currentUserRecordID = ckRecordID}
         }
     }
@@ -192,7 +193,7 @@ extension GridofCards {
     
     @ViewBuilder func contextMenuButtons(card: CoreCard) -> some View {
         if let currentUserRecordID = self.currentUserRecordID, card.creator == currentUserRecordID.recordName {
-            if PersistenceController.shared.privatePersistentStore.contains(manageObject: card) {
+            if persistenceController.privatePersistentStore.contains(manageObject: card) {
                 Button("Create New Share") {showCloudShareController = true;
                     if networkMonitor.isConnected{createNewShare(coreCard: card)}
                     else{alertVars.alertType = .failedConnection; alertVars.activateAlert = true}}
@@ -216,19 +217,19 @@ extension GridofCards {
             HStack {Text("Report Offensive Content"); Image(systemName: "exclamationmark.octagon")}}
         }
     
-    private func createNewShare(coreCard: CoreCard) {PersistenceController.shared.presentCloudSharingController(coreCard: coreCard)}
-    private func manageParticipation(coreCard: CoreCard) {PersistenceController.shared.presentCloudSharingController(coreCard: coreCard)}
+    private func createNewShare(coreCard: CoreCard) {persistenceController.presentCloudSharingController(coreCard: coreCard)}
+    private func manageParticipation(coreCard: CoreCard) {persistenceController.presentCloudSharingController(coreCard: coreCard)}
     private func processStoreChangeNotification(_ notification: Notification) {
         guard let storeUUID = notification.userInfo?[UserInfoKey.storeUUID] as? String,
-              storeUUID == PersistenceController.shared.privatePersistentStore.identifier else {
+              storeUUID == persistenceController.privatePersistentStore.identifier else {
             return
         }
         guard let transactions = notification.userInfo?[UserInfoKey.transactions] as? [NSPersistentHistoryTransaction],
               transactions.isEmpty else {
             return
         }
-        //isCardShared = (PersistenceController.shared.existingShare(coreCard: card) != nil)
-        hasAnyShare = PersistenceController.shared.shareTitles().isEmpty ? false : true
+        //isCardShared = (persistenceController.existingShare(coreCard: card) != nil)
+        hasAnyShare = persistenceController.shareTitles().isEmpty ? false : true
     }
 
     func sortedCards(_ cards: [CoreCard], sortBy: String) -> [CoreCard] {
@@ -248,7 +249,7 @@ extension GridofCards {
     }
     
     func deleteCoreCard(coreCard: CoreCard) {
-        do {PersistenceController.shared.persistentContainer.viewContext.delete(coreCard);try PersistenceController.shared.persistentContainer.viewContext.save()}
+        do {persistenceController.persistentContainer.viewContext.delete(coreCard);try persistenceController.persistentContainer.viewContext.save()}
         catch {}
         cardsForDisplayEnv.deleteCoreCard(card: coreCard, box: whichBoxVal)
         loadCards()
@@ -257,7 +258,7 @@ extension GridofCards {
     func deleteAllCoreCards() {
         let request = CoreCard.createFetchRequest()
         var cardsFromCore: [CoreCard] = []
-        do {cardsFromCore = try PersistenceController.shared.persistentContainer.viewContext.fetch(request); for card in cardsFromCore {deleteCoreCard(coreCard: card)}}
+        do {cardsFromCore = try persistenceController.persistentContainer.viewContext.fetch(request); for card in cardsFromCore {deleteCoreCard(coreCard: card)}}
         catch{}
     }
     

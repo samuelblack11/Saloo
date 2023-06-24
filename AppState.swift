@@ -53,7 +53,8 @@ struct ContentView: View {
     @State var emptyCard: CoreCard? = CoreCard()
     @State var cardFromShare: CoreCard?
     func didDismiss() {cardFromShare = nil}
-    
+    var animationDuration  = 0.3
+
     // custom initializer
     init(hasShownLaunchView: Bool? = nil, cardFromShare: CoreCard? = nil) {
         _hasShownLaunchView = State(initialValue: hasShownLaunchView ?? false)
@@ -116,7 +117,7 @@ struct ContentView: View {
 
 struct BuildCardView: View {
     let steps: [AppState.BuildCardSteps]
-
+    var animationDuration  = 5.0
     var body: some View {
         ForEach(steps, id: \.self) { step in
             switch step {
@@ -129,15 +130,16 @@ struct BuildCardView: View {
             case .collageStyleMenu:
                 CollageStyleMenu()
             case .collageBuilder:
-                CollageBuilder(showImagePicker: false)//.environmentObject(collageImage)
+                CollageBuilder(showImagePicker: false)
             case .writeNoteView:
                 WriteNoteView()
             case .musicSearchView:
-                MusicSearchView()//.environmentObject(appDelegate)
+                MusicSearchView()
             case .finalizeCardView:
                 FinalizeCardView(cardType: CardPrep.shared.cardType)
             }
         }
     }
 }
+
 

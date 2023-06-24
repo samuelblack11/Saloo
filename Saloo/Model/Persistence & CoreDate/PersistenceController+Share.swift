@@ -35,19 +35,25 @@ extension PersistenceController {
             }
         }
         
-            let sharingController: UICloudSharingController
+            let sharingController: MyCloudSharingController
             if coreCardShare == nil {
-                print("called new sharing controller1...")
-                print(coreCard)
-                print(self)
-                print(PersistenceController.shared)
                 sharingController = self.newSharingController(unsharedCoreCard: coreCard, persistenceController: self)
-            } else {
+          } else {
                 print("----"); print(coreCardShare)
-                sharingController = UICloudSharingController(share: coreCardShare!, container: self.cloudKitContainer)
+                sharingController = MyCloudSharingController(share: coreCardShare!, container: self.cloudKitContainer)
+           }
+            sharingController.onDismiss = {
+             print("Controller has been dismissed.")
+             // Other cleanup code...
+                if case .buildCard(let steps) = AppState.shared.currentScreen, steps == [.finalizeCardView] {
+                    AlertVars.shared.alertType = .showCardComplete
+                    AlertVars.shared.activateAlert = true
+                }
+                else {
+                    
+                }
             }
-            
-            sharingController.delegate = self
+
             print("1111")
             //Setting the presentation style to .formSheet so there's no need to specify sourceView, sourceItem, or sourceRect.
             guard var topVC = UIApplication.shared.windows.first?.rootViewController else {return}
@@ -62,7 +68,7 @@ extension PersistenceController {
 
 
 
-    func prepareAndPresentSharingController(sharingController: UICloudSharingController) {
+    func prepareAndPresentSharingController(sharingController: MyCloudSharingController) {
         sharingController.delegate = self
 
         // Setting the presentation style to .formSheet so there's no need to specify sourceView, sourceItem, or sourceRect.
@@ -76,7 +82,7 @@ extension PersistenceController {
             
     
     func presentCloudSharingController(share: CKShare) {
-        let sharingController = UICloudSharingController(share: share, container: cloudKitContainer)
+        let sharingController = MyCloudSharingController(share: share, container: cloudKitContainer)
         sharingController.delegate = self
         /**
          Setting the presentation style to .formSheet so there's no need to specify sourceView, sourceItem, or sourceRect.
@@ -87,8 +93,8 @@ extension PersistenceController {
         }
     }
     
-    private func newSharingController(unsharedCoreCard: CoreCard, persistenceController: PersistenceController) -> UICloudSharingController {
-        let sharingController = UICloudSharingController { (controller, completion: @escaping (CKShare?, CKContainer?, Error?) -> Void) in
+    private func newSharingController(unsharedCoreCard: CoreCard, persistenceController: PersistenceController) -> MyCloudSharingController {
+        let sharingController = MyCloudSharingController { (controller, completion: @escaping (CKShare?, CKContainer?, Error?) -> Void) in
             DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
             print("Called new sharing controller2...")
             /**
@@ -122,7 +128,7 @@ extension PersistenceController {
     
     
     func createCKShare(unsharedCoreCard: CoreCard, persistenceController: PersistenceController) {
-        let sharingController = UICloudSharingController { (controller, completion: @escaping (CKShare?, CKContainer?, Error?) -> Void) in
+        let sharingController = MyCloudSharingController { (controller, completion: @escaping (CKShare?, CKContainer?, Error?) -> Void) in
             DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
             print("Called new sharing controller3...")
             
@@ -147,7 +153,7 @@ extension PersistenceController {
     
     private func newSharingController(sharedRootRecord: CKRecord,
                                       database: CKDatabase,
-                                      completionHandler: @escaping (UICloudSharingController?) -> Void) {
+                                      completionHandler: @escaping (MyCloudSharingController?) -> Void) {
         let shareRecordID = sharedRootRecord.share!.recordID
         let fetchRecordsOp = CKFetchRecordsOperation(recordIDs: [shareRecordID])
 
@@ -158,7 +164,7 @@ extension PersistenceController {
             }
             
             DispatchQueue.main.async {
-                let sharingController = UICloudSharingController(share: share, container: self.cloudKitContainer)
+                let sharingController = MyCloudSharingController(share: share, container: self.cloudKitContainer)
                 completionHandler(sharingController)
             }
         }
@@ -197,12 +203,14 @@ extension PersistenceController: UICloudSharingControllerDelegate {
      the UI, if necessary.
      */
     func cloudSharingControllerDidStopSharing(_ csc: UICloudSharingController) {
+        print("DID STOP SHARING")
         if let share = csc.share {
             purgeObjectsAndRecords(with: share)
         }
     }
 
     func cloudSharingControllerDidSaveShare(_ csc: UICloudSharingController) {
+        print("Saved Share")
         if let share = csc.share, let persistentStore = share.persistentStore {
             persistentContainer.persistUpdatedShare(share, in: persistentStore) { (share, error) in
                 if let error = error {
@@ -231,8 +239,6 @@ extension PersistenceController: UICloudSharingControllerDelegate {
             AlertVars.shared.activateAlert = true
         }
     }
-    
-    
 }
 #endif
 
@@ -404,10 +410,9 @@ extension CKShare {
 }
 
 class MyCloudSharingController: UICloudSharingController {
+    var onDismiss: (() -> Void)?
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
-        // Run your function here
-        AlertVars.shared.alertType = .showCardComplete
-        AlertVars.shared.activateAlert = true
+        onDismiss?()
     }
 }

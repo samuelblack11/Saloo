@@ -123,6 +123,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
                             .environmentObject(ChosenSong.shared)
                             .environmentObject(NoteField.shared)
                             .environmentObject(PlayerWrapper.shared)
+                            .environmentObject(PersistenceController.shared)
+
         let window = UIWindow(windowScene: windowScene)
         self.window = window
         let initialViewController = UIHostingController(rootView: contentView)
