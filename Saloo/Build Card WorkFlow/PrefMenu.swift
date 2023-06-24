@@ -102,29 +102,41 @@ struct PrefMenu: View {
                                     spotifyManager.updateCredentialsIfNeeded{success in
                                         print("updateCredentials success \(success)")
                                         if success {
-                                            spotifyManager.onTokenUpdate = {
-                                                currentSubSelection = "Spotify"
-                                                appDelegate.musicSub.type = .Spotify
-                                                defaults.set("Spotify", forKey: "MusicSubType")
-                                                hideProgressView = true
-                                                appState.currentScreen = .startMenu
-                                            }
-                                            spotifyManager.noNewTokenNeeded = {
-                                                print("No New Token Needed...")
-                                                hideProgressView = true
-                                                alertVars.alertType = .musicAuthSuccessful
-                                                alertVars.activateAlert = true
+                                            spotifyManager.verifySubType { isPremium in
+                                                if isPremium {
+                                                    spotifyManager.onTokenUpdate = {
+                                                        currentSubSelection = "Spotify"
+                                                        appDelegate.musicSub.type = .Spotify
+                                                        defaults.set("Spotify", forKey: "MusicSubType")
+                                                        hideProgressView = true
+                                                        appState.currentScreen = .startMenu
+                                                    }
+                                                    spotifyManager.noNewTokenNeeded = {
+                                                        print("No New Token Needed...")
+                                                        hideProgressView = true
+                                                        alertVars.alertType = .musicAuthSuccessful
+                                                        alertVars.activateAlert = true
+                                                    }
+                                                }
+                                                else { //if not premium
+                                                    currentSubSelection = "Neither"
+                                                    appDelegate.musicSub.type = .Neither
+                                                    defaults.set("Neither", forKey: "MusicSubType")
+                                                    alertVars.alertType = .spotNeedPremium
+                                                    alertVars.activateAlert = true
+                                                    hideProgressView = true
+                                                }
                                             }
                                         }
                                         else {
-                                            spotifyManager.onTokenUpdate = {
+                                                spotifyManager.onTokenUpdate = {
                                                 alertVars.alertType = .spotAuthFailed
                                                 alertVars.activateAlert = true
                                                 currentSubSelection = "Neither"
                                                 appDelegate.musicSub.type = .Neither
                                                 hideProgressView = true
                                             }
-                                            spotifyManager.noInternet = {
+                                                spotifyManager.noInternet = {
                                                 alertVars.alertType = .failedConnection
                                                 alertVars.activateAlert = true
                                             }
@@ -144,7 +156,7 @@ struct PrefMenu: View {
                     ProgressView()
                         .hidden(hideProgressView)
                         .tint(musicColor)
-                        .scaleEffect(5)
+                        .scaleEffect(3)
                         .progressViewStyle(CircularProgressViewStyle())
                     LoadingOverlay()
                 }
@@ -181,14 +193,27 @@ struct PrefMenu: View {
                             else {
                                 print("getSpotToken completion called...")
                                 print(success)
-                                currentSubSelection = "Spotify"
-                                appDelegate.musicSub.type = .Spotify
-                                defaults.set("Spotify", forKey: "MusicSubType")
-                                spotifyManager.instantiateAppRemote()
-                                hideProgressView = true
-                                alertVars.alertType = .musicAuthSuccessful
-                                alertVars.activateAlert = true
-                                appState.currentScreen = .startMenu
+                                spotifyManager.verifySubType { isPremium in
+                                    if isPremium {
+                                        currentSubSelection = "Spotify"
+                                        appDelegate.musicSub.type = .Spotify
+                                        defaults.set("Spotify", forKey: "MusicSubType")
+                                        spotifyManager.instantiateAppRemote()
+                                        spotifyManager.instantiateAppRemote()
+                                        alertVars.alertType = .musicAuthSuccessful
+                                        alertVars.activateAlert = true
+                                        appState.currentScreen = .startMenu
+                                    }
+                                    else {
+                                        currentSubSelection = "Neither"
+                                        appDelegate.musicSub.type = .Neither
+                                        defaults.set("Neither", forKey: "MusicSubType")
+                                        alertVars.alertType = .spotNeedPremium
+                                        alertVars.activateAlert = true
+                                    }
+                                    hideProgressView = true
+                                }
+                            
                             }
                         }
                     }

@@ -125,7 +125,7 @@ extension View {
 }
 
 enum ActiveAlert {
-    case failedConnection, signInFailure, explicitPhoto, offensiveText, namesNotEntered, showCardComplete, showFailedToShare, addMusicPrompt, spotAuthFailed, amAuthFailed, AMSongNotAvailable, gettingRecord, userBanned, reportComplete, deleteCard, mustSelectPic, musicAuthSuccessful
+    case failedConnection, signInFailure, explicitPhoto, offensiveText, namesNotEntered, showCardComplete, showFailedToShare, addMusicPrompt, spotAuthFailed, amAuthFailed, AMSongNotAvailable, gettingRecord, userBanned, reportComplete, deleteCard, mustSelectPic, musicAuthSuccessful, spotNeedPremium
 }
 
 struct AlertViewMod: ViewModifier {
@@ -163,6 +163,10 @@ struct AlertViewMod: ViewModifier {
                     return Alert(title: Text("Please Enter Values for All Fields!"), dismissButton: .default(Text("Ok")))
                 case .spotAuthFailed:
                     return Alert(title: Text("Spotify Authorization Failed. If you have a Spotify Subscription, please try authorizing again"), dismissButton: .default(Text("OK"), action: {alertDismissAction?()}))
+                case .spotNeedPremium:
+                    return Alert(title: Text("Sorry, Saloo Requires a Spotify Premium Membership in order to Connect."), message: Text("Spotify Premium lets you play any track, ad-free and with better audio quality."), primaryButton: .default(Text("Ok ☹️"), action: {alertDismissAction?()}), secondaryButton: .default(Text("Try Spotify Premium for Free"), action: {
+                        UIApplication.shared.open(URL(string: "https://spotify.com/premium")!)}
+                    ))
                 case .amAuthFailed:
                     return Alert(title: Text("Apple Music Authorization Failed. If you have a Apple Music Subscription, please try authorizing again"), dismissButton: .default(Text("OK"), action: {alertDismissAction?()}))
                 case .gettingRecord:

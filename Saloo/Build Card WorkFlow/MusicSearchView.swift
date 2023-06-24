@@ -143,6 +143,13 @@ struct MusicSearchView: View {
                 .onAppear{
                     if appDelegate.musicSub.type == .Spotify {
                             spotifyManager.updateCredentialsIfNeeded{success in
+                                spotifyManager.verifySubType{isPremium in
+                                    if !isPremium {
+                                        alertVars.alertType = .spotNeedPremium
+                                        alertVars.activateAlert = true
+                                        isLoading = false
+                                    }
+                                }
                                 spotifyManager.noInternet = {
                                     alertVars.alertType = .failedConnection
                                     alertVars.activateAlert = true
@@ -366,7 +373,16 @@ extension MusicSearchView {
     func searchWithSpotify() {
         print("searchWithSpotifyCalled...")
         print(spotifyManager.access_token)
-        if spotifyManager.access_token == "" || spotifyManager.access_token == nil {isLoading = true; spotifyManager.updateCredentialsIfNeeded{success in performSPOTSearch()}}
+        if spotifyManager.access_token == "" || spotifyManager.access_token == nil {isLoading = true; spotifyManager.updateCredentialsIfNeeded{success in
+            spotifyManager.verifySubType{isPremium in
+                if !isPremium {
+                    alertVars.alertType = .spotNeedPremium
+                    alertVars.activateAlert = true
+                    isLoading = false
+                }
+                else {performSPOTSearch()}}
+            }
+        }
         else {
             print("Else called...")
             performSPOTSearch()
@@ -510,7 +526,17 @@ extension MusicSearchView {
                 print("Checking network & credentials before getSpotAlbum...")
                 print(spotifyManager.access_token)
                 if !spotifyManager.access_token.isEmpty {print("Going to get album");getSpotAlbum()}
-                else {spotifyManager.updateCredentialsIfNeeded{_ in print("Getting credentials, then album");getSpotAlbum()}}
+                else {spotifyManager.updateCredentialsIfNeeded{_ in
+                    spotifyManager.verifySubType{isPremium in
+                        if !isPremium {
+                            alertVars.alertType = .spotNeedPremium
+                            alertVars.activateAlert = true
+                            isLoading = false
+                        }
+                        else {getSpotAlbum()}
+                    }
+                    
+                }}
             }
             else{
                 alertVars.alertType = .failedConnection

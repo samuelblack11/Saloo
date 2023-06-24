@@ -73,6 +73,12 @@ struct SpotPlayerView: View {
         SpotPlayerView2
             .onAppear{
                     spotifyManager.updateCredentialsIfNeeded{success in
+                        spotifyManager.verifySubType{isPremium in
+                            if !isPremium {
+                                alertVars.alertType = .spotNeedPremium
+                                alertVars.activateAlert = true
+                            }
+                        }
                         spotifyManager.noInternet = {
                             alertVars.alertType = .failedConnection
                             alertVars.activateAlert = true

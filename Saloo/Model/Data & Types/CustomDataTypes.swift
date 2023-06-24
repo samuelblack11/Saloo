@@ -687,6 +687,7 @@ class SpotifyManager: ObservableObject {
     var auth_code = String()
     var refresh_token = String()
     var access_token = String()
+    var accessType = String()
     var accessExpiresAt = Date()
     var authForRedirect = String()
     var songID = String()
@@ -730,18 +731,7 @@ class SpotifyManager: ObservableObject {
         //print(accessExpiresAt)
 
         
-        updateCredentialsIfNeeded{success in
-            print("CREDENTIALS....\(success)")
-            print(self.access_token)
-            if success {
-                SpotifyAPI.shared.getCurrentUserProfile(accessToken: self.access_token) { (profile, error) in
-                    print("----")
-                    //if profile?.product != "premium" {
-                    //
-                    //}
-                }
-            }
-        }
+        updateCredentialsIfNeeded{success in}
             //self.checkifSpotifyIsInstalled()
     }
     
@@ -749,6 +739,15 @@ class SpotifyManager: ObservableObject {
         if let expirationDate = defaults.object(forKey: "SpotifyAccessTokenExpirationDate") as? Date {
             return Date() > expirationDate}
         else {return true}
+    }
+    
+    func verifySubType(completion: @escaping (Bool) -> Void){
+        SpotifyAPI.shared.getCurrentUserProfile(accessToken: self.access_token) { (profile, error) in
+            print("----")
+            if let subType = profile?.product {self.accessType = subType}
+            if self.accessType != "premium" {completion(false)}
+            else{completion(true)}
+        }
     }
     
     func updateCredentialsIfNeeded(completion: @escaping (Bool) -> Void) {
