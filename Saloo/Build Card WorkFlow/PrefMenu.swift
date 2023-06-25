@@ -287,6 +287,14 @@ extension PrefMenu {
             if status == .authorized {
                 amAPI.getUserToken { response, error in
                     print("Checking Token"); print(response); print("^^"); print(error)
+                    if response == nil {
+                        hideProgressView = true
+                        alertVars.alertType = .amAuthFailed
+                        alertVars.activateAlert = true
+                    }
+                    
+                    
+                    
                     completion()
                 }
             }

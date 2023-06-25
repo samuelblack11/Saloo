@@ -169,7 +169,7 @@ struct AlertViewMod: ViewModifier {
                         UIApplication.shared.open(URL(string: "https://spotify.com/premium")!)}
                     ))
                 case .amAuthFailed:
-                    return Alert(title: Text("Apple Music Authorization Failed. If you have a Apple Music Subscription, please try authorizing again"), dismissButton: .default(Text("OK"), action: {alertDismissAction?()}))
+                    return Alert(title: Text("Apple Music Authorization Failed"), message: Text("If you have an Apple Music Subscription and are logged into it on this device, please try again"), dismissButton: .default(Text("OK"), action: {alertDismissAction?()}))
                 case .gettingRecord:
                     return Alert(
                         title: Text("We're Saving Your Card to the Cloud."),
