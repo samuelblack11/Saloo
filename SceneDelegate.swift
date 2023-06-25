@@ -36,7 +36,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
         // Handle the URL if one was stored when the app was launched
         if let url = launchedURL, let windowScene = scene as? UIWindowScene {
             print("Set scene in SceneDidBecomeActive")
-            self.handleGridofCardsDisplay(windowScene: windowScene)
+            self.displayCard(windowScene: windowScene)
             launchedURL = nil // Clear the stored URL
         }
     }
@@ -81,63 +81,16 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
     }
     
     @objc private func handleDidAcceptShare(_ notification: Notification) {
-        if let windowScene = window?.windowScene {self.handleGridofCardsDisplay(windowScene: windowScene)}
+        if let windowScene = window?.windowScene {self.displayCard(windowScene: windowScene)}
     }
 
-    private func handleGridofCardsDisplay(windowScene: UIWindowScene) {
-        print("called* handleGridofCardsDisplay")
+    private func displayCard(windowScene: UIWindowScene) {
+        print("called* displayCard")
         guard self.gotRecord && self.connectToScene else { return }
         if self.appDelegate.musicSub.type == .Neither {self.updateMusicSubType()}
         AppState.shared.currentScreen = .startMenu
-        let contentView = ContentView(hasShownLaunchView: true,cardFromShare: self.coreCard)
-                            .onAppear {
-                                CardsForDisplay.shared.addCoreCard(card: self.coreCard, box: self.whichBoxForCKAccept!)
-                                if let musicSub = (self.defaults.object(forKey: "MusicSubType") as? String) {
-                                    if musicSub == "Spotify"{APIManager.shared.initializeSpotifyManager(){}}
-                                    if musicSub == "Apple Music"{APIManager.shared.initializeAM(){}}
-                                }
-                            }
-                            //.environmentObject(PersistenceController.shared)
-                            .environmentObject(AppState.shared)
-                            .environmentObject(CardsForDisplay.shared)
-                            .environmentObject(self.appDelegate)
-                            .environmentObject(self.networkMonitor)
-                            .environmentObject(APIManager.shared)
-                            .environmentObject(SpotifyManager.shared)
-                            .environmentObject(AlertVars.shared)
-                            .environmentObject(GettingRecord.shared)
-                            .environmentObject(CollectionManager.shared)
-                            .environmentObject(ScreenManager.shared)
-                            .environmentObject(CardsForDisplay.shared)
-                            .environmentObject(UserSession.shared)
-                            .environmentObject(AudioSessionManager.shared)
-                            .environmentObject(MusicSubscription.shared)
-                            .environmentObject(ShowDetailView.shared)
-                            .environmentObject(NetworkMonitor.shared)
-                            .environmentObject(CollageImage.shared)
-                            .environmentObject(Annotation.shared)
-                            .environmentObject(AddMusic.shared)
-                            .environmentObject(Occassion.shared)
-                            .environmentObject(ChosenCoverImageObject.shared)
-                            .environmentObject(ChosenImages.shared)
-                            .environmentObject(ChosenSong.shared)
-                            .environmentObject(NoteField.shared)
-                            .environmentObject(PlayerWrapper.shared)
-                            .environmentObject(PersistenceController.shared)
-
-        let window = UIWindow(windowScene: windowScene)
-        self.window = window
-        let initialViewController = UIHostingController(rootView: contentView)
-        let navigationController = UINavigationController(rootViewController: initialViewController)
-        navigationController.isNavigationBarHidden = true
-        window.rootViewController = navigationController
-        window.makeKeyAndVisible()
-        // Customize the transition animation
-        let transition = CATransition()
-        transition.duration = 5.3
-        transition.timingFunction = CAMediaTimingFunction(name: CAMediaTimingFunctionName.easeInEaseOut)
-        transition.type = CATransitionType.fade
-        navigationController.view.layer.add(transition, forKey: kCATransition)
+        CardsForDisplay.shared.addCoreCard(card: self.coreCard, box: self.whichBoxForCKAccept!)
+        AppState.shared.cardFromShare = self.coreCard
         self.gotRecord = false
     }
 
@@ -329,7 +282,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
             // Try to get the window scene from the shared application instance.
              if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene {
                  print("Trying to handle Display after parseRecord...")
-                 self.handleGridofCardsDisplay(windowScene: windowScene)
+                 self.displayCard(windowScene: windowScene)
              }
         }
     }
