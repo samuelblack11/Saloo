@@ -36,8 +36,6 @@ struct GridofCards: View {
     @State private var searchText = ""
     @State private var nameToDisplay: String?
     @State private var userID = UserDefaults.standard.object(forKey: "SalooUserID") as? String
-    @StateObject var audioManager = AudioSessionManager()
-    @ObservedObject var avPlayer = PlayerWrapper.shared
     @State private var displayCard = false
     @State var chosenCard: CoreCard?
     @State var cardToReport: CoreCard?
@@ -122,8 +120,6 @@ struct GridofCards: View {
         }
         .modifier(AlertViewMod(showAlert: alertVars.activateAlertBinding, activeAlert: alertVars.alertType, alertDismissAction: {
             deleteCoreCard(coreCard: cardToDelete!)}))
-        .environmentObject(audioManager)
-        .environmentObject(avPlayer)
         // "Search by \(sortByValue)"
         .searchable(text: $searchText, prompt: "Search by Card Name")
         .fullScreenCover(isPresented: $showStartMenu) {StartMenu()}

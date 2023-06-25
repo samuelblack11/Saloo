@@ -31,7 +31,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
     var launchedURL: URL?
     let customLog = OSLog(subsystem: "com.Saloo", category: "Custom Category")
     var spotifyManager: SpotifyManager?
-    
+
     func sceneDidBecomeActive(_ scene: UIScene) {
         // Handle the URL if one was stored when the app was launched
         if let url = launchedURL, let windowScene = scene as? UIWindowScene {
@@ -53,10 +53,13 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
     func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
         print("called* openURLContexts")
         guard let url = URLContexts.first?.url else { return }
-        //if url.absoluteString.contains("spotify_version") {
-        //    print("URL is from Spotify, ignoring")
-        //    return
-       // }
+        
+        if url.absoluteString == "spotify://" {
+            print("goToSpotInAppStore about to change")
+            SpotifyManager.shared.gotToAppInAppStore = true
+            return
+        }
+
         let container = CKContainer.default()
         container.fetchShareMetadata(with: url) { metadata, error in
             guard error == nil, let metadata = metadata else {

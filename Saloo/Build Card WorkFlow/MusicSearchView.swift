@@ -37,7 +37,6 @@ struct MusicSearchView: View {
     @State private var isPlaying = false
     @State private var songProgress = 0.0
     @EnvironmentObject var sceneDelegate: SceneDelegate
-    //@StateObject var spotifyAuth = SpotifyAuth()
     let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
     @State private var tokenCounter = 0
     @State private var authCode: String? = ""

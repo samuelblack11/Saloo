@@ -30,14 +30,13 @@ struct Saloo_App: App {
                         if musicSub == "Spotify"{APIManager.shared.initializeSpotifyManager(){}}
                         if musicSub == "Apple Music"{APIManager.shared.initializeAM(){}}
                     }
-                    print(";;;")
-                    print(appState.currentScreen)
-                    
                 }
                 .environment(\.managedObjectContext, persistenceController.persistentContainer.viewContext)
                 .environmentObject(SpotifyManager.shared)
+                .environmentObject(PlayerWrapper.shared)
                 .environmentObject(NetworkMonitor.shared)
                 .environmentObject(sceneDelegate)
+                .environmentObject(AudioSessionManager.shared)
                 .environmentObject(MusicSubscription.shared)
                 .environmentObject(ShowDetailView.shared)
                 .environmentObject(GettingRecord.shared)

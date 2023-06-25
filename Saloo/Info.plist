@@ -42,6 +42,7 @@
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
 		<string>apple music</string>
+		<string>music</string>
 		<string>saloo</string>
 		<string>spotify</string>
 	</array>

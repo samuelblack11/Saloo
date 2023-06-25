@@ -31,7 +31,6 @@ struct StartMenu: View {
 
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate2
     // @State var salooUserID: String = (UserDefaults.standard.object(forKey: "SalooUserID") as? String)!
-    //@StateObject var audioManager = AudioSessionManager()
     var possibleSubscriptionValues = ["Apple Music", "Spotify", "Neither"]
     let buildCardWorkFlow = """
     Build a Card

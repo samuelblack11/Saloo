@@ -710,7 +710,7 @@ class SpotifyManager: ObservableObject {
     var onTokenUpdate: (() -> Void)?
     var noNewTokenNeeded: (() -> Void)?
     var noInternet: (() -> Void)?
-
+    @Published var gotToAppInAppStore = Bool()
     
     init() {
         enum UserDefaultsError: Error {case noMusicSubType}
