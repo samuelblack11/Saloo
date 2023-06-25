@@ -76,7 +76,7 @@ struct MusicSearchView: View {
                         TextField("Track", text: $songSearch)
                         TextField("Artist", text: $artistSearch)
                         HStack{
-                            Image("Spotify_Icon_RGB_Green")
+                            Image("SpotifyIcon")
                                 .resizable()
                                 .aspectRatio(contentMode: .fit)
                                 .frame(height: 24) // height as per your text field
@@ -92,11 +92,15 @@ struct MusicSearchView: View {
                 }
                 else {
                     HStack {
-                    Image("AMIconRedOnWhite")
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .frame(height: 24)
-                        .padding(.top, 15)
+                        Button(action: {
+                            if let url = URL(string: "music://") {UIApplication.shared.open(url)}
+                        }) {
+                        Image("AMIcon")
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                            .frame(height: 24)
+                            .padding(.top, 15)
+                        }
                     TextField("Search Songs", text: $songSearch, onCommit: {
                         UIApplication.shared.resignFirstResponder()
                         if networkMonitor.isConnected {

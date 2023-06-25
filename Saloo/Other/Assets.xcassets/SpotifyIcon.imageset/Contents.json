@@ -1,15 +1,17 @@
 {
   "images" : [
     {
-      "filename" : "Spotify_Icon_RGB_Green.png",
+      "filename" : "SpotifyIcon44.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
+      "filename" : "SpotifyIcon88.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
     {
+      "filename" : "SpotifyIcon132.png",
       "idiom" : "universal",
       "scale" : "3x"
     }

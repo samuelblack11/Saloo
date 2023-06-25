@@ -54,11 +54,8 @@ extension PersistenceController {
                 }
             }
 
-            print("1111")
             //Setting the presentation style to .formSheet so there's no need to specify sourceView, sourceItem, or sourceRect.
             guard var topVC = UIApplication.shared.windows.first?.rootViewController else {return}
-            print("//////")
-            print(topVC)
             while let presentedVC = topVC.presentedViewController {topVC = presentedVC }
             sharingController.modalPresentationStyle = .formSheet
             topVC.present(sharingController, animated: true)
@@ -414,5 +411,11 @@ class MyCloudSharingController: UICloudSharingController {
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
         onDismiss?()
+    }
+}
+
+extension UIViewController {
+    var topmostViewController: UIViewController {
+        return presentedViewController?.topmostViewController ?? self
     }
 }

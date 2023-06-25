@@ -159,7 +159,7 @@ struct AMPlayerView: View {
                 Spacer()
             }
             .overlay(
-                Image("AMIconRedOnWhite")
+                Image("AMIcon")
                     .resizable()
                     .aspectRatio(contentMode: .fit)
                     .frame(height: 24) // height as per your text field

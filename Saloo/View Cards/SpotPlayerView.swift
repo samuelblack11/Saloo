@@ -57,6 +57,7 @@ struct SpotPlayerView: View {
     @EnvironmentObject var appState: AppState
     @Binding var showSPV: Bool
     @Binding var isLoading: Bool
+    @State private var isSpotifyInstalled = true
     @ObservedObject var alertVars = AlertVars.shared
     let spotGreen = Color(red: 29.0 / 255.0, green: 185.0 / 255.0, blue: 84.0 / 255.0)
     //@Binding var disableTextField: Bool
@@ -175,7 +176,7 @@ struct SpotPlayerView: View {
                     Spacer()
                 }
                 .overlay(
-                    Image("Spotify_Icon_RGB_Green")
+                    Image("SpotifyIcon")
                         .resizable()
                         .aspectRatio(contentMode: .fit)
                         .frame(height: 24) // height as per your text field
@@ -211,7 +212,7 @@ struct SpotPlayerView: View {
                         Text(convertToMinutes(seconds: Int(songDuration!)-Int(songProgress)))
                             .padding(.trailing, 10)
                     }
-                    else {
+                    else if isSpotifyInstalled {
                         ProgressView() // This is the built-in iOS activity indicator
                             .progressViewStyle(CircularProgressViewStyle(tint: .green))
                     }
@@ -371,16 +372,17 @@ struct SpotPlayerView: View {
     }
 
     func playSong() {
-        print("called playSong....")
         print(APIManager.shared.spotClientIdentifier)
         if let songID = songID {
-            print("songID = songID")
             let trackURI = "spotify:track:\(songID)"
             if spotifyManager.appRemote?.isConnected == false {
                 spotifyManager.appRemote?.connect()
                 spotifyManager.appRemote?.authorizeAndPlayURI(trackURI)
                 //spotifyManager.appRemote?.connect()
-                DispatchQueue.main.asyncAfter(deadline: .now() + 2) {spotifyManager.appRemote?.connect()}
+                DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                    spotifyManager.appRemote?.connect()
+                    redirectToAppStore()
+                }
             } else {
                 spotifyManager.appRemote?.playerAPI?.pause(spotifyManager.defaultCallback)
                 spotifyManager.appRemote?.playerAPI?.enqueueTrackUri(trackURI, callback: spotifyManager.defaultCallback)
@@ -394,7 +396,18 @@ struct SpotPlayerView: View {
         }
     }
 
-    
+    func redirectToAppStore() {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+            print("+++")
+            if let isConnected = spotifyManager.appRemote?.isConnected, !isConnected {
+                self.showProgressView = false
+                self.isSpotifyInstalled = false
+                let spotifyAppStoreURL = URL(string: "https://apps.apple.com/app/spotify-music/id324684580")!
+                UIApplication.shared.open(spotifyAppStoreURL)
+            }
+        }
+    }
+
     
     
     

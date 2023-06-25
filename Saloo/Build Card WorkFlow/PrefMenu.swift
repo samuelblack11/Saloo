@@ -60,21 +60,29 @@ struct PrefMenu: View {
     var body: some View {
         NavigationStack {
             VStack {
-                Text("Do you subscribe to either of these services?").foregroundColor(.black)
-                Text("This will help optimize your experience").foregroundColor(.black)
-                Text("Current Selection: \(currentSubSelection)").foregroundColor(.black)
+                Text("Do you subscribe to either of these services?").foregroundColor(colorScheme == .dark ? .white : .black)
+                Text("This will help optimize your experience").foregroundColor(colorScheme == .dark ? .white : .black)
+                Text("Current Selection: \(currentSubSelection)").foregroundColor(colorScheme == .dark ? .white : .black)
 
                 ZStack {
                     ScrollView {
                         VStack {
                             Divider()
-                                VStack {
-                                    Image("AMLogoBlack")
+                            VStack {
+                                if colorScheme == .dark {
+                                    Image("AMBadge")
+                                        .resizable()
+                                        .scaledToFit()
+                                        .frame(width: UIScreen.main.bounds.width)
+                                        .clipped()
+                                } else {
+                                    Image("AMLockupBlackType")
                                         .resizable()
                                         .scaledToFit()
                                         .frame(width: UIScreen.main.bounds.width)
                                         .clipped()
                                 }
+                            }
                                 .background(colorScheme == .dark ? Color.black : Color.white) // Setting the background color
                             .onTapGesture {
                                 musicColor = .pink
@@ -148,7 +156,7 @@ struct PrefMenu: View {
                             Divider()
                             Text("I don't subscribe to either")
                                 .font(.system(size: 24))
-                                .foregroundColor(.black)
+                                .foregroundColor(colorScheme == .dark ? .white : .black)
                                 .frame(height: listItemHeight)
                                 .onTapGesture {appDelegate.musicSub.type = .Neither; defaults.set("Neither", forKey: "MusicSubType"); appState.currentScreen = .startMenu}
                             Divider()
@@ -164,7 +172,6 @@ struct PrefMenu: View {
                 }
                 
             }
-            .background(Color.white.edgesIgnoringSafeArea(.all))
             .navigationBarItems(leading:Button {appState.currentScreen = .startMenu} label: {Image(systemName: "chevron.left").foregroundColor(.blue); Text("Back")}.disabled(gettingRecord.isShowingActivityIndicator))
         }
         .onDisappear {

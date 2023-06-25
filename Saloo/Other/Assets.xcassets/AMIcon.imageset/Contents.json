@@ -1,15 +1,17 @@
 {
   "images" : [
     {
-      "filename" : "AMIconRedOnWhite.png",
+      "filename" : "AMIcon44.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
+      "filename" : "AMIcon88.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
     {
+      "filename" : "AMIcon132.png",
       "idiom" : "universal",
       "scale" : "3x"
     }

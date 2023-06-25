@@ -655,7 +655,9 @@ class CollectionManager: ObservableObject {
         "Cinco De Mayo 🇲🇽": CollectionType.spring,
         "Halloween 🎃": CollectionType.fall,
         "Lunar New Year 🐉": CollectionType.winter,
-        "Valentine's Day ❤️": CollectionType.winter
+        "Valentine's Day ❤️": CollectionType.winter,
+        "Baby Shower 🐣": CollectionType.yearRound
+
     ]
 
     
@@ -737,8 +739,7 @@ class SpotifyManager: ObservableObject {
         //print(access_token)
         //print(accessExpiresAt)
         
-        updateCredentialsIfNeeded{success in}
-            //self.checkifSpotifyIsInstalled()
+        updateCredentialsIfNeeded{success in }
     }
     
     func hasTokenExpired() -> Bool {
@@ -802,19 +803,6 @@ class SpotifyManager: ObservableObject {
             
             // Call the onTokenUpdate handler
             self.onTokenUpdate?()
-        }
-    }
-
-    func checkifSpotifyIsInstalled() {
-        let spotifyURL = URL(string: "spotify://")!
-            
-        if UIApplication.shared.canOpenURL(spotifyURL) {
-            // Spotify is installed, you can add further code if needed
-            print("Spotify App installed on device.")
-        } else {
-            // Spotify is not installed, redirect to App Store
-            let spotifyAppStoreURL = URL(string: "https://apps.apple.com/app/spotify-music/id324684580")!
-            UIApplication.shared.open(spotifyAppStoreURL)
         }
     }
 
@@ -892,7 +880,6 @@ class SpotPlayerViewDelegate: NSObject, SPTAppRemoteDelegate {
 
     func appRemote(_ appRemote: SPTAppRemote, didFailConnectionAttemptWithError error: Error?) {
         print("Failed to connect appRemote")
-        SpotifyManager.shared.checkifSpotifyIsInstalled()
         if let error = error {print("Error: \(error)")}
     }
 }
