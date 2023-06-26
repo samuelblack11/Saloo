@@ -71,7 +71,14 @@ struct CollageBuilder: View {
                         }
                         else {
                             appState.currentScreen = .buildCard([.writeNoteView])
-                            collageImage.collageImage = snap2()
+                               Task {
+                                   if let imageData = await snap2() {
+                                       collageImage.collageImage = imageData
+                                   } else {
+                                       // Handle the case where imageData is nil.
+                                   }
+                               }
+
                         }
                     }.padding(.bottom, 30)
                         .navigationBarItems(leading: Button {appState.currentScreen = .buildCard([.collageStyleMenu])} label: {
@@ -220,17 +227,20 @@ extension CollageBuilder {
         return (w, h)
     }
 
-    @MainActor func snap2() -> Data {
+    @MainActor func snap2() async -> Data? {
         let renderer = ImageRenderer(content: collageView)
-        
         renderer.scale = displayScale
-        var data = Data()
-        if let uiImage = renderer.uiImage {
-            data = uiImage.jpegData(compressionQuality: 1.0)!
-            //data = uiImage.pngData()!
+        
+        guard let uiImage = renderer.uiImage,
+              let imageData = uiImage.pngData() else {
+            return nil
         }
-        return data
+        return imageData
     }
+
+
+
+
 
     func loadImage(chosenImage: UIImage?) {
         
@@ -288,4 +298,3 @@ extension View {
         }
     }
 }
-

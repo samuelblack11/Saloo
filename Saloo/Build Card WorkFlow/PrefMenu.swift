@@ -64,7 +64,7 @@ struct PrefMenu: View {
         NavigationStack {
             VStack {
                 Text("Do you subscribe to either of these services?").foregroundColor(colorScheme == .dark ? .white : .black)
-                Text("This will help optimize your experience").foregroundColor(colorScheme == .dark ? .white : .black)
+                Text("This will optimize your experience").foregroundColor(colorScheme == .dark ? .white : .black)
                 Text("Current Selection: \(currentSubSelection)").foregroundColor(colorScheme == .dark ? .white : .black)
 
                 ZStack {
@@ -103,59 +103,7 @@ struct PrefMenu: View {
                                 .clipped()
                         }
                         .frame(height: listItemHeight)
-                        .onTapGesture {
-                            musicColor = .green
-                            hideProgressView = false
-                            apiManager.initializeSpotifyManager {
-                                if spotifyManager.auth_code == "AuthFailed" {spotifyManager.auth_code = ""}
-                                counter = 0; tokenCounter = 0
-                                //showWebView = false
-                                refreshAccessToken = false
-                                spotifyManager.updateCredentialsIfNeeded{success in
-                                    print("updateCredentials success \(success)")
-                                    if success {
-                                        spotifyManager.verifySubType { isPremium in
-                                            if isPremium {
-                                                spotifyManager.onTokenUpdate = {
-                                                    currentSubSelection = "Spotify"
-                                                    appDelegate.musicSub.type = .Spotify
-                                                    defaults.set("Spotify", forKey: "MusicSubType")
-                                                    hideProgressView = true
-                                                    appState.currentScreen = .startMenu
-                                                }
-                                                spotifyManager.noNewTokenNeeded = {
-                                                    print("No New Token Needed...")
-                                                    hideProgressView = true
-                                                    alertVars.alertType = .musicAuthSuccessful
-                                                    alertVars.activateAlert = true
-                                                }
-                                            }
-                                            else { //if not premium
-                                                currentSubSelection = "Neither"
-                                                appDelegate.musicSub.type = .Neither
-                                                defaults.set("Neither", forKey: "MusicSubType")
-                                                alertVars.alertType = .spotNeedPremium
-                                                alertVars.activateAlert = true
-                                                hideProgressView = true
-                                            }
-                                        }
-                                    }
-                                    else {
-                                        spotifyManager.onTokenUpdate = {
-                                            alertVars.alertType = .spotAuthFailed
-                                            alertVars.activateAlert = true
-                                            currentSubSelection = "Neither"
-                                            appDelegate.musicSub.type = .Neither
-                                            hideProgressView = true
-                                        }
-                                        spotifyManager.noInternet = {
-                                            alertVars.alertType = .failedConnection
-                                            alertVars.activateAlert = true
-                                        }
-                                    }
-                                }
-                            }
-                        }
+                        .onTapGesture {spotAuthLogic()}
                         Divider()
                         Text("I don't subscribe to either")
                             .font(.system(size: 24))
@@ -167,11 +115,11 @@ struct PrefMenu: View {
                         HStack {
                             Button(action: {
                                 openAppOrAppStore(scheme: "music://", appStore: "https://apps.apple.com/app/spotify-music-and-podcasts/id324684580")
-                            }) {Text("Visit Apple Music")}
+                            }) {Text("Visit the Music App")}
                             Spacer()
                             Button(action: {
                                 openAppOrAppStore(scheme: "spotify://", appStore: "https://apps.apple.com/app/spotify-music-and-podcasts/id324684580")
-                            }) {Text("Visit Spotify")}
+                            }) {Text("Visit the Spotify App")}
                         }
                     }
                // }
@@ -200,8 +148,7 @@ struct PrefMenu: View {
             else {currentSubSelection = "Neither"; appDelegate.musicSub.type = .Neither; defaults.set("Neither", forKey: "MusicSubType")}
         }
         .modifier(AlertViewMod(showAlert: alertVars.activateAlertBinding, activeAlert: alertVars.alertType, alertDismissAction: {
-            hideProgressView = true
-            }))
+            hideProgressView = true}))
         .sheet(isPresented: $spotifyManager.showWebView) {
             WebVCView(authURLForView: spotifyManager.authForRedirect, authCode: $authCode)
                 .onReceive(Just(authCode)) { newAuthCode in
@@ -246,6 +193,93 @@ struct PrefMenu: View {
 }
 
 extension PrefMenu {
+    
+    
+    
+    //func resetSpotCredentials(completion: @escaping () -> Void) {
+    //    spotifyManager.auth_code =  ""
+    //    spotifyManager.refresh_token =  ""
+    //    spotifyManager.access_token =  ""
+    //    spotifyManager.authForRedirect =  ""
+    //    spotifyManager.accessExpiresAt = Date()
+    //    self.defaults.set("", forKey: "SpotifyAccessToken")
+   //     self.defaults.set("", forKey: "SpotifyAccessTokenExpirationDate")
+    //    self.defaults.set("", forKey: "SpotifyRefreshToken")
+   //     self.defaults.set("", forKey: "SpotifyAuthCode")
+   //     self.defaults.set("Neither", forKey: "MusicSubType")
+   //     print("_-------")
+   //     print(spotifyManager.authForRedirect)
+    //    completion()
+   // }
+    
+    
+    func spotAuthLogic() {
+        musicColor = .green
+        hideProgressView = false
+        apiManager.initializeSpotifyManager {
+            if spotifyManager.auth_code == "AuthFailed" {spotifyManager.auth_code = ""}
+            counter = 0; tokenCounter = 0
+            //showWebView = false
+            refreshAccessToken = false
+            spotifyManager.noNewTokenNeeded = {
+                print("No New Token Needed...")
+                currentSubSelection = "Spotify"
+                appDelegate.musicSub.type = .Spotify
+                defaults.set("Spotify", forKey: "MusicSubType")
+                hideProgressView = true
+                alertVars.alertType = .musicAuthSuccessful
+                alertVars.activateAlert = true
+
+            }
+            spotifyManager.updateCredentialsIfNeeded{success in
+                if success {
+                    spotifyManager.verifySubType { isPremium in
+                        if isPremium {
+                            print("isPremium...\(isPremium)")
+                            spotifyManager.onTokenUpdate = {
+                                print("Called onTokenUpdate")
+                                currentSubSelection = "Spotify"
+                                appDelegate.musicSub.type = .Spotify
+                                defaults.set("Spotify", forKey: "MusicSubType")
+                                hideProgressView = true
+                                appState.currentScreen = .startMenu
+                            }
+                            spotifyManager.onTokenUpdate?()
+                            spotifyManager.noNewTokenNeeded?()
+                        }
+                        else { //if not premium
+                            currentSubSelection = "Neither"
+                            appDelegate.musicSub.type = .Neither
+                            defaults.set("Neither", forKey: "MusicSubType")
+                            alertVars.alertType = .spotNeedPremium
+                            alertVars.activateAlert = true
+                            hideProgressView = true
+                        }
+                    }
+                }
+                else {
+                    spotifyManager.onTokenUpdate = {
+                        alertVars.alertType = .spotAuthFailed
+                        alertVars.activateAlert = true
+                        currentSubSelection = "Neither"
+                        appDelegate.musicSub.type = .Neither
+                        hideProgressView = true
+                    }
+                    spotifyManager.onTokenUpdate?()
+                    spotifyManager.noInternet = {
+                        alertVars.alertType = .failedConnection
+                        alertVars.activateAlert = true
+                    }
+                    spotifyManager.noInternet?()
+                }
+            }
+        }
+    }
+    
+    
+    
+    
+    
     
     func openAppOrAppStore(scheme: String, appStore: String) {
         if let url = URL(string: scheme) {

@@ -40,7 +40,6 @@ struct SpotPlayerView: View {
     @State private var authCode: String? = ""
     @State private var invalidAuthCode = false
     @State private var tokenCounter = 0
-    @State private var showWebView = false
     @State var associatedRecord: CKRecord?
     @State var coreCard: CoreCard?
     @State var spotAlbumID: String?

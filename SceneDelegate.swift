@@ -76,7 +76,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
         NotificationCenter.default.addObserver(self, selector: #selector(handleDidAcceptShare(_:)), name: .didAcceptShare, object: nil)
         
         if connectionOptions.cloudKitShareMetadata != nil {
-            //GettingRecord.shared.isLoadingAlert = true
             self.processShareMetadata(connectionOptions.cloudKitShareMetadata!)
         }
         
@@ -177,6 +176,11 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
         let gettingRecord = GettingRecord.shared
         gettingRecord.isLoadingAlert = true
         print("called getRecordViaQuery....")
+        print(shareMetaData.ownerIdentity)
+        
+        
+        
+        
         let pred = NSPredicate(value: true)
         let query = CKQuery(recordType: "CD_CoreCard", predicate: pred)
         let op3 = CKQueryOperation(query: query)

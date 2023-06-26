@@ -63,7 +63,7 @@ struct eCardView: View {
     @State var spotSongURL: String?
     @EnvironmentObject var userSession: UserSession
     @State private var hasShownLaunchView: Bool = true
-
+    let screenPadding: CGFloat = 5
     var body: some View {
         ZStack {
             if cardType == "musicNoGift" {MusicNoGiftView.modifier(AlertViewMod(showAlert: alertVars.activateAlertBinding, activeAlert: alertVars.alertType))}
@@ -92,7 +92,7 @@ struct eCardView: View {
         return VStack {
             if getCoverSize().1 < 1.3 {
                 HStack {
-                    VStack {CoverViewTall(); Spacer(); CollageAndAnnotationView()}
+                    VStack {CoverViewTall(); Spacer(); CollageView()}
                     VStack {
                         VStack{NoteViewSquare()}.frame(height: UIScreen.main.bounds.height / 2.3)
 
@@ -108,11 +108,11 @@ struct eCardView: View {
                         NoteView()
                     }
                     .frame(maxHeight: UIScreen.screenHeight/2.1)
-                    HStack {CollageAndAnnotationView(); MusicView}
+                    HStack {CollageView(); MusicView}
                 }
                 .onAppear{print("MusicNoGiftView Appeared...")}
             }
-        }
+        }.padding(.horizontal, screenPadding)
     }
     
     
@@ -121,69 +121,26 @@ struct eCardView: View {
             VStack(alignment: .center) {
                 if getCoverSize().1 < 1.3 {
                     let height = geometry.size.height / 2.2
-                    HStack{CoverViewTall();CollageAndAnnotationView()}.frame(height: height)
+                    HStack{CoverViewTall();CollageView()}.frame(height: height)
                     NoteViewSquare()
                 }
                 else {
                     VStack(alignment: .center) {
                         CoverViewWide2()
                         Spacer()
-                        HStack{CollageAndAnnotationView();NoteViewSquare()}
+                        HStack{CollageView();NoteViewSquare()}
                     }
                     .frame(maxWidth: .infinity)
                 }
             }
-        }
-    }
-    
-    func CoverView() -> some View {
-        return Image(uiImage: UIImage(data: coverImage)!)
-                //.interpolation(.none).resizable().scaledToFit()
-    }
-    
-    func CoverViewWide1() -> some View {
-        return Image(uiImage: UIImage(data: coverImage)!)
-                .interpolation(.none).resizable()
-                .frame(width: UIScreen.main.bounds.width/1.05, height: UIScreen.main.bounds.height / 4.2, alignment: .center)
-                .scaledToFill()
-    }
-
-    func CoverViewWide2() -> some View {
-        return Image(uiImage: UIImage(data: coverImage)!)
-                .interpolation(.none).resizable()
-                .frame(width: UIScreen.main.bounds.width/1.05, height: UIScreen.main.bounds.height / 3.3, alignment: .center)
-                .scaledToFill()
+        }.padding(.horizontal, screenPadding)
     }
     
     
-    func CoverViewTall() -> some View {
-        return Image(uiImage: UIImage(data: coverImage)!)
-            //.interpolation(.none).resizable().scaledToFit()
-            .resizable()
-            .aspectRatio(contentMode: .fit)
-            .frame(maxWidth: UIScreen.main.bounds.height / 2.2, maxHeight: UIScreen.main.bounds.height / 2.3)
-    }
     
-    func NoteView() -> some View {
+    func annotationView() -> some View {
         return
-        Text(eCardText)
-            .font(Font.custom(font, size: 500)).minimumScaleFactor(0.01)
-            .frame(width: UIScreen.screenWidth/2.2, height: UIScreen.screenHeight/4.0)
-    }
-    
-    func NoteViewSquare() -> some View {
-        return
-        Text(eCardText)
-            .font(Font.custom(font, size: 500)).minimumScaleFactor(0.01)
-            .frame(maxWidth: UIScreen.main.bounds.height / 2.2, maxHeight: UIScreen.main.bounds.height / 2.3)
-    }
-    
-    func CollageAndAnnotationView() -> some View {
-        return VStack(spacing: 5) {
-            Image(uiImage: UIImage(data: collageImage)!)
-                .interpolation(.high)
-                .resizable()
-                .scaledToFit()
+        VStack {
             Text(text1)
                 .font(.system(size: 10))
             HStack(spacing:0){
@@ -196,6 +153,74 @@ struct eCardView: View {
                         .font(.system(size: 10))
                 }
             }
+        }
+    }
+    
+    
+    
+    func CoverView() -> some View {
+        return
+        VStack {
+            Image(uiImage: UIImage(data: coverImage)!)
+            //.interpolation(.none).resizable().scaledToFit()
+            annotationView()
+        }
+    }
+    
+    func CoverViewWide1() -> some View {
+        return
+        VStack {
+            Image(uiImage: UIImage(data: coverImage)!)
+                .interpolation(.none).resizable()
+                .frame(width: UIScreen.main.bounds.width/1.05, height: UIScreen.main.bounds.height / 4.2, alignment: .center)
+                .scaledToFill()
+            annotationView()
+        }
+    }
+
+    func CoverViewWide2() -> some View {
+        return
+        VStack {
+            Image(uiImage: UIImage(data: coverImage)!)
+                .interpolation(.none).resizable()
+                .frame(width: UIScreen.main.bounds.width/1.05, height: UIScreen.main.bounds.height / 3.3, alignment: .center)
+                .scaledToFill()
+            annotationView()
+        }
+    }
+    
+    
+    func CoverViewTall() -> some View {
+        return
+        VStack {
+            Image(uiImage: UIImage(data: coverImage)!)
+                .resizable()
+                .aspectRatio(contentMode: .fit)
+                .frame(maxWidth: UIScreen.main.bounds.height / 2.2, maxHeight: UIScreen.main.bounds.height / 2.3)
+            annotationView()
+        }
+    }
+    
+    func NoteView() -> some View {
+        return
+        Text(eCardText)
+            .font(Font.custom(font, size: 500)).minimumScaleFactor(0.01)
+            .frame(width: UIScreen.screenWidth/2.2, height: UIScreen.screenHeight/4.7)
+    }
+    
+    func NoteViewSquare() -> some View {
+        return
+        Text(eCardText)
+            .font(Font.custom(font, size: 500)).minimumScaleFactor(0.01)
+            .frame(maxWidth: UIScreen.main.bounds.height / 2.2, maxHeight: UIScreen.main.bounds.height / 2.3)
+    }
+    
+    func CollageView() -> some View {
+        return VStack(spacing: 5) {
+            Image(uiImage: UIImage(data: collageImage)!)
+                .interpolation(.high)
+                .resizable()
+                .scaledToFit()
         }
         .frame(maxWidth: UIScreen.main.bounds.height / 2.2, maxHeight: UIScreen.main.bounds.height / 2.3, alignment: .center)
     }
@@ -285,7 +310,7 @@ extension eCardView {
     func NoMusicNoGift() -> some View {
         VStack {
             CoverView()
-            CollageAndAnnotationView()
+            CollageView()
         }
     }
     

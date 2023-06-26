@@ -66,8 +66,17 @@ struct OccassionsMenu: View {
                         .scaleEffect(2)
                 }
                     List {
-                        Section(header: Text("Personal & Search")) {
-                            Text("Select from Photo Library ")
+                        Section(header:
+                                    VStack(alignment: .leading) {
+                                        Text("Personal & Search")
+                                            .font(.headline)
+                                        Text("Use a personal photo instead of one of Saloo's occasion-specific options")
+                                            .font(.caption)
+                                            .foregroundColor(.gray)
+                                            .textCase(.none)
+                                    }
+                                )
+                        {Text("Select from Photo Library ")
                             //.listRowBackground(appDelegate.appColor)
                                 .onTapGesture {self.showCameraCapture = false; self.showImagePicker = true}
                                 .fullScreenCover(isPresented: $showImagePicker){ImagePicker(image: $coverImageFromLibrary, explicitPhotoAlert: $explicitPhotoAlert, isImageLoading: $isImageLoading)}
@@ -146,6 +155,7 @@ struct OccassionsMenu: View {
         .alert(isPresented: $explicitPhotoAlert) {
             Alert(title: Text("Error"), message: Text("The selected image contains explicit content and cannot be used."), dismissButton: .default(Text("OK")))
         }
+        .navigationTitle("Choose Occasion")
         .navigationBarItems(leading:Button {appState.currentScreen = .startMenu} label: {Image(systemName: "chevron.left").foregroundColor(.blue); Text("Back")}.disabled(gettingRecord.isShowingActivityIndicator))
         .font(.headline)
         .listStyle(GroupedListStyle())

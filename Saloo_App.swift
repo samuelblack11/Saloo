@@ -126,7 +126,7 @@ extension View {
 }
 
 enum ActiveAlert {
-    case failedConnection, signInFailure, explicitPhoto, offensiveText, namesNotEntered, showCardComplete, showFailedToShare, addMusicPrompt, spotAuthFailed, amAuthFailed, AMSongNotAvailable, gettingRecord, userBanned, reportComplete, deleteCard, mustSelectPic, musicAuthSuccessful, spotNeedPremium
+    case failedConnection, signInFailure, explicitPhoto, offensiveText, namesNotEntered, showCardComplete, showFailedToShare, addMusicPrompt, spotAuthFailed, amAuthFailed, AMSongNotAvailable, gettingRecord, userBanned, reportComplete, deleteCard, mustSelectPic, musicAuthSuccessful, spotNeedPremium, switchSpotAccounts
 }
 
 struct AlertViewMod: ViewModifier {
@@ -135,6 +135,9 @@ struct AlertViewMod: ViewModifier {
     var activeAlert: ActiveAlert
     var alertDismissAction: (() -> Void)?    
     var secondDismissAction: (() -> Void)?
+    var switchSpotAccounts: (() -> Void)?
+    var keepSpotAccount: (() -> Void)?
+
     @State var cardToDelete: CoreCard?
     
     func body(content: Content) -> some View {
@@ -168,6 +171,10 @@ struct AlertViewMod: ViewModifier {
                     return Alert(title: Text("Sorry, Saloo Requires a Spotify Premium Membership in order to Connect."), message: Text("Spotify Premium lets you play any track, ad-free and with better audio quality."), primaryButton: .default(Text("Ok ☹️"), action: {alertDismissAction?()}), secondaryButton: .default(Text("Try Spotify Premium for Free"), action: {
                         UIApplication.shared.open(URL(string: "https://spotify.com/premium")!)}
                     ))
+                case .switchSpotAccounts:
+                    return Alert(title: Text("You're currently connected to a Spotify account"), message: Text("Would you like to connect to a different one?"), primaryButton: .default(Text("Yes"), action: {switchSpotAccounts?()}), secondaryButton: .default(Text("No"), action: {keepSpotAccount?()}))
+                    
+                    
                 case .amAuthFailed:
                     return Alert(title: Text("Apple Music Authorization Failed"), message: Text("If you have an Apple Music Subscription and are logged into it on this device, please try again"), dismissButton: .default(Text("OK"), action: {alertDismissAction?()}))
                 case .gettingRecord:
@@ -200,7 +207,7 @@ struct AlertViewMod: ViewModifier {
                     )
                 case .addMusicPrompt:
                     return Alert(title: Text("Add Song to Card?"),
-                                 primaryButton: .default(Text("Hell Yea"), action: {alertDismissAction?()}),
+                                 primaryButton: .default(Text("You Bet"), action: {alertDismissAction?()}),
                                  secondaryButton: .default(Text("No Thanks"), action: {secondDismissAction?()}))
                 case .AMSongNotAvailable:
                     return Alert(title: Text("Song Not Available"), message: Text("Sorry, this song isn't available. Please select a different one."), dismissButton: .default(Text("OK")){alertDismissAction?()})

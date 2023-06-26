@@ -733,12 +733,6 @@ class SpotifyManager: ObservableObject {
         refresh_token = defaults.object(forKey: "SpotifyRefreshToken") as? String ?? ""
         access_token = defaults.object(forKey: "SpotifyAccessToken") as? String ?? ""
         accessExpiresAt = defaults.object(forKey: "SpotifyAccessTokenExpirationDate") as? Date ?? Date.distantPast
-        //print("----")
-        //print(auth_code)
-        //print(refresh_token)
-        //print(access_token)
-        //print(accessExpiresAt)
-        
         updateCredentialsIfNeeded{success in }
     }
     
@@ -775,13 +769,14 @@ class SpotifyManager: ObservableObject {
                 completion(true)
             }
             else {
-                completion(true)
+                print("no new token needed...")
                 self.noNewTokenNeeded?()
+                completion(true)
             }
         } else {
             print("Else called in udpateSpotCredentials...")
-            completion(false)
             self.noInternet?()
+            completion(false)
         }
     }
 
@@ -799,10 +794,8 @@ class SpotifyManager: ObservableObject {
         SpotifyAPI.shared.getTokenViaRefresh(refresh_token: refresh_token) { (response, error) in
             let success = self.processTokenRequest(response: response, error: error)
             self.instantiateAppRemote()
-            completion(success)
-            
-            // Call the onTokenUpdate handler
             self.onTokenUpdate?()
+            completion(success)
         }
     }
 

@@ -75,7 +75,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, ObservableObject {
             if let error = error {
                 print("\(#function): Failed to accept share invitations: \(error)")
                 // repeat same logic for accept share as participant, and use to open the specified record.
-                self.acceptedShare = cloudKitShareMetadata.share; print("Trying to Get Share as Owner...")
+                self.acceptedShare = cloudKitShareMetadata.share; print("Trying to Get Share as Owner...UGH BOOO")
                 waitingToAcceptRecord = true
                 Task {
                     await self.getRecordViaQuery(shareMetaData: cloudKitShareMetadata, targetDatabase: PersistenceController.shared.cloudKitContainer.privateCloudDatabase)

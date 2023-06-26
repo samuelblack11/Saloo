@@ -51,7 +51,7 @@ struct StartMenu: View {
                     Text("Drafts 📓").onTapGesture {screenManager.advance(); appState.currentScreen = .draft}
                     Text("Inbox 📥").onTapGesture {screenManager.advance(); appState.currentScreen = .inbox}
                     Text("Outbox 📥") .onTapGesture {screenManager.advance(); appState.currentScreen = .outbox}
-                    Text("Preferences 📱").onTapGesture {appState.currentScreen = .preferences}
+                    Text("Music Preferences 📱").onTapGesture {appState.currentScreen = .preferences}
                 }
                 LoadingOverlay(hasShownLaunchView: $hasShownLaunchView)
 
