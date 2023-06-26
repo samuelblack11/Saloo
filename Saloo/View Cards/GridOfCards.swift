@@ -193,7 +193,7 @@ extension GridofCards {
     @ViewBuilder func contextMenuButtons(card: CoreCard) -> some View {
         if let currentUserRecordID = self.currentUserRecordID, card.creator == currentUserRecordID.recordName {
             if persistenceController.privatePersistentStore.contains(manageObject: card) {
-                Button("Create New Share") {showCloudShareController = true;
+                Button("Share Card") {showCloudShareController = true;
                     if networkMonitor.isConnected{createNewShare(coreCard: card)}
                     else{alertVars.alertType = .failedConnection; alertVars.activateAlert = true}}
                 .disabled(cardsForDisplayEnv.shareStatus(card: card).0)
@@ -206,12 +206,12 @@ extension GridofCards {
         Button {
             if networkMonitor.isConnected {chosenCard = card; chosenGridCardType = card.cardType;segueToEnlarge = true; displayCard = true}
             else {alertVars.alertType = .failedConnection; alertVars.activateAlert = true}
-        } label: {Text("Enlarge eCard"); Image(systemName: "plus.magnifyingglass")}
+        } label: {Text("View Card"); Image(systemName: "plus.magnifyingglass")}
         Button(action: {
             alertVars.alertType = .deleteCard
             alertVars.activateAlert = true
             cardToDelete = card
-        }) {HStack {Text("Delete eCard"); Image(systemName: "trash") }}
+        }) {HStack {Text("Delete Card"); Image(systemName: "trash") }}
         Button(action: {cardToReport = card}) {
             HStack {Text("Report Offensive Content"); Image(systemName: "exclamationmark.octagon")}}
         }
@@ -240,10 +240,18 @@ extension GridofCards {
     }
     
     var sortResults: some View {
-        HStack {
-            Text("Sort By:").padding(.leading, 5).font(Font.custom(sortByValue, size: 12))
-            Picker("", selection: $sortByValue) {ForEach(sortOptions, id:\.self) {sortOption in Text(sortOption)}}
-            Spacer()
+        VStack {
+            HStack {
+                Text("Sort By:").padding(.leading, 5).font(Font.custom(sortByValue, size: 12))
+                Picker("", selection: $sortByValue) {ForEach(sortOptions, id:\.self) {sortOption in Text(sortOption)}}
+                Spacer()
+            }
+            if coreCards.count > 0 {
+                Text("Tap and Hold to Access Card")
+                    .font(.caption)
+                    .foregroundColor(.gray)
+                    .textCase(.none)
+            }
         }
     }
     

@@ -70,7 +70,7 @@ struct OccassionsMenu: View {
                                     VStack(alignment: .leading) {
                                         Text("Personal & Search")
                                             .font(.headline)
-                                        Text("Use a personal photo instead of one of Saloo's occasion-specific options")
+                                        Text("Use a personal photo instead of one from Saloo's occasion-specific options")
                                             .font(.caption)
                                             .foregroundColor(.gray)
                                             .textCase(.none)

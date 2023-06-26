@@ -72,8 +72,9 @@ struct MusicSearchView: View {
             ZStack {
                 if appDelegate.musicSub.type == .Spotify {
                     VStack {
-                        TextField("Track", text: $songSearch)
-                        TextField("Artist", text: $artistSearch)
+                        TextField("Enter Song Name Here", text: $songSearch)
+                        Text("And/Or")
+                        TextField("Enter Artist Name Here", text: $artistSearch)
                         HStack{
                             Image("SpotifyIcon")
                                 .resizable()

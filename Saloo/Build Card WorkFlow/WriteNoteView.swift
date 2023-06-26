@@ -56,6 +56,16 @@ struct WriteNoteView: View {
                         .border(Color.red, width: message.hasReachedLimit ? 1 : 0)
                         .frame(minHeight: UIScreen.screenHeight/2.5)
                         .font(Font.custom(noteField.font, size: 14))
+                    Text("Enter the following details for your card in order to save")
+                        .font(.caption)
+                        .foregroundColor(.gray)
+                        .textCase(.none)
+                        .multilineTextAlignment(.center)
+                    Text("This will not appear in the card")
+                        .font(.caption)
+                        .foregroundColor(.gray)
+                        .textCase(.none)
+                        .multilineTextAlignment(.center)
                     TextField("To:", text: Binding(
                             get: {
                                 if noteField.recipient.value == "To:" {return ""}

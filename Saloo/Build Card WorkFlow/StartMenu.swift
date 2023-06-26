@@ -43,11 +43,13 @@ struct StartMenu: View {
 """
     
     
+    
+    
     var body: some View {
         NavigationView {
             ZStack {
                 List {
-                    Text(buildCardWorkFlow).onTapGesture {appState.currentScreen = .buildCard([.occasionsMenu])}
+                    Text("Build a Card").onTapGesture {appState.currentScreen = .buildCard([.occasionsMenu])}
                     Text("Drafts 📓").onTapGesture {screenManager.advance(); appState.currentScreen = .draft}
                     Text("Inbox 📥").onTapGesture {screenManager.advance(); appState.currentScreen = .inbox}
                     Text("Outbox 📥") .onTapGesture {screenManager.advance(); appState.currentScreen = .outbox}
