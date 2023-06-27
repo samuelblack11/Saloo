@@ -129,34 +129,22 @@ struct GridofCards: View {
     func didDismiss() {chosenCard = nil}
     
     private func cardView(for gridCard: CoreCard, shareable: Bool = true) -> some View {
-            VStack(spacing: 0) {
-                VStack(spacing:1) {
-                    Image(uiImage: UIImage(data: gridCard.coverImage!)!)
-                        .resizable()
-                        .frame(width: (UIScreen.screenWidth/4), height: (UIScreen.screenHeight/7))
-                    Text(gridCard.message)
-                        .font(Font.custom(gridCard.font, size: 500)).minimumScaleFactor(0.01)
-                        .frame(width: (UIScreen.screenWidth/4), height: (UIScreen.screenHeight/8))
-                    Image(uiImage: UIImage(data: gridCard.collage!)!)
-                        .resizable()
-                        .frame(maxWidth: (UIScreen.screenWidth/4), maxHeight: (UIScreen.screenHeight/7))
-                    HStack(spacing: 0) {
-                        VStack(spacing: 0) {
-                            Text(gridCard.an1).font(.system(size: 4))
-                            Link(gridCard.an2, destination: URL(string: gridCard.an2URL)!).font(.system(size: 4))
-                            Text(gridCard.an3).font(.system(size: 4))
-                            Link(gridCard.an4, destination: URL(string: "https://unsplash.com")!).font(.system(size: 4))
-                        }.padding(.trailing, 5)
-                        Spacer()
-                        Image(systemName: "greetingcard.fill").foregroundColor(.blue).font(.system(size: 24))
-                        Spacer()
-                        VStack(spacing:0) {
-                            Text("Greeting Card").font(.system(size: 4))
-                            Text("by").font(.system(size: 4))
-                            Text("Saloo").font(.system(size: 4)).padding(.bottom,10).padding(.leading, 5)
-                        }}.frame(width: (UIScreen.screenWidth/4), height: (UIScreen.screenHeight/15))
+        VStack(spacing: 0) {
+            VStack(spacing:1) {
+                Image(uiImage: UIImage(data: gridCard.coverImage!)!)
+                    .resizable()
+                    .frame(width: (UIScreen.screenWidth/4), height: (UIScreen.screenHeight/7))
+                Text(gridCard.message)
+                    .font(Font.custom(gridCard.font, size: 500)).minimumScaleFactor(0.01)
+                    .frame(width: (UIScreen.screenWidth/4), height: (UIScreen.screenHeight/8))
+                Image(uiImage: UIImage(data: gridCard.collage!)!)
+                    .resizable()
+                    .frame(maxWidth: (UIScreen.screenWidth/4), maxHeight: (UIScreen.screenHeight/7))
+                HStack(spacing: 0) {
+                    Image(systemName: "greetingcard.fill").foregroundColor(.blue).font(.system(size: 24))
                 }
-                .onTapGesture {print("gridCard Card Name...\(gridCard.cardName)")}
+            }
+            .onTapGesture {print("gridCard Card Name...\(gridCard.cardName)")}
                 //.sheet(isPresented: $showDeliveryScheduler) {ScheduleDelivery(card: card)}
                 Divider().padding(.bottom, 5)
                 HStack(spacing: 3) {
@@ -192,16 +180,16 @@ extension GridofCards {
     
     @ViewBuilder func contextMenuButtons(card: CoreCard) -> some View {
         if let currentUserRecordID = self.currentUserRecordID, card.creator == currentUserRecordID.recordName {
-            if persistenceController.privatePersistentStore.contains(manageObject: card) {
-                Button("Share Card") {showCloudShareController = true;
-                    if networkMonitor.isConnected{createNewShare(coreCard: card)}
-                    else{alertVars.alertType = .failedConnection; alertVars.activateAlert = true}}
-                .disabled(cardsForDisplayEnv.shareStatus(card: card).0)
-            }
+            //if persistenceController.privatePersistentStore.contains(manageObject: card) {
+            //    Button("Share Card") {showCloudShareController = true;
+           //         if networkMonitor.isConnected{createNewShare(coreCard: card)}
+           //         else{alertVars.alertType = .failedConnection; alertVars.activateAlert = true}}
+           //     .disabled(cardsForDisplayEnv.shareStatus(card: card).0)
+            //}
             Button {
                 if networkMonitor.isConnected{manageParticipation(coreCard: card)}
                 else{alertVars.alertType = .failedConnection; alertVars.activateAlert = true}
-            } label: {Text("Manage Participation"); Image(systemName: "person.badge.plus")}
+            } label: {Text("Share Card"); Image(systemName: "person.badge.plus")}
         }
         Button {
             if networkMonitor.isConnected {chosenCard = card; chosenGridCardType = card.cardType;segueToEnlarge = true; displayCard = true}

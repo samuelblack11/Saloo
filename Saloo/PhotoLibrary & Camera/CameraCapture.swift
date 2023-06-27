@@ -98,8 +98,9 @@ class ImagePickerViewCoordinator: NSObject, UINavigationControllerDelegate, UIIm
                     // If the photo is adult or racy, show an alert
                     if isExplicitContent {
                         print("Detected explicit content..")
-                        self.explicitPhotoAlert = true
-                        self.image = nil // Reset the image
+                        AlertVars.shared.alertType = .explicitPhoto
+                        AlertVars.shared.activateAlert = true
+                        self.image = nil
                     }
                     else {
                         print("No explicit content detected...")

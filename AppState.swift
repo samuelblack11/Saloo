@@ -25,6 +25,7 @@ class AppState: ObservableObject {
     
     
     enum BuildCardSteps {
+        case photoOptionsView
         case occasionsMenu
         case unsplashCollectionView
         case confirmFrontCoverView
@@ -123,6 +124,8 @@ struct BuildCardView: View {
     var body: some View {
         ForEach(steps, id: \.self) { step in
             switch step {
+            case .photoOptionsView:
+                PhotoOptionsView()
             case .occasionsMenu:
                 OccassionsMenu()
             case .unsplashCollectionView:

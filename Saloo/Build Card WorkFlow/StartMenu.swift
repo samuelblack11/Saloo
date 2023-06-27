@@ -28,6 +28,7 @@ struct StartMenu: View {
     @State var userID = String()
     @State private var isBanned = false
     @State private var hasShownLaunchView: Bool = true
+    @Environment(\.colorScheme) var colorScheme
 
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate2
     // @State var salooUserID: String = (UserDefaults.standard.object(forKey: "SalooUserID") as? String)!
@@ -41,22 +42,37 @@ struct StartMenu: View {
         Add Music 🎶
         Finalize ✅
 """
-    
-    
-    
-    
+
     var body: some View {
         NavigationView {
             ZStack {
-                List {
-                    Text("Build a Card").onTapGesture {appState.currentScreen = .buildCard([.occasionsMenu])}
-                    Text("Drafts 📓").onTapGesture {screenManager.advance(); appState.currentScreen = .draft}
-                    Text("Inbox 📥").onTapGesture {screenManager.advance(); appState.currentScreen = .inbox}
-                    Text("Outbox 📥") .onTapGesture {screenManager.advance(); appState.currentScreen = .outbox}
-                    Text("Music Preferences 📱").onTapGesture {appState.currentScreen = .preferences}
+                VStack {
+                    Text("Welcome To Saloo")
+                        .foregroundColor(colorScheme == .dark ? .white : .black)
+                        .font(.headline)
+                        .padding(.top, 10)
+                    Text("🎈🎂🥳❤️🥂💍🎓")
+                    Text("Connect with loved ones, share memories")
+                        .font(.caption)
+                        .foregroundColor(.gray)
+                        .textCase(.none)
+                        .multilineTextAlignment(.center)
+                    Text("and celebrate holidays and special occassions")
+                        .font(.caption)
+                        .foregroundColor(.gray)
+                        .textCase(.none)
+                        .multilineTextAlignment(.center)
+
+                    List {
+                        //Text("Build a Card").onTapGesture {appState.currentScreen = .buildCard([.occasionsMenu])}
+                        Text("Build a Card").onTapGesture {appState.currentScreen = .buildCard([.photoOptionsView])}
+                        Text("Drafts 📓").onTapGesture {screenManager.advance(); appState.currentScreen = .draft}
+                        Text("Received Cards 📥").onTapGesture {screenManager.advance(); appState.currentScreen = .inbox}
+                        Text("Sent Cards 📥") .onTapGesture {screenManager.advance(); appState.currentScreen = .outbox}
+                        Text("Music Preferences 📱").onTapGesture {appState.currentScreen = .preferences}
+                    }
                 }
                 LoadingOverlay(hasShownLaunchView: $hasShownLaunchView)
-
             }
         }
             .modifier(AlertViewMod(showAlert: alertVars.activateAlertBinding, activeAlert: alertVars.alertType))

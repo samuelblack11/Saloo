@@ -51,16 +51,18 @@ struct ConfirmFrontCoverView: View {
                         Link("Unsplash", destination: URL(string: "https://unsplash.com")!)
                     }
                     Spacer()
-                    Button("Confirm Image for Front Cover") {
+                    Button("Confirm Image") {
                         //segueToCollageMenu = true
-                        appState.currentScreen = .buildCard([.collageStyleMenu])
+                        appState.currentScreen = .buildCard([.collageBuilder])
                         PhotoAPI.pingDownloadURL(downloadLocation: chosenObject.downloadLocation, completionHandler: { (response, error) in
                             if response != nil {
-                                debugPrint("Ping Success!.......")
-                                debugPrint(response)
+                                //debugPrint("Ping Success!.......")
+                                //debugPrint(response)
                             }
                             if response == nil {
-                                debugPrint("Ping Failed!.......")}})
+                                //debugPrint("Ping Failed!.......")
+                                
+                            }})
                     }.padding(.bottom, 10)
                 }
                 LoadingOverlay(hasShownLaunchView: $hasShownLaunchView)

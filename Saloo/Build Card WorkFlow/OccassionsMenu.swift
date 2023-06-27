@@ -66,73 +66,76 @@ struct OccassionsMenu: View {
                         .scaleEffect(2)
                 }
                     List {
-                        Section(header:
-                                    VStack(alignment: .leading) {
-                                        Text("Personal & Search")
-                                            .font(.headline)
-                                        Text("Use a personal photo instead of one from Saloo's occasion-specific options")
-                                            .font(.caption)
-                                            .foregroundColor(.gray)
-                                            .textCase(.none)
+                        if chosenObject.frontCoverIsPersonalPhoto == 1 {
+                            Section(header:
+                                VStack(alignment: .leading) {
+                                    Text("Personal")
+                                        .font(.headline)
+                                }
+                            )
+                            {Text("Select from Photo Library ")
+                                //.listRowBackground(appDelegate.appColor)
+                                    .onTapGesture {self.showCameraCapture = false; self.showImagePicker = true}
+                                    .fullScreenCover(isPresented: $showImagePicker){ImagePicker(image: $coverImageFromLibrary, explicitPhotoAlert: $explicitPhotoAlert, isImageLoading: $isImageLoading)}
+                                    .onChange(of: coverImageFromLibrary) { _ in loadImage(pic: coverImageFromLibrary!)
+                                        handlePersonalPhotoSelection()
+                                        appState.currentScreen = .buildCard([.collageBuilder])
+                                        chosenObject.frontCoverIsPersonalPhoto = 1
+                                        chosenOccassion.occassion = "None"; chosenOccassion.collectionID = "None"
                                     }
-                                )
-                        {Text("Select from Photo Library ")
-                            //.listRowBackground(appDelegate.appColor)
-                                .onTapGesture {self.showCameraCapture = false; self.showImagePicker = true}
-                                .fullScreenCover(isPresented: $showImagePicker){ImagePicker(image: $coverImageFromLibrary, explicitPhotoAlert: $explicitPhotoAlert, isImageLoading: $isImageLoading)}
-                                .onChange(of: coverImageFromLibrary) { _ in loadImage(pic: coverImageFromLibrary!)
-                                    handlePersonalPhotoSelection()
-                                    appState.currentScreen = .buildCard([.collageStyleMenu])
-                                    chosenObject.frontCoverIsPersonalPhoto = 1
-                                    chosenOccassion.occassion = "None"; chosenOccassion.collectionID = "None"
-                                }
-                            Text("Take Photo with Camera 📸 ")
-                            //.listRowBackground(appDelegate.appColor)
-                                .onTapGesture {
-                                    self.showImagePicker = false
-                                    self.showCameraCapture = true
-                                }
-                                .fullScreenCover(isPresented: $showCameraCapture)
-                            {CameraCapture(image: self.$coverImageFromCamera, isPresented: self.$showCameraCapture, explicitPhotoAlert: $explicitPhotoAlert, sourceType: .camera, isImageLoading: $isImageLoading)}
-                                .onChange(of: coverImageFromCamera) { _ in loadImage(pic: coverImageFromCamera!)
-                                    handlePersonalPhotoSelection()
-                                    appState.currentScreen = .buildCard([.collageStyleMenu]); chosenObject.frontCoverIsPersonalPhoto = 1
-                                    chosenOccassion.occassion = ""; chosenOccassion.collectionID = ""
-                                }
+                                Text("Take Photo with Camera 📸 ")
+                                //.listRowBackground(appDelegate.appColor)
+                                    .onTapGesture {
+                                        self.showImagePicker = false
+                                        self.showCameraCapture = true
+                                    }
+                                    .fullScreenCover(isPresented: $showCameraCapture)
+                                {CameraCapture(image: self.$coverImageFromCamera, isPresented: self.$showCameraCapture, explicitPhotoAlert: $explicitPhotoAlert, sourceType: .camera, isImageLoading: $isImageLoading)}
+                                    .onChange(of: coverImageFromCamera) { _ in loadImage(pic: coverImageFromCamera!)
+                                        handlePersonalPhotoSelection()
+                                        appState.currentScreen = .buildCard([.collageBuilder]); chosenObject.frontCoverIsPersonalPhoto = 1
+                                        chosenOccassion.occassion = ""; chosenOccassion.collectionID = ""
+                                    }
+                            }
                         }
-                
-                        Section(header: Text("Year-Round Occassions")) {
-                            menuSection(for: "Birthday 🎈")
-                            menuSection(for: "Wedding and Anniversary 💒")
-                            menuSection(for: "Baby Shower 🐣")
-                            menuSection(for: "Postcard ✈️")
-                            menuSection(for: "Graduation 🎓")
-                        }
-                        Section(header: Text("Summer Holidays")) {
-                            menuSection(for: "Juneteenth ✊🏿")
-                            menuSection(for: "Pride 🏳️‍🌈")
-                            menuSection(for: "Father's Day 🍻")
-                            menuSection(for: "4th of July 🎇")
-                        }
-                        Section(header: Text("Fall Holidays")) {
-                            menuSection(for: "Rosh Hashanah 🔯")
-                            menuSection(for: "Halloween 🎃")
-                            menuSection(for: "Thanksgiving 🍁")
-                        }
-                        Section(header: Text("Winter Holidays")) {
-                            menuSection(for: "Christmas 🎄")
-                            menuSection(for: "Hanukkah 🕎")
-                            menuSection(for: "New Years Eve 🎆")
-                            menuSection(for: "Valentine's Day ❤️")
-                            menuSection(for: "Mardi Gras 🎭")
-                            menuSection(for: "Lunar New Year 🐉")
-                        }
-                        Section(header: Text("Spring Holidays")) {
-                            menuSection(for: "St. Patrick's Day 🍀")
-                            menuSection(for: "Easter 🐇")
-                            menuSection(for: "Eid al-Fitr ☪️")
-                            menuSection(for: "Cinco De Mayo 🇲🇽")
-                            menuSection(for: "Mother's Day 🌸")
+                        else {
+                            
+                            
+                            
+                            
+                            Section(header: Text("Year-Round Occassions")) {
+                                menuSection(for: "Birthday 🎈")
+                                menuSection(for: "Wedding and Anniversary 💒")
+                                menuSection(for: "Baby Shower 🐣")
+                                menuSection(for: "Postcard ✈️")
+                                menuSection(for: "Graduation 🎓")
+                            }
+                            Section(header: Text("Summer Holidays")) {
+                                menuSection(for: "Juneteenth ✊🏿")
+                                menuSection(for: "Pride 🏳️‍🌈")
+                                menuSection(for: "Father's Day 🍻")
+                                menuSection(for: "4th of July 🎇")
+                            }
+                            Section(header: Text("Fall Holidays")) {
+                                menuSection(for: "Rosh Hashanah 🔯")
+                                menuSection(for: "Halloween 🎃")
+                                menuSection(for: "Thanksgiving 🍁")
+                            }
+                            Section(header: Text("Winter Holidays")) {
+                                menuSection(for: "Christmas 🎄")
+                                menuSection(for: "Hanukkah 🕎")
+                                menuSection(for: "New Years Eve 🎆")
+                                menuSection(for: "Valentine's Day ❤️")
+                                menuSection(for: "Mardi Gras 🎭")
+                                menuSection(for: "Lunar New Year 🐉")
+                            }
+                            Section(header: Text("Spring Holidays")) {
+                                menuSection(for: "St. Patrick's Day 🍀")
+                                menuSection(for: "Easter 🐇")
+                                menuSection(for: "Eid al-Fitr ☪️")
+                                menuSection(for: "Cinco De Mayo 🇲🇽")
+                                menuSection(for: "Mother's Day 🌸")
+                            }
                         }
                     }
                 LoadingOverlay(hasShownLaunchView: $hasShownLaunchView)
@@ -152,11 +155,11 @@ struct OccassionsMenu: View {
         }
         .modifier(AlertViewMod(showAlert: alertVars.activateAlertBinding, activeAlert: alertVars.alertType))
 
-        .alert(isPresented: $explicitPhotoAlert) {
-            Alert(title: Text("Error"), message: Text("The selected image contains explicit content and cannot be used."), dismissButton: .default(Text("OK")))
-        }
+        //.alert(isPresented: $explicitPhotoAlert) {
+        //    Alert(title: Text("Error"), message: Text("The selected image contains explicit content and cannot be used."), dismissButton: .default(Text("OK")))
+        //}
         .navigationTitle("Choose Occasion")
-        .navigationBarItems(leading:Button {appState.currentScreen = .startMenu} label: {Image(systemName: "chevron.left").foregroundColor(.blue); Text("Back")}.disabled(gettingRecord.isShowingActivityIndicator))
+        .navigationBarItems(leading:Button {appState.currentScreen = .buildCard([.photoOptionsView])} label: {Image(systemName: "chevron.left").foregroundColor(.blue); Text("Back")}.disabled(gettingRecord.isShowingActivityIndicator))
         .font(.headline)
         .listStyle(GroupedListStyle())
         }

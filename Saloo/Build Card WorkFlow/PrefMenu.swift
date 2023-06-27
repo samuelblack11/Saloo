@@ -66,7 +66,14 @@ struct PrefMenu: View {
                 Text("Do you subscribe to either of these services?").foregroundColor(colorScheme == .dark ? .white : .black)
                 Text("This will optimize your experience").foregroundColor(colorScheme == .dark ? .white : .black)
                 Text("Current Selection: \(currentSubSelection)").foregroundColor(colorScheme == .dark ? .white : .black)
-
+                Text("If you don't select a service and authorize your account")
+                    .font(.caption)
+                    .foregroundColor(.gray)
+                    .textCase(.none)
+                Text("you won't be able to include music in your cards")
+                    .font(.caption)
+                    .foregroundColor(.gray)
+                    .textCase(.none)
                 ZStack {
                     //ScrollView {
                     VStack {
@@ -246,6 +253,8 @@ extension PrefMenu {
                             }
                             spotifyManager.onTokenUpdate?()
                             spotifyManager.noNewTokenNeeded?()
+                            spotifyManager.onTokenUpdate = {}
+                            spotifyManager.noNewTokenNeeded = {}
                         }
                         else { //if not premium
                             currentSubSelection = "Neither"
@@ -271,6 +280,7 @@ extension PrefMenu {
                         alertVars.activateAlert = true
                     }
                     spotifyManager.noInternet?()
+                    spotifyManager.onTokenUpdate = {}
                 }
             }
         }

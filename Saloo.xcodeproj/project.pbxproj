@@ -54,6 +54,8 @@
 		C27430FC286335F000E17B19 /* CameraCapture.swift in Sources */ = {isa = PBXBuildFile; fileRef = C27430FB286335F000E17B19 /* CameraCapture.swift */; };
 		C2764CEB2A06A9CA0083819B /* CleanMusicData.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2764CEA2A06A9CA0083819B /* CleanMusicData.swift */; };
 		C28B13F828E3E106008E2C4C /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C28B13F728E3E106008E2C4C /* AppDelegate.swift */; };
+		C2950E822A4B6221001E175F /* PhotoOptionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2950E812A4B6221001E175F /* PhotoOptionsView.swift */; };
+		C2950E892A4B6693001E175F /* MiniCollageMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2950E862A4B6693001E175F /* MiniCollageMenu.swift */; };
 		C2B650CA287AFFF90002E252 /* CloudKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C2B650C9287AFFF90002E252 /* CloudKit.framework */; };
 		C2BC52DB2A1EE55B000BAF60 /* ReportOffensiveContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2BC52DA2A1EE55B000BAF60 /* ReportOffensiveContentView.swift */; };
 /* End PBXBuildFile section */
@@ -129,6 +131,8 @@
 		C27430FB286335F000E17B19 /* CameraCapture.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraCapture.swift; sourceTree = "<group>"; };
 		C2764CEA2A06A9CA0083819B /* CleanMusicData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CleanMusicData.swift; sourceTree = "<group>"; };
 		C28B13F728E3E106008E2C4C /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		C2950E812A4B6221001E175F /* PhotoOptionsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoOptionsView.swift; sourceTree = "<group>"; };
+		C2950E862A4B6693001E175F /* MiniCollageMenu.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MiniCollageMenu.swift; sourceTree = "<group>"; };
 		C2B650C9287AFFF90002E252 /* CloudKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CloudKit.framework; path = System/Library/Frameworks/CloudKit.framework; sourceTree = SDKROOT; };
 		C2BC52DA2A1EE55B000BAF60 /* ReportOffensiveContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReportOffensiveContentView.swift; sourceTree = "<group>"; };
 		EA0978C9D748CE0611B19D5A /* Pods-GreetMe-2.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-GreetMe-2.release.xcconfig"; path = "Target Support Files/Pods-GreetMe-2/Pods-GreetMe-2.release.xcconfig"; sourceTree = "<group>"; };
@@ -154,9 +158,11 @@
 				C22A180A296CF60600A7E9B8 /* StartMenu.swift */,
 				260F6906281DC0E3002E864B /* LaunchView.swift */,
 				260F68F4281DBDCD002E864B /* OccassionsMenu.swift */,
+				C2950E812A4B6221001E175F /* PhotoOptionsView.swift */,
 				260F68F6281DBDD2002E864B /* UnsplashCollectionView.swift */,
 				26AD812A281F119A0069C3F0 /* ConfirmFrontCoverView.swift */,
 				260F68EE281DBD93002E864B /* CollageStyleMenu.swift */,
+				C2950E862A4B6693001E175F /* MiniCollageMenu.swift */,
 				C2075AFC295FDBA70048ECEB /* CollageBuilder.swift */,
 				26AD8126281F05160069C3F0 /* WriteNoteView.swift */,
 				C22A180C296D010800A7E9B8 /* MusicSearchView.swift */,
@@ -502,6 +508,7 @@
 				C27430FC286335F000E17B19 /* CameraCapture.swift in Sources */,
 				C22A180D296D010800A7E9B8 /* MusicSearchView.swift in Sources */,
 				26AD8127281F05160069C3F0 /* WriteNoteView.swift in Sources */,
+				C2950E892A4B6693001E175F /* MiniCollageMenu.swift in Sources */,
 				26AD812B281F119A0069C3F0 /* ConfirmFrontCoverView.swift in Sources */,
 				C208A3FC2A387C1F00F87739 /* AppState.swift in Sources */,
 				26AD8129281F05310069C3F0 /* FinalizeCardView.swift in Sources */,
@@ -509,6 +516,7 @@
 				C2233BF729AEEE4F00DB098D /* HandleCloudKitError.swift in Sources */,
 				260F68FA281DBE61002E864B /* PhotoAPI.swift in Sources */,
 				C21EACE02998525000401DC8 /* WebVC.swift in Sources */,
+				C2950E822A4B6221001E175F /* PhotoOptionsView.swift in Sources */,
 				C26890B0299E572900EA63A4 /* SpotPlayerView.swift in Sources */,
 				C23A9D222897ECA90059B97C /* Card.swift in Sources */,
 				C2075AFD295FDBA70048ECEB /* CollageBuilder.swift in Sources */,
@@ -661,10 +669,12 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = Saloo/Saloo.entitlements;
-				CODE_SIGN_STYLE = Automatic;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = Saloo/Preview_Content/;
-				DEVELOPMENT_TEAM = 9AVZUF22VY;
+				DEVELOPMENT_TEAM = "";
+				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = 9AVZUF22VY;
 				ENABLE_PREVIEWS = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -699,6 +709,8 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.Saloo.saloo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = Sam;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_OBJC_BRIDGING_HEADER = "Saloo-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
@@ -713,10 +725,12 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = Saloo/Saloo.entitlements;
-				CODE_SIGN_STYLE = Automatic;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = Saloo/Preview_Content/;
-				DEVELOPMENT_TEAM = 9AVZUF22VY;
+				DEVELOPMENT_TEAM = "";
+				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = 9AVZUF22VY;
 				ENABLE_PREVIEWS = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -751,6 +765,8 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.Saloo.saloo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = Sam;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_OBJC_BRIDGING_HEADER = "Saloo-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;

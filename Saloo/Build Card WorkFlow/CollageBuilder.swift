@@ -42,10 +42,10 @@ struct CollageBuilder: View {
     @State private var imageNumber: Int?
     @Environment(\.displayScale) var displayScale
     @State var lastScaleValue: CGFloat = 1.0
-    var minWidth = CGFloat(100)
-    var maxWidth = CGFloat(300)
-    var minHeight = CGFloat(100)
-    var maxHeight = CGFloat(320)
+   // var minWidth = CGFloat(100)
+   // var maxWidth = CGFloat(300)
+    //var minHeight = CGFloat(100)
+    //var maxHeight = CGFloat(320)
     var width = UIScreen.screenWidth/2
     var height = UIScreen.screenHeight/3
     @State private var blockCount: Int?
@@ -116,11 +116,6 @@ extension CollageBuilder {
         if collageImage.chosenStyle == 5 {blockCount = 3}
         if collageImage.chosenStyle == 6 {blockCount = 4}
     }
-    
-    
-    
-    
-    
     
     func specifyImage(imageNumber: Int) -> UIImage? {
         let imageDict: [Int : UIImage?] = [
