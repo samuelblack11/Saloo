@@ -84,7 +84,7 @@ struct BorderedStyleModifier: ViewModifier {
             if style == selectedStyle {
                 content
                     .border(color, width: width)
-                    .overlay(Text("\(style)").foregroundColor(.white).font(.title), alignment: .center)
+                    .overlay(Text("Style \(style)").foregroundColor(.white).font(.title), alignment: .center)
             } else {
                 content
             }
