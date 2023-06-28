@@ -49,7 +49,8 @@ struct CollageBuilder: View {
     var width = UIScreen.screenWidth/2
     var height = UIScreen.screenHeight/3
     @State private var blockCount: Int?
-    
+    @State private var currentStep: Int = 2
+
     @State private var isImageLoading: [Bool] = [false, false, false, false]
 
     
@@ -59,38 +60,41 @@ struct CollageBuilder: View {
     
     var body: some View {
         NavigationStack {
-            ZStack {
-                VStack {
-                    Spacer()
-                    collageView//.frame(width: UIScreen.screenHeight/4, height: UIScreen.screenHeight/4)
-                    Spacer()
-                    Button("Confirm Collage") {
-                        if blockCount != (4 - countNilImages()) {
-                            alertVars.alertType = .mustSelectPic
-                            alertVars.activateAlert = true
-                        }
-                        else {
-                            appState.currentScreen = .buildCard([.writeNoteView])
-                               Task {
-                                   if let imageData = await snap2() {
-                                       collageImage.collageImage = imageData
-                                   } else {
-                                       // Handle the case where imageData is nil.
-                                   }
-                               }
-
-                        }
-                    }.padding(.bottom, 30)
-                        .navigationBarItems(leading: Button {appState.currentScreen = .buildCard([.collageStyleMenu])} label: {
-                            Image(systemName: "chevron.left").foregroundColor(.blue)
-                            Text("Back")}.disabled(gettingRecord.isShowingActivityIndicator))
+            VStack {
+                ProgressBar(currentStep: $currentStep).frame(height: 20)
+                    .frame(height: 20)
+                ZStack {
+                    VStack {
+                        Spacer()
+                        collageView//.frame(width: UIScreen.screenHeight/4, height: UIScreen.screenHeight/4)
+                        Spacer()
+                        Button("Confirm Collage") {
+                            if blockCount != (4 - countNilImages()) {
+                                alertVars.alertType = .mustSelectPic
+                                alertVars.activateAlert = true
+                            }
+                            else {
+                                appState.currentScreen = .buildCard([.writeNoteView])
+                                Task {
+                                    if let imageData = await snap2() {
+                                        collageImage.collageImage = imageData
+                                    } else {
+                                        // Handle the case where imageData is nil.
+                                    }
+                                }
+                                
+                            }
+                        }.padding(.bottom, 30)
+                            .navigationBarItems(leading: Button {appState.currentScreen = .buildCard([.collageStyleMenu])} label: {
+                                Image(systemName: "chevron.left").foregroundColor(.blue)
+                                Text("Back")}.disabled(gettingRecord.isShowingActivityIndicator))
+                    }
+                    .onAppear{countBlocks()}
+                    .alert(isPresented: $explicitPhotoAlert) {
+                        Alert(title: Text("Error"), message: Text("The selected image contains explicit content and cannot be used."), dismissButton: .default(Text("OK")))
+                    }
+                    LoadingOverlay(hasShownLaunchView: $hasShownLaunchView)
                 }
-                .onAppear{countBlocks()}
-                .alert(isPresented: $explicitPhotoAlert) {
-                    Alert(title: Text("Error"), message: Text("The selected image contains explicit content and cannot be used."), dismissButton: .default(Text("OK")))
-                }
-                LoadingOverlay(hasShownLaunchView: $hasShownLaunchView)
-
             }
             .modifier(AlertViewMod(showAlert: alertVars.activateAlertBinding, activeAlert: alertVars.alertType))
         }

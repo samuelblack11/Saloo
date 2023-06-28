@@ -20,7 +20,6 @@ struct FinalizeCardView: View {
     @EnvironmentObject var noteField: NoteField
     @EnvironmentObject var addMusic: AddMusic
     @EnvironmentObject var annotation: Annotation
-    @EnvironmentObject var spotifyAuth: SpotifyAuth
     @EnvironmentObject var giftCard: GiftCard
     @State var showCloudShareController = false
     @EnvironmentObject var appDelegate: AppDelegate
@@ -54,8 +53,8 @@ struct FinalizeCardView: View {
     @EnvironmentObject var appState: AppState
     @EnvironmentObject var cardsForDisplay: CardsForDisplay
     @State private var safeAreaHeight: CGFloat = 0
-    
-
+    @State var currentStep: Int
+    let defaults = UserDefaults.standard
     
     @EnvironmentObject var chosenSong: ChosenSong
     
@@ -95,18 +94,22 @@ struct FinalizeCardView: View {
     
     var body: some View {
         NavigationView {
-            GeometryReader { geometry in
-                VStack(spacing: 0){
-                    eCardView(eCardText: noteField.noteText.value, font: noteField.font, coverImage: chosenObject.coverImage, collageImage: collageImage.collageImage, text1: annotation.text1, text2: annotation.text2, text2URL: annotation.text2URL, text3: annotation.text3, text4: annotation.text4, songID: chosenSong.id, spotID: chosenSong.spotID, spotName: chosenSong.spotName, spotArtistName: chosenSong.spotArtistName, songName: chosenSong.name, songArtistName: chosenSong.artistName, songArtImageData: chosenSong.artwork, songDuration: chosenSong.durationInSeconds, songPreviewURL: chosenSong.songPreviewURL, inclMusic: addMusic.addMusic, spotImageData: chosenSong.spotImageData, spotSongDuration: chosenSong.spotSongDuration, spotPreviewURL: chosenSong.spotPreviewURL, songAddedUsing: chosenSong.songAddedUsing, cardType: cardType, accessedViaGrid: false, fromFinalize: true, chosenCard: $emptyCard, appleSongURL: chosenSong.appleSongURL, spotSongURL: chosenSong.spotSongURL)
-                        .frame(maxHeight: geometry.size.height - geometry.safeAreaInsets.bottom) // subtract height of toolbar
-                    Spacer()
-                    HStack {
-                        saveButton
+            VStack {
+                ProgressBar(currentStep: $currentStep).frame(height: 20)
+                    .frame(height: 20)
+                GeometryReader { geometry in
+                    VStack(spacing: 0){
+                        eCardView(eCardText: noteField.noteText.value, font: noteField.font, coverImage: chosenObject.coverImage, collageImage: collageImage.collageImage, text1: annotation.text1, text2: annotation.text2, text2URL: annotation.text2URL, text3: annotation.text3, text4: annotation.text4, songID: chosenSong.id, spotID: chosenSong.spotID, spotName: chosenSong.spotName, spotArtistName: chosenSong.spotArtistName, songName: chosenSong.name, songArtistName: chosenSong.artistName, songArtImageData: chosenSong.artwork, songDuration: chosenSong.durationInSeconds, songPreviewURL: chosenSong.songPreviewURL, inclMusic: addMusic.addMusic, spotImageData: chosenSong.spotImageData, spotSongDuration: chosenSong.spotSongDuration, spotPreviewURL: chosenSong.spotPreviewURL, songAddedUsing: chosenSong.songAddedUsing, cardType: cardType, accessedViaGrid: false, fromFinalize: true, chosenCard: $emptyCard, appleSongURL: chosenSong.appleSongURL, spotSongURL: chosenSong.spotSongURL)
+                            .frame(maxHeight: geometry.size.height - geometry.safeAreaInsets.bottom) // subtract height of toolbar
                         Spacer()
-                        saveAndShareButton
+                        HStack {
+                            saveButton
+                            Spacer()
+                            saveAndShareButton
+                        }
                     }
+                    .onAppear {safeAreaHeight = geometry.size.height}
                 }
-                .onAppear {safeAreaHeight = geometry.size.height}
                 .toolbar {
                     ToolbarItemGroup(placement: .navigationBarLeading) {
                         if addMusic.addMusic == false {

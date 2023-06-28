@@ -33,46 +33,49 @@ struct UnsplashCollectionView: View {
     @EnvironmentObject var networkMonitor: NetworkMonitor
     @ObservedObject var alertVars = AlertVars.shared
     @State private var hasShownLaunchView: Bool = true
+    @State private var currentStep: Int = 1
 
     var body: some View {
         NavigationView {
-            ZStack {
-                ScrollView {
-                    LazyVGrid(columns: columns, spacing: 10) {
-                        ForEach(imageObjectModel.imageObjects, id: \.self.id) {photoObj in
-                            AsyncImage(url: photoObj.smallImageURL) { image in
-                                image.resizable()} placeholder: {ZStack{Color.gray; ProgressView()}}
-                                .frame(width: 125, height: 125)
-                                .onTapGesture {Task {
-                                    //try? await handleTap(index: photoObj.index)
-                                    if networkMonitor.isConnected{try? await handleTap(index: photoObj.index)}
-                                    else{
-                                        alertVars.alertType = .failedConnection
-                                        alertVars.activateAlert = true
-                                    }
-                                }}
+            VStack {
+                ProgressBar(currentStep: $currentStep).frame(height: 20)
+                ZStack {
+                    ScrollView {
+                        LazyVGrid(columns: columns, spacing: 10) {
+                            ForEach(imageObjectModel.imageObjects, id: \.self.id) {photoObj in
+                                AsyncImage(url: photoObj.smallImageURL) { image in
+                                    image.resizable()} placeholder: {ZStack{Color.gray; ProgressView()}}
+                                    .frame(width: 125, height: 125)
+                                    .onTapGesture {Task {
+                                        //try? await handleTap(index: photoObj.index)
+                                        if networkMonitor.isConnected{try? await handleTap(index: photoObj.index)}
+                                        else{
+                                            alertVars.alertType = .failedConnection
+                                            alertVars.activateAlert = true
+                                        }
+                                    }}
+                            }
                         }
-                    }
-                    .navigationTitle("Choose Front Cover")
-                    .navigationBarItems(leading:Button {chosenObject.pageCount = 1; appState.currentScreen = .buildCard([.occasionsMenu])} label: {Image(systemName: "chevron.left").foregroundColor(.blue); Text("Back")}.disabled(gettingRecord.isShowingActivityIndicator))
-                    Button("More...") {
-                        if networkMonitor.isConnected {
-                            //imageObjectModel.getMorePhotos(chosenObject: chosenObject); print("page count: \(chosenObject.pageCount)")
-                            chosenObject.pageCount = chosenObject.pageCount + 1
-                            imageObjectModel.imageObjects = []
-                            imageObjectModel.getPhotosFromCollection(collectionID: chosenOccassion.collectionID, page_num: chosenObject.pageCount)
-                        }
-                        else {
-                            alertVars.alertType = .failedConnection
-                            alertVars.activateAlert = true
+                        .navigationTitle("Choose Front Cover")
+                        .navigationBarItems(leading:Button {chosenObject.pageCount = 1; appState.currentScreen = .buildCard([.occasionsMenu])} label: {Image(systemName: "chevron.left").foregroundColor(.blue); Text("Back")}.disabled(gettingRecord.isShowingActivityIndicator))
+                        Button("More...") {
+                            if networkMonitor.isConnected {
+                                //imageObjectModel.getMorePhotos(chosenObject: chosenObject); print("page count: \(chosenObject.pageCount)")
+                                chosenObject.pageCount = chosenObject.pageCount + 1
+                                imageObjectModel.imageObjects = []
+                                imageObjectModel.getPhotosFromCollection(collectionID: chosenOccassion.collectionID, page_num: chosenObject.pageCount)
+                            }
+                            else {
+                                alertVars.alertType = .failedConnection
+                                alertVars.activateAlert = true
+                                
+                            }
                             
-                        }
-                        
-                    }.disabled(setButtonStatus(imageObjects: imageObjectModel.imageObjects))
+                        }.disabled(setButtonStatus(imageObjects: imageObjectModel.imageObjects))
+                    }
+                    .modifier(AlertViewMod(showAlert: alertVars.activateAlertBinding, activeAlert: alertVars.alertType))
+                    LoadingOverlay(hasShownLaunchView: $hasShownLaunchView)
                 }
-                .modifier(AlertViewMod(showAlert: alertVars.activateAlertBinding, activeAlert: alertVars.alertType))
-                LoadingOverlay(hasShownLaunchView: $hasShownLaunchView)
-
             }
         }
         

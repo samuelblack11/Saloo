@@ -708,7 +708,10 @@ class SpotifyManager: ObservableObject {
     @State private var tokenCounter = 0
     @State var refreshAccessToken = false
     var onTokenUpdate: (() -> Void)?
+    var onTokenUpdatePref1: (() -> Void)?
+    var onTokenUpdatePref2: (() -> Void)?
     var noNewTokenNeeded: (() -> Void)?
+    var noNewTokenNeededPref: (() -> Void)?
     var noInternet: (() -> Void)?
     @Published var gotToAppInAppStore = Bool()
     
@@ -771,6 +774,7 @@ class SpotifyManager: ObservableObject {
             else {
                 print("no new token needed...")
                 self.noNewTokenNeeded?()
+                self.noNewTokenNeededPref?()
                 completion(true)
             }
         } else {
@@ -795,6 +799,8 @@ class SpotifyManager: ObservableObject {
             let success = self.processTokenRequest(response: response, error: error)
             self.instantiateAppRemote()
             self.onTokenUpdate?()
+            self.onTokenUpdatePref1?()
+            self.onTokenUpdatePref2?()
             completion(success)
         }
     }

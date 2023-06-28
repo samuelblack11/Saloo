@@ -55,6 +55,7 @@ struct MusicSearchView: View {
     @State private var isLoading = false
     @Environment(\.colorScheme) var colorScheme
     @State private var hasShownLaunchView: Bool = true
+    @State private var currentStep: Int = 4
 
     
     @ObservedObject var alertVars = AlertVars.shared
@@ -69,59 +70,62 @@ struct MusicSearchView: View {
 
     var body: some View {
         NavigationStack {
-            ZStack {
-                if appDelegate.musicSub.type == .Spotify {
-                    VStack {
-                        TextField("Enter Song Name Here", text: $songSearch)
-                        Text("And/Or")
-                        TextField("Enter Artist Name Here", text: $artistSearch)
-                        HStack{
-                            Image("SpotifyIcon")
-                                .resizable()
-                                .aspectRatio(contentMode: .fit)
-                                .frame(height: 24) // height as per your text field
-                            Button("Search"){
-                                if networkMonitor.isConnected {searchWithSpotify()}
-                                else {
-                                    alertVars.alertType = .failedConnection
-                                    alertVars.activateAlert = true
+            VStack {
+                ProgressBar(currentStep: $currentStep).frame(height: 20)
+                    .frame(height: 20)
+                ZStack {
+                    if appDelegate.musicSub.type == .Spotify {
+                        VStack {
+                            TextField("Enter Song Name Here", text: $songSearch)
+                            Text("And/Or")
+                            TextField("Enter Artist Name Here", text: $artistSearch)
+                            HStack{
+                                Image("SpotifyIcon")
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fit)
+                                    .frame(height: 24) // height as per your text field
+                                Button("Search"){
+                                    if networkMonitor.isConnected {searchWithSpotify()}
+                                    else {
+                                        alertVars.alertType = .failedConnection
+                                        alertVars.activateAlert = true
+                                    }
                                 }
                             }
                         }
                     }
-                }
-                else {
-                    HStack {
-                        Button(action: {
-                            if let url = URL(string: "music://") {UIApplication.shared.open(url)}
-                        }) {
-                        Image("AMIcon")
-                            .resizable()
-                            .aspectRatio(contentMode: .fit)
-                            .frame(height: 24)
-                            .padding(.top, 15)
-                        }
-                    TextField("Search Songs", text: $songSearch, onCommit: {
-                        UIApplication.shared.resignFirstResponder()
-                        if networkMonitor.isConnected {
-                            if self.songSearch.isEmpty {self.searchResults = []}
-                            else  {
-                                switch appDelegate.musicSub.type {
-                                case .Apple: return searchWithAM()
-                                case .Neither: return searchWithAM()
-                                case .Spotify: return searchWithSpotify()
-                                }
+                    else {
+                        HStack {
+                            Button(action: {
+                                if let url = URL(string: "music://") {UIApplication.shared.open(url)}
+                            }) {
+                                Image("AMIcon")
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fit)
+                                    .frame(height: 24)
+                                    .padding(.top, 15)
                             }
+                            TextField("Search Songs", text: $songSearch, onCommit: {
+                                UIApplication.shared.resignFirstResponder()
+                                if networkMonitor.isConnected {
+                                    if self.songSearch.isEmpty {self.searchResults = []}
+                                    else  {
+                                        switch appDelegate.musicSub.type {
+                                        case .Apple: return searchWithAM()
+                                        case .Neither: return searchWithAM()
+                                        case .Spotify: return searchWithSpotify()
+                                        }
+                                    }
+                                }
+                                else {
+                                    alertVars.alertType = .failedConnection
+                                    alertVars.activateAlert = true
+                                }
+                            }).padding(.top, 15)
                         }
-                        else {
-                            alertVars.alertType = .failedConnection
-                            alertVars.activateAlert = true
-                        }
-                    }).padding(.top, 15)
+                    }
+                    LoadingOverlay(hasShownLaunchView: $hasShownLaunchView)
                 }
-                }
-                LoadingOverlay(hasShownLaunchView: $hasShownLaunchView)
-
             }
                 NavigationView {
                     ZStack {

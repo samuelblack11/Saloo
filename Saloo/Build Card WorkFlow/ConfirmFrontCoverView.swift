@@ -21,6 +21,7 @@ struct ConfirmFrontCoverView: View {
     @State private var presentPrior = false
     @ObservedObject var gettingRecord = GettingRecord.shared
     @State private var hasShownLaunchView: Bool = true
+    @State private var currentStep: Int = 1
 
     func getCoverSize() -> (CGSize, Double) {
         var size = CGSize()
@@ -38,35 +39,37 @@ struct ConfirmFrontCoverView: View {
 
     var body: some View {
         NavigationView {
-            ZStack {
-                VStack {
-                    Image(uiImage: UIImage(data: chosenObject.coverImage)!)
-                        .resizable()
-                        .frame(width: 250, height: 250)
-                        .padding(.top, 50)
-                    VStack(spacing: 0) {
-                        Text("Photo By ")
-                        Link(String(chosenObject.coverImagePhotographer), destination: URL(string: "https://unsplash.com/@\(chosenObject.coverImageUserName)")!)
-                        Text(" On ")
-                        Link("Unsplash", destination: URL(string: "https://unsplash.com")!)
+            VStack {
+                ProgressBar(currentStep: $currentStep).frame(height: 20)
+                ZStack {
+                    VStack {
+                        Image(uiImage: UIImage(data: chosenObject.coverImage)!)
+                            .resizable()
+                            .frame(width: 250, height: 250)
+                            .padding(.top, 50)
+                        VStack(spacing: 0) {
+                            Text("Photo By ")
+                            Link(String(chosenObject.coverImagePhotographer), destination: URL(string: "https://unsplash.com/@\(chosenObject.coverImageUserName)")!)
+                            Text(" On ")
+                            Link("Unsplash", destination: URL(string: "https://unsplash.com")!)
+                        }
+                        Spacer()
+                        Button("Confirm Image") {
+                            //segueToCollageMenu = true
+                            appState.currentScreen = .buildCard([.collageBuilder])
+                            PhotoAPI.pingDownloadURL(downloadLocation: chosenObject.downloadLocation, completionHandler: { (response, error) in
+                                if response != nil {
+                                    //debugPrint("Ping Success!.......")
+                                    //debugPrint(response)
+                                }
+                                if response == nil {
+                                    //debugPrint("Ping Failed!.......")
+                                    
+                                }})
+                        }.padding(.bottom, 10)
                     }
-                    Spacer()
-                    Button("Confirm Image") {
-                        //segueToCollageMenu = true
-                        appState.currentScreen = .buildCard([.collageBuilder])
-                        PhotoAPI.pingDownloadURL(downloadLocation: chosenObject.downloadLocation, completionHandler: { (response, error) in
-                            if response != nil {
-                                //debugPrint("Ping Success!.......")
-                                //debugPrint(response)
-                            }
-                            if response == nil {
-                                //debugPrint("Ping Failed!.......")
-                                
-                            }})
-                    }.padding(.bottom, 10)
+                    LoadingOverlay(hasShownLaunchView: $hasShownLaunchView)
                 }
-                LoadingOverlay(hasShownLaunchView: $hasShownLaunchView)
-
             }
         .onAppear{getCoverSize()}
         .modifier(AlertViewMod(showAlert: alertVars.activateAlertBinding, activeAlert: alertVars.alertType))

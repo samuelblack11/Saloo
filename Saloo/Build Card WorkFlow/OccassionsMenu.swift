@@ -52,26 +52,29 @@ struct OccassionsMenu: View {
     @EnvironmentObject var networkMonitor: NetworkMonitor
     @ObservedObject var alertVars = AlertVars.shared
     @EnvironmentObject var collectionManager: CollectionManager
-
+    @State private var currentStep: Int = 1
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     var body: some View {
         // NavigationView combines display styling of UINavigationBar and VC stack behavior of UINavigationController.
         // Hold cmd + ctrl, then click space bar to show emoji menu
         NavigationView {
-            ZStack {
-                if isLoadingMenu {
-                    ProgressView().frame(width: UIScreen.screenWidth/2,height: UIScreen.screenHeight/2)
-                        .progressViewStyle(CircularProgressViewStyle(tint: .white))
-                        .scaleEffect(2)
-                }
+            VStack {
+                ProgressBar(currentStep: $currentStep)
+                    .frame(height: 20)
+                ZStack {
+                    if isLoadingMenu {
+                        ProgressView().frame(width: UIScreen.screenWidth/2,height: UIScreen.screenHeight/2)
+                            .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                            .scaleEffect(2)
+                    }
                     List {
                         if chosenObject.frontCoverIsPersonalPhoto == 1 {
                             Section(header:
-                                VStack(alignment: .leading) {
-                                    Text("Personal")
-                                        .font(.headline)
-                                }
+                                        VStack(alignment: .leading) {
+                                Text("Personal")
+                                    .font(.headline)
+                            }
                             )
                             {Text("Select from Photo Library ")
                                 //.listRowBackground(appDelegate.appColor)
@@ -99,10 +102,6 @@ struct OccassionsMenu: View {
                             }
                         }
                         else {
-                            
-                            
-                            
-                            
                             Section(header: Text("Year-Round Occassions")) {
                                 menuSection(for: "Birthday 🎈")
                                 menuSection(for: "Wedding and Anniversary 💒")
@@ -138,8 +137,8 @@ struct OccassionsMenu: View {
                             }
                         }
                     }
-                LoadingOverlay(hasShownLaunchView: $hasShownLaunchView)
-
+                    LoadingOverlay(hasShownLaunchView: $hasShownLaunchView)
+                }
             }
         .onAppear {
             if networkMonitor.isConnected == false {
@@ -204,3 +203,45 @@ extension OccassionsMenu {
     }
 
 }
+
+
+
+struct ProgressBar: View {
+    @Binding var currentStep: Int
+    @EnvironmentObject var appDelegate: AppDelegate
+    var steps: [String] {
+        return (appDelegate.musicSub.type == .Neither) ? ["🎉", "📸", "📝", "✅"] : ["🎉", "📸", "📝", "🎶", "✅"]
+    }
+
+    var body: some View {
+        let progress = Double(currentStep) / Double(steps.count)
+        GeometryReader { geometry in
+            ZStack(alignment: .leading) {
+                Capsule() // Changes Rectangle to Capsule for rounded ends
+                    .stroke(lineWidth: 2)
+                    .foregroundColor(Color.gray.opacity(0.3)) // Makes the background of the bar transparent with a thin gray border
+
+                Capsule() // Progress filler
+                    .frame(width: geometry.size.width * CGFloat(progress))
+                    .padding(.leading, 5)
+                    .padding(.trailing, 5)
+                    .foregroundColor(Color("SalooTheme"))
+                
+                HStack {
+                    ForEach(0..<steps.count) { index in
+                        Text(steps[index])
+                            .padding(.horizontal)
+                            .frame(width: geometry.size.width / CGFloat(steps.count), alignment: .center)
+                    }
+                }
+            }
+            .frame(height: 20)
+        }
+    }
+}
+
+
+
+
+
+

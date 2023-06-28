@@ -228,7 +228,7 @@ extension PrefMenu {
             counter = 0; tokenCounter = 0
             //showWebView = false
             refreshAccessToken = false
-            spotifyManager.noNewTokenNeeded = {
+            spotifyManager.noNewTokenNeededPref = {
                 print("No New Token Needed...")
                 currentSubSelection = "Spotify"
                 appDelegate.musicSub.type = .Spotify
@@ -243,7 +243,7 @@ extension PrefMenu {
                     spotifyManager.verifySubType { isPremium in
                         if isPremium {
                             print("isPremium...\(isPremium)")
-                            spotifyManager.onTokenUpdate = {
+                            spotifyManager.onTokenUpdatePref1 = {
                                 print("Called onTokenUpdate")
                                 currentSubSelection = "Spotify"
                                 appDelegate.musicSub.type = .Spotify
@@ -251,10 +251,9 @@ extension PrefMenu {
                                 hideProgressView = true
                                 appState.currentScreen = .startMenu
                             }
-                            spotifyManager.onTokenUpdate?()
-                            spotifyManager.noNewTokenNeeded?()
-                            spotifyManager.onTokenUpdate = {}
-                            spotifyManager.noNewTokenNeeded = {}
+                            spotifyManager.onTokenUpdatePref1?()
+                            spotifyManager.noNewTokenNeededPref?()
+
                         }
                         else { //if not premium
                             currentSubSelection = "Neither"
@@ -267,20 +266,19 @@ extension PrefMenu {
                     }
                 }
                 else {
-                    spotifyManager.onTokenUpdate = {
+                    spotifyManager.onTokenUpdatePref2 = {
                         alertVars.alertType = .spotAuthFailed
                         alertVars.activateAlert = true
                         currentSubSelection = "Neither"
                         appDelegate.musicSub.type = .Neither
                         hideProgressView = true
                     }
-                    spotifyManager.onTokenUpdate?()
+                    spotifyManager.onTokenUpdatePref2?()
                     spotifyManager.noInternet = {
                         alertVars.alertType = .failedConnection
                         alertVars.activateAlert = true
                     }
                     spotifyManager.noInternet?()
-                    spotifyManager.onTokenUpdate = {}
                 }
             }
         }

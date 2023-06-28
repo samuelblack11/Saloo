@@ -31,6 +31,7 @@ struct WriteNoteView: View {
     @ObservedObject var gettingRecord = GettingRecord.shared
     @State private var isEditing = false
     @State private var hasShownLaunchView: Bool = true
+    @State private var currentStep: Int = 3
 
     var fonts = ["Zapfino","Papyrus","American-Typewriter-Bold"]
     var fontMenu: some View {
@@ -49,24 +50,27 @@ struct WriteNoteView: View {
     
     var body: some View {
         NavigationView {
-            ZStack {
-                ScrollView {
-                    TextEditor(text: $message.value)
-                        .onTapGesture {if message.value == "Write Your Note Here" {message.value = ""}}
-                        .border(Color.red, width: message.hasReachedLimit ? 1 : 0)
-                        .frame(minHeight: UIScreen.screenHeight/2.5)
-                        .font(Font.custom(noteField.font, size: 14))
-                    Text("Enter the following details to save your card")
-                        .font(.caption)
-                        .foregroundColor(.gray)
-                        .textCase(.none)
-                        .multilineTextAlignment(.center)
-                    Text("This will not appear in the card")
-                        .font(.caption)
-                        .foregroundColor(.gray)
-                        .textCase(.none)
-                        .multilineTextAlignment(.center)
-                    TextField("To:", text: Binding(
+            VStack {
+                ProgressBar(currentStep: $currentStep).frame(height: 20)
+                    .frame(height: 20)
+                ZStack {
+                    ScrollView {
+                        TextEditor(text: $message.value)
+                            .onTapGesture {if message.value == "Write Your Note Here" {message.value = ""}}
+                            .border(Color.red, width: message.hasReachedLimit ? 1 : 0)
+                            .frame(minHeight: UIScreen.screenHeight/2.5)
+                            .font(Font.custom(noteField.font, size: 14))
+                        Text("Enter the following details to save your card")
+                            .font(.caption)
+                            .foregroundColor(.gray)
+                            .textCase(.none)
+                            .multilineTextAlignment(.center)
+                        Text("This will not appear in the card")
+                            .font(.caption)
+                            .foregroundColor(.gray)
+                            .textCase(.none)
+                            .multilineTextAlignment(.center)
+                        TextField("To:", text: Binding(
                             get: {
                                 if noteField.recipient.value == "To:" {return ""}
                                 else { return noteField.recipient.value}
@@ -75,7 +79,7 @@ struct WriteNoteView: View {
                         ), onEditingChanged: { isEditing in
                             if isEditing && noteField.recipient.value == "To:" {noteField.recipient.value = ""}
                         }).border(Color.red, width: $noteField.recipient.hasReachedLimit.wrappedValue ? 1 : 0 )
-                    TextField("From:", text: Binding(
+                        TextField("From:", text: Binding(
                             get: {
                                 if noteField.sender.value == "From:" {return ""} else {return noteField.sender.value}
                             },
@@ -84,39 +88,39 @@ struct WriteNoteView: View {
                             if isEditing && noteField.sender.value == "From:" {noteField.sender.value = ""}
                         })
                         .border(Color.red, width: noteField.sender.hasReachedLimit ? 1 : 0 )
-
-                    TextField("Name Your Card", text: Binding(
-                        get: {
-                            if noteField.cardName.value == "Name Your Card" {return ""} else {return noteField.cardName.value}
-                        },
-                        set: {noteField.cardName.value = $0}
-                    ), onEditingChanged: { isEditing in
-                        if isEditing && noteField.cardName.value == "Name Your Card" { noteField.cardName.value = ""}
-                    })
-                    .border(Color.red, width: noteField.cardName.hasReachedLimit ? 1 : 0 )
-                    Button("Confirm Note") {
-                        let fullTextDetails = noteField.noteText.value + " " + noteField.recipient.value + " " + noteField.sender.value + " " + noteField.cardName.value
-                        WriteNoteView.checkTextForOffensiveContent(text: fullTextDetails) { (textIsOffensive, error) in
-                            noteField.noteText = message
-                            if textIsOffensive! {alertVars.alertType = .offensiveText; alertVars.activateAlert = true}
-                            else {
-                                noteField.cardName.value = noteField.cardName.value.components(separatedBy: CharacterSet.punctuationCharacters).joined()
-                                if appDelegate.musicSub.type == .Apple {
-                                    alertVars.alertType = .addMusicPrompt
-                                    alertVars.activateAlert = true
+                        
+                        TextField("Name Your Card", text: Binding(
+                            get: {
+                                if noteField.cardName.value == "Name Your Card" {return ""} else {return noteField.cardName.value}
+                            },
+                            set: {noteField.cardName.value = $0}
+                        ), onEditingChanged: { isEditing in
+                            if isEditing && noteField.cardName.value == "Name Your Card" { noteField.cardName.value = ""}
+                        })
+                        .border(Color.red, width: noteField.cardName.hasReachedLimit ? 1 : 0 )
+                        Button("Confirm Note") {
+                            let fullTextDetails = noteField.noteText.value + " " + noteField.recipient.value + " " + noteField.sender.value + " " + noteField.cardName.value
+                            WriteNoteView.checkTextForOffensiveContent(text: fullTextDetails) { (textIsOffensive, error) in
+                                noteField.noteText = message
+                                if textIsOffensive! {alertVars.alertType = .offensiveText; alertVars.activateAlert = true}
+                                else {
+                                    noteField.cardName.value = noteField.cardName.value.components(separatedBy: CharacterSet.punctuationCharacters).joined()
+                                    if appDelegate.musicSub.type == .Apple {
+                                        alertVars.alertType = .addMusicPrompt
+                                        alertVars.activateAlert = true
+                                    }
+                                    if appDelegate.musicSub.type == .Spotify {
+                                        alertVars.alertType = .addMusicPrompt
+                                        alertVars.activateAlert = true
+                                    }
+                                    if appDelegate.musicSub.type == .Neither {checkRequiredFields(); annotateIfNeeded();CardPrep.shared.chosenSong = chosenSong; appState.currentScreen = .buildCard([.finalizeCardView])}
                                 }
-                                if appDelegate.musicSub.type == .Spotify {
-                                    alertVars.alertType = .addMusicPrompt
-                                    alertVars.activateAlert = true
-                                }
-                                if appDelegate.musicSub.type == .Neither {checkRequiredFields(); annotateIfNeeded();CardPrep.shared.chosenSong = chosenSong; appState.currentScreen = .buildCard([.finalizeCardView])}
                             }
                         }
+                        .padding(.bottom, 30)
                     }
-                    .padding(.bottom, 30)
+                    LoadingOverlay(hasShownLaunchView: $hasShownLaunchView)
                 }
-                LoadingOverlay(hasShownLaunchView: $hasShownLaunchView)
-
             }
             .onAppear{
                 if noteField.noteText.value != "" && noteField.noteText.value != "Write Your Note Here"{message.value = noteField.noteText.value}
