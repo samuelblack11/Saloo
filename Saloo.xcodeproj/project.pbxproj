@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		260F68EF281DBD93002E864B /* CollageStyleMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 260F68EE281DBD93002E864B /* CollageStyleMenu.swift */; };
 		260F68F5281DBDCD002E864B /* OccassionsMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 260F68F4281DBDCD002E864B /* OccassionsMenu.swift */; };
 		260F68F7281DBDD2002E864B /* UnsplashCollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 260F68F6281DBDD2002E864B /* UnsplashCollectionView.swift */; };
 		260F68FA281DBE61002E864B /* PhotoAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 260F68F9281DBE61002E864B /* PhotoAPI.swift */; };
@@ -78,7 +77,6 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		260F68EE281DBD93002E864B /* CollageStyleMenu.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CollageStyleMenu.swift; sourceTree = "<group>"; };
 		260F68F4281DBDCD002E864B /* OccassionsMenu.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OccassionsMenu.swift; sourceTree = "<group>"; };
 		260F68F6281DBDD2002E864B /* UnsplashCollectionView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UnsplashCollectionView.swift; sourceTree = "<group>"; };
 		260F68F9281DBE61002E864B /* PhotoAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoAPI.swift; sourceTree = "<group>"; };
@@ -161,7 +159,6 @@
 				C2950E812A4B6221001E175F /* PhotoOptionsView.swift */,
 				260F68F6281DBDD2002E864B /* UnsplashCollectionView.swift */,
 				26AD812A281F119A0069C3F0 /* ConfirmFrontCoverView.swift */,
-				260F68EE281DBD93002E864B /* CollageStyleMenu.swift */,
 				C2950E862A4B6693001E175F /* MiniCollageMenu.swift */,
 				C2075AFC295FDBA70048ECEB /* CollageBuilder.swift */,
 				26AD8126281F05160069C3F0 /* WriteNoteView.swift */,
@@ -413,18 +410,18 @@
 		C217B02F294FE5F200544B17 /* FSCalendar */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.framework;
-			name = FSCalendar;
-			path = FSCalendar.framework;
+			name = FSCalendar.framework;
+			path = "/Users/samblack/Desktop/iOS Developer/Saloo/Pods/../build/Debug-iphoneos/FSCalendar.framework";
 			remoteRef = C217B02E294FE5F200544B17 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
+			sourceTree = "<absolute>";
 		};
 		C217B031294FE5F200544B17 /* Pods-GreetMe-2 */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.framework;
-			name = "Pods-GreetMe-2";
-			path = Pods_GreetMe_2.framework;
+			name = Pods_GreetMe_2.framework;
+			path = "/Users/samblack/Desktop/iOS Developer/Saloo/Pods/../build/Debug-iphoneos/Pods_GreetMe_2.framework";
 			remoteRef = C217B030294FE5F200544B17 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
+			sourceTree = "<absolute>";
 		};
 /* End PBXReferenceProxy section */
 
@@ -494,7 +491,6 @@
 				C217021029AC0C9500BE48DC /* SongPreviewPlayer.swift in Sources */,
 				C237E6E1294E453600E472AD /* GridOfCards.swift in Sources */,
 				C22A84E529667587001244CC /* PersistenceController+History.swift in Sources */,
-				260F68EF281DBD93002E864B /* CollageStyleMenu.swift in Sources */,
 				C2764CEB2A06A9CA0083819B /* CleanMusicData.swift in Sources */,
 				C2BC52DB2A1EE55B000BAF60 /* ReportOffensiveContentView.swift in Sources */,
 				C20DEF602986C9F30080AE03 /* SpotifyAPI.swift in Sources */,
@@ -700,8 +696,6 @@
 				MARKETING_VERSION = 1.0;
 				OTHER_LDFLAGS = (
 					"-framework",
-					"\"FSCalendar\"",
-					"-framework",
 					"\"QuartzCore\"",
 					"-framework",
 					"\"UIKit\"",
@@ -755,8 +749,6 @@
 				);
 				MARKETING_VERSION = 1.0;
 				OTHER_LDFLAGS = (
-					"-framework",
-					"\"FSCalendar\"",
 					"-framework",
 					"\"QuartzCore\"",
 					"-framework",

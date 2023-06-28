@@ -1,5 +1,4 @@
 //
-//  CollageStyleMenu.swift
 //  LearningSwiftUI
 //
 //  Created by Sam Black on 4/28/22.

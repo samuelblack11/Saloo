@@ -85,7 +85,7 @@ struct CollageBuilder: View {
                                 
                             }
                         }.padding(.bottom, 30)
-                            .navigationBarItems(leading: Button {appState.currentScreen = .buildCard([.collageStyleMenu])} label: {
+                            .navigationBarItems(leading: Button {appState.currentScreen = .buildCard([.photoOptionsView])} label: {
                                 Image(systemName: "chevron.left").foregroundColor(.blue)
                                 Text("Back")}.disabled(gettingRecord.isShowingActivityIndicator))
                     }

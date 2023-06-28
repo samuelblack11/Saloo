@@ -53,7 +53,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
     func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
         print("called* openURLContexts")
         guard let url = URLContexts.first?.url else { return }
-        
         if url.absoluteString == "spotify://" {
             print("goToSpotInAppStore about to change")
             SpotifyManager.shared.gotToAppInAppStore = true
@@ -74,12 +73,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         print("called* willConnectTo")
         NotificationCenter.default.addObserver(self, selector: #selector(handleDidAcceptShare(_:)), name: .didAcceptShare, object: nil)
-        
-        if connectionOptions.cloudKitShareMetadata != nil {
-            self.processShareMetadata(connectionOptions.cloudKitShareMetadata!)
-        }
-        
-        print("called* willConnectTo2")
+        if connectionOptions.cloudKitShareMetadata != nil {self.processShareMetadata(connectionOptions.cloudKitShareMetadata!)}
     }
     
     @objc private func handleDidAcceptShare(_ notification: Notification) {
@@ -140,7 +134,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
                     Task {
                         await self.getRecordViaQuery(shareMetaData: cloudKitShareMetadata, targetDatabase: PersistenceController.shared.cloudKitContainer.privateCloudDatabase)
                         // Notify observers that a CloudKit share was accepted.
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                             NotificationCenter.default.post(name: .didAcceptShare, object: nil)
                     }
                 }
@@ -149,12 +143,11 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
                     waitingToAcceptRecord = true
                     Task {
                         await self.runGetRecord(shareMetaData: cloudKitShareMetadata)
-                        
                         ShareMD.shared.metaData = cloudKitShareMetadata
                         print(ShareMD.shared.metaData?.share)
                         //updateSharedRecordID(with: cloudKitShareMetadata)
                         // Notify observers that a CloudKit share was accepted.
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                             NotificationCenter.default.post(name: .didAcceptShare, object: nil)
                         }
                     }
@@ -176,11 +169,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
         let gettingRecord = GettingRecord.shared
         gettingRecord.isLoadingAlert = true
         print("called getRecordViaQuery....")
-        print(shareMetaData.ownerIdentity)
-        
-        
-        
-        
         let pred = NSPredicate(value: true)
         let query = CKQuery(recordType: "CD_CoreCard", predicate: pred)
         let op3 = CKQueryOperation(query: query)
@@ -228,9 +216,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
                                 gettingRecord.showLoadingRecordAlert  = true
                                 AlertVars.shared.alertType = .gettingRecord
                                 AlertVars.shared.activateAlert = true
-                                print("##")
-                                print(AlertVars.shared.alertType)
-                                print(AlertVars.shared.activateAlert)
                                 gettingRecord.isLoadingAlert = false
                             }
                             print("Counter = \(self.counter)"); self.counter += 1
@@ -262,7 +247,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
             self.coreCard.spotName = record?.object(forKey: "CD_spotName") as? String
             self.coreCard.songArtistName = record?.object(forKey: "CD_songArtistName") as? String
             self.coreCard.spotArtistName = record?.object(forKey: "CD_spotArtistName") as? String
-
             self.coreCard.songArtImageData = record?.object(forKey: "CD_songArtImageData") as? Data
             self.coreCard.songPreviewURL = record?.object(forKey: "CD_songPreviewURL") as? String
             self.coreCard.songDuration = record?.object(forKey: "CD_songDuration") as? String
@@ -273,7 +257,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
             self.coreCard.songAlbumName = record?.object(forKey: "CD_songAlbumName") as? String
             self.coreCard.spotAlbumArtist = record?.object(forKey: "CD_spotAlbumArtist") as? String
             self.coreCard.appleAlbumArtist = record?.object(forKey: "CD_appleAlbumArtist") as? String
-
             self.coreCard.creator = record?.object(forKey: "CD_creator") as? String
             self.coreCard.songAddedUsing = record?.object(forKey: "CD_songAddedUsing") as? String
             self.coreCard.cardName = record?.object(forKey: "CD_cardName") as! String

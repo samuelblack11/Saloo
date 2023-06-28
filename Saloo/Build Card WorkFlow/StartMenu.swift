@@ -8,7 +8,6 @@
 import Foundation
 import SwiftUI
 import UIKit
-import FSCalendar
 import CoreData
 import CloudKit
 import MediaPlayer
@@ -49,22 +48,24 @@ struct StartMenu: View {
                 VStack {
                     Text("Welcome To Saloo")
                         .foregroundColor(colorScheme == .dark ? .white : .black)
+                        .font(.system(size: 32))
                         .font(.headline)
                         .padding(.top, 10)
                     Text("🎈🎂🥳❤️🥂💍🎓")
                     Text("Connect with loved ones, share memories")
                         .font(.caption)
                         .foregroundColor(.gray)
+                        .font(.system(size: 16))
                         .textCase(.none)
                         .multilineTextAlignment(.center)
                     Text("and celebrate holidays and special occassions")
                         .font(.caption)
                         .foregroundColor(.gray)
+                        .font(.system(size: 16))
                         .textCase(.none)
                         .multilineTextAlignment(.center)
 
                     List {
-                        //Text("Build a Card").onTapGesture {appState.currentScreen = .buildCard([.occasionsMenu])}
                         Text("Build a Card").onTapGesture {appState.currentScreen = .buildCard([.photoOptionsView])}
                         Text("Drafts 📓").onTapGesture {screenManager.advance(); appState.currentScreen = .draft}
                         Text("Received Cards 📥").onTapGesture {screenManager.advance(); appState.currentScreen = .inbox}

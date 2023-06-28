@@ -29,7 +29,6 @@ class AppState: ObservableObject {
         case occasionsMenu
         case unsplashCollectionView
         case confirmFrontCoverView
-        case collageStyleMenu
         case collageBuilder
         case writeNoteView
         case musicSearchView
@@ -133,8 +132,6 @@ struct BuildCardView: View {
                 UnsplashCollectionView()
             case .confirmFrontCoverView:
                 ConfirmFrontCoverView()
-            case .collageStyleMenu:
-                CollageStyleMenu()
             case .collageBuilder:
                 CollageBuilder(showImagePicker: false)
             case .writeNoteView:

@@ -6,7 +6,4 @@ target 'GreetMe-2' do
   //use_frameworks!
 
   # Pods for GreetMe-2
-
-pod 'FSCalendar'
-
 end
