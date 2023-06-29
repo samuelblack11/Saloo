@@ -141,12 +141,17 @@ struct SpotPlayerView: View {
                     HStack {
                         Button {
                             songProgress = 0.0
-                            if getCurrentTrack() == songID && spotifyManager.appRemote?.isConnected == true {
-                                spotifyManager.appRemote?.playerAPI?.pause()
-                                spotifyManager.appRemote?.playerAPI?.skip(toPrevious: spotifyManager.defaultCallback)
-                                spotifyManager.appRemote?.playerAPI?.resume()
+                            getCurrentTrack { currentlyPlayingTrackID in
+                                if let trackID = currentlyPlayingTrackID {
+                                    if trackID == "spotify:track:\(songID!)" && spotifyManager.appRemote?.isConnected == true {
+                                        spotifyManager.appRemote?.playerAPI?.pause()
+                                        spotifyManager.appRemote?.playerAPI?.skip(toPrevious: spotifyManager.defaultCallback)
+                                        spotifyManager.appRemote?.playerAPI?.resume()
+                                    }
+                                    else {playSong()}
+                                }
+                                else {playSong()}
                             }
-                            else {playSong()}
                             isPlaying = true
                         } label: {
                             ZStack {
@@ -163,10 +168,15 @@ struct SpotPlayerView: View {
                             if isPlaying {
                                 spotifyManager.appRemote?.playerAPI?.pause()
                             } else {
-                                if getCurrentTrack() == songID && spotifyManager.appRemote?.isConnected == true {
-                                    spotifyManager.appRemote?.playerAPI?.resume()
+                                getCurrentTrack { currentlyPlayingTrackID in
+                                    if let trackID = currentlyPlayingTrackID {
+                                        if trackID == "spotify:track:\(songID!)" && spotifyManager.appRemote?.isConnected == true {
+                                            spotifyManager.appRemote?.playerAPI?.resume()
+                                        }
+                                        else {playSong()}
+                                    }
+                                    else {playSong()}
                                 }
-                                else {playSong()}
                             }
                             isPlaying.toggle()
                         } label: {
@@ -280,17 +290,25 @@ struct SpotPlayerView: View {
         showProgressView = false
     }
     
-    func getCurrentTrack() -> String {
-        var currentlyPlayingTrackID = String()
-        spotifyManager.appRemote?.playerAPI?.getPlayerState { (result, error) in
+    func getCurrentTrack(completion: @escaping (String?) -> Void) {
+        guard let playerAPI = spotifyManager.appRemote?.playerAPI else {
+            print("Spotify AppRemote not connected.")
+            completion(nil)
+            return
+        }
+        
+        playerAPI.getPlayerState { (result, error) in
             if let error = error {
                 print("Failed to get player state: \(error)")
+                completion(nil)
             } else if let playerState = result as? SPTAppRemotePlayerState {
-                currentlyPlayingTrackID = playerState.track.uri
+                let currentlyPlayingTrackID = playerState.track.uri
+                completion(currentlyPlayingTrackID)
             }
         }
-        return currentlyPlayingTrackID
     }
+
+
     
 
 
