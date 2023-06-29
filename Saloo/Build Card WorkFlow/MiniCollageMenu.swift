@@ -15,11 +15,9 @@ struct MiniCollageMenu: View {
     @EnvironmentObject var chosenOccassion: Occassion
     @EnvironmentObject var collageImage: CollageImage
     @State private var showImagePicker = false
-    @State private var transitionVariable = false
     @EnvironmentObject var appDelegate: AppDelegate
     // Is front cover a personal photo? (selected from camera or library)
     // Tracks which collage type (#) was selected by the user
-    @State private var collageStyles = []
     @State private var collageBlocks = CollageBlocksAndViews()
     @ObservedObject var gettingRecord = GettingRecord.shared
     @ObservedObject var alertVars = AlertVars.shared

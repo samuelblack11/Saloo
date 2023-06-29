@@ -24,10 +24,7 @@ struct WriteNoteView: View {
     @ObservedObject var recipient = MaximumText(limit: 20, value: "To:")
     @ObservedObject var sender = MaximumText(limit: 20, value: "From:")
     @ObservedObject var cardName = MaximumText(limit: 20, value: "Name Your Card")
-    @State private var tappedTextEditor = false
     @State private var namesNotEntered = false
-    @State var isFirstTap = true
-    @FocusState private var isNoteFieldFocused: Bool
     @ObservedObject var gettingRecord = GettingRecord.shared
     @State private var isEditing = false
     @State private var hasShownLaunchView: Bool = true
@@ -147,11 +144,6 @@ struct WriteNoteView: View {
 
 extension WriteNoteView {
     
-    
-    func checkForBannedContent(inputString: String) {
-        print("Checking for banned content...")
-    }
-    
     func annotateIfNeeded() {
         print("annotateIfNeeded was Called")
         print(chosenObject.frontCoverIsPersonalPhoto)
@@ -167,7 +159,6 @@ extension WriteNoteView {
     
     func checkRequiredFields() {
         if noteField.recipient.value != "" && noteField.cardName.value != "" {
-            //namesNotEntered = false
             if addMusic.addMusic {appState.currentScreen = .buildCard([.musicSearchView])}
             else {
                 CardPrep.shared.chosenSong = chosenSong
@@ -225,10 +216,6 @@ extension WriteNoteView {
                     print("Score1: \(score1)")
                     print("Score2: \(score2)")
                     print("Score3: \(score3)")
-                    
-                    // Add your own logic for handling the classification scores
-                    
-                    // For now, just pass the maximum score to the completion handler
                     let maxScore = max(score1, score2, score3)
                     // seems to max out at 0.98799 with something particularly offensive
                     print("Max Score...\(maxScore)")
@@ -244,10 +231,4 @@ extension WriteNoteView {
         }
         task.resume()
     }
-
-
-    
-    
 }
-
-

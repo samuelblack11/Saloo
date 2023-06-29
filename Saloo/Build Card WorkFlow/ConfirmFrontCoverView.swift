@@ -14,11 +14,6 @@ struct ConfirmFrontCoverView: View {
     @EnvironmentObject var chosenOccassion: Occassion
     @ObservedObject var alertVars = AlertVars.shared
     @EnvironmentObject var appState: AppState
-    @State var frontCoverImage: Image!
-    @State var frontCoverPhotographer: String!
-    @State var frontCoverUserName: String!
-    @State private var segueToCollageMenu = false
-    @State private var presentPrior = false
     @ObservedObject var gettingRecord = GettingRecord.shared
     @State private var hasShownLaunchView: Bool = true
     @State private var currentStep: Int = 1
@@ -55,7 +50,6 @@ struct ConfirmFrontCoverView: View {
                         }
                         Spacer()
                         Button("Confirm Image") {
-                            //segueToCollageMenu = true
                             appState.currentScreen = .buildCard([.collageBuilder])
                             PhotoAPI.pingDownloadURL(downloadLocation: chosenObject.downloadLocation, completionHandler: { (response, error) in
                                 if response != nil {

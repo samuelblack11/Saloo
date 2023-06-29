@@ -20,8 +20,6 @@ struct FinalizeCardView: View {
     @EnvironmentObject var noteField: NoteField
     @EnvironmentObject var addMusic: AddMusic
     @EnvironmentObject var annotation: Annotation
-    @EnvironmentObject var giftCard: GiftCard
-    @State var showCloudShareController = false
     @EnvironmentObject var appDelegate: AppDelegate
     @State var coreCard: CoreCard!
     @State var savedCoreCardForView: CoreCard!
@@ -32,21 +30,10 @@ struct FinalizeCardView: View {
     @State private var showActivityController = false
     @State var activityItemsArray: [Any] = []
     @State var saveAndShareIsActive = false
-    var field1: String!
-    var field2: String!
-    @State var string1: String!
-    @State var string2: String!
-    @State private var showShareSheet = false
     @State var share: CKShare?
-    @State private var isAddingCard = false
-    @State private var isSharing = false
-    @State private var isProcessingShare = false
-    @State private var activeShare: CKShare?
-    @State private var activeContainer: CKContainer?
     @State var cardType: String
     var config = SPTConfiguration(clientID: APIManager.shared.spotClientIdentifier, redirectURL: URL(string: "saloo://")!)
     @State var emptyCard: CoreCard? = CoreCard()
-    @State private var sharingController: UICloudSharingController?
     @State private var enableShare = false
     @EnvironmentObject var networkMonitor: NetworkMonitor
     @EnvironmentObject var spotifyManager: SpotifyManager
@@ -55,7 +42,6 @@ struct FinalizeCardView: View {
     @State private var safeAreaHeight: CGFloat = 0
     @State var currentStep: Int
     let defaults = UserDefaults.standard
-    
     @EnvironmentObject var chosenSong: ChosenSong
     
     var saveButton: some View {
@@ -66,9 +52,6 @@ struct FinalizeCardView: View {
             }
         }
         .frame(height: UIScreen.screenHeight/20)
-        //.fullScreenCover(item: $sharingController) { controller in
-        //    CloudSharingView(controller: controller)
-        // }
         .disabled(saveAndShareIsActive)
     }
     
@@ -79,7 +62,6 @@ struct FinalizeCardView: View {
                 Task {saveCard(noteField: noteField, chosenOccassion: chosenOccassion, an1: annotation.text1, an2: annotation.text2, an2URL: annotation.text2URL.absoluteString, an3: annotation.text3, an4: annotation.text4, chosenObject: chosenObject, collageImage: collageImage, songID: chosenSong.id, spotID: chosenSong.spotID, spotName: chosenSong.spotName, spotArtistName: chosenSong.spotArtistName, songName: chosenSong.name, songArtistName: chosenSong.artistName, songAlbumName: chosenSong.songAlbumName, songArtImageData: chosenSong.artwork, songPreviewURL: chosenSong.songPreviewURL, songDuration: String(chosenSong.durationInSeconds), inclMusic: addMusic.addMusic, spotImageData: chosenSong.spotImageData, spotSongDuration: String(chosenSong.spotSongDuration), spotPreviewURL: chosenSong.spotPreviewURL, songAddedUsing: chosenSong.songAddedUsing, cardType: cardType, appleAlbumArtist: chosenSong.appleAlbumArtist,spotAlbumArtist: chosenSong.spotAlbumArtist, salooUserID: (UserDefaults.standard.object(forKey: "SalooUserID") as? String)!, appleSongURL: chosenSong.appleSongURL, spotSongURL: chosenSong.spotSongURL)
                     print("Save & Share CoreCard...")
                 }
-
             }
             else {
                 alertVars.alertType = .showFailedToShare
@@ -130,7 +112,6 @@ struct FinalizeCardView: View {
             }
             .modifier(AlertViewMod(showAlert: alertVars.activateAlertBinding, activeAlert: alertVars.alertType, alertDismissAction: {appState.currentScreen = .startMenu}))
         }
-        //.onAppear{if appDelegate.musicSub.type == .Spotify{spotifyManager.appRemote?.playerAPI?.pause()}}
     }
 }
 
@@ -148,17 +129,13 @@ extension FinalizeCardView {
             if enableShare == true {
                 self.appState.pauseMusic.toggle()
                 cardsForDisplay.addCoreCard(card: savedCoreCard, box: .outbox)
-                //DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) {
                 createNewShare(coreCard: savedCoreCard)
-                //}
             }
             else {cardsForDisplay.addCoreCard(card: savedCoreCard, box: .draftbox)}
             noteField.recipient.value = ""
             noteField.sender.value = ""
             noteField.cardName.value = ""
             noteField.noteText.value = "Write Your Note Here"
-            //else {PersistenceController.shared.createCKShare(unsharedCoreCard: savedCoreCard, persistenceController: PersistenceController.shared)}
-            //else {print("Do Not Share card right now")}
         }))
             
     }

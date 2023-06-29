@@ -14,7 +14,6 @@ struct UnsplashCollectionView: View {
     // Object for collection selected by user
     @EnvironmentObject var chosenOccassion: Occassion
     @EnvironmentObject var chosenObject: ChosenCoverImageObject
-    @State private var showOccassions = false
     // Object holding Bools for all views to be displayed.
     // Array of all images displayed in the view
     @ObservedObject var imageObjectModel = UCVImageObjectModel()

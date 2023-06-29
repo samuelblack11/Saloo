@@ -14,13 +14,8 @@ struct OccassionsMenu: View {
     // Object to pass to Collage Menu if photo not selcted from UCV
     @EnvironmentObject var chosenOccassion: Occassion
     @EnvironmentObject var chosenObject: ChosenCoverImageObject
-    
-    //@State private var showSentCards = false
-    //@State private var showReceivedCards = false
-    @State private var showGridOfCards = false
     @State private var showCameraCapture = false
     @State private var showImagePicker = false
-    @State private var showUCV = false
     // Collection Variables. Use @State private for variables owned by this view and not accessible by external views
     //@State private var collections: [CollectionPair] = []
     @State private var yearRoundCollection: [CollectionPair2] = []
@@ -36,9 +31,6 @@ struct OccassionsMenu: View {
     @State private var isLoadingMenu = false
     @EnvironmentObject var appState: AppState
     @State private var hasShownLaunchView: Bool = true
-
-    
-    // Cover Image Variables used dependent on the image's source
     @State private var coverImage: UIImage?
     @State private var coverImageFromLibrary: UIImage?
     @State private var coverImageFromCamera: UIImage?
@@ -46,7 +38,6 @@ struct OccassionsMenu: View {
     @State var frontCoverIsPersonalPhoto = 0
     // Variables for text field where user does custom photo search. Initialized as blank String
     @State private var customSearch: String = ""
-    // Defines page number to be used when displaying photo results on UCV
     @State var loadedImagefromLibraryOrCamera: Bool?
     @EnvironmentObject var networkMonitor: NetworkMonitor
     @ObservedObject var alertVars = AlertVars.shared

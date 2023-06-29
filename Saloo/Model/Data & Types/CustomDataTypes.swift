@@ -65,15 +65,6 @@ struct SelectedSong {
     @State var durationInMillis: Int
 }
 
-class GiftCard: ObservableObject {
-    @Published var id = ""
-    @Published var status = String()
-    @Published var cardValue = Int()
-    @Published var deliveryMethod = String()
-    @Published var recipientEmail = String()
-    @Published var recipientName = String()
-}
-
 struct UserResponseParent: Codable {
     let usersList: [UserResponse]
 }
@@ -125,25 +116,33 @@ class CardsForDisplay: ObservableObject {
     @Published var userID = UserDefaults.standard.object(forKey: "SalooUserID") as? String
     @Published var isLoading = false
 
-    //let userID = UserDefaults.standard.object(forKey: "SalooUserID") as? String
     func addCoreCard(card: CoreCard, box: InOut.SendReceive) {
+        print("Adding card with uniqueName: \(card.uniqueName)")
         switch box {
         case .inbox:
-            if !self.inboxCards.contains(card) {
+            print("Current cards in inbox:")
+            self.inboxCards.forEach { print($0.uniqueName) }
+            if !self.inboxCards.contains(where: { $0.uniqueName == card.uniqueName }) {
                 self.inboxCards.append(card)
             }
         case .outbox:
-            if !self.outboxCards.contains(card) {
+            print("Current cards in outbox:")
+            self.outboxCards.forEach { print($0.uniqueName) }
+            if !self.outboxCards.contains(where: { $0.uniqueName == card.uniqueName }) {
                 self.outboxCards.append(card)
             }
         case .draftbox:
-            if !self.draftboxCards.contains(card) {
+            print("Current cards in draftbox:")
+            self.draftboxCards.forEach { print($0.uniqueName) }
+            if !self.draftboxCards.contains(where: { $0.uniqueName == card.uniqueName }) {
                 self.draftboxCards.append(card)
             }
         default:
             print("Invalid box type")
         }
     }
+
+
 
 
     func deleteCoreCard(card: CoreCard, box: InOut.SendReceive) {
@@ -709,7 +708,7 @@ class SpotifyManager: ObservableObject {
     @State var refreshAccessToken = false
     var noInternet: (() -> Void)?
     @Published var gotToAppInAppStore = Bool()
-    
+    @Published var appRemoteDisconnected = 0
     init() {
         enum UserDefaultsError: Error {case noMusicSubType}
         do {
@@ -865,7 +864,11 @@ class SpotifyManager: ObservableObject {
 class SpotPlayerViewDelegate: NSObject, SPTAppRemoteDelegate {
     func appRemoteDidEstablishConnection(_ appRemote: SPTAppRemote) {print("Connected appRemote")}
 
-    func appRemote(_ appRemote: SPTAppRemote, didDisconnectWithError error: Error?) {print("Disconnected appRemote")}
+    func appRemote(_ appRemote: SPTAppRemote, didDisconnectWithError error: Error?) {
+        SpotifyManager.shared.appRemoteDisconnected += 1
+        print("Disconnected appRemote")
+        
+    }
 
     func appRemote(_ appRemote: SPTAppRemote, didFailConnectionAttemptWithError error: Error?) {
         print("Failed to connect appRemote")

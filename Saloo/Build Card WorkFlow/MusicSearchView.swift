@@ -24,7 +24,6 @@ struct MusicSearchView: View {
     //@State private var storeFrontID = "us"
     @State private var userToken = ""
     @State private var searchResults: [SongForList] = []
-    @EnvironmentObject var giftCard: GiftCard
     @EnvironmentObject var networkMonitor: NetworkMonitor
     @EnvironmentObject var spotifyManager: SpotifyManager
     let cleanMusicData = CleanMusicData()
@@ -56,8 +55,6 @@ struct MusicSearchView: View {
     @Environment(\.colorScheme) var colorScheme
     @State private var hasShownLaunchView: Bool = true
     @State private var currentStep: Int = 4
-
-    
     @ObservedObject var alertVars = AlertVars.shared
     @EnvironmentObject var appState: AppState
     var sortResults: some View {

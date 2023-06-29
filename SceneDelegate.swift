@@ -23,13 +23,11 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
     var checkIfRecordAddedToStore = true
     var waitingToAcceptRecord = false
     @ObservedObject var appDelegate = AppDelegate()
-    //@ObservedObject var networkMonitor =  NetworkMonitor()
     @ObservedObject var networkMonitor = NetworkMonitor()
     //var hideProgViewOnAcceptShare: Bool = true
     let defaults = UserDefaults.standard
     var counter = 0
     var launchedURL: URL?
-    let customLog = OSLog(subsystem: "com.Saloo", category: "Custom Category")
     var spotifyManager: SpotifyManager?
 
     func sceneDidBecomeActive(_ scene: UIScene) {
@@ -264,6 +262,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
             self.coreCard.cardType = record?.object(forKey: "CD_cardType") as! String
             self.coreCard.appleSongURL = record?.object(forKey: "CD_appleSongURL") as! String
             self.coreCard.spotSongURL = record?.object(forKey: "CD_spotSongURL") as! String
+            self.coreCard.uniqueName = record?.object(forKey: "CD_uniqueName") as! String
             self.appDelegate.chosenGridCard = self.coreCard
             self.determineWhichBox {}
             self.gotRecord = true

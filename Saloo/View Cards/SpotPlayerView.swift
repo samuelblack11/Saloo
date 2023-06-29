@@ -60,6 +60,7 @@ struct SpotPlayerView: View {
     @ObservedObject var alertVars = AlertVars.shared
     let spotGreen = Color(red: 29.0 / 255.0, green: 185.0 / 255.0, blue: 84.0 / 255.0)
     //@Binding var disableTextField: Bool
+    @State private var currentPlaybackPosition: Int = 0
 
     var body: some View {
         SpotPlayerView2
@@ -140,9 +141,12 @@ struct SpotPlayerView: View {
                     HStack {
                         Button {
                             songProgress = 0.0
-                            spotifyManager.appRemote?.playerAPI?.pause()
-                            spotifyManager.appRemote?.playerAPI?.skip(toPrevious: spotifyManager.defaultCallback)
-                            spotifyManager.appRemote?.playerAPI?.resume()
+                            if getCurrentTrack() == songID && spotifyManager.appRemote?.isConnected == true {
+                                spotifyManager.appRemote?.playerAPI?.pause()
+                                spotifyManager.appRemote?.playerAPI?.skip(toPrevious: spotifyManager.defaultCallback)
+                                spotifyManager.appRemote?.playerAPI?.resume()
+                            }
+                            else {playSong()}
                             isPlaying = true
                         } label: {
                             ZStack {
@@ -156,8 +160,14 @@ struct SpotPlayerView: View {
                         }
                         .frame(maxWidth: UIScreen.screenHeight/12, maxHeight: UIScreen.screenHeight/12)
                         Button {
-                            if isPlaying {spotifyManager.appRemote?.playerAPI?.pause()}
-                            else {spotifyManager.appRemote?.playerAPI?.resume()}
+                            if isPlaying {
+                                spotifyManager.appRemote?.playerAPI?.pause()
+                            } else {
+                                if getCurrentTrack() == songID && spotifyManager.appRemote?.isConnected == true {
+                                    spotifyManager.appRemote?.playerAPI?.resume()
+                                }
+                                else {playSong()}
+                            }
                             isPlaying.toggle()
                         } label: {
                             ZStack {
@@ -170,6 +180,8 @@ struct SpotPlayerView: View {
                             }
                         }
                         .frame(maxWidth: UIScreen.screenHeight/12, maxHeight: UIScreen.screenHeight/12)
+
+
                     }
 
                     Spacer()
@@ -203,11 +215,6 @@ struct SpotPlayerView: View {
                     if songProgress >= 1.0 || songID == "" {
                         Text(convertToMinutes(seconds:Int(songProgress)))
                         Spacer()
-                        //Image("Spotify_Icon_RGB_Green")
-                        //    .resizable()
-                        //    .aspectRatio(contentMode: .fit)
-                        //    .frame(height: 24)
-                        //Spacer()
                         Text(convertToMinutes(seconds: Int(songDuration!)-Int(songProgress)))
                             .padding(.trailing, 10)
                     }
@@ -244,13 +251,48 @@ struct SpotPlayerView: View {
             }
         }
     }
-
+    
+    func checkConnection() {
+        Timer.scheduledTimer(withTimeInterval: 10.0, repeats: true) { _ in
+            if spotifyManager.appRemote?.isConnected == false {spotifyManager.appRemote?.connect()}
+        }
+    }
 
     private func stopTimer() {
         // Invalidate and deinitialize the timer
         self.syncTimer?.invalidate()
         self.syncTimer = nil
     }
+    
+    func playSongFromLastPosition(clickedRestart: Bool) {
+        let trackURI = "spotify:track:\(songID)"
+        var startAt = Int()
+        if clickedRestart {print("START AT 0"); startAt = 0}
+        else {startAt = currentPlaybackPosition}
+        spotifyManager.appRemote?.authorizeAndPlayURI(trackURI)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) { // delay to ensure track has started playing
+            spotifyManager.appRemote?.connect()
+            spotifyManager.appRemote?.playerAPI?.seek(toPosition: startAt, callback: { (_, error) in
+                if let error = error {print("Error seeking to position: \(error)")}
+            })
+        }
+        isPlaying = true
+        showProgressView = false
+    }
+    
+    func getCurrentTrack() -> String {
+        var currentlyPlayingTrackID = String()
+        spotifyManager.appRemote?.playerAPI?.getPlayerState { (result, error) in
+            if let error = error {
+                print("Failed to get player state: \(error)")
+            } else if let playerState = result as? SPTAppRemotePlayerState {
+                currentlyPlayingTrackID = playerState.track.uri
+            }
+        }
+        return currentlyPlayingTrackID
+    }
+    
+
 
     private func syncSongProgress() {
         // Sync the song progress
@@ -267,7 +309,8 @@ struct SpotPlayerView: View {
                 
                 if playerState.isPaused {self.isPlaying = false}
                 else {self.isPlaying = true}
-                
+                // Save the current position and track URI
+                self.currentPlaybackPosition = playerState.playbackPosition
                 guard let playbackPosition = (result as AnyObject).playbackPosition else {
                     print("Error: Could not retrieve playback position.")
                     return
@@ -278,6 +321,7 @@ struct SpotPlayerView: View {
         }
         else {print("Error: Could not retrieve player API.")}
     }
+
     
     func concatAllArtists(song: SpotItem) -> String {
         var allArtists = String()
