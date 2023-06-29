@@ -30,7 +30,14 @@ struct PhotoOptionsView: View {
                     Text("Saloo has curated photos for each holiday and special occassion. Would you like to use one of these or a personal photo?")
                         .multilineTextAlignment(.center)
                         .foregroundColor(colorScheme == .dark ? .white : .black)
-                        .padding(.top, 10)
+                        .padding(.top, 15)
+                    Text("This photo will display separately from your collage")
+                        .font(.caption)
+                        .foregroundColor(.gray)
+                        .textCase(.none)
+                        .multilineTextAlignment(.center)
+                    
+                    
                     RadioButtonGroup(items: ["Yes", "No"], selectedId: $chosenObject.frontCoverIsPersonalPhoto)
                     Spacer()
                     Text("You'll also make a collage as part of your card\nWhich of the below options would you like to use?")

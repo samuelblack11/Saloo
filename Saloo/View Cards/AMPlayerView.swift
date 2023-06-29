@@ -99,7 +99,7 @@ struct AMPlayerView: View {
             }
 
             .navigationBarItems(leading:Button {
-                if fromFinalize {musicPlayer.pause(); appState.currentScreen = .buildCard([.writeNoteView])}
+                if fromFinalize {musicPlayer.pause(); appState.currentScreen = .buildCard([.musicSearchView])}
                         print("Calling completion...")
                         musicPlayer.pause()
                         showGrid = true

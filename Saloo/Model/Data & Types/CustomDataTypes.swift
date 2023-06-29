@@ -709,6 +709,9 @@ class SpotifyManager: ObservableObject {
     var noInternet: (() -> Void)?
     @Published var gotToAppInAppStore = Bool()
     @Published var appRemoteDisconnected = 0
+    @Published var isSpotPlayerViewShowing: Bool = false
+    @Published var currentTrackId = String()
+    @Published var resetPlayerToStart = Bool()
     init() {
         enum UserDefaultsError: Error {case noMusicSubType}
         do {
@@ -861,8 +864,21 @@ class SpotifyManager: ObservableObject {
     
 }
 
-class SpotPlayerViewDelegate: NSObject, SPTAppRemoteDelegate {
-    func appRemoteDidEstablishConnection(_ appRemote: SPTAppRemote) {print("Connected appRemote")}
+class SpotPlayerViewDelegate: NSObject, SPTAppRemoteDelegate, SPTAppRemotePlayerStateDelegate  {
+    func appRemoteDidEstablishConnection(_ appRemote: SPTAppRemote) {
+        print("Connected appRemote")
+        if let playerAPI = SpotifyManager.shared.appRemote?.playerAPI {
+            print("Check1")
+            playerAPI.delegate = SpotifyManager.shared.spotPlayerDelegate
+            print("Check2")
+            playerAPI.subscribe { (result, error) in
+                print("subscribteResult")
+                print(result)
+                if let error = error {print("Error subscribing to player state changes: \(error)")}
+        }
+    }
+        
+    }
 
     func appRemote(_ appRemote: SPTAppRemote, didDisconnectWithError error: Error?) {
         SpotifyManager.shared.appRemoteDisconnected += 1
@@ -873,5 +889,17 @@ class SpotPlayerViewDelegate: NSObject, SPTAppRemoteDelegate {
     func appRemote(_ appRemote: SPTAppRemote, didFailConnectionAttemptWithError error: Error?) {
         print("Failed to connect appRemote")
         if let error = error {print("Error: \(error)")}
+    }
+    
+    func playerStateDidChange(_ playerState: SPTAppRemotePlayerState) {
+        var salooURI = "spotify:track:\(SpotifyManager.shared.currentTrackId)"
+        print("Called playerStateDidChange")
+        print(salooURI)
+        print(playerState.track.uri)
+        if salooURI != playerState.track.uri {
+            print("Track changed to: \(playerState.track.name) by \(playerState.track.artist.name)")
+            SpotifyManager.shared.appRemote?.disconnect()
+            SpotifyManager.shared.resetPlayerToStart = true
+        }
     }
 }

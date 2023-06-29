@@ -61,10 +61,13 @@ struct SpotPlayerView: View {
     let spotGreen = Color(red: 29.0 / 255.0, green: 185.0 / 255.0, blue: 84.0 / 255.0)
     //@Binding var disableTextField: Bool
     @State private var currentPlaybackPosition: Int = 0
+    @State var fromFinalize = false
 
     var body: some View {
         SpotPlayerView2
             .onAppear{
+                    if let songIdUnwrapped = songID {spotifyManager.currentTrackId = songIdUnwrapped}
+                    else { print("songID is nil")}
                     spotifyManager.updateCredentialsIfNeeded{success in
                         spotifyManager.verifySubType{isPremium in
                             if !isPremium {
@@ -81,7 +84,7 @@ struct SpotPlayerView: View {
             }
             .onChange(of: appState.pauseMusic) {shouldPause in if shouldPause{spotifyManager.appRemote?.playerAPI?.pause()}}
             .onDisappear{spotifyManager.appRemote?.playerAPI?.pause()}
-            .navigationBarItems(leading:Button {chosenCard = nil
+            .navigationBarItems(leading:Button {chosenCard = nil; if fromFinalize {appState.currentScreen = .buildCard([.musicSearchView])}
             } label: {Image(systemName: "chevron.left").foregroundColor(.blue); Text("Back")}.disabled(gettingRecord.isShowingActivityIndicator))
             // Show an alert if showAlert is true
             .alert(isPresented: $showFailedConnectionAlert) {
@@ -236,6 +239,13 @@ struct SpotPlayerView: View {
                 if confirmButton == true {selectButton}
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
+        }
+        .onChange(of: spotifyManager.resetPlayerToStart) { isTrue in
+            if isTrue {
+                songProgress = 1.0
+                isPlaying = false
+                spotifyManager.resetPlayerToStart = false
+            }
         }
         .onDisappear{spotifyManager.appRemote?.playerAPI?.seek(toPosition: 0)}
     }
@@ -408,6 +418,8 @@ struct SpotPlayerView: View {
                     spotName = song.name
                     spotArtistName = allArtists
                     songID = song.id
+                    if let songIdUnwrapped = songID {spotifyManager.currentTrackId = songIdUnwrapped}
+                    else { print("songID is nil")}
                     songURL = song.external_urls?.spotify
                     songArtImageData = artResponse!
                     songDuration = Double(song.duration_ms) * 0.001

@@ -10,11 +10,6 @@ struct eCardView: View {
     @State var font: String
     @State var coverImage: Data
     @State var collageImage: Data
-    //@State var chosenCollageStyle: Int
-    //@State var collage1: Data
-    //@State var collage2: Data?
-    //@State var collage3: Data?
-    //@State var collage4: Data?
     @State var text1: String
     @State var text2: String
     @State var text2URL: URL
@@ -172,7 +167,7 @@ struct eCardView: View {
         VStack {
             Image(uiImage: UIImage(data: coverImage)!)
                 .interpolation(.none).resizable()
-                .frame(width: UIScreen.main.bounds.width/1.05, height: UIScreen.main.bounds.height / 4.2, alignment: .center)
+                .frame(width: UIScreen.main.bounds.width/1.05, height: UIScreen.main.bounds.height / 4.4, alignment: .center)
                 .scaledToFill()
             annotationView()
         }
@@ -205,7 +200,7 @@ struct eCardView: View {
         return
         Text(eCardText)
             .font(Font.custom(font, size: 500)).minimumScaleFactor(0.01)
-            .frame(width: UIScreen.screenWidth/2.2, height: UIScreen.screenHeight/4.7)
+            .frame(width: UIScreen.screenWidth/2.2, height: UIScreen.screenHeight/4.9)
     }
     
     func NoteViewSquare() -> some View {
@@ -244,7 +239,7 @@ struct eCardView: View {
                         .frame(maxHeight: UIScreen.main.bounds.height / 2.3, alignment: .bottom)
                 }
             else if (appDelegate.musicSub.type == .Spotify) { // && (spotName != "LookupFailed")
-                SpotPlayerView(songID: spotID, songName: songName, songArtistName: songArtistName, spotName: spotName, spotArtistName: spotArtistName, songAlbumName: songAlbumName, songArtImageData: spotImageData, songDuration: spotSongDuration, songPreviewURL: spotPreviewURL, appleAlbumArtist: appleAlbumArtist, spotAlbumArtist: spotAlbumArtist, confirmButton: false, songURL: spotSongURL, accessedViaGrid: accessedViaGrid, coreCard: coreCard, chosenCard: $chosenCard, deferToPreview: $deferToPreview, showSPV: $showSPV, isLoading: $isLoading)
+                SpotPlayerView(songID: spotID, songName: songName, songArtistName: songArtistName, spotName: spotName, spotArtistName: spotArtistName, songAlbumName: songAlbumName, songArtImageData: spotImageData, songDuration: spotSongDuration, songPreviewURL: spotPreviewURL, appleAlbumArtist: appleAlbumArtist, spotAlbumArtist: spotAlbumArtist, confirmButton: false, songURL: spotSongURL, accessedViaGrid: accessedViaGrid, coreCard: coreCard, chosenCard: $chosenCard, deferToPreview: $deferToPreview, showSPV: $showSPV, isLoading: $isLoading, fromFinalize: fromFinalize)
                         .frame(maxHeight: UIScreen.main.bounds.height / 2.3, alignment: .bottom)
                 }
             }
