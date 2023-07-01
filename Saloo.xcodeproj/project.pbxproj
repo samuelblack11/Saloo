@@ -60,13 +60,6 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		C217B02E294FE5F200544B17 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = C217B029294FE5F200544B17 /* Pods.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 95209B8BB966524BC76543F99C75F5FE;
-			remoteInfo = FSCalendar;
-		};
 		C217B030294FE5F200544B17 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = C217B029294FE5F200544B17 /* Pods.xcodeproj */;
@@ -248,8 +241,7 @@
 		C217B02A294FE5F200544B17 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				C217B02F294FE5F200544B17 /* FSCalendar */,
-				C217B031294FE5F200544B17 /* Pods-GreetMe-2 */,
+				C217B031294FE5F200544B17 /* Pods_GreetMe_2.framework */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -407,21 +399,12 @@
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
-		C217B02F294FE5F200544B17 /* FSCalendar */ = {
+		C217B031294FE5F200544B17 /* Pods_GreetMe_2.framework */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.framework;
-			name = FSCalendar.framework;
-			path = "/Users/samblack/Desktop/iOS Developer/Saloo/Pods/../build/Debug-iphoneos/FSCalendar.framework";
-			remoteRef = C217B02E294FE5F200544B17 /* PBXContainerItemProxy */;
-			sourceTree = "<absolute>";
-		};
-		C217B031294FE5F200544B17 /* Pods-GreetMe-2 */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.framework;
-			name = Pods_GreetMe_2.framework;
-			path = "/Users/samblack/Desktop/iOS Developer/Saloo/Pods/../build/Debug-iphoneos/Pods_GreetMe_2.framework";
+			path = Pods_GreetMe_2.framework;
 			remoteRef = C217B030294FE5F200544B17 /* PBXContainerItemProxy */;
-			sourceTree = "<absolute>";
+			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 /* End PBXReferenceProxy section */
 

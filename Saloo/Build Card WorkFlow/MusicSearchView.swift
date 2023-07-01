@@ -57,6 +57,7 @@ struct MusicSearchView: View {
     @State private var currentStep: Int = 4
     @ObservedObject var alertVars = AlertVars.shared
     @EnvironmentObject var appState: AppState
+    @EnvironmentObject var cardProgress: CardProgress
     var sortResults: some View {
         HStack {
             Text("Sort By:").padding(.leading, 5).font(Font.custom(sortByValue, size: 12))
@@ -68,7 +69,7 @@ struct MusicSearchView: View {
     var body: some View {
         NavigationStack {
             VStack {
-                ProgressBar(currentStep: $currentStep).frame(height: 20)
+                ProgressBar().frame(height: 20)
                     .frame(height: 20)
                 ZStack {
                     if appDelegate.musicSub.type == .Spotify {
@@ -169,7 +170,8 @@ struct MusicSearchView: View {
                             alertVars.alertType = .failedConnection
                             alertVars.activateAlert = true}}
                 }
-                .navigationBarItems(leading:Button {appState.currentScreen = .buildCard([.writeNoteView])} label: {Image(systemName: "chevron.left").foregroundColor(.blue); Text("Back")}.disabled(gettingRecord.isShowingActivityIndicator))
+                .navigationBarItems(leading:Button {cardProgress.currentStep = 3; appState.currentScreen = .buildCard([.writeNoteView])} label: {Image(systemName: "chevron.left").foregroundColor(.blue); Text("Back")}.disabled(gettingRecord.isShowingActivityIndicator))
+                .navigationTitle("Select Your Song")
                 .popover(isPresented: $showAPV) {AMPlayerView(songID: chosenSong.id, songName: chosenSong.name, songArtistName: chosenSong.artistName, songArtImageData: chosenSong.artwork, songDuration: chosenSong.durationInSeconds, songPreviewURL: chosenSong.songPreviewURL, confirmButton: true, chosenCard: $emptyCard, deferToPreview: $deferToPreview, showAPV: $showAPV, isLoading: $isLoading, songURL: chosenSong.appleSongURL)
                         .presentationDetents([.fraction(0.435)])
                 }

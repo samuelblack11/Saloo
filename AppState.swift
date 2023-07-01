@@ -119,6 +119,7 @@ struct ContentView: View {
 
 struct BuildCardView: View {
     @EnvironmentObject var appDelegate: AppDelegate
+    @EnvironmentObject var cardProgress: CardProgress
     let steps: [AppState.BuildCardSteps]
     var animationDuration  = 5.0
     var body: some View {
@@ -139,8 +140,7 @@ struct BuildCardView: View {
             case .musicSearchView:
                 MusicSearchView()
             case .finalizeCardView:
-                let currentStep = (appDelegate.musicSub.type == .Neither) ? 4 : 5
-                FinalizeCardView(cardType: CardPrep.shared.cardType, currentStep: currentStep)
+                FinalizeCardView(cardType: CardPrep.shared.cardType)
             }
         }
     }

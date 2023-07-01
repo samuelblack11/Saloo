@@ -56,7 +56,8 @@ struct AMPlayerView: View {
     @Binding var showAPV: Bool
     @Binding var isLoading: Bool
     @State var songURL: String?
-    
+    @EnvironmentObject var cardProgress: CardProgress
+
     
     
     
@@ -99,7 +100,7 @@ struct AMPlayerView: View {
             }
 
             .navigationBarItems(leading:Button {
-                if fromFinalize {musicPlayer.pause(); appState.currentScreen = .buildCard([.musicSearchView])}
+                if fromFinalize {musicPlayer.pause(); cardProgress.currentStep = 4; appState.currentScreen = .buildCard([.musicSearchView])}
                         print("Calling completion...")
                         musicPlayer.pause()
                         showGrid = true
@@ -212,6 +213,8 @@ struct AMPlayerView: View {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) {
                 self.isLoading = false
                 CardPrep.shared.chosenSong = chosenSong
+                CardPrep.shared.cardType = "musicNoGift"
+                cardProgress.currentStep = 5;
                 appState.currentScreen = .buildCard([.finalizeCardView])
             }
         } label: {Text("Select Song For Card").foregroundColor(.blue).disabled(disableSelect)}

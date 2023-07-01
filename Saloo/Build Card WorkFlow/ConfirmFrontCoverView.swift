@@ -16,7 +16,7 @@ struct ConfirmFrontCoverView: View {
     @EnvironmentObject var appState: AppState
     @ObservedObject var gettingRecord = GettingRecord.shared
     @State private var hasShownLaunchView: Bool = true
-    @State private var currentStep: Int = 1
+    @EnvironmentObject var cardProgress: CardProgress
 
     func getCoverSize() -> (CGSize, Double) {
         var size = CGSize()
@@ -35,7 +35,7 @@ struct ConfirmFrontCoverView: View {
     var body: some View {
         NavigationView {
             VStack {
-                ProgressBar(currentStep: $currentStep).frame(height: 20)
+                ProgressBar().frame(height: 20)
                 ZStack {
                     VStack {
                         Image(uiImage: UIImage(data: chosenObject.coverImage)!)
@@ -50,6 +50,7 @@ struct ConfirmFrontCoverView: View {
                         }
                         Spacer()
                         Button("Confirm Image") {
+                            cardProgress.currentStep = 2
                             appState.currentScreen = .buildCard([.collageBuilder])
                             PhotoAPI.pingDownloadURL(downloadLocation: chosenObject.downloadLocation, completionHandler: { (response, error) in
                                 if response != nil {
@@ -70,6 +71,7 @@ struct ConfirmFrontCoverView: View {
         .navigationBarItems(leading:
             Button {
                 print("Back button tapped")
+                cardProgress.currentStep = 1
                 appState.currentScreen = .buildCard([.unsplashCollectionView])
             } label: {
                 Image(systemName: "chevron.left").foregroundColor(.blue)

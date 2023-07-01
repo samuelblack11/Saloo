@@ -32,19 +32,20 @@ struct UnsplashCollectionView: View {
     @EnvironmentObject var networkMonitor: NetworkMonitor
     @ObservedObject var alertVars = AlertVars.shared
     @State private var hasShownLaunchView: Bool = true
-    @State private var currentStep: Int = 1
+    @EnvironmentObject var cardProgress: CardProgress
 
     var body: some View {
         NavigationView {
             VStack {
-                ProgressBar(currentStep: $currentStep).frame(height: 20)
+                ProgressBar().frame(height: 20)
                 ZStack {
                     ScrollView {
                         LazyVGrid(columns: columns, spacing: 10) {
                             ForEach(imageObjectModel.imageObjects, id: \.self.id) {photoObj in
                                 AsyncImage(url: photoObj.smallImageURL) { image in
                                     image.resizable()} placeholder: {ZStack{Color.gray; ProgressView()}}
-                                    .frame(width: 125, height: 125)
+                                    //.frame(width: 125, height: 125)
+                                    .frame(width: UIScreen.screenWidth/3, height: UIScreen.screenWidth/3)
                                     .onTapGesture {Task {
                                         //try? await handleTap(index: photoObj.index)
                                         if networkMonitor.isConnected{try? await handleTap(index: photoObj.index)}
@@ -55,7 +56,7 @@ struct UnsplashCollectionView: View {
                                     }}
                             }
                         }
-                        .navigationTitle("Choose Front Cover")
+                        .navigationTitle("Primary Photo")
                         .navigationBarItems(leading:Button {chosenObject.pageCount = 1; appState.currentScreen = .buildCard([.occasionsMenu])} label: {Image(systemName: "chevron.left").foregroundColor(.blue); Text("Back")}.disabled(gettingRecord.isShowingActivityIndicator))
                         Button("More...") {
                             if networkMonitor.isConnected {

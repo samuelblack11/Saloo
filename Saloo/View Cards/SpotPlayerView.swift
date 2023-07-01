@@ -62,6 +62,7 @@ struct SpotPlayerView: View {
     //@Binding var disableTextField: Bool
     @State private var currentPlaybackPosition: Int = 0
     @State var fromFinalize = false
+    @EnvironmentObject var cardProgress: CardProgress
 
     var body: some View {
         SpotPlayerView2
@@ -84,7 +85,7 @@ struct SpotPlayerView: View {
             }
             .onChange(of: appState.pauseMusic) {shouldPause in if shouldPause{spotifyManager.appRemote?.playerAPI?.pause()}}
             .onDisappear{spotifyManager.appRemote?.playerAPI?.pause()}
-            .navigationBarItems(leading:Button {chosenCard = nil; if fromFinalize {appState.currentScreen = .buildCard([.musicSearchView])}
+            .navigationBarItems(leading:Button {chosenCard = nil; if fromFinalize {cardProgress.currentStep = 4; appState.currentScreen = .buildCard([.musicSearchView])}
             } label: {Image(systemName: "chevron.left").foregroundColor(.blue); Text("Back")}.disabled(gettingRecord.isShowingActivityIndicator))
             // Show an alert if showAlert is true
             .alert(isPresented: $showFailedConnectionAlert) {
@@ -102,8 +103,8 @@ struct SpotPlayerView: View {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) {
                 self.isLoading = false
                 CardPrep.shared.chosenSong = chosenSong
-                print("::::")
-                print(CardPrep.shared.chosenSong)
+                CardPrep.shared.cardType = "musicNoGift"
+                cardProgress.currentStep = 5
                 appState.currentScreen = .buildCard([.finalizeCardView])
             }
         } label: {Text("Select Song For Card").foregroundColor(.blue)}

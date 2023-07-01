@@ -42,7 +42,7 @@ struct OccassionsMenu: View {
     @EnvironmentObject var networkMonitor: NetworkMonitor
     @ObservedObject var alertVars = AlertVars.shared
     @EnvironmentObject var collectionManager: CollectionManager
-    @State private var currentStep: Int = 1
+    @EnvironmentObject var cardProgress: CardProgress
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     var body: some View {
@@ -50,7 +50,7 @@ struct OccassionsMenu: View {
         // Hold cmd + ctrl, then click space bar to show emoji menu
         NavigationView {
             VStack {
-                ProgressBar(currentStep: $currentStep)
+                ProgressBar()
                     .frame(height: 20)
                 ZStack {
                     if isLoadingMenu {
@@ -72,6 +72,7 @@ struct OccassionsMenu: View {
                                     .fullScreenCover(isPresented: $showImagePicker){ImagePicker(image: $coverImageFromLibrary, explicitPhotoAlert: $explicitPhotoAlert, isImageLoading: $isImageLoading)}
                                     .onChange(of: coverImageFromLibrary) { _ in loadImage(pic: coverImageFromLibrary!)
                                         handlePersonalPhotoSelection()
+                                        cardProgress.currentStep = 2
                                         appState.currentScreen = .buildCard([.collageBuilder])
                                         chosenObject.frontCoverIsPersonalPhoto = 1
                                         chosenOccassion.occassion = "None"; chosenOccassion.collectionID = "None"
@@ -86,6 +87,7 @@ struct OccassionsMenu: View {
                                 {CameraCapture(image: self.$coverImageFromCamera, isPresented: self.$showCameraCapture, explicitPhotoAlert: $explicitPhotoAlert, sourceType: .camera, isImageLoading: $isImageLoading)}
                                     .onChange(of: coverImageFromCamera) { _ in loadImage(pic: coverImageFromCamera!)
                                         handlePersonalPhotoSelection()
+                                        cardProgress.currentStep = 2
                                         appState.currentScreen = .buildCard([.collageBuilder]); chosenObject.frontCoverIsPersonalPhoto = 1
                                         chosenOccassion.occassion = ""; chosenOccassion.collectionID = ""
                                     }
@@ -147,7 +149,7 @@ struct OccassionsMenu: View {
         //.alert(isPresented: $explicitPhotoAlert) {
         //    Alert(title: Text("Error"), message: Text("The selected image contains explicit content and cannot be used."), dismissButton: .default(Text("OK")))
         //}
-        .navigationTitle("Choose Occasion")
+        .navigationTitle(chosenObject.frontCoverIsPersonalPhoto == 0 ? "Choose Occasion": "Primary Photo")
         .navigationBarItems(leading:Button {appState.currentScreen = .buildCard([.photoOptionsView])} label: {Image(systemName: "chevron.left").foregroundColor(.blue); Text("Back")}.disabled(gettingRecord.isShowingActivityIndicator))
         .font(.headline)
         .listStyle(GroupedListStyle())
@@ -197,14 +199,35 @@ extension OccassionsMenu {
 
 
 struct ProgressBar: View {
-    @Binding var currentStep: Int
     @EnvironmentObject var appDelegate: AppDelegate
+    @EnvironmentObject var appState: AppState
+    @EnvironmentObject var cardProgress: CardProgress
     var steps: [String] {
         return (appDelegate.musicSub.type == .Neither) ? ["🎉", "📸", "📝", "✅"] : ["🎉", "📸", "📝", "🎶", "✅"]
     }
 
+    var actions: [(Int) -> Void] {
+        switch appDelegate.musicSub.type {
+        case .Neither:
+            return [
+                { _ in appState.currentScreen = .buildCard([.occasionsMenu]); cardProgress.currentStep = 1 },
+                { _ in appState.currentScreen = .buildCard([.collageBuilder]); cardProgress.currentStep = 2 },
+                { _ in appState.currentScreen = .buildCard([.writeNoteView]); cardProgress.currentStep = 3 },
+                { _ in appState.currentScreen = .buildCard([.finalizeCardView]); cardProgress.currentStep = 4 },
+            ]
+        default:
+            return [
+                { _ in appState.currentScreen = .buildCard([.occasionsMenu]); cardProgress.currentStep = 1 },
+                { _ in appState.currentScreen = .buildCard([.collageBuilder]); cardProgress.currentStep = 2 },
+                { _ in appState.currentScreen = .buildCard([.writeNoteView]); cardProgress.currentStep = 3 },
+                { _ in appState.currentScreen = .buildCard([.musicSearchView]); cardProgress.currentStep = 4 },
+                { _ in appState.currentScreen = .buildCard([.finalizeCardView]); cardProgress.currentStep = 5 },
+            ]
+        }
+    }
+
     var body: some View {
-        let progress = Double(currentStep) / Double(steps.count)
+        let progress = Double(cardProgress.currentStep) / Double(steps.count)
         GeometryReader { geometry in
             ZStack(alignment: .leading) {
                 Capsule() // Changes Rectangle to Capsule for rounded ends
@@ -219,16 +242,32 @@ struct ProgressBar: View {
                 
                 HStack {
                     ForEach(0..<steps.count) { index in
-                        Text(steps[index])
-                            .padding(.horizontal)
-                            .frame(width: geometry.size.width / CGFloat(steps.count), alignment: .center)
+                        Button(action: {
+                            // Call the corresponding action
+                            if index <= cardProgress.maxStep {
+                                self.actions[index](index)
+                            }
+                        }) {
+                            Text(steps[index])
+                        }
+                        .padding(.horizontal)
+                        .frame(width: geometry.size.width / CGFloat(steps.count), alignment: .center)
+                        .disabled(index >= cardProgress.maxStep)
                     }
                 }
             }
             .frame(height: 20)
+            .onChange(of: cardProgress.currentStep) { newValue in
+                print("--------\(newValue)")
+                if newValue > cardProgress.maxStep {
+                    cardProgress.maxStep = newValue
+                    print("MaxStep == \(cardProgress.maxStep)")
+                }
+            }
         }
     }
 }
+
 
 
 

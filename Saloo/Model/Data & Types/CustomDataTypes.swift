@@ -268,7 +268,7 @@ class ChosenCoverImageObject: ObservableObject {
 
 class NoteField: ObservableObject  {
     static let shared = NoteField()
-    @Published var noteText = MaximumText(limit: 225, value:  "Write Your Note Here")
+    @Published var noteText = MaximumText(limit: 225, value:  "Write Your Message Here")
     @Published var recipient = MaximumText(limit: 20, value: "To:")
     @Published var sender = MaximumText(limit: 20, value: "From:")
     @Published var cardName = MaximumText(limit: 20, value: "Name Your Card")
@@ -277,6 +277,13 @@ class NoteField: ObservableObject  {
     @Published var eCardText = String()
     @Published var printCardText = String()
 }
+
+class CardProgress: ObservableObject {
+    static let shared = CardProgress()
+    @Published var currentStep = 1
+    @Published var maxStep = 1
+}
+
 
 class MaximumText: ObservableObject {
     // variable for character limit

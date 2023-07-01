@@ -36,6 +36,7 @@ struct Saloo_App: App {
                 .environmentObject(PlayerWrapper.shared)
                 .environmentObject(NetworkMonitor.shared)
                 .environmentObject(sceneDelegate)
+                .environmentObject(CardProgress.shared)
                 .environmentObject(AudioSessionManager.shared)
                 .environmentObject(MusicSubscription.shared)
                 .environmentObject(ShowDetailView.shared)

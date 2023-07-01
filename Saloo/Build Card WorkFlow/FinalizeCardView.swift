@@ -40,10 +40,10 @@ struct FinalizeCardView: View {
     @EnvironmentObject var appState: AppState
     @EnvironmentObject var cardsForDisplay: CardsForDisplay
     @State private var safeAreaHeight: CGFloat = 0
-    @State var currentStep: Int
     let defaults = UserDefaults.standard
     @EnvironmentObject var chosenSong: ChosenSong
-    
+    @EnvironmentObject var cardProgress: CardProgress
+
     var saveButton: some View {
         Button("Save to Drafts") {
             Task {saveCard(noteField: noteField, chosenOccassion: chosenOccassion, an1: annotation.text1, an2: annotation.text2, an2URL: annotation.text2URL.absoluteString, an3: annotation.text3, an4: annotation.text4, chosenObject: chosenObject, collageImage: collageImage, songID: chosenSong.id, spotID: chosenSong.spotID, spotName: chosenSong.spotName, spotArtistName: chosenSong.spotArtistName, songName: chosenSong.name, songArtistName: chosenSong.artistName, songAlbumName: chosenSong.songAlbumName, songArtImageData: chosenSong.artwork, songPreviewURL: chosenSong.songPreviewURL, songDuration: String(chosenSong.durationInSeconds), inclMusic: addMusic.addMusic, spotImageData: chosenSong.spotImageData, spotSongDuration: String(chosenSong.spotSongDuration), spotPreviewURL: chosenSong.spotPreviewURL, songAddedUsing: chosenSong.songAddedUsing, cardType: cardType, appleAlbumArtist: chosenSong.appleAlbumArtist,spotAlbumArtist: chosenSong.spotAlbumArtist, salooUserID: (UserDefaults.standard.object(forKey: "SalooUserID") as? String)!, appleSongURL: chosenSong.appleSongURL, spotSongURL: chosenSong.spotSongURL)
@@ -77,7 +77,7 @@ struct FinalizeCardView: View {
     var body: some View {
         NavigationView {
             VStack {
-                ProgressBar(currentStep: $currentStep).frame(height: 20)
+                ProgressBar().frame(height: 20)
                     .frame(height: 20)
                 GeometryReader { geometry in
                     VStack(spacing: 0){
@@ -95,16 +95,18 @@ struct FinalizeCardView: View {
                 .toolbar {
                     ToolbarItemGroup(placement: .navigationBarLeading) {
                         if addMusic.addMusic == false {
-                            Button {if addMusic.addMusic{appState.currentScreen = .buildCard([.musicSearchView])} else {appState.currentScreen = .buildCard([.writeNoteView])}}label: {Image(systemName: "chevron.left").foregroundColor(.blue)
+                            Button {if addMusic.addMusic{cardProgress.currentStep = 4; appState.currentScreen = .buildCard([.musicSearchView])} else {cardProgress.currentStep = 3; appState.currentScreen = .buildCard([.writeNoteView])}}label: {Image(systemName: "chevron.left").foregroundColor(.blue)
                                 Text("Back")}
                         }
                     }
                     ToolbarItemGroup(placement: .navigationBarTrailing) {
                         Button {
-                            noteField.noteText = MaximumText(limit: 225, value:  "Write Your Note Here")
+                            noteField.noteText = MaximumText(limit: 225, value:  "Write Your Message Here")
                             noteField.recipient = MaximumText(limit: 20, value: "To:")
                             noteField.sender = MaximumText(limit: 20, value: "From:")
                             noteField.cardName = MaximumText(limit: 20, value: "Name Your Card")
+                            cardProgress.currentStep = 1
+                            cardProgress.maxStep = 1
                             appState.currentScreen = .startMenu} label: {Image(systemName: "menucard.fill").foregroundColor(.blue)
                             Text("Menu")}
                     }
@@ -135,7 +137,9 @@ extension FinalizeCardView {
             noteField.recipient.value = ""
             noteField.sender.value = ""
             noteField.cardName.value = ""
-            noteField.noteText.value = "Write Your Note Here"
+            noteField.noteText.value = "Write Your Message Here"
+            cardProgress.currentStep = 1
+            cardProgress.maxStep = 1
         }))
             
     }

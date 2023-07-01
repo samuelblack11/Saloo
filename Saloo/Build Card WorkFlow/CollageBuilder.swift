@@ -50,6 +50,7 @@ struct CollageBuilder: View {
     var height = UIScreen.screenHeight/3
     @State private var blockCount: Int?
     @State private var currentStep: Int = 2
+    @EnvironmentObject var cardProgress: CardProgress
 
     @State private var isImageLoading: [Bool] = [false, false, false, false]
 
@@ -61,7 +62,7 @@ struct CollageBuilder: View {
     var body: some View {
         NavigationStack {
             VStack {
-                ProgressBar(currentStep: $currentStep).frame(height: 20)
+                ProgressBar().frame(height: 20)
                     .frame(height: 20)
                 ZStack {
                     VStack {
@@ -74,6 +75,7 @@ struct CollageBuilder: View {
                                 alertVars.activateAlert = true
                             }
                             else {
+                                cardProgress.currentStep = 3
                                 appState.currentScreen = .buildCard([.writeNoteView])
                                 Task {
                                     if let imageData = await snap2() {
@@ -85,7 +87,7 @@ struct CollageBuilder: View {
                                 
                             }
                         }.padding(.bottom, 30)
-                            .navigationBarItems(leading: Button {appState.currentScreen = .buildCard([.photoOptionsView])} label: {
+                            .navigationBarItems(leading: Button {cardProgress.currentStep = 1; appState.currentScreen = .buildCard([.photoOptionsView])} label: {
                                 Image(systemName: "chevron.left").foregroundColor(.blue)
                                 Text("Back")}.disabled(gettingRecord.isShowingActivityIndicator))
                     }
@@ -97,6 +99,7 @@ struct CollageBuilder: View {
                 }
             }
             .modifier(AlertViewMod(showAlert: alertVars.activateAlertBinding, activeAlert: alertVars.alertType))
+            .navigationTitle("Build Your Collage")
         }
     }
         @ViewBuilder var chosenTemplate: some View {

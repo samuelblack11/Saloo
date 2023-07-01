@@ -20,7 +20,7 @@ struct WriteNoteView: View {
     @EnvironmentObject var chosenSong: ChosenSong
     @EnvironmentObject var noteField: NoteField
     @ObservedObject var alertVars = AlertVars.shared
-    @ObservedObject var message = MaximumText(limit: 225, value: "Write Your Note Here")
+    @ObservedObject var message = MaximumText(limit: 225, value: "Write Your Message Here")
     @ObservedObject var recipient = MaximumText(limit: 20, value: "To:")
     @ObservedObject var sender = MaximumText(limit: 20, value: "From:")
     @ObservedObject var cardName = MaximumText(limit: 20, value: "Name Your Card")
@@ -28,7 +28,7 @@ struct WriteNoteView: View {
     @ObservedObject var gettingRecord = GettingRecord.shared
     @State private var isEditing = false
     @State private var hasShownLaunchView: Bool = true
-    @State private var currentStep: Int = 3
+    @EnvironmentObject var cardProgress: CardProgress
 
     var fonts = ["Zapfino","Papyrus","American-Typewriter-Bold"]
     var fontMenu: some View {
@@ -48,15 +48,15 @@ struct WriteNoteView: View {
     var body: some View {
         NavigationView {
             VStack {
-                ProgressBar(currentStep: $currentStep).frame(height: 20)
+                ProgressBar().frame(height: 20)
                     .frame(height: 20)
                 ZStack {
                     ScrollView {
                         TextEditor(text: $message.value)
-                            .onTapGesture {if message.value == "Write Your Note Here" {message.value = ""}}
+                            .onTapGesture {if message.value == "Write Your Message Here" {message.value = ""}}
                             .border(Color.red, width: message.hasReachedLimit ? 1 : 0)
                             .frame(minHeight: UIScreen.screenHeight/2.5)
-                            .font(Font.custom(noteField.font, size: 14))
+                            .font(Font.custom(noteField.font, size: 16))
                         Text("Enter the following details to save your card")
                             .font(.caption)
                             .foregroundColor(.gray)
@@ -110,7 +110,7 @@ struct WriteNoteView: View {
                                         alertVars.alertType = .addMusicPrompt
                                         alertVars.activateAlert = true
                                     }
-                                    if appDelegate.musicSub.type == .Neither {checkRequiredFields(); annotateIfNeeded();CardPrep.shared.chosenSong = chosenSong; appState.currentScreen = .buildCard([.finalizeCardView])}
+                                    if appDelegate.musicSub.type == .Neither {checkRequiredFields(); annotateIfNeeded();CardPrep.shared.chosenSong = chosenSong; cardProgress.currentStep = 4; appState.currentScreen = .buildCard([.finalizeCardView])}
                                 }
                             }
                         }
@@ -119,10 +119,11 @@ struct WriteNoteView: View {
                     LoadingOverlay(hasShownLaunchView: $hasShownLaunchView)
                 }
             }
+            .navigationTitle("Write Your Message")
             .onAppear{
-                if noteField.noteText.value != "" && noteField.noteText.value != "Write Your Note Here"{message.value = noteField.noteText.value}
+                if noteField.noteText.value != "" && noteField.noteText.value != "Write Your Message Here"{message.value = noteField.noteText.value}
             }
-            .navigationBarItems(leading:Button {appState.currentScreen = .buildCard([.collageBuilder])} label: {Image(systemName: "chevron.left").foregroundColor(.blue); Text("Back")}.disabled(gettingRecord.isShowingActivityIndicator))
+            .navigationBarItems(leading:Button {cardProgress.currentStep = 2; appState.currentScreen = .buildCard([.collageBuilder])} label: {Image(systemName: "chevron.left").foregroundColor(.blue); Text("Back")}.disabled(gettingRecord.isShowingActivityIndicator))
         }
         
         .modifier(AlertViewMod(showAlert: alertVars.activateAlertBinding, activeAlert: alertVars.alertType, alertDismissAction: {
@@ -133,10 +134,12 @@ struct WriteNoteView: View {
             checkRequiredFields()
             annotateIfNeeded()
             CardPrep.shared.cardType = "musicNoGift"
+            
         }, secondDismissAction: {
             checkRequiredFields(); annotateIfNeeded(); addMusic.addMusic = false
             CardPrep.shared.cardType = "noMusicNoGift"
             CardPrep.shared.chosenSong = chosenSong
+            cardProgress.currentStep = 5
             appState.currentScreen = .buildCard([.finalizeCardView])
         }))
     }
@@ -159,9 +162,10 @@ extension WriteNoteView {
     
     func checkRequiredFields() {
         if noteField.recipient.value != "" && noteField.cardName.value != "" {
-            if addMusic.addMusic {appState.currentScreen = .buildCard([.musicSearchView])}
+            if addMusic.addMusic {cardProgress.currentStep = 4; appState.currentScreen = .buildCard([.musicSearchView])}
             else {
                 CardPrep.shared.chosenSong = chosenSong
+                cardProgress.currentStep = 4
                 appState.currentScreen = .buildCard([.finalizeCardView])
             }
         }
