@@ -72,10 +72,38 @@ struct Saloo_App: App {
                             }
                         }
                         else{print("no salooUserID due to first launch")}
+                        checkiCloudLoginStatus()
                     }
                 }
         }
     }
+    
+    func checkiCloudLoginStatus() {
+        PersistenceController.shared.cloudKitContainer.accountStatus { (accountStatus, error) in
+            guard error == nil else {
+                print("Error while checking iCloud account status: \(error!.localizedDescription)")
+                return
+            }
+            
+            switch accountStatus {
+            case .available:
+                print("iCloud is available.")
+            case .noAccount:
+                print("No iCloud account is configured.")
+                alertVars.alertType = .loginToiCloud; alertVars.activateAlert = true
+            case .restricted:
+                print("iCloud is restricted.")
+                alertVars.alertType = .loginToiCloud; alertVars.activateAlert = true
+            case .couldNotDetermine:
+                print("Could not determine iCloud status.")
+                alertVars.alertType = .loginToiCloud; alertVars.activateAlert = true
+            @unknown default:
+                print("Unknown iCloud status.")
+                alertVars.alertType = .loginToiCloud; alertVars.activateAlert = true
+            }
+        }
+    }
+    
     func checkUserBanned(userId: String, completion: @escaping (Bool, Error?) -> Void) {
         guard let url = URL(string: "https://saloouserstatus.azurewebsites.net/is_banned?user_id=\(userId)") else {
             // Handle invalid URL error
@@ -127,14 +155,14 @@ extension View {
 }
 
 enum ActiveAlert {
-    case failedConnection, signInFailure, explicitPhoto, offensiveText, namesNotEntered, showCardComplete, showFailedToShare, addMusicPrompt, spotAuthFailed, amAuthFailed, AMSongNotAvailable, gettingRecord, userBanned, reportComplete, deleteCard, mustSelectPic, musicAuthSuccessful, spotNeedPremium, switchSpotAccounts
+    case failedConnection, signInFailure, explicitPhoto, offensiveText, namesNotEntered, showCardComplete, showFailedToShare, addMusicPrompt, spotAuthFailed, amAuthFailed, AMSongNotAvailable, gettingRecord, userBanned, reportComplete, deleteCard, mustSelectPic, musicAuthSuccessful, spotNeedPremium, switchSpotAccounts, loginToiCloud
 }
 
 struct AlertViewMod: ViewModifier {
     @ObservedObject var gettingRecord = GettingRecord.shared
     @Binding var showAlert: Bool
     var activeAlert: ActiveAlert
-    var alertDismissAction: (() -> Void)?    
+    var alertDismissAction: (() -> Void)?
     var secondDismissAction: (() -> Void)?
     var switchSpotAccounts: (() -> Void)?
     var keepSpotAccount: (() -> Void)?
@@ -145,6 +173,18 @@ struct AlertViewMod: ViewModifier {
         content
             .alert(isPresented: $showAlert) {
                 switch activeAlert {
+                case .loginToiCloud:
+                    return Alert(title: Text("iCloud Account Required"), message: Text("Please login to iCloud to continue"), dismissButton: .default(Text("Go to Settings"), action: {
+                        //guard let settingsUrl = URL(string: UIApplication.openSettingsURLString) else {
+                        guard let settingsUrl = URL(string: "App-prefs:root=CASTLE") else {
+                            return
+                        }
+                        if UIApplication.shared.canOpenURL(settingsUrl) {
+                            UIApplication.shared.open(settingsUrl, completionHandler: { (success) in
+                                print("Settings opened: \(success)")
+                            })
+                        }
+                    }))
                 case .musicAuthSuccessful:
                     return Alert(title: Text("You're All Set 🎶"), dismissButton: .default(Text("Ok")))
                 case .mustSelectPic:

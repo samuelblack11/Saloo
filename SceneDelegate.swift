@@ -118,41 +118,58 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
 
     func processShareMetadata(_ cloudKitShareMetadata: CKShare.Metadata) {
         print("called* processShareMetadata")
-        // Handle the share metadata: fetch the associated record, update your app's state, etc.
-        // This code is based on your implementation in userDidAcceptCloudKitShareWith.
+        
         let persistenceController = PersistenceController.shared
         let sharedStore = persistenceController.sharedPersistentStore
         let container = persistenceController.persistentContainer
+        
+        print("OOOOOOO")
+        print(cloudKitShareMetadata)
+        
         container.acceptShareInvitations(from: [cloudKitShareMetadata], into: sharedStore) { [self] (_, error) in
             if let error = error {
+                let errorDescription = "\(error)"
                 print("\(#function): Failed to accept share invitations: \(error)")
-                    // repeat same logic for accept share as participant, and use to open the specified record.
-                self.acceptedShare = cloudKitShareMetadata.share; print("Trying to Get Share as Owner...")
+                if errorDescription.contains("owner participant tried to accept share") {
+                    print("Owner is trying to accept their own share")
+                    self.acceptedShare = cloudKitShareMetadata.share
+                    print("Trying to Get Share as Owner...")
                     waitingToAcceptRecord = true
+                    
                     Task {
                         await self.getRecordViaQuery(shareMetaData: cloudKitShareMetadata, targetDatabase: PersistenceController.shared.cloudKitContainer.privateCloudDatabase)
-                        // Notify observers that a CloudKit share was accepted.
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                            NotificationCenter.default.post(name: .didAcceptShare, object: nil)
-                    }
-                }
-                } else {
-                    self.acceptedShare = cloudKitShareMetadata.share; print("Accepted Share...")
-                    waitingToAcceptRecord = true
-                    Task {
-                        await self.runGetRecord(shareMetaData: cloudKitShareMetadata)
-                        ShareMD.shared.metaData = cloudKitShareMetadata
-                        print(ShareMD.shared.metaData?.share)
-                        //updateSharedRecordID(with: cloudKitShareMetadata)
+                        
                         // Notify observers that a CloudKit share was accepted.
                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                             NotificationCenter.default.post(name: .didAcceptShare, object: nil)
                         }
                     }
+                    
+                } else {
+                    // If there's another kind of error
+                    print("An error occurred: \(errorDescription)")
+                }
+                
+            } else {
+                self.acceptedShare = cloudKitShareMetadata.share
+                print("Accepted Share...")
+                waitingToAcceptRecord = true
+                
+                Task {
+                    await self.runGetRecord(shareMetaData: cloudKitShareMetadata)
+                    ShareMD.shared.metaData = cloudKitShareMetadata
+                    
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                        NotificationCenter.default.post(name: .didAcceptShare, object: nil)
+                    }
                 }
             }
+        }
+        
         print("called* processShareMetadata2")
     }
+
+
     
     func runGetRecord(shareMetaData: CKShare.Metadata) async {
         print("called getRecord")

@@ -41,6 +41,7 @@
 	<true/>
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
+		<string>App-prefs</string>
 		<string>apple music</string>
 		<string>music</string>
 		<string>saloo</string>

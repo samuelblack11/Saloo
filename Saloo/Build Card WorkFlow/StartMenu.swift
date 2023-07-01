@@ -28,6 +28,7 @@ struct StartMenu: View {
     @State private var isBanned = false
     @State private var hasShownLaunchView: Bool = true
     @Environment(\.colorScheme) var colorScheme
+    @EnvironmentObject var cardProgress: CardProgress
 
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate2
     // @State var salooUserID: String = (UserDefaults.standard.object(forKey: "SalooUserID") as? String)!
@@ -79,6 +80,8 @@ struct StartMenu: View {
             .modifier(AlertViewMod(showAlert: alertVars.activateAlertBinding, activeAlert: alertVars.alertType))
             .onAppear {
                 //deleteAllCoreCards()
+                cardProgress.currentStep = 1
+                cardProgress.maxStep = 1
                 if (defaults.object(forKey: "MusicSubType") as? String) != nil {
                     if (defaults.object(forKey: "MusicSubType") as? String)! == "Apple Music" {appDelegate.musicSub.type = .Apple}
                     if (defaults.object(forKey: "MusicSubType") as? String)! == "Spotify" {appDelegate.musicSub.type = .Spotify}

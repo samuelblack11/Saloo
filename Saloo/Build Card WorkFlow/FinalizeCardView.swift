@@ -105,8 +105,6 @@ struct FinalizeCardView: View {
                             noteField.recipient = MaximumText(limit: 20, value: "To:")
                             noteField.sender = MaximumText(limit: 20, value: "From:")
                             noteField.cardName = MaximumText(limit: 20, value: "Name Your Card")
-                            cardProgress.currentStep = 1
-                            cardProgress.maxStep = 1
                             appState.currentScreen = .startMenu} label: {Image(systemName: "menucard.fill").foregroundColor(.blue)
                             Text("Menu")}
                     }
