@@ -53,6 +53,18 @@ struct CollageBuilder: View {
     @EnvironmentObject var cardProgress: CardProgress
 
     @State private var isImageLoading: [Bool] = [false, false, false, false]
+    
+    @State private var scaleA: CGFloat = 1.0
+    @State private var offsetA: CGSize = .zero
+    @State private var scaleB: CGFloat = 1.0
+    @State private var offsetB: CGSize = .zero
+    @State private var scaleC: CGFloat = 1.0
+    @State private var offsetC: CGSize = .zero
+    @State private var scaleD: CGFloat = 1.0
+    @State private var offsetD: CGSize = .zero
+
+    // Add the remaining @State properties for scale and offset (scaleC, offsetC, scaleD, offsetD)
+
 
     
     var collageView: some View {
@@ -134,21 +146,21 @@ extension CollageBuilder {
         return imageDict[imageNumber]!
     }
     
-    func blockForPhotoSelection(imageForBlock: Image?, imageNum: Int) -> some View {
+    func blockForPhotoSelection(imageForBlock: Image?, imageNum: Int, scale: Binding<CGFloat>, offset: Binding<CGSize>, onScaleChanged: @escaping (CGFloat) -> Void, onOffsetChanged: @escaping (CGSize) -> Void) -> some View {
         let shapeOptions = defineShapes()
         var thisShape = String()
-        if imageNum == 1 {thisShape = shapeOptions.0}
-        if imageNum == 2 {thisShape = shapeOptions.1}
-        if imageNum == 3 {thisShape = shapeOptions.2}
-        if imageNum == 4 {thisShape = shapeOptions.3}
+        if imageNum == 1 { thisShape = shapeOptions.0 }
+        if imageNum == 2 { thisShape = shapeOptions.1 }
+        if imageNum == 3 { thisShape = shapeOptions.2 }
+        if imageNum == 4 { thisShape = shapeOptions.3 }
         let (w2, h2) = shapeToDimensions(shape: thisShape)
         
-        return GeometryReader {geometry in
+        return GeometryReader { geometry in
             ZStack(alignment: .center) {
                 Rectangle().fill(Color.gray).border(Color.black)
                 Text("Tap to select a picture").foregroundColor(.white).font(.headline)
                 if isImageLoading[imageNum - 1]  {
-                    ProgressView() // Shows activity indicator when image is loading
+                    ProgressView()
                         .progressViewStyle(CircularProgressViewStyle(tint: .white))
                         .scaleEffect(2, anchor: .center)
                 }
@@ -156,48 +168,80 @@ extension CollageBuilder {
                     .resizable()
                     .scaledToFill()
                     .frame(width: w2, height: h2)
-                    //.border(Color.pink)
                     .clipped()
             }
+            .gesture(
+                MagnificationGesture()
+                    .onChanged { scaleValue in
+                        scale.wrappedValue = scaleValue
+                        onScaleChanged(scaleValue)
+                    }
+            )
+            .offset(offset.wrappedValue)
+            .gesture(
+                DragGesture()
+                    .onChanged { gesture in
+                        offset.wrappedValue = gesture.translation
+                        onOffsetChanged(gesture.translation)
+                    }
+            )
         }
         .onTapGesture {
             self.showImagePicker.toggle();
             imageNumber = imageNum
-            isImageLoading[imageNum - 1]  = true // Start loading
+            isImageLoading[imageNum - 1]  = true
         }
         .onChange(of: specifyImage(imageNumber: imageNum)) { _ in
             loadImage(chosenImage: specifyImage(imageNumber: imageNum))
-            isImageLoading[imageNum - 1]  = false // Finish loading
+            isImageLoading[imageNum - 1]  = false
         }
     }
-    
+
+
     func block1() -> some View {
-        return blockForPhotoSelection(imageForBlock: imageA, imageNum: 1)
-            .fullScreenCover(isPresented: $showImagePicker) {
-                ImagePicker(image: $chosenImagesObject.chosenImageA, explicitPhotoAlert: $explicitPhotoAlert, isImageLoading: $isImageLoading[0])
-            }
+        return blockForPhotoSelection(imageForBlock: imageA, imageNum: 1, scale: $scaleA, offset: $offsetA, onScaleChanged: { scale in
+            scaleA = scale
+        }, onOffsetChanged: { offset in
+            offsetA = offset
+        })
+        .sheet(isPresented: $showImagePicker) {
+            ImagePicker(image: $chosenImagesObject.chosenImageA, explicitPhotoAlert: $explicitPhotoAlert, isImageLoading: $isImageLoading[0])
+        }
     }
-    
+
     func block2() -> some View {
-        return blockForPhotoSelection(imageForBlock: imageB, imageNum: 2)
-            .fullScreenCover(isPresented: $showImagePicker) {
-                ImagePicker(image: $chosenImagesObject.chosenImageB, explicitPhotoAlert: $explicitPhotoAlert, isImageLoading: $isImageLoading[1])
-            }
+        return blockForPhotoSelection(imageForBlock: imageB, imageNum: 2, scale: $scaleB, offset: $offsetB, onScaleChanged: { scale in
+            scaleB = scale
+        }, onOffsetChanged: { offset in
+            offsetB = offset
+        })
+        .sheet(isPresented: $showImagePicker) {
+            ImagePicker(image: $chosenImagesObject.chosenImageB, explicitPhotoAlert: $explicitPhotoAlert, isImageLoading: $isImageLoading[1])
+        }
     }
-    
+
     func block3() -> some View {
-        return blockForPhotoSelection(imageForBlock: imageC, imageNum: 3)
-            .fullScreenCover(isPresented: $showImagePicker) {
-                ImagePicker(image: $chosenImagesObject.chosenImageC, explicitPhotoAlert: $explicitPhotoAlert, isImageLoading: $isImageLoading[2])
-            }
+        return blockForPhotoSelection(imageForBlock: imageC, imageNum: 3, scale: $scaleC, offset: $offsetC, onScaleChanged: { scale in
+            scaleC = scale
+        }, onOffsetChanged: { offset in
+            offsetC = offset
+        })
+        .sheet(isPresented: $showImagePicker) {
+            ImagePicker(image: $chosenImagesObject.chosenImageC, explicitPhotoAlert: $explicitPhotoAlert, isImageLoading: $isImageLoading[2])
+        }
     }
-    
+
     func block4() -> some View {
-        return blockForPhotoSelection(imageForBlock: imageD, imageNum: 4)
-            .fullScreenCover(isPresented: $showImagePicker) {
-                ImagePicker(image: $chosenImagesObject.chosenImageD, explicitPhotoAlert: $explicitPhotoAlert, isImageLoading: $isImageLoading[3])
-            }
+        return blockForPhotoSelection(imageForBlock: imageD, imageNum: 4, scale: $scaleD, offset: $offsetD, onScaleChanged: { scale in
+            scaleD = scale
+        }, onOffsetChanged: { offset in
+            offsetD = offset
+        })
+        .sheet(isPresented: $showImagePicker) {
+            ImagePicker(image: $chosenImagesObject.chosenImageD, explicitPhotoAlert: $explicitPhotoAlert, isImageLoading: $isImageLoading[3])
+        }
     }
+
     
     func onePhotoView(block: some View) -> some View {return block}
     func twoPhotoWide(block1: some View, block2: some View) -> some View {return VStack(spacing:0){block1; block2}}

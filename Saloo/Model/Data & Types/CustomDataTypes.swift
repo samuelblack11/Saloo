@@ -914,3 +914,50 @@ class SpotPlayerViewDelegate: NSObject, SPTAppRemoteDelegate, SPTAppRemotePlayer
         }
     }
 }
+
+
+import Foundation
+
+class RateLimiter {
+    private let maxExecutionsPerSecond: Int
+    private var executionQueue: DispatchQueue
+    private var executionTimestamps: [Double] = []
+    
+    init(maxExecutionsPerSecond: Int) {
+        self.maxExecutionsPerSecond = maxExecutionsPerSecond
+        self.executionQueue = DispatchQueue(label: "com.Saloo.app", attributes: .concurrent)
+    }
+    
+    func executeFunction(function: @escaping () -> Void) {
+        let currentTimestamp = Date().timeIntervalSince1970
+        var delay: Double = 0.0
+        print("called executeFunction")
+        executionQueue.sync {
+            // Remove timestamps older than 1 second
+            executionTimestamps = executionTimestamps.filter { currentTimestamp - $0 < 1 }
+            
+            // Calculate the number of executions made in the last second
+            let executionsInLastSecond = executionTimestamps.count
+            
+            if executionsInLastSecond >= maxExecutionsPerSecond {
+                // Delay the execution to comply with the rate limit
+                delay = 1.0 - (currentTimestamp - executionTimestamps.first!)
+            }
+            
+            // Add the current timestamp to the execution timestamps
+            executionTimestamps.append(currentTimestamp)
+        }
+        
+        if delay > 0 {
+            // Delay the execution
+            DispatchQueue.main.asyncAfter(deadline: .now() + delay) {
+                print("Delayed exe")
+                function()
+            }
+        } else {
+            // Execute the function immediately
+            print("Immediate exe")
+            function()
+        }
+    }
+}

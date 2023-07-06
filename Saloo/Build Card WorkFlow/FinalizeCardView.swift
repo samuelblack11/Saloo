@@ -71,9 +71,6 @@ struct FinalizeCardView: View {
         }
     }
     
-    
-    
-    
     var body: some View {
         NavigationView {
             VStack {
@@ -136,8 +133,6 @@ extension FinalizeCardView {
             noteField.sender.value = ""
             noteField.cardName.value = ""
             noteField.noteText.value = "Write Your Message Here"
-            cardProgress.currentStep = 1
-            cardProgress.maxStep = 1
         }))
             
     }

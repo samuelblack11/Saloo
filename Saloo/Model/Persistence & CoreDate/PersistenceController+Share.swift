@@ -23,18 +23,21 @@ extension PersistenceController {
             print("ShareSetFirst is true")
             print(share.publicPermission.rawValue)
             coreCardShare = share // moved outside of the block
+            let rateLimiter = RateLimiter(maxExecutionsPerSecond: 2)
             if share.publicPermission.rawValue != 3 {
                 print("Updating share permissions")
                 share.publicPermission = .readWrite
                 let modifyOperation = CKModifyRecordsOperation(recordsToSave: [share], recordIDsToDelete: nil)
-                modifyOperation.modifyRecordsCompletionBlock = { saved, _, error in
-                    if let error = error {print("Failed to update share permissions: \(error)")}
-                    else {print("Share permissions updated")}
+                rateLimiter.executeFunction {
+                    print("executeFunction in closure called")
+                    modifyOperation.modifyRecordsCompletionBlock = { saved, _, error in
+                        if let error = error {print("Failed to update share permissions: \(error)")}
+                        else {print("Share permissions updated")}
+                    }
+                    self.cloudKitContainer.privateCloudDatabase.add(modifyOperation)
                 }
-                cloudKitContainer.privateCloudDatabase.add(modifyOperation)
             }
         }
-        
             let sharingController: MyCloudSharingController
             if coreCardShare == nil {
                 sharingController = self.newSharingController(unsharedCoreCard: coreCard, persistenceController: self)
@@ -92,31 +95,23 @@ extension PersistenceController {
     
     private func newSharingController(unsharedCoreCard: CoreCard, persistenceController: PersistenceController) -> MyCloudSharingController {
         let sharingController = MyCloudSharingController { (controller, completion: @escaping (CKShare?, CKContainer?, Error?) -> Void) in
-            DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
             print("Called new sharing controller2...")
-            /**
-             The app doesn't specify a share intentionally, so Core Data creates a new share (zone).
-             CloudKit has a limit on how many zones a database can have, so this app provides an option for users to use an existing share.
-             
-             If the share's publicPermission is CKShareParticipantPermissionNone, only private participants can accept the share.
-             Private participants mean the participants an app adds to a share by calling CKShare.addParticipant.
-             If the share is more permissive, and is, therefore, a public share, anyone with the shareURL can accept it,
-             or self-add themselves to it.
-             The default value of publicPermission is CKShare.ParticipantPermission.none.
-             */
-            
-            self.persistentContainer.share([unsharedCoreCard], to: nil) { objectIDs, share, container, error in
-                print("Beginning share completion handler...")
-                if let share = share {
-                    print("Share = Share")
-                    self.configure(share: share,coreCard: unsharedCoreCard)
-                    // Set the available permissions to an empty set to load the share into the sharing controller
-                    controller.availablePermissions = []
+                let rateLimiter = RateLimiter(maxExecutionsPerSecond: 1)
+                rateLimiter.executeFunction {
+                    self.persistentContainer.share([unsharedCoreCard], to: nil) { objectIDs, share, container, error in
+                        print("Beginning share completion handler...")
+                        if let share = share {
+                            print("Share = Share")
+                            self.configure(share: share,coreCard: unsharedCoreCard)
+                            // Set the available permissions to an empty set to load the share into the sharing controller
+                            controller.availablePermissions = []
+                        }
+                        print("Called share completion")
+                        print(share?.publicPermission.rawValue)
+                        completion(share, container, error)
+                    }
                 }
-                print("Called share completion")
-                print(share?.publicPermission.rawValue)
-                completion(share, container, error)
-            }
             }
         }
         return sharingController
