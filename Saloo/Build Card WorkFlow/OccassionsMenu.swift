@@ -105,7 +105,7 @@ struct OccassionsMenu: View {
                                 menuSection(for: "Juneteenth ✊🏿")
                                 menuSection(for: "Pride 🏳️‍🌈")
                                 menuSection(for: "Father's Day 🍻")
-                                menuSection(for: "4th of July 🎇")
+                                menuSection(for: "4th of July 🇺🇸")
                             }
                             Section(header: Text("Fall Holidays")) {
                                 menuSection(for: "Rosh Hashanah 🔯")
@@ -116,7 +116,7 @@ struct OccassionsMenu: View {
                                 menuSection(for: "Christmas 🎄")
                                 menuSection(for: "Hanukkah 🕎")
                                 menuSection(for: "New Years Eve 🎆")
-                                menuSection(for: "Valentine's Day ❤️")
+                                menuSection(for: "Valentine’s Day ❤️")
                                 menuSection(for: "Mardi Gras 🎭")
                                 menuSection(for: "Lunar New Year 🐉")
                             }
@@ -162,21 +162,21 @@ extension OccassionsMenu {
     func menuSection(for collectionTitle: String) -> some View {
         let collection = collectionManager.collections.first(where: { $0.title == collectionTitle })
         
-        return Text(collectionTitle)
-            .onTapGesture {
-                print(collection)
-                if let collection = collection, networkMonitor.isConnected {
-                    print(collection.id)
-                    frontCoverIsPersonalPhoto = 0
-                    self.chosenOccassion.occassion = collectionTitle
-                    self.chosenOccassion.collectionID = collection.id
-                    appState.currentScreen = .buildCard([.unsplashCollectionView])
-                } else if !networkMonitor.isConnected {
-                    alertVars.alertType = .failedConnection
-                    alertVars.activateAlert = true
-                }
+        return Button(action: {
+            print(collection)
+            if let collection = collection, networkMonitor.isConnected {
+                print(collection.id)
+                frontCoverIsPersonalPhoto = 0
+                self.chosenOccassion.occassion = collectionTitle
+                self.chosenOccassion.collectionID = collection.id
+                appState.currentScreen = .buildCard([.unsplashCollectionView])
+            } else if !networkMonitor.isConnected {
+                alertVars.alertType = .failedConnection
+                alertVars.activateAlert = true
             }
+        }) {Text(collectionTitle).frame(maxWidth: .infinity, alignment: .leading).foregroundColor(.primary) }
     }
+
 
 
     

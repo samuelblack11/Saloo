@@ -489,6 +489,10 @@ class UCVImageObjectModel: ObservableObject {
     
     func getPhotosFromCollection(collectionID: String, page_num: Int) {
         PhotoAPI.getPhotosFromCollection(collectionID: collectionID, page_num: page_num, completionHandler: { (response, error) in
+            print(".....")
+            print(collectionID)
+            print(page_num)
+            print(response)
             if response != nil {
                 DispatchQueue.main.async {
                     for picture in response! {
@@ -500,7 +504,7 @@ class UCVImageObjectModel: ObservableObject {
                     }}
                 }
             }
-            if response != nil {print("No Response!")}
+            if response != nil {print("No Response!"); self.imageObjects = []}
             else {debugPrint(error?.localizedDescription ?? "Error Getting Photos from Collection")}
         })
     }
@@ -661,7 +665,7 @@ class CollectionManager: ObservableObject {
         "Cinco De Mayo 🇲🇽": CollectionType.spring,
         "Halloween 🎃": CollectionType.fall,
         "Lunar New Year 🐉": CollectionType.winter,
-        "Valentine's Day ❤️": CollectionType.winter,
+        "Valentine’s Day ❤️": CollectionType.winter,
         "Baby Shower 🐣": CollectionType.yearRound
 
     ]

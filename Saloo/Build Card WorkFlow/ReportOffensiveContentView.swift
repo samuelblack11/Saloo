@@ -17,6 +17,10 @@ struct ReportOffensiveContentView: View {
     @Binding var card: CoreCard? // Assuming CoreCard is defined elsewhere
     //@Binding var cardToReport: CoreCard?
     @EnvironmentObject var appState: AppState
+    @EnvironmentObject var persistenceController: PersistenceController
+    @EnvironmentObject var cardsForDisplayEnv: CardsForDisplay
+    @Binding var whichBoxVal: InOut.SendReceive
+    @Binding var coreCards: [CoreCard]
 
     var body: some View {
         NavigationView {
@@ -31,13 +35,12 @@ struct ReportOffensiveContentView: View {
                     sendReportToAzure(report: report)
                     alertVars.alertType = .reportComplete
                     alertVars.activateAlert = true
-                    deleteCoreCard(coreCard: card!)
                 }) {Text("Submit")}
             }
             .navigationBarItems(leading:Button {card = nil} label: {Image(systemName: "chevron.left").foregroundColor(.blue); Text("Back")})
         }
         .padding()
-        .modifier(AlertViewMod(showAlert: alertVars.activateAlertBinding, activeAlert: alertVars.alertType))
+        .modifier(AlertViewMod(showAlert: alertVars.activateAlertBinding, activeAlert: alertVars.alertType, alertDismissAction: {deleteCoreCard(coreCard: card!); loadCards(); card = nil}, secondDismissAction: {card = nil}))
     }
     
     func sendReportToAzure(report: Report) {
@@ -189,7 +192,20 @@ struct ReportOffensiveContentView: View {
     }
     
     func deleteCoreCard(coreCard: CoreCard) {
-        do {PersistenceController.shared.persistentContainer.viewContext.delete(coreCard);try PersistenceController.shared.persistentContainer.viewContext.save()}
+        do {persistenceController.persistentContainer.viewContext.delete(coreCard);try persistenceController.persistentContainer.viewContext.save()}
         catch {}
+        cardsForDisplayEnv.deleteCoreCard(card: coreCard, box: whichBoxVal)
+    }
+    
+    func loadCards() {
+        // use whichBoxVal to determine which cards to load
+        switch whichBoxVal {
+        case .draftbox:
+            coreCards = cardsForDisplayEnv.draftboxCards
+        case .inbox:
+            coreCards = cardsForDisplayEnv.inboxCards
+        case .outbox:
+            coreCards = cardsForDisplayEnv.outboxCards
+        }
     }
 }

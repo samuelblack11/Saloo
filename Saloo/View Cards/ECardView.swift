@@ -137,15 +137,15 @@ struct eCardView: View {
         return
         VStack {
             Text(text1)
-                .font(.system(size: 10))
+                .font(.system(size: 8))
             HStack(spacing:0){
                 Link(text2, destination: text2URL)
-                    .font(.system(size: 10))
+                    .font(.system(size: 8))
                 HStack(spacing: 0) {
                     Text(text3)
-                        .font(.system(size: 8))
+                        .font(.system(size: 7))
                     Link(text4, destination: URL(string: "https://unsplash.com")!)
-                        .font(.system(size: 10))
+                        .font(.system(size: 8))
                 }
             }
         }

@@ -58,20 +58,22 @@ struct UnsplashCollectionView: View {
                         }
                         .navigationTitle("Primary Photo")
                         .navigationBarItems(leading:Button {chosenObject.pageCount = 1; appState.currentScreen = .buildCard([.occasionsMenu])} label: {Image(systemName: "chevron.left").foregroundColor(.blue); Text("Back")}.disabled(gettingRecord.isShowingActivityIndicator))
-                        Button("More...") {
-                            if networkMonitor.isConnected {
-                                //imageObjectModel.getMorePhotos(chosenObject: chosenObject); print("page count: \(chosenObject.pageCount)")
-                                chosenObject.pageCount = chosenObject.pageCount + 1
-                                imageObjectModel.imageObjects = []
-                                imageObjectModel.getPhotosFromCollection(collectionID: chosenOccassion.collectionID, page_num: chosenObject.pageCount)
-                            }
-                            else {
-                                alertVars.alertType = .failedConnection
-                                alertVars.activateAlert = true
+                        if setButtonStatus(imageObjects: imageObjectModel.imageObjects) == false {
+                            Button("More...") {
+                                if networkMonitor.isConnected {
+                                    //imageObjectModel.getMorePhotos(chosenObject: chosenObject); print("page count: \(chosenObject.pageCount)")
+                                    chosenObject.pageCount = chosenObject.pageCount + 1
+                                    //imageObjectModel.imageObjects = []
+                                    imageObjectModel.getPhotosFromCollection(collectionID: chosenOccassion.collectionID, page_num: chosenObject.pageCount)
+                                }
+                                else {
+                                    alertVars.alertType = .failedConnection
+                                    alertVars.activateAlert = true
+                                    
+                                }
                                 
-                            }
-                            
-                        }.disabled(setButtonStatus(imageObjects: imageObjectModel.imageObjects))
+                            }//.disabled(setButtonStatus(imageObjects: imageObjectModel.imageObjects))
+                        }
                     }
                     .modifier(AlertViewMod(showAlert: alertVars.activateAlertBinding, activeAlert: alertVars.alertType))
                     LoadingOverlay(hasShownLaunchView: $hasShownLaunchView)
@@ -97,8 +99,10 @@ extension UnsplashCollectionView {
 
     func setButtonStatus(imageObjects: [CoverImageObject]) -> Bool {
         var disableButton: Bool?
-        if imageObjects.count < 30 {disableButton = true}
+        if (imageObjects.count * chosenObject.pageCount) < (30 * chosenObject.pageCount) {disableButton = true}
         else {disableButton = false}
+        print("---")
+        print(imageObjects.count)
         return disableButton!
     }
 

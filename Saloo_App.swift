@@ -255,9 +255,9 @@ struct AlertViewMod: ViewModifier {
                 case .reportComplete:
                     return Alert(
                         title: Text("Feedback Received"),
-                        message: Text("Thanks for your feedback. We will review these details along with the card itself and will be in touch about your concern."),
-                        dismissButton: .default(Text("Ok")) {}
-                    )
+                        message: Text("We will review these details and be in touch about your concern. Would you like to delete the card now?"),
+                        primaryButton: .default(Text("Yes"), action: {alertDismissAction?()}),
+                        secondaryButton: .default(Text("No"), action: {secondDismissAction?()}))
             }
         }
     }

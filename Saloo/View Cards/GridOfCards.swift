@@ -23,7 +23,7 @@ struct GridofCards: View {
     @State var activeContainer: CKContainer?
     @State private var showStartMenu = false
     @State var cards = [Card]()
-    @State private var coreCards: [CoreCard] = []
+    @State var coreCards: [CoreCard] = []
     @State var segueToEnlarge = false
     @State var share: CKShare?
     @State var showShareSheet = false
@@ -39,6 +39,7 @@ struct GridofCards: View {
     @State private var displayCard = false
     @State var chosenCard: CoreCard?
     @State var cardToReport: CoreCard?
+    @State var cardToReportThenDelete: CoreCard?
     @State var cardToDelete: CoreCard?
     @State var shouldShareCard: Bool = false
     @EnvironmentObject var wrapper: CoreCardWrapper
@@ -109,7 +110,7 @@ struct GridofCards: View {
                 
             }
             .fullScreenCover(item: $cardToReport, onDismiss: didDismiss) {cardToReport in
-                ReportOffensiveContentView(card: $cardToReport)}
+                ReportOffensiveContentView(card: $cardToReport, whichBoxVal: $whichBoxVal, coreCards: $coreCards)}
             .fullScreenCover(item: $chosenCard, onDismiss: didDismiss) {chosenCard in
                 NavigationView {
                     eCardView(eCardText: chosenCard.message, font: chosenCard.font, coverImage: chosenCard.coverImage!, collageImage: chosenCard.collage!, text1: chosenCard.an1, text2: chosenCard.an2, text2URL: URL(string: chosenCard.an2URL)!, text3: chosenCard.an3, text4: chosenCard.an4, songID: chosenCard.songID, spotID: chosenCard.spotID, spotName: chosenCard.spotName, spotArtistName: chosenCard.spotArtistName, songName: chosenCard.songName, songArtistName: chosenCard.songArtistName, songAlbumName: chosenCard.songAlbumName, appleAlbumArtist: chosenCard.appleAlbumArtist, spotAlbumArtist: chosenCard.spotAlbumArtist, songArtImageData: chosenCard.songArtImageData, songDuration: Double(chosenCard.songDuration!)!, songPreviewURL: chosenCard.songPreviewURL, inclMusic: chosenCard.inclMusic, spotImageData: chosenCard.spotImageData, spotSongDuration: Double(chosenCard.spotSongDuration!)!, spotPreviewURL: chosenCard.spotPreviewURL, songAddedUsing: chosenCard.songAddedUsing, cardType: chosenCard.cardType!, associatedRecord: chosenCard.associatedRecord, coreCard: chosenCard, chosenCard: $chosenCard, appleSongURL: chosenCard.appleSongURL, spotSongURL: chosenCard.spotSongURL)

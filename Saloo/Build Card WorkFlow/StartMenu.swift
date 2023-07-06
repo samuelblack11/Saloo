@@ -55,24 +55,34 @@ struct StartMenu: View {
                     Text("🎈🎂🥳❤️🥂💍🎓")
                     Text("Connect with loved ones, share memories")
                         .font(.caption)
-                        .foregroundColor(.gray)
+                        .foregroundColor(colorScheme == .dark ? .white : .black)
                         .font(.system(size: 16))
                         .textCase(.none)
                         .multilineTextAlignment(.center)
                     Text("and celebrate holidays and special occassions")
                         .font(.caption)
-                        .foregroundColor(.gray)
+                        .foregroundColor(colorScheme == .dark ? .white : .black)
                         .font(.system(size: 16))
                         .textCase(.none)
                         .multilineTextAlignment(.center)
-
                     List {
-                        Text("Build a Card").onTapGesture {appState.currentScreen = .buildCard([.photoOptionsView])}
-                        Text("Drafts 📓").onTapGesture {screenManager.advance(); appState.currentScreen = .draft}
-                        Text("Received Cards 📥").onTapGesture {screenManager.advance(); appState.currentScreen = .inbox}
-                        Text("Sent Cards 📥") .onTapGesture {screenManager.advance(); appState.currentScreen = .outbox}
-                        Text("Music Preferences 📱").onTapGesture {appState.currentScreen = .preferences}
+                        Button(action: {appState.currentScreen = .buildCard([.photoOptionsView])}) {
+                            Text("Build a Card").frame(maxWidth: .infinity, alignment: .leading).foregroundColor(.primary)
+                        }
+                        Button(action: {screenManager.advance(); appState.currentScreen = .draft}) {
+                            Text("Drafts 📓").frame(maxWidth: .infinity, alignment: .leading).foregroundColor(.primary)
+                        }
+                        Button(action: {screenManager.advance(); appState.currentScreen = .inbox}) {
+                            Text("Received Cards 📥").frame(maxWidth: .infinity, alignment: .leading).foregroundColor(.primary)
+                        }
+                        Button(action: {screenManager.advance(); appState.currentScreen = .outbox}) {
+                            Text("Sent Cards 📤").frame(maxWidth: .infinity, alignment: .leading).foregroundColor(.primary)
+                        }
+                        Button(action: {appState.currentScreen = .preferences}) {
+                            Text("Music Preferences 📱").frame(maxWidth: .infinity, alignment: .leading).foregroundColor(.primary)
+                        }
                     }
+
                 }
                 LoadingOverlay(hasShownLaunchView: $hasShownLaunchView)
             }
