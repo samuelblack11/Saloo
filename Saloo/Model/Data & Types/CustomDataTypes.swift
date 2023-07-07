@@ -336,6 +336,7 @@ class CollageImage: ObservableObject {
     static let shared = CollageImage()
     @Published var chosenStyle = Int()
     @Published var collageImage = Data()
+    @Published var imageCount = Int()
     @Published var image1 = Data()
     @Published var image2 = Data()
     @Published var image3 = Data()

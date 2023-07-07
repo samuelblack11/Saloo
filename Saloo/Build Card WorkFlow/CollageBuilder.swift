@@ -51,24 +51,13 @@ struct CollageBuilder: View {
     @State private var blockCount: Int?
     @State private var currentStep: Int = 2
     @EnvironmentObject var cardProgress: CardProgress
-
     @State private var isImageLoading: [Bool] = [false, false, false, false]
     
-    @State private var scaleA: CGFloat = 1.0
-    @State private var offsetA: CGSize = .zero
-    @State private var scaleB: CGFloat = 1.0
-    @State private var offsetB: CGSize = .zero
-    @State private var scaleC: CGFloat = 1.0
-    @State private var offsetC: CGSize = .zero
-    @State private var scaleD: CGFloat = 1.0
-    @State private var offsetD: CGSize = .zero
-
-    // Add the remaining @State properties for scale and offset (scaleC, offsetC, scaleD, offsetD)
-
-
-    
     var collageView: some View {
-        VStack {chosenTemplate}.frame(width: width, height: height)
+        VStack {
+            chosenImageCount
+        }
+        
     }
     
     var body: some View {
@@ -114,26 +103,52 @@ struct CollageBuilder: View {
             .navigationTitle("Build Your Collage")
         }
     }
-        @ViewBuilder var chosenTemplate: some View {
-            if collageImage.chosenStyle == 1 {onePhotoView(block: block1())}
-            if collageImage.chosenStyle == 2 {twoPhotoWide(block1: block1(),block2: block2())}
-            if collageImage.chosenStyle == 3 {twoPhotoLong(block1: block1(),block2: block2())}
-            if collageImage.chosenStyle == 4 { twoShortOneLong(block1: block1(), block2: block2(), block3: block3())}
-            if collageImage.chosenStyle == 5 {twoNarrowOneWide(block1: block1(),block2: block2(),block3: block3())}
-            if collageImage.chosenStyle == 6 {fourPhoto(block1: block1(),block2: block2(), block3: block3(), block4: block4())}
-        }
+        //@ViewBuilder var chosenTemplate: some View {
+         //   if collageImage.chosenStyle == 1 {onePhotoView(block: block1())}
+         //   if collageImage.chosenStyle == 2 {twoPhotoWide(block1: block1(),block2: block2())}
+        //    if collageImage.chosenStyle == 3 {twoPhotoLong(block1: block1(),block2: block2())}
+        //    if collageImage.chosenStyle == 4 {twoShortOneLong(block1: block1(), block2: block2(), block3: block3())}
+        //    if collageImage.chosenStyle == 5 {twoNarrowOneWide(block1: block1(),block2: block2(),block3: block3())}
+        //    if collageImage.chosenStyle == 6 {fourPhoto(block1: block1(),block2: block2(), block3: block3(), block4: block4())}
+        //}
+    
+    @ViewBuilder var chosenImageCount: some View {
+        if collageImage.imageCount == 1 {onePhotoView(block: block1()).frame(width: width, height: height)}
+        if collageImage.imageCount == 2 {twoPhoto(block1: block1(), block2: block2())}
+        if collageImage.imageCount == 3 {threePhoto(block1: block1(), block2: block2(), block3: block3())}
+        if collageImage.imageCount == 4 {fourPhoto(block1: block1(),block2: block2(), block3: block3(), block4: block4()).frame(width: width, height: height)}
+    }
+    
     
 }
 
 extension CollageBuilder {
     
+    func getDims(imageForMeasurement: Data) -> (CGSize, Double) {
+        var size = CGSize()
+        var widthToHeightRatio = Double()
+        if let image = UIImage(data: imageForMeasurement) {
+            let imageSize = image.size
+            size = imageSize
+        }
+        print("Image Size....")
+        widthToHeightRatio = size.width/size.height
+        print(size)
+        print(widthToHeightRatio)
+        return (size, widthToHeightRatio)
+    }
+    
     func countBlocks() {
-        if collageImage.chosenStyle == 1 {blockCount = 1}
-        if collageImage.chosenStyle == 2 {blockCount = 2}
-        if collageImage.chosenStyle == 3 {blockCount = 2}
-        if collageImage.chosenStyle == 4 {blockCount = 3}
-        if collageImage.chosenStyle == 5 {blockCount = 3}
-        if collageImage.chosenStyle == 6 {blockCount = 4}
+        //if collageImage.chosenStyle == 1 {blockCount = 1}
+        //if collageImage.chosenStyle == 2 {blockCount = 2}
+        //if collageImage.chosenStyle == 3 {blockCount = 2}
+        //if collageImage.chosenStyle == 4 {blockCount = 3}
+        //if collageImage.chosenStyle == 5 {blockCount = 3}
+        //if collageImage.chosenStyle == 6 {blockCount = 4}
+        if collageImage.imageCount == 1 {blockCount = 1}
+        if collageImage.imageCount == 2 {blockCount = 2}
+        if collageImage.imageCount == 3 {blockCount = 3}
+        if collageImage.imageCount == 4 {blockCount = 4}
     }
     
     func specifyImage(imageNumber: Int) -> UIImage? {
@@ -143,24 +158,26 @@ extension CollageBuilder {
             3 : chosenImagesObject.chosenImageC,
             4 : chosenImagesObject.chosenImageD,
         ]
+        print("called spec image")
+        print(imageDict)
         return imageDict[imageNumber]!
     }
     
-    func blockForPhotoSelection(imageForBlock: Image?, imageNum: Int, scale: Binding<CGFloat>, offset: Binding<CGSize>, onScaleChanged: @escaping (CGFloat) -> Void, onOffsetChanged: @escaping (CGSize) -> Void) -> some View {
+    func blockForPhotoSelection(imageForBlock: Image?, imageNum: Int) -> some View {
         let shapeOptions = defineShapes()
         var thisShape = String()
-        if imageNum == 1 { thisShape = shapeOptions.0 }
-        if imageNum == 2 { thisShape = shapeOptions.1 }
-        if imageNum == 3 { thisShape = shapeOptions.2 }
-        if imageNum == 4 { thisShape = shapeOptions.3 }
+        if imageNum == 1 {thisShape = shapeOptions.0}
+        if imageNum == 2 {thisShape = shapeOptions.1}
+        if imageNum == 3 {thisShape = shapeOptions.2}
+        if imageNum == 4 {thisShape = shapeOptions.3}
         let (w2, h2) = shapeToDimensions(shape: thisShape)
         
-        return GeometryReader { geometry in
+        return GeometryReader {geometry in
             ZStack(alignment: .center) {
                 Rectangle().fill(Color.gray).border(Color.black)
                 Text("Tap to select a picture").foregroundColor(.white).font(.headline)
                 if isImageLoading[imageNum - 1]  {
-                    ProgressView()
+                    ProgressView() // Shows activity indicator when image is loading
                         .progressViewStyle(CircularProgressViewStyle(tint: .white))
                         .scaleEffect(2, anchor: .center)
                 }
@@ -168,78 +185,47 @@ extension CollageBuilder {
                     .resizable()
                     .scaledToFill()
                     .frame(width: w2, height: h2)
+                    //.border(Color.pink)
                     .clipped()
             }
-            .gesture(
-                MagnificationGesture()
-                    .onChanged { scaleValue in
-                        scale.wrappedValue = scaleValue
-                        onScaleChanged(scaleValue)
-                    }
-            )
-            .offset(offset.wrappedValue)
-            .gesture(
-                DragGesture()
-                    .onChanged { gesture in
-                        offset.wrappedValue = gesture.translation
-                        onOffsetChanged(gesture.translation)
-                    }
-            )
         }
         .onTapGesture {
             self.showImagePicker.toggle();
             imageNumber = imageNum
-            isImageLoading[imageNum - 1]  = true
+            isImageLoading[imageNum - 1]  = true // Start loading
         }
         .onChange(of: specifyImage(imageNumber: imageNum)) { _ in
             loadImage(chosenImage: specifyImage(imageNumber: imageNum))
-            isImageLoading[imageNum - 1]  = false
+            isImageLoading[imageNum - 1]  = false // Finish loading
         }
     }
-
 
     func block1() -> some View {
-        return blockForPhotoSelection(imageForBlock: imageA, imageNum: 1, scale: $scaleA, offset: $offsetA, onScaleChanged: { scale in
-            scaleA = scale
-        }, onOffsetChanged: { offset in
-            offsetA = offset
-        })
-        .sheet(isPresented: $showImagePicker) {
-            ImagePicker(image: $chosenImagesObject.chosenImageA, explicitPhotoAlert: $explicitPhotoAlert, isImageLoading: $isImageLoading[0])
-        }
+        return blockForPhotoSelection(imageForBlock: imageA, imageNum: 1)
+            .fullScreenCover(isPresented: $showImagePicker) {
+                ImagePicker(image: $chosenImagesObject.chosenImageA, explicitPhotoAlert: $explicitPhotoAlert, isImageLoading: $isImageLoading[0])
+            }
     }
-
+    
     func block2() -> some View {
-        return blockForPhotoSelection(imageForBlock: imageB, imageNum: 2, scale: $scaleB, offset: $offsetB, onScaleChanged: { scale in
-            scaleB = scale
-        }, onOffsetChanged: { offset in
-            offsetB = offset
-        })
-        .sheet(isPresented: $showImagePicker) {
-            ImagePicker(image: $chosenImagesObject.chosenImageB, explicitPhotoAlert: $explicitPhotoAlert, isImageLoading: $isImageLoading[1])
-        }
+        return blockForPhotoSelection(imageForBlock: imageB, imageNum: 2)
+            .fullScreenCover(isPresented: $showImagePicker) {
+                ImagePicker(image: $chosenImagesObject.chosenImageB, explicitPhotoAlert: $explicitPhotoAlert, isImageLoading: $isImageLoading[1])
+            }
     }
-
+    
     func block3() -> some View {
-        return blockForPhotoSelection(imageForBlock: imageC, imageNum: 3, scale: $scaleC, offset: $offsetC, onScaleChanged: { scale in
-            scaleC = scale
-        }, onOffsetChanged: { offset in
-            offsetC = offset
-        })
-        .sheet(isPresented: $showImagePicker) {
-            ImagePicker(image: $chosenImagesObject.chosenImageC, explicitPhotoAlert: $explicitPhotoAlert, isImageLoading: $isImageLoading[2])
-        }
+        return blockForPhotoSelection(imageForBlock: imageC, imageNum: 3)
+            .fullScreenCover(isPresented: $showImagePicker) {
+                ImagePicker(image: $chosenImagesObject.chosenImageC, explicitPhotoAlert: $explicitPhotoAlert, isImageLoading: $isImageLoading[2])
+            }
     }
-
+    
     func block4() -> some View {
-        return blockForPhotoSelection(imageForBlock: imageD, imageNum: 4, scale: $scaleD, offset: $offsetD, onScaleChanged: { scale in
-            scaleD = scale
-        }, onOffsetChanged: { offset in
-            offsetD = offset
-        })
-        .sheet(isPresented: $showImagePicker) {
-            ImagePicker(image: $chosenImagesObject.chosenImageD, explicitPhotoAlert: $explicitPhotoAlert, isImageLoading: $isImageLoading[3])
-        }
+        return blockForPhotoSelection(imageForBlock: imageD, imageNum: 4)
+            .fullScreenCover(isPresented: $showImagePicker) {
+                ImagePicker(image: $chosenImagesObject.chosenImageD, explicitPhotoAlert: $explicitPhotoAlert, isImageLoading: $isImageLoading[3])
+            }
     }
 
     
@@ -250,6 +236,21 @@ extension CollageBuilder {
     func twoNarrowOneWide(block1: some View, block2: some View, block3: some View) -> some View {return VStack(spacing:0){HStack(spacing:0){block1; block2}; block3}}
     func fourPhoto(block1: some View, block2: some View, block3: some View, block4: some View) -> some View {return VStack(spacing:0){HStack(spacing:0){block1; block2}; HStack(spacing:0){block3; block4}}}
     
+    
+    func twoPhoto(block1: some View, block2: some View) -> some View {
+        return VStack{
+        block1.frame(width: width/1.3, height: height/1.3)
+        block2.frame(width: width/1.3, height: height/1.3)
+    }}
+    func threePhoto(block1: some View, block2: some View, block3: some View) -> some View {
+        return VStack{
+        block1.frame(width: width/1.8, height: height/1.8)
+        block2.frame(width: width/1.8, height: height/1.8)
+        block3.frame(width: width/1.8, height: height/1.8)
+        }}
+
+    
+    
     func defineShapes() -> (String, String, String, String) {
         var shape1 = ""; var shape2 = ""; var shape3 = ""; var shape4 = ""
         // List shape of each block for each collage styl e
@@ -259,6 +260,12 @@ extension CollageBuilder {
         if collageImage.chosenStyle == 4{shape1 = "smallSquare"; shape2 = "smallSquare"; shape3 = "tall"}
         if collageImage.chosenStyle == 5{shape1 = "smallSquare"; shape2 = "smallSquare"; shape3 = "wide"}
         if collageImage.chosenStyle == 6{shape1 = "smallSquare"; shape2 = "smallSquare"; shape3 = "smallSquare"; shape4 = "smallSquare"}
+        
+        if collageImage.imageCount == 1{shape1 = "largeSquare" }
+        if collageImage.imageCount == 2{shape1 = "smallSquare"; shape2 = "smallSquare"}
+        if collageImage.imageCount == 3{shape1 = "smallSquare"; shape2 = "smallSquare"}
+        if collageImage.imageCount == 4{shape1 = "smallSquare"; shape2 = "smallSquare"; shape3 = "smallSquare"; shape4 = "smallSquare"}
+        
 
         return (shape1, shape2, shape3, shape4)
     }
@@ -294,10 +301,15 @@ extension CollageBuilder {
         
         print("called load image.....")
         guard let chosenImage = chosenImage else {return print("loadImage() failed....")}
+        print(imageNumber)
+        print(chosenImage)
+        
         if imageNumber == 1 {imageA = Image(uiImage: chosenImage); collageImage.image1 = chosenImage.pngData()!}
         if imageNumber == 2 {imageB = Image(uiImage: chosenImage); collageImage.image2 = chosenImage.pngData()!}
         if imageNumber == 3 {imageC = Image(uiImage: chosenImage); collageImage.image3 = chosenImage.pngData()!}
         if imageNumber == 4 {imageD = Image(uiImage: chosenImage); collageImage.image4 = chosenImage.pngData()!}
+        print(imageA)
+
     }
     
     func countNilImages() -> Int {

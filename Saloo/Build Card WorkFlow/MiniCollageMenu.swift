@@ -30,34 +30,35 @@ struct MiniCollageMenu: View {
     var body: some View {
                 VStack {
                     HStack {
-                        collageBlocks.onePhotoView(block: collageBlocks.blockForStyle())
-                            .frame(width: miniWidth, height: miniHeight)
-                            .bordered(style: 1, selectedStyle: $selectedStyle)
-                            .onTapGesture{collageImage.chosenStyle = 1; selectedStyle = 1}
-                        collageBlocks.twoPhotoWide(block: collageBlocks.blockForStyle())
-                            .frame(width: miniWidth, height: miniHeight)
-                            .bordered(style: 2, selectedStyle: $selectedStyle)
-                            .onTapGesture{collageImage.chosenStyle = 2; selectedStyle = 2}
+                        NumberView(number: 1, selectedStyle: $selectedStyle) {
+                            collageImage.imageCount = 1
+                            selectedStyle = 1
+                        }
+                        .frame(width: miniWidth, height: miniHeight)
+                        .bordered(style: 1, selectedStyle: $selectedStyle)
+
+                        NumberView(number: 2, selectedStyle: $selectedStyle) {
+                            collageImage.imageCount = 2
+                            selectedStyle = 2
+                        }
+                        .frame(width: miniWidth, height: miniHeight)
+                        .bordered(style: 2, selectedStyle: $selectedStyle)
+
                     }
                     HStack {
-                        collageBlocks.twoPhotoLong(block: collageBlocks.blockForStyle())
-                            .frame(width: miniWidth, height: miniHeight)
-                            .bordered(style: 3, selectedStyle: $selectedStyle)
-                            .onTapGesture{collageImage.chosenStyle = 3; selectedStyle = 3}
-                        collageBlocks.twoShortOneLong(block: collageBlocks.blockForStyle())
-                            .frame(width: miniWidth, height: miniHeight)
-                            .bordered(style: 4, selectedStyle: $selectedStyle)
-                            .onTapGesture{collageImage.chosenStyle = 4; selectedStyle = 4}
-                    }
-                    HStack {
-                        collageBlocks.twoNarrowOneWide(block: collageBlocks.blockForStyle())
-                            .frame(width: miniWidth, height: miniHeight)
-                            .bordered(style: 5, selectedStyle: $selectedStyle)
-                            .onTapGesture{collageImage.chosenStyle = 5; selectedStyle = 5}
-                        collageBlocks.fourPhoto(block: collageBlocks.blockForStyle())
-                            .frame(width: miniWidth, height: miniHeight)
-                            .bordered(style: 6, selectedStyle: $selectedStyle)
-                            .onTapGesture{collageImage.chosenStyle = 6; selectedStyle = 6}
+                        NumberView(number: 3, selectedStyle: $selectedStyle) {
+                            collageImage.imageCount = 3
+                            selectedStyle = 3
+                        }
+                        .frame(width: miniWidth, height: miniHeight)
+                        .bordered(style: 3, selectedStyle: $selectedStyle)
+
+                        NumberView(number: 4, selectedStyle: $selectedStyle) {
+                            collageImage.imageCount = 4
+                            selectedStyle = 4
+                        }
+                        .frame(width: miniWidth, height: miniHeight)
+                        .bordered(style: 4, selectedStyle: $selectedStyle)
                     }
                 }
             .environmentObject(collageImage)
@@ -66,27 +67,32 @@ struct MiniCollageMenu: View {
 
 extension View {
     func bordered(style: Int, selectedStyle: Binding<Int?>, color: Color = Color("SalooTheme"), width: CGFloat = 5) -> some View {
-        self.modifier(BorderedStyleModifier(style: style, selectedStyle: selectedStyle, color: color, width: width))
+        self.modifier(BorderedStyleModifier(style: style, selectedStyle: selectedStyle, width: width))
     }
 }
 
 struct BorderedStyleModifier: ViewModifier {
     let style: Int
     @Binding var selectedStyle: Int?
-    let color: Color
+    let color = Color("SalooTheme")
     let width: CGFloat
     
     func body(content: Content) -> some View {
         Group {
-            if style == selectedStyle {
-                content
-                    .border(color, width: width)
-                    .overlay(Text("Style \(style)").foregroundColor(.white).font(.title), alignment: .center)
-            } else {
-                content
-            }
+            if style == selectedStyle {content.border(color, width: width)}
+            else {content}
         }
     }
 }
 
-
+struct NumberView: View {
+    let number: Int
+    @Binding var selectedStyle: Int?
+    let onTap: () -> Void
+    
+    var body: some View {
+        Text(String(number))
+            .font(.title)
+            .onTapGesture {onTap()}
+    }
+}
