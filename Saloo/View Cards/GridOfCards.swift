@@ -31,7 +31,6 @@ struct GridofCards: View {
     @State var returnRecord: CKRecord?
     @State var showDeliveryScheduler = false
     @State var whichBoxVal: InOut.SendReceive
-    let columns = [GridItem(.adaptive(minimum: 120))]
     @State private var sortByValue = "Card Name"
     @State private var searchText = ""
     @State private var nameToDisplay: String?
@@ -64,6 +63,7 @@ struct GridofCards: View {
     @State var chosenGridCardType: String?
     @ObservedObject var alertVars = AlertVars.shared
     @EnvironmentObject var cardsForDisplayEnv: CardsForDisplay
+    let columns = [GridItem(.adaptive(minimum: 120))]
 
     @State private var currentUserRecordID: CKRecord.ID?
 
@@ -74,7 +74,11 @@ struct GridofCards: View {
     }
     
     
-    
+    func calculateGridColumns() -> [GridItem] {
+        let screenWidth = UIScreen.main.bounds.width
+        let columns = Int(screenWidth / 160) // Adjust the width (160) based on your desired card width
+        return Array(repeating: .init(.flexible()), count: columns)
+    }
     
     
     
@@ -88,13 +92,13 @@ struct GridofCards: View {
         case .draftbox: return coreCard.recipient
         }
     }
-    
+
     var body: some View {
         NavigationView {
             ZStack {
                 ScrollView {
                     sortResults
-                    LazyVGrid(columns: columns, spacing: 10) {
+                    LazyVGrid(columns: calculateGridColumns(), spacing: 10) {
                         ForEach(sortedCards(cardsFilteredBySearch, sortBy: sortByValue), id: \.self) { gridCard in
                             cardView(for: gridCard, shareable: false)
                         }
@@ -142,7 +146,7 @@ struct GridofCards: View {
                     .resizable()
                     .frame(maxWidth: (UIScreen.screenWidth/4), maxHeight: (UIScreen.screenHeight/7))
                 HStack(spacing: 0) {
-                    Image(systemName: "greetingcard.fill").foregroundColor(.blue).font(.system(size: 24))
+                    Image(systemName: "greetingcard.fill").foregroundColor(Color("SalooTheme")).font(.system(size: 24))
                 }
             }
             .onTapGesture {print("gridCard Card Name...\(gridCard.cardName)")}
@@ -157,7 +161,7 @@ struct GridofCards: View {
             .contextMenu {
                 contextMenuButtons(card: gridCard)
             }
-            .padding().overlay(RoundedRectangle(cornerRadius: 6).stroke(.blue, lineWidth: 2))
+            .padding().overlay(RoundedRectangle(cornerRadius: 6).stroke(Color("SalooTheme"), lineWidth: 2))
                 .font(.headline).padding(.horizontal).frame(maxHeight: 600)
                 
         

@@ -42,6 +42,7 @@ struct StartMenu: View {
         Add Music 🎶
         Finalize ✅
 """
+    
 
     var body: some View {
         NavigationView {
@@ -49,37 +50,38 @@ struct StartMenu: View {
                 VStack {
                     Text("Welcome To Saloo")
                         .foregroundColor(colorScheme == .dark ? .white : .black)
-                        .font(.system(size: 32))
-                        .font(.headline)
+                        .font(Font.custom("Papyrus", size: 32))
+                        //.font(.system(size: 32))
+                        //.font(.headline)
                         .padding(.top, 10)
                     Text("🎈🎂🥳❤️🥂💍🎓")
                     Text("Connect with loved ones, share memories")
-                        .font(.caption)
+                        //.font(.caption)
                         .foregroundColor(colorScheme == .dark ? .white : .black)
-                        .font(.system(size: 16))
+                        .font(Font.custom("Papyrus", size: 16))
                         .textCase(.none)
                         .multilineTextAlignment(.center)
                     Text("and celebrate holidays and special occassions")
-                        .font(.caption)
+                        //.font(.caption)
                         .foregroundColor(colorScheme == .dark ? .white : .black)
-                        .font(.system(size: 16))
+                        .font(Font.custom("Papyrus", size: 16))
                         .textCase(.none)
                         .multilineTextAlignment(.center)
                     List {
                         Button(action: {appState.currentScreen = .buildCard([.photoOptionsView])}) {
-                            Text("Build a Card").frame(maxWidth: .infinity, alignment: .leading).foregroundColor(.primary)
+                            Text("Build a Card").font(Font.custom("Papyrus", size: 16)).frame(maxWidth: .infinity, alignment: .leading).foregroundColor(.primary)
                         }
                         Button(action: {screenManager.advance(); appState.currentScreen = .draft}) {
-                            Text("Drafts 📓").frame(maxWidth: .infinity, alignment: .leading).foregroundColor(.primary)
+                            Text("Drafts 📓").font(Font.custom("Papyrus", size: 16)).frame(maxWidth: .infinity, alignment: .leading).foregroundColor(.primary)
                         }
                         Button(action: {screenManager.advance(); appState.currentScreen = .inbox}) {
-                            Text("Received Cards 📥").frame(maxWidth: .infinity, alignment: .leading).foregroundColor(.primary)
+                            Text("Received Cards 📥").font(Font.custom("Papyrus", size: 16)).frame(maxWidth: .infinity, alignment: .leading).foregroundColor(.primary)
                         }
                         Button(action: {screenManager.advance(); appState.currentScreen = .outbox}) {
-                            Text("Sent Cards 📤").frame(maxWidth: .infinity, alignment: .leading).foregroundColor(.primary)
+                            Text("Sent Cards 📤").font(Font.custom("Papyrus", size: 16)).frame(maxWidth: .infinity, alignment: .leading).foregroundColor(.primary)
                         }
                         Button(action: {appState.currentScreen = .preferences}) {
-                            Text("Music Preferences 📱").frame(maxWidth: .infinity, alignment: .leading).foregroundColor(.primary)
+                            Text("Music Preferences 🎶 ").font(Font.custom("Papyrus", size: 16)).frame(maxWidth: .infinity, alignment: .leading).foregroundColor(.primary)
                         }
                     }
 

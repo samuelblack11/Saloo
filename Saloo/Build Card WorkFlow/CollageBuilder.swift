@@ -48,8 +48,8 @@ struct CollageBuilder: View {
     //var maxHeight = CGFloat(320)
     //var width = UIScreen.screenWidth/2
     //var height = UIScreen.screenHeight/3
-    var width = UIScreen.screenWidth/1.8
-    var height = UIScreen.screenHeight/2.6
+    var width = UIScreen.screenWidth/1.5
+    var height = UIScreen.screenHeight/2.3
     @State private var blockCount: Int?
     @State private var currentStep: Int = 2
     @EnvironmentObject var cardProgress: CardProgress
@@ -213,7 +213,7 @@ extension CollageBuilder {
 
 
             }
-            .border(Color.gray)
+            .border(Color("SalooTheme"))
         }
         .onTapGesture {
             self.showImagePicker.toggle()

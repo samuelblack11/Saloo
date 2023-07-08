@@ -57,6 +57,7 @@ struct WriteNoteView: View {
                             .border(Color.red, width: message.hasReachedLimit ? 1 : 0)
                             .frame(minHeight: UIScreen.screenHeight/2.5)
                             .font(Font.custom(noteField.font, size: 16))
+                        fontMenu
                         Text("Enter the following details to save your card")
                             .font(.caption)
                             .foregroundColor(.gray)
