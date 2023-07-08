@@ -41,7 +41,7 @@ struct PhotoOptionsView: View {
                     
                     RadioButtonGroup(items: ["Use Professional Photo", "Use Personal Photo"], selectedId: $chosenObject.frontCoverIsPersonalPhoto)
                     Spacer()
-                    Text("You'll also make a collage as part of your card\nHow many photos would you like to use?")
+                    Text("You'll also make a collage of personal photos.\nWhich of the below options would you like to use?")
                         .multilineTextAlignment(.center)
                     
                     MiniCollageMenu()

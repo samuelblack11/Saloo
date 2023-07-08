@@ -46,8 +46,10 @@ struct CollageBuilder: View {
    // var maxWidth = CGFloat(300)
     //var minHeight = CGFloat(100)
     //var maxHeight = CGFloat(320)
-    var width = UIScreen.screenWidth/2
-    var height = UIScreen.screenHeight/3
+    //var width = UIScreen.screenWidth/2
+    //var height = UIScreen.screenHeight/3
+    var width = UIScreen.screenWidth/1.8
+    var height = UIScreen.screenHeight/2.6
     @State private var blockCount: Int?
     @State private var currentStep: Int = 2
     @EnvironmentObject var cardProgress: CardProgress
@@ -80,6 +82,13 @@ struct CollageBuilder: View {
                     VStack {
                         Spacer()
                         collageView//.frame(width: UIScreen.screenHeight/4, height: UIScreen.screenHeight/4)
+                        Button(action: resetZoomAndOffset) {
+                            Image(systemName: "arrow.uturn.left")
+                                .foregroundColor(.blue)
+                            Text("Reset Zoom & Offset")
+                                .font(.system(size: 7)) // Set the font size here
+                        }
+                        .frame(alignment: .trailing)
                         Spacer()
                         Button("Confirm Collage") {
                             if blockCount != (4 - countNilImages()) {
@@ -156,11 +165,15 @@ extension CollageBuilder {
         let (w2, h2) = shapeToDimensions(shape: thisShape)
         @State var currentZoom = 0.0
         @State var totalZoom = 1.0
-        
+        @State var currentOffset: CGSize = .zero
+        @State var endingOffset: CGSize = .zero
+
         return GeometryReader { geometry in
             ZStack(alignment: .center) {
-                Rectangle().fill(Color.gray).border(Color.black)
-                Text("Tap to select a picture").foregroundColor(.white).font(.headline)
+                if imageForBlock == nil {
+                    Rectangle().fill(Color.gray)
+                    Text("Tap to select a picture").foregroundColor(.white).font(.headline)
+                }
                 if isImageLoading[imageNum - 1] {
                     ProgressView()
                         .progressViewStyle(CircularProgressViewStyle(tint: .white))
@@ -171,7 +184,7 @@ extension CollageBuilder {
                     .scaledToFill()
                     .frame(width: w2, height: h2)
                     .clipped()
-                    .scaleEffect(scale.wrappedValue)
+                    .scaleEffect(scale.wrappedValue, anchor: .center)
                     .gesture(
                         MagnificationGesture()
                             .onChanged { value in
@@ -183,15 +196,24 @@ extension CollageBuilder {
                                 totalZoom += value - 1
                             }
                     )
-                    .offset(offset.wrappedValue)
+                    .offset(CGSize(width: offset.wrappedValue.width + currentOffset.width, height: offset.wrappedValue.height + currentOffset.height))
                     .gesture(
                         DragGesture()
                             .onChanged { gesture in
                                 offset.wrappedValue = gesture.translation
                                 onOffsetChanged(gesture.translation)
                             }
+                            .onEnded { gesture in
+                                let translation = gesture.translation
+                                let newOffset = CGSize(width: offset.wrappedValue.width + translation.width, height: offset.wrappedValue.height + translation.height)
+                                offset.wrappedValue = newOffset
+                                onOffsetChanged(newOffset)
+                            }
                     )
+
+
             }
+            .border(Color.gray)
         }
         .onTapGesture {
             self.showImagePicker.toggle()
@@ -204,57 +226,72 @@ extension CollageBuilder {
         }
     }
 
+
     
-    func calculateMaxScale(frameSize: CGSize) -> CGFloat {
-        let maxWidth = frameSize.width
-        let maxHeight = frameSize.height
-        let maxScale = min(maxWidth, maxHeight) / min(width, height)
-        return maxScale
+    func calculateMinScale(frameSize: CGSize, imageSize: CGSize) -> CGFloat {
+        let scaleX = frameSize.width / imageSize.width
+        let scaleY = frameSize.height / imageSize.height
+        return max(min(scaleX, scaleY), 1.0)
     }
+
+
 
 
     func block1() -> some View {
-        return blockForPhotoSelection(imageForBlock: imageA, imageNum: 1, scale: $scaleA, offset: $offsetA, onScaleChanged: { scale in
-            scaleA = scale
-        }, onOffsetChanged: { offset in
-            offsetA = offset
-        })
-        .sheet(isPresented: $showImagePicker) {
-            ImagePicker(image: $chosenImagesObject.chosenImageA, explicitPhotoAlert: $explicitPhotoAlert, isImageLoading: $isImageLoading[0])
+        return VStack {
+            blockForPhotoSelection(imageForBlock: imageA, imageNum: 1, scale: $scaleA, offset: $offsetA, onScaleChanged: { scale in
+                scaleA = scale
+            }, onOffsetChanged: { offset in
+                offsetA = offset
+            })
+            .sheet(isPresented: $showImagePicker) {
+                ImagePicker(image: $chosenImagesObject.chosenImageA, explicitPhotoAlert: $explicitPhotoAlert, isImageLoading: $isImageLoading[0])
+            }
         }
+        .clipped()
     }
 
+    
     func block2() -> some View {
-        return blockForPhotoSelection(imageForBlock: imageB, imageNum: 2, scale: $scaleB, offset: $offsetB, onScaleChanged: { scale in
-            scaleB = scale
-        }, onOffsetChanged: { offset in
-            offsetB = offset
-        })
-        .sheet(isPresented: $showImagePicker) {
-            ImagePicker(image: $chosenImagesObject.chosenImageB, explicitPhotoAlert: $explicitPhotoAlert, isImageLoading: $isImageLoading[1])
+        return VStack {
+            blockForPhotoSelection(imageForBlock: imageB, imageNum: 2, scale: $scaleB, offset: $offsetB, onScaleChanged: { scale in
+                scaleB = scale
+            }, onOffsetChanged: { offset in
+                offsetB = offset
+            })
+            .sheet(isPresented: $showImagePicker) {
+                ImagePicker(image: $chosenImagesObject.chosenImageB, explicitPhotoAlert: $explicitPhotoAlert, isImageLoading: $isImageLoading[1])
+            }
         }
+        .clipped()
     }
-
+    
     func block3() -> some View {
-        return blockForPhotoSelection(imageForBlock: imageC, imageNum: 3, scale: $scaleC, offset: $offsetC, onScaleChanged: { scale in
-            scaleC = scale
-        }, onOffsetChanged: { offset in
-            offsetC = offset
-        })
-        .sheet(isPresented: $showImagePicker) {
-            ImagePicker(image: $chosenImagesObject.chosenImageC, explicitPhotoAlert: $explicitPhotoAlert, isImageLoading: $isImageLoading[2])
+        return VStack {
+            blockForPhotoSelection(imageForBlock: imageC, imageNum: 3, scale: $scaleC, offset: $offsetC, onScaleChanged: { scale in
+                scaleC = scale
+            }, onOffsetChanged: { offset in
+                offsetC = offset
+            })
+            .sheet(isPresented: $showImagePicker) {
+                ImagePicker(image: $chosenImagesObject.chosenImageC, explicitPhotoAlert: $explicitPhotoAlert, isImageLoading: $isImageLoading[2])
+            }
         }
+        .clipped()
     }
-
+    
     func block4() -> some View {
-        return blockForPhotoSelection(imageForBlock: imageD, imageNum: 4, scale: $scaleD, offset: $offsetD, onScaleChanged: { scale in
-            scaleD = scale
-        }, onOffsetChanged: { offset in
-            offsetD = offset
-        })
-        .sheet(isPresented: $showImagePicker) {
-            ImagePicker(image: $chosenImagesObject.chosenImageD, explicitPhotoAlert: $explicitPhotoAlert, isImageLoading: $isImageLoading[3])
+        return VStack {
+            blockForPhotoSelection(imageForBlock: imageD, imageNum: 4, scale: $scaleD, offset: $offsetD, onScaleChanged: { scale in
+                scaleD = scale
+            }, onOffsetChanged: { offset in
+                offsetD = offset
+            })
+            .sheet(isPresented: $showImagePicker) {
+                ImagePicker(image: $chosenImagesObject.chosenImageD, explicitPhotoAlert: $explicitPhotoAlert, isImageLoading: $isImageLoading[3])
+            }
         }
+        .clipped()
     }
 
     
@@ -299,7 +336,16 @@ extension CollageBuilder {
         return imageData
     }
 
-
+    func resetZoomAndOffset() {
+        scaleA = 1.0
+        offsetA = .zero
+        scaleB = 1.0
+        offsetB = .zero
+        scaleC = 1.0
+        offsetC = .zero
+        scaleD = 1.0
+        offsetD = .zero
+    }
 
 
 
