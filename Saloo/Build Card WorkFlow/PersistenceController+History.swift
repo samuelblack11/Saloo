@@ -19,7 +19,7 @@ extension PersistenceController {
     @objc
     func storeRemoteChange(_ notification: Notification) {
         guard let storeUUID = notification.userInfo?[NSStoreUUIDKey] as? String,
-              [privatePersistentStore.identifier, sharedPersistentStore.identifier].contains(storeUUID) else {
+              [publicPersistentStore.identifier, sharedPersistentStore.identifier].contains(storeUUID) else {
             print("\(#function): Ignore a store remote Change notification because of no valid storeUUID.")
             return
         }
@@ -69,8 +69,8 @@ extension PersistenceController {
         historyFetchRequest.predicate = NSPredicate(format: "author != %@", TransactionAuthor.app)
         request.fetchRequest = historyFetchRequest
 
-        if privatePersistentStore.identifier == storeUUID {
-            request.affectedStores = [privatePersistentStore]
+        if publicPersistentStore.identifier == storeUUID {
+            request.affectedStores = [publicPersistentStore]
         } else if sharedPersistentStore.identifier == storeUUID {
             request.affectedStores = [sharedPersistentStore]
         }
@@ -98,7 +98,7 @@ extension PersistenceController {
          Limit to the private store so only owners can deduplicate the tags. Owners have full access to the private database, and so
          don't need to worry about the permissions.
          */
-        guard !transactions.isEmpty, storeUUID == privatePersistentStore.identifier else {
+        guard !transactions.isEmpty, storeUUID == publicPersistentStore.identifier else {
             return
         }
         /**

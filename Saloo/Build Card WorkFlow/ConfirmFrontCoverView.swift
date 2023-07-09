@@ -66,7 +66,7 @@ struct ConfirmFrontCoverView: View {
                     LoadingOverlay(hasShownLaunchView: $hasShownLaunchView)
                 }
             }
-        .onAppear{getCoverSize()}
+            .onAppear{getCoverSize()}
         .modifier(AlertViewMod(showAlert: alertVars.activateAlertBinding, activeAlert: alertVars.alertType))
         .navigationBarItems(leading:
             Button {

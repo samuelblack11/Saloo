@@ -11,6 +11,7 @@ import SwiftUI
 import CloudKit
 import Network
 import Security
+import MessageUI
 
 struct ChosenCollection {@State var occassion: String!; @State var collectionID: String!}
 class ChosenCoreCard: ObservableObject {@Published var chosenCard = CoreCard()}
@@ -958,6 +959,95 @@ class RateLimiter {
             // Execute the function immediately
             print("Immediate exe")
             function()
+        }
+    }
+}
+
+
+
+struct CodableCoreCard: Codable, Identifiable {
+    var id: String
+    var cardName: String
+    var occassion: String
+    var recipient: String
+    var sender: String?
+    var an1: String
+    var an2: String
+    var an2URL: String
+    var an3: String
+    var an4: String
+    var collage: Data?
+    var coverImage: Data?
+    var date: Date
+    var font: String
+    var message: String
+    var uniqueName: String
+    var songID: String?
+    var spotID: String?
+    var spotName: String?
+    var spotArtistName: String?
+    var songName: String?
+    var songArtistName: String?
+    var songArtImageData: Data?
+    var songPreviewURL: String?
+    var songDuration: String?
+    var inclMusic: Bool
+    var spotImageData: Data?
+    var spotSongDuration: String?
+    var spotPreviewURL: String?
+    var creator: String?
+    var songAddedUsing: String?
+    var collage1: Data?
+    var collage2: Data?
+    var collage3: Data?
+    var collage4: Data?
+    var cardType: String?
+    var recordID: String?
+    var songAlbumName: String?
+    var appleAlbumArtist: String?
+    var spotAlbumArtist: String?
+    var salooUserID: String?
+    var sharedRecordID: String?
+    var appleSongURL: String?
+    var spotSongURL: String?
+}
+
+
+struct MessageComposerView: UIViewControllerRepresentable {
+    
+    let linkURL: URL
+    //let coverImage: Data
+    func makeUIViewController(context: UIViewControllerRepresentableContext<MessageComposerView>) -> MFMessageComposeViewController {
+        let controller = MFMessageComposeViewController()
+        
+        if MFMessageComposeViewController.canSendText() {
+            // Modify this with the appropriate deepLinkURL and image
+            let deepLinkURL = linkURL
+            controller.body = deepLinkURL.absoluteString
+            //controller.addAttachmentData(coverImage, typeIdentifier: "public.data", filename: "image.jpg")
+        }
+        
+        controller.messageComposeDelegate = context.coordinator
+        return controller
+    }
+
+    func updateUIViewController(_ uiViewController: MFMessageComposeViewController, context: UIViewControllerRepresentableContext<MessageComposerView>) {}
+
+    func makeCoordinator() -> Coordinator {
+        Coordinator(self)
+    }
+
+    class Coordinator: NSObject, MFMessageComposeViewControllerDelegate {
+        var parent: MessageComposerView
+
+        init(_ messageComposer: MessageComposerView) {
+            self.parent = messageComposer
+        }
+
+        func messageComposeViewController(_ controller: MFMessageComposeViewController, didFinishWith result: MessageComposeResult) {
+            controller.dismiss(animated: true)
+            AlertVars.shared.alertType = .showCardComplete
+            AlertVars.shared.activateAlert = true
         }
     }
 }

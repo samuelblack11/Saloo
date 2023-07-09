@@ -29,6 +29,23 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
     var counter = 0
     var launchedURL: URL?
     var spotifyManager: SpotifyManager?
+    
+    func scene(_ scene: UIScene, continue userActivity: NSUserActivity) {
+        guard userActivity.activityType == NSUserActivityTypeBrowsingWeb,
+              let incomingURL = userActivity.webpageURL,
+              let components = NSURLComponents(url: incomingURL, resolvingAgainstBaseURL: true),
+              let path = components.path else {
+            return
+        }
+        print("$$$$$$$$$$")
+        print(userActivity.webpageURL)
+
+        // Handle the universal link URL
+        // Use the path to present appropriate content in your app
+    }
+
+    
+    
 
     func sceneDidBecomeActive(_ scene: UIScene) {
         // Handle the URL if one was stored when the app was launched
@@ -120,13 +137,13 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
         print("called* processShareMetadata")
         
         let persistenceController = PersistenceController.shared
-        let sharedStore = persistenceController.sharedPersistentStore
+        let publicStore = persistenceController.publicPersistentStore
         let container = persistenceController.persistentContainer
         
         print("OOOOOOO")
         print(cloudKitShareMetadata)
         
-        container.acceptShareInvitations(from: [cloudKitShareMetadata], into: sharedStore) { [self] (_, error) in
+        container.acceptShareInvitations(from: [cloudKitShareMetadata], into: publicStore) { [self] (_, error) in
             if let error = error {
                 let errorDescription = "\(error)"
                 print("\(#function): Failed to accept share invitations: \(error)")
@@ -137,7 +154,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
                     waitingToAcceptRecord = true
                     
                     Task {
-                        await self.getRecordViaQuery(shareMetaData: cloudKitShareMetadata, targetDatabase: PersistenceController.shared.cloudKitContainer.privateCloudDatabase)
+                        await self.getRecordViaQuery(shareMetaData: cloudKitShareMetadata, targetDatabase: PersistenceController.shared.cloudKitContainer.publicCloudDatabase)
                         
                         // Notify observers that a CloudKit share was accepted.
                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
@@ -175,7 +192,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
         print("called getRecord")
         if self.checkIfRecordAddedToStore {
             print("Running getRecordViaQuery...")
-            self.getRecordViaQuery(shareMetaData: shareMetaData, targetDatabase: PersistenceController.shared.cloudKitContainer.sharedCloudDatabase)
+            self.getRecordViaQuery(shareMetaData: shareMetaData, targetDatabase: PersistenceController.shared.cloudKitContainer.publicCloudDatabase)
         }
     }
     

@@ -39,11 +39,11 @@ class PersistenceController: NSObject, ObservableObject {
          */
         let baseURL = NSPersistentContainer.defaultDirectoryURL()
         let storeFolderURL = baseURL.appendingPathComponent("CoreDataStores")
-        let privateStoreFolderURL = storeFolderURL.appendingPathComponent("Private")
+        let publichStoreFolderURL = storeFolderURL.appendingPathComponent("Public")
         let sharedStoreFolderURL = storeFolderURL.appendingPathComponent("Shared")
-        
+
         let fileManager = FileManager.default
-        for folderURL in [privateStoreFolderURL, sharedStoreFolderURL] where !fileManager.fileExists(atPath: folderURL.path) {
+        for folderURL in [publichStoreFolderURL, sharedStoreFolderURL] where !fileManager.fileExists(atPath: folderURL.path) {
             do {
                 try fileManager.createDirectory(at: folderURL, withIntermediateDirectories: true, attributes: nil)
             } catch {
@@ -59,25 +59,25 @@ class PersistenceController: NSObject, ObservableObject {
          - Enabling history tracking and remote notifications.
          - Specifying the iCloud container and database scope.
         */
-        guard let privateStoreDescription = container.persistentStoreDescriptions.first else {
+        guard let publicStoreDescription = container.persistentStoreDescriptions.first else {
             fatalError("#\(#function): Failed to retrieve a persistent store description.")
         }
-        privateStoreDescription.url = privateStoreFolderURL.appendingPathComponent("private.sqlite")
+        publicStoreDescription.url = publichStoreFolderURL.appendingPathComponent("public.sqlite")
         
-        privateStoreDescription.setOption(true as NSNumber, forKey: NSPersistentHistoryTrackingKey)
-        privateStoreDescription.setOption(true as NSNumber, forKey: NSPersistentStoreRemoteChangeNotificationPostOptionKey)
+        publicStoreDescription.setOption(true as NSNumber, forKey: NSPersistentHistoryTrackingKey)
+        publicStoreDescription.setOption(true as NSNumber, forKey: NSPersistentStoreRemoteChangeNotificationPostOptionKey)
 
         let cloudKitContainerOptions = NSPersistentCloudKitContainerOptions(containerIdentifier: gCloudKitContainerIdentifier)
         
-        cloudKitContainerOptions.databaseScope = .private
-        //cloudKitContainerOptions.databaseScope = .public
+        //cloudKitContainerOptions.databaseScope = .private
+        cloudKitContainerOptions.databaseScope = .public
 
-        privateStoreDescription.cloudKitContainerOptions = cloudKitContainerOptions
+        publicStoreDescription.cloudKitContainerOptions = cloudKitContainerOptions
                 
         /**
          Similarly, add a second store and associate it with the CloudKit shared database.
          */
-        guard let sharedStoreDescription = privateStoreDescription.copy() as? NSPersistentStoreDescription else {
+        guard let sharedStoreDescription = publicStoreDescription.copy() as? NSPersistentStoreDescription else {
             fatalError("#\(#function): Copying the private store description returned an unexpected value.")
         }
         sharedStoreDescription.url = sharedStoreFolderURL.appendingPathComponent("shared.sqlite")
@@ -97,8 +97,8 @@ class PersistenceController: NSObject, ObservableObject {
             guard let cloudKitContainerOptions = loadedStoreDescription.cloudKitContainerOptions else {
                 return
             }
-            if cloudKitContainerOptions.databaseScope == .private {
-                self._privatePersistentStore = container.persistentStoreCoordinator.persistentStore(for: loadedStoreDescription.url!)
+            if cloudKitContainerOptions.databaseScope == .public {
+                self._publicPersistentStore = container.persistentStoreCoordinator.persistentStore(for: loadedStoreDescription.url!)
             } else if cloudKitContainerOptions.databaseScope  == .shared {
                 self._sharedPersistentStore = container.persistentStoreCoordinator.persistentStore(for: loadedStoreDescription.url!)
             }
@@ -151,6 +151,12 @@ class PersistenceController: NSObject, ObservableObject {
     private var _privatePersistentStore: NSPersistentStore?
     var privatePersistentStore: NSPersistentStore {
         return _privatePersistentStore!
+    }
+    
+    
+    private var _publicPersistentStore: NSPersistentStore?
+    var publicPersistentStore: NSPersistentStore {
+        return _publicPersistentStore!
     }
 
     private var _sharedPersistentStore: NSPersistentStore?

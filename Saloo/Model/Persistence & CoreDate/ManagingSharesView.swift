@@ -32,9 +32,9 @@ struct ManagingSharesView: View {
     @ViewBuilder
     private func actionButtons(for share: CKShare) -> some View {
         let persistentStore = share.persistentStore
-        let isPrivateStore = (persistentStore == PersistenceController.shared.privatePersistentStore)
+        let isPublicStore = (persistentStore == PersistenceController.shared.publicPersistentStore)
         
-        Button(isPrivateStore ? "Manage Participants" : "View Participants") {
+        Button(isPublicStore ? "Manage Participants" : "View Participants") {
             if let share = PersistenceController.shared.share(with: selection!) {
                 nextSheet = .participantView(share)
                 activeSheet = nil
@@ -42,7 +42,7 @@ struct ManagingSharesView: View {
         }
         .disabled(selection == nil)
         
-        Button(isPrivateStore ? "Stop Sharing" : "Remove Me") {
+        Button(isPublicStore ? "Stop Sharing" : "Remove Me") {
             if let share = PersistenceController.shared.share(with: selection!) {
                 purgeShare(share, in: persistentStore)
             }

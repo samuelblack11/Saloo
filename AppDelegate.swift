@@ -37,13 +37,20 @@ class AppDelegate: UIResponder, UIApplicationDelegate, ObservableObject {
     let appColor = Color("SalooTheme")
     @Published var isLaunchingFromClosed = true
     @Published var isPlayerCreated = false
-    //func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
-    //    print("AppDelegate Open with Options being called....")
-    //    GettingRecord.shared.isLoadingAlert = true
-    //    let isOpened = openMyApp(from: url)
-    //    return isOpened
-    //}
-    
+
+    func application(_ application: UIApplication, continue userActivity: NSUserActivity,
+    restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void) -> Bool {
+        guard userActivity.activityType == NSUserActivityTypeBrowsingWeb,
+              let incomingURL = userActivity.webpageURL,
+              let components = NSURLComponents(url: incomingURL, resolvingAgainstBaseURL: true),
+              let path = components.path else {
+            return false
+        }
+        // Now you have the path, you can parse it and show appropriate content in your app
+        return true
+    }
+
+
 
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
@@ -69,16 +76,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate, ObservableObject {
     func application(_ application: UIApplication, userDidAcceptCloudKitShareWith cloudKitShareMetadata: CKShare.Metadata) {
 
         let persistenceController = PersistenceController.shared
-        let sharedStore = persistenceController.sharedPersistentStore
+        let publicStore = persistenceController.publicPersistentStore
         let container = persistenceController.persistentContainer
-        container.acceptShareInvitations(from: [cloudKitShareMetadata], into: sharedStore) { [self] (_, error) in
+        container.acceptShareInvitations(from: [cloudKitShareMetadata], into: publicStore) { [self] (_, error) in
             if let error = error {
                 print("\(#function): Failed to accept share invitations: \(error)")
                 // repeat same logic for accept share as participant, and use to open the specified record.
                 self.acceptedShare = cloudKitShareMetadata.share; print("Trying to Get Share as Owner...UGH BOOO")
                 waitingToAcceptRecord = true
                 Task {
-                    await self.getRecordViaQuery(shareMetaData: cloudKitShareMetadata, targetDatabase: PersistenceController.shared.cloudKitContainer.privateCloudDatabase)
+                    await self.getRecordViaQuery(shareMetaData: cloudKitShareMetadata, targetDatabase: PersistenceController.shared.cloudKitContainer.publicCloudDatabase)
                     // Notify observers that a CloudKit share was accepted.
                     DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
                         NotificationCenter.default.post(name: .didAcceptShare, object: nil)
@@ -237,7 +244,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, ObservableObject {
     func runGetRecord(shareMetaData: CKShare.Metadata) async {
         print("called getRecord")
         if self.checkIfRecordAddedToStore {
-            self.getRecordViaQuery(shareMetaData: shareMetaData, targetDatabase: PersistenceController.shared.cloudKitContainer.sharedCloudDatabase)
+            self.getRecordViaQuery(shareMetaData: shareMetaData, targetDatabase: PersistenceController.shared.cloudKitContainer.publicCloudDatabase)
         }
     }
     

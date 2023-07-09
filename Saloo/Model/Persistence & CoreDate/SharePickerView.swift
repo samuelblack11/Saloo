@@ -59,7 +59,7 @@ struct SharePickerView<ActionView: View>: View {
      */
     private func processStoreChangeNotification(_ notification: Notification) {
         guard let storeUUID = notification.userInfo?[UserInfoKey.storeUUID] as? String,
-              storeUUID == PersistenceController.shared.privatePersistentStore.identifier else {
+              storeUUID == PersistenceController.shared.publicPersistentStore.identifier else {
             return
         }
         guard let transactions = notification.userInfo?[UserInfoKey.transactions] as? [NSPersistentHistoryTransaction],

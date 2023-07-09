@@ -14,7 +14,6 @@ extension PersistenceController {
     func addCoreCard(noteField: NoteField, chosenOccassion: Occassion, an1: String, an2: String, an2URL: String, an3: String, an4: String, chosenObject: ChosenCoverImageObject, collageImage: CollageImage, context: NSManagedObjectContext, songID: String?, spotID: String?, spotName: String?, spotArtistName: String?, songName: String?, songArtistName: String?, songAlbumName: String?, songArtImageData: Data?, songPreviewURL: String?, songDuration: String?, inclMusic: Bool, spotImageData: Data?, spotSongDuration: String?, spotPreviewURL: String?, songAddedUsing: String?, cardType: String, appleAlbumArtist: String?, spotAlbumArtist: String?, salooUserID: String, appleSongURL: String?, spotSongURL: String?, completion: @escaping (CoreCard) -> Void) {
         var createdCoreCard: CoreCard!
         context.performAndWait {
-            
             print("Apple Album Artist is....\(appleAlbumArtist)")
             print("Collage Data:    \(collageImage.collageImage)")
             
@@ -75,6 +74,61 @@ extension PersistenceController {
             print(coreCard.collage)
         }
     }
+    
+    
+    func convertCoreCardToCodable(coreCard: CoreCard) -> CodableCoreCard {
+        return CodableCoreCard(
+            id: coreCard.uniqueName,  // Assuming the uniqueName is being used as an id
+            cardName: coreCard.cardName,
+            occassion: coreCard.occassion,
+            recipient: coreCard.recipient,
+            sender: coreCard.sender,
+            an1: coreCard.an1,
+            an2: coreCard.an2,
+            an2URL: coreCard.an2URL,
+            an3: coreCard.an3,
+            an4: coreCard.an4,
+            collage: coreCard.collage,
+            coverImage: coreCard.coverImage,
+            date: coreCard.date,
+            font: coreCard.font,
+            message: coreCard.message,
+            uniqueName: coreCard.uniqueName,
+            songID: coreCard.songID,
+            spotID: coreCard.spotID,
+            spotName: coreCard.spotName,
+            spotArtistName: coreCard.spotArtistName,
+            songName: coreCard.songName,
+            songArtistName: coreCard.songArtistName,
+            songArtImageData: coreCard.songArtImageData,
+            songPreviewURL: coreCard.songPreviewURL,
+            songDuration: coreCard.songDuration,
+            inclMusic: coreCard.inclMusic,
+            spotImageData: coreCard.spotImageData,
+            spotSongDuration: coreCard.spotSongDuration,
+            spotPreviewURL: coreCard.spotPreviewURL,
+            creator: coreCard.creator,
+            songAddedUsing: coreCard.songAddedUsing,
+            collage1: coreCard.collage1,
+            collage2: coreCard.collage2,
+            collage3: coreCard.collage3,
+            collage4: coreCard.collage4,
+            cardType: coreCard.cardType,
+            recordID: coreCard.recordID,
+            songAlbumName: coreCard.songAlbumName,
+            appleAlbumArtist: coreCard.appleAlbumArtist,
+            spotAlbumArtist: coreCard.spotAlbumArtist,
+            salooUserID: coreCard.salooUserID,
+            sharedRecordID: coreCard.sharedRecordID,
+            appleSongURL: coreCard.appleSongURL,
+            spotSongURL: coreCard.spotSongURL
+        )
+    }
+
+    
+    
+    
+    
     
     
     func createShare(coreCard: CoreCard) {
@@ -142,8 +196,7 @@ extension PersistenceController {
         var database: CKDatabase?
         // Add the query operation to the desired database
         PersistenceController.shared.cloudKitContainer.fetchUserRecordID { ckRecordID, error in
-            if coreCard.creator == (ckRecordID?.recordName)! {database = ckContainer.privateCloudDatabase}
-            else {database = ckContainer.sharedCloudDatabase}
+            database = ckContainer.publicCloudDatabase
         }
         
         // Specify the field and value to search for
@@ -226,11 +279,7 @@ extension PersistenceController {
                 return
             }
             let database: CKDatabase
-            if coreCard.creator == ckRecordID.recordName {
-                database = ckContainer.privateCloudDatabase
-            } else {
-                database = ckContainer.sharedCloudDatabase
-            }
+            database = ckContainer.publicCloudDatabase
 
             // Use the appropriate database
             database.fetch(withRecordID: recordID) { (record, error) in

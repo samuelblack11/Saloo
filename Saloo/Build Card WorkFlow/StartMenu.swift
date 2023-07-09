@@ -107,7 +107,7 @@ struct StartMenu: View {
 extension StartMenu {
     func createNewShare(coreCard: CoreCard) {
        print("CreateNewShare called")
-       if PersistenceController.shared.privatePersistentStore.contains(manageObject: coreCard) {
+       if PersistenceController.shared.publicPersistentStore.contains(manageObject: coreCard) {
            print("privateStoreDoesContainObject")
            PersistenceController.shared.presentCloudSharingController(coreCard: coreCard)
        }

@@ -34,7 +34,7 @@ extension PersistenceController {
                         if let error = error {print("Failed to update share permissions: \(error)")}
                         else {print("Share permissions updated")}
                     }
-                    self.cloudKitContainer.privateCloudDatabase.add(modifyOperation)
+                    self.cloudKitContainer.publicCloudDatabase.add(modifyOperation)
                 }
             }
         }
@@ -261,7 +261,7 @@ extension PersistenceController {
              Synchronize the changes on the share to the private persistent store.
              */
 
-            self.persistentContainer.persistUpdatedShare(share, in: self.privatePersistentStore) { (share, error) in
+            self.persistentContainer.persistUpdatedShare(share, in: self.publicPersistentStore) { (share, error) in
                 if let error = error {
                     print("\(#function): Failed to persist updated share: \(error)")
                 }
@@ -294,14 +294,14 @@ extension PersistenceController {
     }
     
     func share(with title: String) -> CKShare? {
-        let stores = [privatePersistentStore, sharedPersistentStore]
+        let stores = [publicPersistentStore]
         let shares = try? persistentContainer.fetchShares(in: stores)
         let share = shares?.first(where: { $0.title == title })
         return share
     }
     
     func shareTitles() -> [String] {
-        let stores = [privatePersistentStore, sharedPersistentStore]
+        let stores = [publicPersistentStore]
         let shares = try? persistentContainer.fetchShares(in: stores)
         return shares?.map { $0.title } ?? []
     }
@@ -322,7 +322,7 @@ extension PersistenceController {
          Use privatePersistentStore directly because only the owner may add participants to a share.
          */
         let lookupInfo = CKUserIdentity.LookupInfo(emailAddress: emailAddress)
-        let persistentStore = privatePersistentStore //share.persistentStore!
+        let persistentStore = publicPersistentStore //share.persistentStore!
 
         persistentContainer.fetchParticipants(matching: [lookupInfo], into: persistentStore) { (results, error) in
             guard let participants = results, let participant = participants.first, error == nil else {
@@ -331,7 +331,7 @@ extension PersistenceController {
             }
                   
             participant.permission = permission
-            participant.role = .privateUser
+            participant.role = .publicUser
             share.addParticipant(participant)
             
             self.persistentContainer.persistUpdatedShare(share, in: persistentStore) { (share, error) in
@@ -349,9 +349,9 @@ extension PersistenceController {
             share.removeParticipant(participant)
         }
         /**
-         Use privatePersistentStore directly because only the owner may delete participants to a share.
+         Use publicPersistentStore directly because only the owner may delete participants to a share.
          */
-        persistentContainer.persistUpdatedShare(share, in: privatePersistentStore) { (share, error) in
+        persistentContainer.persistUpdatedShare(share, in: publicPersistentStore) { (share, error) in
             if let error = error {
                 print("\(#function): Failed to persist updated share: \(error)")
             }
@@ -379,11 +379,11 @@ extension CKShare {
     
     var persistentStore: NSPersistentStore? {
         let persistentContainer = PersistenceController.shared.persistentContainer
-        let privatePersistentStore = PersistenceController.shared.privatePersistentStore
-        if let shares = try? persistentContainer.fetchShares(in: privatePersistentStore) {
+        let publicPersistentStore = PersistenceController.shared.publicPersistentStore
+        if let shares = try? persistentContainer.fetchShares(in: publicPersistentStore) {
             let zoneIDs = shares.map { $0.recordID.zoneID }
             if zoneIDs.contains(recordID.zoneID) {
-                return privatePersistentStore
+                return publicPersistentStore
             }
         }
         let sharedPersistentStore = PersistenceController.shared.sharedPersistentStore

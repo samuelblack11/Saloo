@@ -185,12 +185,6 @@ extension GridofCards {
     
     @ViewBuilder func contextMenuButtons(card: CoreCard) -> some View {
         if let currentUserRecordID = self.currentUserRecordID, card.creator == currentUserRecordID.recordName {
-            //if persistenceController.privatePersistentStore.contains(manageObject: card) {
-            //    Button("Share Card") {showCloudShareController = true;
-           //         if networkMonitor.isConnected{createNewShare(coreCard: card)}
-           //         else{alertVars.alertType = .failedConnection; alertVars.activateAlert = true}}
-           //     .disabled(cardsForDisplayEnv.shareStatus(card: card).0)
-            //}
             Button {
                 if networkMonitor.isConnected{manageParticipation(coreCard: card)}
                 else{alertVars.alertType = .failedConnection; alertVars.activateAlert = true}
@@ -213,7 +207,7 @@ extension GridofCards {
     private func manageParticipation(coreCard: CoreCard) {persistenceController.presentCloudSharingController(coreCard: coreCard)}
     private func processStoreChangeNotification(_ notification: Notification) {
         guard let storeUUID = notification.userInfo?[UserInfoKey.storeUUID] as? String,
-              storeUUID == persistenceController.privatePersistentStore.identifier else {
+              storeUUID == persistenceController.publicPersistentStore.identifier else {
             return
         }
         guard let transactions = notification.userInfo?[UserInfoKey.transactions] as? [NSPersistentHistoryTransaction],

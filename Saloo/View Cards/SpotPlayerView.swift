@@ -439,7 +439,7 @@ struct SpotPlayerView: View {
         let ckContainer = PersistenceController.shared.cloudKitContainer
         taskContext.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
         print("????")
-        controller.updateRecordWithSpotData(for: coreCard!, in: taskContext, with: ckContainer.privateCloudDatabase, spotName: spotName, spotArtistName: spotArtistName,spotID: spotID, spotImageData: songArtImageData, spotSongDuration: songDuration, completion: { (error) in
+        controller.updateRecordWithSpotData(for: coreCard!, in: taskContext, with: ckContainer.publicCloudDatabase, spotName: spotName, spotArtistName: spotArtistName,spotID: spotID, spotImageData: songArtImageData, spotSongDuration: songDuration, completion: { (error) in
             print("Updated Record...")
             print(error as Any)
         } )

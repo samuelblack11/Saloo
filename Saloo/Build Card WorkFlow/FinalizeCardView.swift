@@ -9,6 +9,7 @@ import Foundation
 import SwiftUI
 import CoreData
 import CloudKit
+import MessageUI
 
 
 struct FinalizeCardView: View {
@@ -43,6 +44,8 @@ struct FinalizeCardView: View {
     let defaults = UserDefaults.standard
     @EnvironmentObject var chosenSong: ChosenSong
     @EnvironmentObject var cardProgress: CardProgress
+    @State private var isShowingMessageComposer = false
+    @State private var linkURL: URL?
 
     var saveButton: some View {
         Button("Save to Drafts") {
@@ -107,6 +110,10 @@ struct FinalizeCardView: View {
                     }
                 }
             }
+            .sheet(isPresented: $isShowingMessageComposer) {
+                // Your MessageComposer view
+                MessageComposerView(linkURL: linkURL!)
+            }
             .modifier(AlertViewMod(showAlert: alertVars.activateAlertBinding, activeAlert: alertVars.alertType, alertDismissAction: {appState.currentScreen = .startMenu}))
         }
     }
@@ -126,7 +133,8 @@ extension FinalizeCardView {
             if enableShare == true {
                 self.appState.pauseMusic.toggle()
                 cardsForDisplay.addCoreCard(card: savedCoreCard, box: .outbox)
-                createNewShare(coreCard: savedCoreCard)
+                // Encoding to JSON
+                createRichLink(uniqueName: savedCoreCard.uniqueName)
             }
             else {cardsForDisplay.addCoreCard(card: savedCoreCard, box: .draftbox)}
             noteField.recipient.value = ""
@@ -138,6 +146,54 @@ extension FinalizeCardView {
     }
     
     private func createNewShare(coreCard: CoreCard) {PersistenceController.shared.presentCloudSharingController(coreCard: coreCard)}
+    
+
+    func createRichLink(uniqueName: String) {
+        let deepLinkURLString = "saloo://open?uniqueName=\(uniqueName)"
+        
+        let title = "A Greeting from Saloo"
+        let description = "Generic Description 456"
+        let imageURL = "https://salooreportarchive.blob.core.windows.net/logoimage/logo1024.png"
+
+        var components = URLComponents()
+        components.scheme = "https"
+        components.host = "www.salooapp.com"
+        //components.host = "saloo://"
+        components.path = "/"
+        
+        let queryItems = [
+            URLQueryItem(name: "og:title", value: title),
+            URLQueryItem(name: "og:description", value: description),
+            URLQueryItem(name: "og:image", value: imageURL),
+            URLQueryItem(name: "og:url", value: deepLinkURLString)
+        ]
+        
+        components.queryItems = queryItems
+
+        if let richLinkURL = components.url {
+            linkURL = richLinkURL
+            sendViaMessages(richLinkURL: richLinkURL)
+        } else {
+            print("Failed to create rich link URL")
+        }
+    }
+
+    func sendViaMessages(richLinkURL: URL) {
+        if MFMessageComposeViewController.canSendText() && MFMessageComposeViewController.canSendAttachments() {
+            let messageComposer = MFMessageComposeViewController()
+            messageComposer.body = richLinkURL.absoluteString
+            
+            // Present the message composer view controller
+            isShowingMessageComposer = true
+        } else {
+            print("Cannot send message")
+        }
+    }
+
+
+
+
+
 
 }
 
