@@ -241,7 +241,12 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
 
     func parseRecord(record: CKRecord?) {
         print("Parsing Record....")
+        print(record)
+        print("--------")
         DispatchQueue.main.async() {
+            
+            print("^^^^")
+            print(record?.object(forKey: "CD_collage") as? Data)
             self.getCurrentUserID()
             self.coreCard.occassion = record?.object(forKey: "CD_occassion") as! String
             self.coreCard.recipient = record?.object(forKey: "CD_recipient") as! String
@@ -251,7 +256,17 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
             self.coreCard.an2URL = record?.object(forKey: "CD_an2URL") as! String
             self.coreCard.an3 = record?.object(forKey: "CD_an3") as! String
             self.coreCard.an4 = record?.object(forKey: "CD_an4") as! String
-            self.coreCard.collage = record?.object(forKey: "CD_collage") as? Data
+            if let ckAsset = record?.object(forKey: "CD_collage_ckAsset") as? CKAsset,
+               let fileURL = ckAsset.fileURL {
+                do {
+                    let imageData = try Data(contentsOf: fileURL)
+                    self.coreCard.collage = imageData
+                    // Use the extracted image as needed
+                } catch {
+                    // Handle the error if data extraction fails
+                    self.coreCard.collage = record?.object(forKey: "CD_collage") as? Data
+                }
+            }
             self.coreCard.coverImage = record?.object(forKey: "CD_coverImage") as? Data
             self.coreCard.date = record?.object(forKey: "CD_date") as! Date
             self.coreCard.font = record?.object(forKey: "CD_font") as! String

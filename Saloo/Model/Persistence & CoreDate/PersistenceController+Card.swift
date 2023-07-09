@@ -16,6 +16,7 @@ extension PersistenceController {
         context.performAndWait {
             
             print("Apple Album Artist is....\(appleAlbumArtist)")
+            print("Collage Data:    \(collageImage.collageImage)")
             
             let recordZone = CKRecordZone(zoneName: "Cards")
             let id = CKRecord.ID(zoneID: recordZone.zoneID)
@@ -52,10 +53,10 @@ extension PersistenceController {
             coreCard.spotSongDuration = spotSongDuration
             coreCard.spotPreviewURL = spotPreviewURL
             coreCard.songAddedUsing = songAddedUsing
-            coreCard.collage1 = collageImage.image1
-            coreCard.collage2 = collageImage.image2
-            coreCard.collage3 = collageImage.image3
-            coreCard.collage4 = collageImage.image4
+            //coreCard.collage1 = collageImage.image1
+            //coreCard.collage2 = collageImage.image2
+            //coreCard.collage3 = collageImage.image3
+            //coreCard.collage4 = collageImage.image4
             //okcoreCard.recordID = UUID().uuidString
             coreCard.recordID = cardRecord.recordID.recordName
             coreCard.appleAlbumArtist = appleAlbumArtist
@@ -71,6 +72,7 @@ extension PersistenceController {
             createdCoreCard = coreCard
             completion(createdCoreCard)
             print("Save Successful")
+            print(coreCard.collage)
         }
     }
     

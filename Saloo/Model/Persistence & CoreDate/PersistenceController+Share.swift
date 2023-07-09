@@ -23,7 +23,7 @@ extension PersistenceController {
             print("ShareSetFirst is true")
             print(share.publicPermission.rawValue)
             coreCardShare = share // moved outside of the block
-            let rateLimiter = RateLimiter(maxExecutionsPerSecond: 2)
+            let rateLimiter = RateLimiter(maxExecutionsPerSecond: 1)
             if share.publicPermission.rawValue != 3 {
                 print("Updating share permissions")
                 share.publicPermission = .readWrite
@@ -95,7 +95,7 @@ extension PersistenceController {
     
     private func newSharingController(unsharedCoreCard: CoreCard, persistenceController: PersistenceController) -> MyCloudSharingController {
         let sharingController = MyCloudSharingController { (controller, completion: @escaping (CKShare?, CKContainer?, Error?) -> Void) in
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
             print("Called new sharing controller2...")
                 let rateLimiter = RateLimiter(maxExecutionsPerSecond: 1)
                 rateLimiter.executeFunction {
@@ -307,13 +307,9 @@ extension PersistenceController {
     }
     //private func configure(share: CKShare, with coreCard: CoreCard? = nil) {
     private func configure(share: CKShare, coreCard: CoreCard?) {
-        print("Did configure?")
         share[CKShare.SystemFieldKey.title] = "A Greeting from Saloo"
         share[CKShare.SystemFieldKey.thumbnailImageData] = coreCard?.coverImage
-        
         share.publicPermission = .readWrite
-        //share.recordID = coreCard?.associatedRecord.recordID
-        //share.recordID = coreCard?.associatedRecord
         print("Did configure")
     }
 }

@@ -48,8 +48,8 @@ struct CollageBuilder: View {
     //var maxHeight = CGFloat(320)
     //var width = UIScreen.screenWidth/2
     //var height = UIScreen.screenHeight/3
-    var width = UIScreen.screenWidth/1.5
-    var height = UIScreen.screenHeight/2.3
+    var width = UIScreen.screenWidth/1.25
+    var height = UIScreen.screenHeight/2.1
     @State private var blockCount: Int?
     @State private var currentStep: Int = 2
     @EnvironmentObject var cardProgress: CardProgress
@@ -89,6 +89,7 @@ struct CollageBuilder: View {
                                 .font(.system(size: 7)) // Set the font size here
                         }
                         .frame(alignment: .trailing)
+                        Spacer()
                         Spacer()
                         Button("Confirm Collage") {
                             if blockCount != (4 - countNilImages()) {
@@ -183,7 +184,7 @@ extension CollageBuilder {
                     .resizable()
                     .scaledToFill()
                     .frame(width: w2, height: h2)
-                    .clipped()
+                    //.clipped()
                     .scaleEffect(scale.wrappedValue, anchor: .center)
                     .gesture(
                         MagnificationGesture()
