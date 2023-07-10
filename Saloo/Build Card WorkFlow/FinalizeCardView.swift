@@ -134,7 +134,7 @@ extension FinalizeCardView {
                 self.appState.pauseMusic.toggle()
                 cardsForDisplay.addCoreCard(card: savedCoreCard, box: .outbox)
                 // Encoding to JSON
-                createRichLink(uniqueName: savedCoreCard.uniqueName)
+                createLink(uniqueName: savedCoreCard.uniqueName)
             }
             else {cardsForDisplay.addCoreCard(card: savedCoreCard, box: .draftbox)}
             noteField.recipient.value = ""
@@ -148,24 +148,13 @@ extension FinalizeCardView {
     private func createNewShare(coreCard: CoreCard) {PersistenceController.shared.presentCloudSharingController(coreCard: coreCard)}
     
 
-    func createRichLink(uniqueName: String) {
-        let deepLinkURLString = "saloo://open?uniqueName=\(uniqueName)"
-        
-        let title = "A Greeting from Saloo"
-        let description = "Generic Description 456"
-        let imageURL = "https://salooreportarchive.blob.core.windows.net/logoimage/logo1024.png"
-
+    func createLink(uniqueName: String) {
         var components = URLComponents()
         components.scheme = "https"
-        components.host = "www.salooapp.com"
-        //components.host = "saloo://"
-        components.path = "/"
+        components.host = "saloocardshare.azurewebsites.net"
         
         let queryItems = [
-            URLQueryItem(name: "og:title", value: title),
-            URLQueryItem(name: "og:description", value: description),
-            URLQueryItem(name: "og:image", value: imageURL),
-            URLQueryItem(name: "og:url", value: deepLinkURLString)
+            URLQueryItem(name: "uniqueName", value: uniqueName)
         ]
         
         components.queryItems = queryItems
@@ -177,6 +166,8 @@ extension FinalizeCardView {
             print("Failed to create rich link URL")
         }
     }
+
+
 
     func sendViaMessages(richLinkURL: URL) {
         if MFMessageComposeViewController.canSendText() && MFMessageComposeViewController.canSendAttachments() {
