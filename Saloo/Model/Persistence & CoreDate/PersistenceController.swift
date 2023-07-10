@@ -78,7 +78,7 @@ class PersistenceController: NSObject, ObservableObject {
          Similarly, add a second store and associate it with the CloudKit shared database.
          */
         guard let sharedStoreDescription = publicStoreDescription.copy() as? NSPersistentStoreDescription else {
-            fatalError("#\(#function): Copying the private store description returned an unexpected value.")
+            fatalError("#\(#function): Copying the public store description returned an unexpected value.")
         }
         sharedStoreDescription.url = sharedStoreFolderURL.appendingPathComponent("shared.sqlite")
         

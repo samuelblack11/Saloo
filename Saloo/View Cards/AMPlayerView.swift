@@ -283,9 +283,7 @@ extension AMPlayerView {
                     if songPreviewURL != nil {
                         print("Defer to preview")
                         deferToPreview = true
-                        DispatchQueue.main.async {
-                                //updateRecordWithNewAMData(songName: "LookupFailed", songArtistName: "LookupFailed", songID: "LookupFailed", songArtImageData: Data(), songDuration: String(0))
-                    }}
+                    }
                     else {chosenCard?.cardType = "noMusicNoGift"}
                 }
             else {
@@ -322,10 +320,7 @@ extension AMPlayerView {
                                                 songDuration = Double(track.attributes.durationInMillis) * 0.001
                                                 musicPlayer.setQueue(with: [songID!])
                                                 musicPlayer.play()
-                                                DispatchQueue.main.async {
-                                                    //updateRecordWithNewAMData(songName: songName!, songArtistName: songArtistName!, songID: songID!, songArtImageData: artResponse!, songDuration: String(songDuration!))
-                                                //group.leave()
-                                                }})}
+                                            })}
                                         if trackIndex == trackList.count - 1 && albumIndex == albumList.count - 1 {
                                             print("Trigerred Found Match Check...")
                                             triggerFoundMatchCheck = true}
@@ -342,28 +337,11 @@ extension AMPlayerView {
                             if songPreviewURL != nil {
                                 print("Defer to preview")
                                 deferToPreview = true
-                                DispatchQueue.main.async {
-                                    //updateRecordWithNewAMData(songName: "LookupFailed", songArtistName: "LookupFailed", songID: "LookupFailed", songArtImageData: Data(), songDuration: String(0))
-                                }}
+                            }
                             else {chosenCard?.cardType = "noMusicNoGift"}
                         }}
                     }}})}
 
-
-    
-    func updateRecordWithNewAMData(songName: String, songArtistName: String, songID: String, songArtImageData: Data, songDuration: String) {
-        let controller = PersistenceController.shared
-        //let taskContext = controller.persistentContainer.newTaskContext()
-        let taskContext = controller.persistentContainer.viewContext
-        let ckContainer = PersistenceController.shared.cloudKitContainer
-        taskContext.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
-        print("About to run AM Data update on the CKRecord....")
-        controller.updateRecordWithAMData(for: coreCard!, in: taskContext, songName: songName, songArtistName: songArtistName,songID: songID, songImageData: songArtImageData, songDuration: songDuration, completion: { (error) in
-            print("Updated Record...")
-            print(error as Any)
-        } )
-    }
-    
     func getURLData(url: URL, completionHandler: @escaping (Data?,Error?) -> Void) {
         var request = URLRequest(url: url)
         request.httpMethod = "GET"

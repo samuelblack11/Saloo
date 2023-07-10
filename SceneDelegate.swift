@@ -73,16 +73,55 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
             SpotifyManager.shared.gotToAppInAppStore = true
             return
         }
+        else if url.scheme == "saloo" {
+                let uniqueName = url.absoluteString.replacingOccurrences(of: "saloo://", with: "")
+                if !uniqueName.isEmpty {
+                    // handle uniqueName here
+                    // use uniqueName to fetch the required information or do necessary action
+                    print("***\(uniqueName)")
+                    fetchRecord(withUniqueName: uniqueName)
+                }
+                return
+            }
+
 
         let container = CKContainer.default()
         container.fetchShareMetadata(with: url) { metadata, error in
             guard error == nil, let metadata = metadata else {
+                print("-----")
                 print("An error occurred: \(error?.localizedDescription ?? "unknown error")")
                 return
             }
             DispatchQueue.main.async {print("called* openURLContexts2");self.processShareMetadata(metadata)}
         }
     }
+    
+    
+    func fetchRecord(withUniqueName uniqueName: String) {
+        print("called fetch")
+        let predicate = NSPredicate(format: "CD_uniqueName == %@", uniqueName)
+        let query = CKQuery(recordType: "CD_CoreCard", predicate: predicate)
+        let publicDatabase = PersistenceController.shared.cloudKitContainer.publicCloudDatabase
+        print("pre-perform")
+        publicDatabase.perform(query, inZoneWith: nil) { results, error in
+            if let error = error {
+                // Handle the error here
+                print("An error occurred: \(error.localizedDescription)")
+            } else {
+                if let results = results, !results.isEmpty {
+                    // Process your results here
+                    for result in results {
+                        // Do something with each result
+                        print("THE RESULT")
+                        print(result)
+                    }
+                } else {
+                    print("No matching record found.")
+                }
+            }
+        }
+    }
+
 
 
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {

@@ -31,11 +31,7 @@
 		C225A8512989E074008FC699 /* SpotResponses.swift in Sources */ = {isa = PBXBuildFile; fileRef = C225A8502989E074008FC699 /* SpotResponses.swift */; };
 		C22A180B296CF60600A7E9B8 /* StartMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = C22A180A296CF60600A7E9B8 /* StartMenu.swift */; };
 		C22A180D296D010800A7E9B8 /* MusicSearchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C22A180C296D010800A7E9B8 /* MusicSearchView.swift */; };
-		C22A1815296D981700A7E9B8 /* SharePickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C22A1814296D981700A7E9B8 /* SharePickerView.swift */; };
-		C22A1817296D983E00A7E9B8 /* ManagingSharesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C22A1816296D983E00A7E9B8 /* ManagingSharesView.swift */; };
-		C22A1819296D985700A7E9B8 /* AddToExistingShareView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C22A1818296D985700A7E9B8 /* AddToExistingShareView.swift */; };
 		C22A84DB29666123001244CC /* PersistenceController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C22A84DA29666123001244CC /* PersistenceController.swift */; };
-		C22A84DD29666C0F001244CC /* PersistenceController+Share.swift in Sources */ = {isa = PBXBuildFile; fileRef = C22A84DC29666C0F001244CC /* PersistenceController+Share.swift */; };
 		C22A84DF29666C23001244CC /* PersistenceController+Card.swift in Sources */ = {isa = PBXBuildFile; fileRef = C22A84DE29666C23001244CC /* PersistenceController+Card.swift */; };
 		C22A84E129666C84001244CC /* CoreDataHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = C22A84E029666C84001244CC /* CoreDataHelper.swift */; };
 		C22A84E32966719A001244CC /* PersistenceController+Deduplicate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C22A84E22966719A001244CC /* PersistenceController+Deduplicate.swift */; };
@@ -102,11 +98,7 @@
 		C225A8502989E074008FC699 /* SpotResponses.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpotResponses.swift; sourceTree = "<group>"; };
 		C22A180A296CF60600A7E9B8 /* StartMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartMenu.swift; sourceTree = "<group>"; };
 		C22A180C296D010800A7E9B8 /* MusicSearchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MusicSearchView.swift; sourceTree = "<group>"; };
-		C22A1814296D981700A7E9B8 /* SharePickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharePickerView.swift; sourceTree = "<group>"; };
-		C22A1816296D983E00A7E9B8 /* ManagingSharesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManagingSharesView.swift; sourceTree = "<group>"; };
-		C22A1818296D985700A7E9B8 /* AddToExistingShareView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddToExistingShareView.swift; sourceTree = "<group>"; };
 		C22A84DA29666123001244CC /* PersistenceController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersistenceController.swift; sourceTree = "<group>"; };
-		C22A84DC29666C0F001244CC /* PersistenceController+Share.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PersistenceController+Share.swift"; sourceTree = "<group>"; };
 		C22A84DE29666C23001244CC /* PersistenceController+Card.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PersistenceController+Card.swift"; sourceTree = "<group>"; };
 		C22A84E029666C84001244CC /* CoreDataHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataHelper.swift; sourceTree = "<group>"; };
 		C22A84E22966719A001244CC /* PersistenceController+Deduplicate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PersistenceController+Deduplicate.swift"; sourceTree = "<group>"; };
@@ -307,14 +299,10 @@
 			isa = PBXGroup;
 			children = (
 				C22A84DA29666123001244CC /* PersistenceController.swift */,
-				C22A84DC29666C0F001244CC /* PersistenceController+Share.swift */,
 				C2233BF629AEEE4F00DB098D /* HandleCloudKitError.swift */,
 				C22A84E22966719A001244CC /* PersistenceController+Deduplicate.swift */,
 				C22A84DE29666C23001244CC /* PersistenceController+Card.swift */,
 				C22A84E029666C84001244CC /* CoreDataHelper.swift */,
-				C22A1814296D981700A7E9B8 /* SharePickerView.swift */,
-				C22A1816296D983E00A7E9B8 /* ManagingSharesView.swift */,
-				C22A1818296D985700A7E9B8 /* AddToExistingShareView.swift */,
 			);
 			path = "Persistence & CoreDate";
 			sourceTree = "<group>";
@@ -474,7 +462,6 @@
 				C225A8512989E074008FC699 /* SpotResponses.swift in Sources */,
 				260F68F7281DBDD2002E864B /* UnsplashCollectionView.swift in Sources */,
 				260F68FE281DBEBD002E864B /* PingDownloadResponse.swift in Sources */,
-				C22A1817296D983E00A7E9B8 /* ManagingSharesView.swift in Sources */,
 				C217021029AC0C9500BE48DC /* SongPreviewPlayer.swift in Sources */,
 				C237E6E1294E453600E472AD /* GridOfCards.swift in Sources */,
 				C22A84E529667587001244CC /* PersistenceController+History.swift in Sources */,
@@ -503,8 +490,6 @@
 				C26890B0299E572900EA63A4 /* SpotPlayerView.swift in Sources */,
 				C23A9D222897ECA90059B97C /* Card.swift in Sources */,
 				C2075AFD295FDBA70048ECEB /* CollageBuilder.swift in Sources */,
-				C22A84DD29666C0F001244CC /* PersistenceController+Share.swift in Sources */,
-				C22A1815296D981700A7E9B8 /* SharePickerView.swift in Sources */,
 				260F6907281DC0E3002E864B /* LaunchView.swift in Sources */,
 				260F68FC281DBEA0002E864B /* UnsplashResponse.swift in Sources */,
 				C2582A3E296F7171009F8FEC /* AppleMusicAPI.swift in Sources */,
@@ -516,7 +501,6 @@
 				C2582A3B296E5841009F8FEC /* eCardView.swift in Sources */,
 				C22CAE4A298EAA3F003302C4 /* PrefMenu.swift in Sources */,
 				C22A84DB29666123001244CC /* PersistenceController.swift in Sources */,
-				C22A1819296D985700A7E9B8 /* AddToExistingShareView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

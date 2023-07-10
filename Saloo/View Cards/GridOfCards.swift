@@ -186,7 +186,7 @@ extension GridofCards {
     @ViewBuilder func contextMenuButtons(card: CoreCard) -> some View {
         if let currentUserRecordID = self.currentUserRecordID, card.creator == currentUserRecordID.recordName {
             Button {
-                if networkMonitor.isConnected{manageParticipation(coreCard: card)}
+                if networkMonitor.isConnected{}
                 else{alertVars.alertType = .failedConnection; alertVars.activateAlert = true}
             } label: {Text("Share Card"); Image(systemName: "person.badge.plus")}
         }
@@ -203,20 +203,7 @@ extension GridofCards {
             HStack {Text("Report Offensive Content"); Image(systemName: "exclamationmark.octagon")}}
         }
     
-    private func createNewShare(coreCard: CoreCard) {persistenceController.presentCloudSharingController(coreCard: coreCard)}
-    private func manageParticipation(coreCard: CoreCard) {persistenceController.presentCloudSharingController(coreCard: coreCard)}
-    private func processStoreChangeNotification(_ notification: Notification) {
-        guard let storeUUID = notification.userInfo?[UserInfoKey.storeUUID] as? String,
-              storeUUID == persistenceController.publicPersistentStore.identifier else {
-            return
-        }
-        guard let transactions = notification.userInfo?[UserInfoKey.transactions] as? [NSPersistentHistoryTransaction],
-              transactions.isEmpty else {
-            return
-        }
-        //isCardShared = (persistenceController.existingShare(coreCard: card) != nil)
-        hasAnyShare = persistenceController.shareTitles().isEmpty ? false : true
-    }
+
 
     func sortedCards(_ cards: [CoreCard], sortBy: String) -> [CoreCard] {
         var sortedCards = cards

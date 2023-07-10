@@ -17,9 +17,43 @@ extension PersistenceController {
             print("Apple Album Artist is....\(appleAlbumArtist)")
             print("Collage Data:    \(collageImage.collageImage)")
             
-            let recordZone = CKRecordZone(zoneName: "Cards")
-            let id = CKRecord.ID(zoneID: recordZone.zoneID)
+            let id = CKRecord.ID(recordName: UUID().uuidString)
+            print("ID....\(id)")
             let cardRecord = CKRecord(recordType: "Card", recordID: id)
+            
+            // Updating the cardRecord with all fields
+            cardRecord["CD_an1"] = an1
+            cardRecord["CD_an2"] = an2
+            cardRecord["CD_an2URL"] = an2URL
+            cardRecord["CD_an3"] = an3
+            cardRecord["CD_an4"] = an4
+            // More fields...
+            cardRecord["CD_cardName"] = noteField.cardName.value
+            cardRecord["CD_occassion"] = chosenOccassion.occassion
+            cardRecord["CD_recipient"] = noteField.recipient.value
+            cardRecord["CD_sender"] = noteField.sender.value
+            // More fields...
+            cardRecord["CD_songID"] = songID
+            cardRecord["CD_spotID"] = spotID
+            cardRecord["CD_spotName"] = spotName
+            cardRecord["CD_spotArtistName"] = spotArtistName
+            cardRecord["CD_songName"] = songName
+            cardRecord["CD_songArtistName"] = songArtistName
+            cardRecord["CD_songAlbumName"] = songAlbumName
+            cardRecord["CD_songArtImageData"] = songArtImageData as CKRecordValue?
+            cardRecord["CD_songPreviewURL"] = songPreviewURL
+            cardRecord["CD_songDuration"] = songDuration
+            cardRecord["CD_inclMusic"] = inclMusic
+            cardRecord["CD_spotImageData"] = spotImageData as CKRecordValue?
+            cardRecord["CD_spotSongDuration"] = spotSongDuration
+            cardRecord["CD_spotPreviewURL"] = spotPreviewURL
+            cardRecord["CD_songAddedUsing"] = songAddedUsing
+            cardRecord["CD_cardType"] = cardType
+            cardRecord["CD_appleAlbumArtist"] = appleAlbumArtist
+            cardRecord["CD_spotAlbumArtist"] = spotAlbumArtist
+            cardRecord["CD_salooUserID"] = salooUserID
+            cardRecord["CD_appleSongURL"] = appleSongURL
+            cardRecord["CD_spotSongURL"] = spotSongURL
             let coreCard = CoreCard(context: context)
             coreCard.uniqueName = UUID().uuidString
             coreCard.cardName = noteField.cardName.value
@@ -52,11 +86,6 @@ extension PersistenceController {
             coreCard.spotSongDuration = spotSongDuration
             coreCard.spotPreviewURL = spotPreviewURL
             coreCard.songAddedUsing = songAddedUsing
-            //coreCard.collage1 = collageImage.image1
-            //coreCard.collage2 = collageImage.image2
-            //coreCard.collage3 = collageImage.image3
-            //coreCard.collage4 = collageImage.image4
-            //okcoreCard.recordID = UUID().uuidString
             coreCard.recordID = cardRecord.recordID.recordName
             coreCard.appleAlbumArtist = appleAlbumArtist
             coreCard.spotAlbumArtist = spotAlbumArtist
@@ -67,6 +96,16 @@ extension PersistenceController {
             PersistenceController.shared.cloudKitContainer.fetchUserRecordID { ckRecordID, error in
                 coreCard.creator = (ckRecordID?.recordName)!
             }
+            
+            
+            let publicDatabase = PersistenceController.shared.cloudKitContainer.publicCloudDatabase
+            publicDatabase.save(cardRecord) { (record, error) in
+                if let error = error {
+                    print("CloudKit Save Error: \(error.localizedDescription)")
+                } else {
+                    print("Record Saved Successfully!")
+                }
+            }
             context.save(with: .addCoreCard)
             createdCoreCard = coreCard
             completion(createdCoreCard)
@@ -74,6 +113,27 @@ extension PersistenceController {
             print(coreCard.collage)
         }
     }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
     
     func convertCoreCardToCodable(coreCard: CoreCard) -> CodableCoreCard {
@@ -124,30 +184,6 @@ extension PersistenceController {
             spotSongURL: coreCard.spotSongURL
         )
     }
-
-    
-    
-    
-    
-    
-    
-    func createShare(coreCard: CoreCard) {
-        let recordZone = CKRecordZone(zoneName: "Cards")
-        let id = CKRecord.ID(zoneID: recordZone.zoneID)
-        let shareID = CKRecord.ID(recordName: UUID().uuidString, zoneID: recordZone.zoneID)
-        var share = CKShare(rootRecord: coreCard.associatedRecord, shareID: shareID)
-        share[CKShare.SystemFieldKey.title] = "A Greeting, from GreetMe"
-        share[CKShare.SystemFieldKey.thumbnailImageData] = coreCard.coverImage
-        share.publicPermission = .readWrite
-        
-        let modifyRecordsOp = CKModifyRecordsOperation(recordsToSave: [share, coreCard.associatedRecord])
-    }
-    
-    
-    func shareRecord() {
-        
-    }
-    
     func loadCoreCards() -> [CoreCard] {
         let request = CoreCard.createFetchRequest()
         let sort = NSSortDescriptor(key: "date", ascending: false)
@@ -186,168 +222,10 @@ extension PersistenceController {
         }
         return results
     }
-    
-
-    func updateRecordWithSpotData(for coreCard: CoreCard, in context: NSManagedObjectContext, with database: CKDatabase, spotName: String, spotArtistName: String, spotID: String, spotImageData: Data, spotSongDuration: String, completion: @escaping (Error?) -> Void) {
-        let controller = PersistenceController.shared
-        let taskContext = controller.persistentContainer.newTaskContext()
-        let ckContainer = PersistenceController.shared.cloudKitContainer
-        taskContext.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
-        var database: CKDatabase?
-        // Add the query operation to the desired database
-        PersistenceController.shared.cloudKitContainer.fetchUserRecordID { ckRecordID, error in
-            database = ckContainer.publicCloudDatabase
-        }
-        
-        // Specify the field and value to search for
-        let fieldName = "CD_uniqueName"
-        let searchValue = coreCard.uniqueName
-        // Create the predicate to use in the query
-        let predicate = NSPredicate(format: "%K == %@", fieldName, searchValue)
-        // Create the query object with the desired record type and predicate
-        let query = CKQuery(recordType: "CD_CoreCard", predicate: predicate)
-        // Create the query operation with the query and desired results limit
-        let queryOperation = CKQueryOperation(query: query)
-        queryOperation.resultsLimit = 1 // Limit to only one result (optional)
-        // Set the block to be called when each record is fetched
-        queryOperation.recordFetchedBlock = { (record) in
-            // Process the fetched record
-            print("Fetched record with ID: \(record.recordID.recordName)")
-            record.setValue(spotName, forKey: "CD_spotName")
-            record.setValue(spotArtistName, forKey: "CD_spotArtistName")
-            record.setValue(spotID, forKey: "CD_spotID")
-            record.setValue(spotImageData, forKey: "CD_spotImageData")
-            record.setValue(spotSongDuration, forKey: "CD_spotSongDuration")
-            // Save changes to Core Data
-            do {try context.save()}
-            catch {
-                completion(error)
-                return
-            }
-            // Save changes to CloudKit
-            database!.save(record) { (record, error) in
-                if let error = error {
-                    // Handle error
-                    completion(error)
-                    return
-                }
-                completion(nil)
-            }
-        }
-
-        // Set the block to be called when the query is complete
-        queryOperation.queryCompletionBlock = { (cursor, error) in
-            guard error == nil else {
-                print("Error fetching records: \(error!.localizedDescription)")
-                return
-            }
-            // Optionally process any cursor information
-            if let cursor = cursor {
-                print("Query operation completed with cursor: \(cursor)")
-            }
-        }
-        
-        
-        
-        if database != nil {database!.add(queryOperation); print("Added data points to CKRecord...")}
-        else {print("Couldn't add data points to CKRecord....")}
-        }
-    
-
-
-    func updateRecordWithAMData(for coreCard: CoreCard,
-                                in context: NSManagedObjectContext,
-                                songName: String,
-                                songArtistName: String,
-                                songID: String,
-                                songImageData: Data,
-                                songDuration: String,
-                                completion: @escaping (Error?) -> Void) {
-        // Define the CloudKit container
-        let ckContainer = PersistenceController.shared.cloudKitContainer
-        let taskContext = PersistenceController.shared.persistentContainer.viewContext
-        taskContext.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
-        
-        // Fetch the record directly using the recordID from the metadata
-        let metadata = ShareMD.shared.metaData
-        let recordID = metadata!.share.recordID  // Get the record ID from the metadata
-
-        // Determine the appropriate database (private or shared)
-        ckContainer.fetchUserRecordID { ckRecordID, error in
-            guard let ckRecordID = ckRecordID else {
-                // handle error
-                return
-            }
-            let database: CKDatabase
-            database = ckContainer.publicCloudDatabase
-
-            // Use the appropriate database
-            database.fetch(withRecordID: recordID) { (record, error) in
-                if let error = error {
-                    print("Error fetching shared record: \(error)")
-                    completion(error)
-                    return
-                }
-                
-                // Update the fetched record with the desired Apple Music data
-                if let record = record {
-                    print("Fetched shared record: \(record)")
-                    record.setValue(songName, forKey: "CD_songName")
-                    record.setValue(songArtistName, forKey: "CD_songArtistName")
-                    record.setValue(songID, forKey: "CD_songID")
-                    record.setValue(songImageData, forKey: "CD_songImageData")
-                    record.setValue(songDuration, forKey: "CD_songDuration")
-                    context.performAndWait {
-                        do {
-                            // Update the fields of the CoreCard
-                            coreCard.songName = songName
-                            coreCard.songArtistName = songArtistName
-                            coreCard.songID = songID
-                            coreCard.songArtImageData = songImageData
-                            coreCard.songDuration = songDuration
-                            
-                            // Save changes to Core Data
-                            try context.save()
-                            
-                            print("---")
-                            print("Core Data changes saved successfully")
-                            completion(nil)
-                        } catch {
-                            print("---")
-                            print("Error saving Core Data changes: \(error.localizedDescription)")
-                            completion(error)
-                        }
-                    }
-
-
-                    // Save changes to CloudKit
-                    database.save(record) { (record, error) in
-                        if let error = error {
-                            print("---")
-                            print(error.localizedDescription)
-                            completion(error)
-                            return
-                        }
-                        // Save changes to Core Data
-                        context.performAndWait {
-                            do {
-                                try context.save()
-                                print("---")
-                                print("I think it saved...")
-                                completion(nil)
-                            } catch {
-                                print("---")
-                                print(error.localizedDescription)
-                                completion(error)
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-
-
 }
 
+extension UIViewController {
+    var topmostViewController: UIViewController {
+        return presentedViewController?.topmostViewController ?? self
+    }
+}

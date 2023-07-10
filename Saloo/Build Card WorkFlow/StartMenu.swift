@@ -105,15 +105,6 @@ struct StartMenu: View {
     }
 
 extension StartMenu {
-    func createNewShare(coreCard: CoreCard) {
-       print("CreateNewShare called")
-       if PersistenceController.shared.publicPersistentStore.contains(manageObject: coreCard) {
-           print("privateStoreDoesContainObject")
-           PersistenceController.shared.presentCloudSharingController(coreCard: coreCard)
-       }
-   }
-    
-    
     func getCurrentUserID() {
         PersistenceController.shared.cloudKitContainer.fetchUserRecordID { ckRecordID, error in
             self.userID = (ckRecordID?.recordName)!

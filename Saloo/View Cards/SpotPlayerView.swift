@@ -432,18 +432,6 @@ struct SpotPlayerView: View {
             completion(foundMatch)
         })
     }
-    
-    func updateRecordWithNewSPOTData(spotName: String, spotArtistName: String, spotID: String, songArtImageData: Data, songDuration: String) {
-        let controller = PersistenceController.shared
-        let taskContext = controller.persistentContainer.newTaskContext()
-        let ckContainer = PersistenceController.shared.cloudKitContainer
-        taskContext.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
-        print("????")
-        controller.updateRecordWithSpotData(for: coreCard!, in: taskContext, with: ckContainer.publicCloudDatabase, spotName: spotName, spotArtistName: spotArtistName,spotID: spotID, spotImageData: songArtImageData, spotSongDuration: songDuration, completion: { (error) in
-            print("Updated Record...")
-            print(error as Any)
-        } )
-    }
 
     func playSong() {
         print(APIManager.shared.spotClientIdentifier)
@@ -497,7 +485,6 @@ extension SpotPlayerView {
             if foundMatchBool == false {
                 if songPreviewURL != nil {
                     deferToPreview = true
-                    //DispatchQueue.main.async {updateRecordWithNewSPOTData(spotName: "LookupFailed", spotArtistName: "LookupFailed", spotID: "LookupFailed", songArtImageData: Data(), songDuration: String(0))}
                 }
                 else {chosenCard?.cardType = "noMusicNoGift"}
             }

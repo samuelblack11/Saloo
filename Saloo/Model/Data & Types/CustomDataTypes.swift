@@ -116,7 +116,7 @@ class CardsForDisplay: ObservableObject {
     @Published var draftboxCards: [CoreCard] = []
     @Published var userID = UserDefaults.standard.object(forKey: "SalooUserID") as? String
     @Published var isLoading = false
-
+    
     func addCoreCard(card: CoreCard, box: InOut.SendReceive) {
         print("Adding card with uniqueName: \(card.uniqueName)")
         switch box {
@@ -142,10 +142,10 @@ class CardsForDisplay: ObservableObject {
             print("Invalid box type")
         }
     }
-
-
-
-
+    
+    
+    
+    
     func deleteCoreCard(card: CoreCard, box: InOut.SendReceive) {
         switch box {
         case .inbox:
@@ -164,7 +164,7 @@ class CardsForDisplay: ObservableObject {
             print("Invalid box type")
         }
     }
-
+    
     
     
     func needToLoadCards() -> Bool {
@@ -196,12 +196,10 @@ class CardsForDisplay: ObservableObject {
                 // Split the cards into separate lists
                 self.inboxCards = cardsFromCore.filter { !$0.salooUserID!.contains(self.userID!) }
                 self.outboxCards = cardsFromCore.filter { card in
-                    let (isCardShared, _) = self.shareStatus(card: card)
-                    return self.userID!.contains(card.salooUserID!) && isCardShared
+                    return self.userID!.contains(card.salooUserID!)
                 }
                 self.draftboxCards = cardsFromCore.filter { card in
-                    let (isCardShared, _) = self.shareStatus(card: card)
-                    return self.userID!.contains(card.salooUserID!) && !isCardShared
+                    return self.userID!.contains(card.salooUserID!)
                 }
                 self.isLoading = false
                 completion()
@@ -211,19 +209,11 @@ class CardsForDisplay: ObservableObject {
                 self.isLoading = false
                 completion()
             }
+            //}
         }
-    }
-    
-    func shareStatus(card: CoreCard) -> (Bool, Bool) {
-        var isCardShared: Bool?
-        var hasAnyShare: Bool?
-        isCardShared = (PersistenceController.shared.existingShare(coreCard: card) != nil)
-        hasAnyShare = PersistenceController.shared.shareTitles().isEmpty ? false : true
         
-        return (isCardShared!, hasAnyShare!)
     }
 }
-
 
 
 class ChosenSong: ObservableObject {
@@ -446,7 +436,6 @@ enum ActiveSheet: Identifiable, Equatable {
     case photoContextMenu(CoreCard) // .contextMenu is deprecated in watchOS, so use action list instead.
     #endif
     case cloudSharingSheet(CKShare)
-    case managingSharesView
     case sharePicker(CoreCard)
     case taggingView(CoreCard)
     case ratingView(CoreCard)

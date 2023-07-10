@@ -144,9 +144,6 @@ extension FinalizeCardView {
         }))
             
     }
-    
-    private func createNewShare(coreCard: CoreCard) {PersistenceController.shared.presentCloudSharingController(coreCard: coreCard)}
-    
 
     func createLink(uniqueName: String) {
         var components = URLComponents()
