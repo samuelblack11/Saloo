@@ -108,7 +108,6 @@ extension StartMenu {
     func getCurrentUserID() {
         PersistenceController.shared.cloudKitContainer.fetchUserRecordID { ckRecordID, error in
             self.userID = (ckRecordID?.recordName)!
-            //print("Current User ID: \((ckRecordID?.recordName)!)")
         }
         
     }

@@ -26,9 +26,6 @@ extension PersistenceController {
         processHistoryAsynchronously(storeUUID: storeUUID)
     }
 
-    /**
-     Handle the container's event change notifications (NSPersistentCloudKitContainer.eventChangedNotification).
-     */
     @objc
     func containerEventChanged(_ notification: Notification) {
          guard let value = notification.userInfo?[NSPersistentCloudKitContainer.eventNotificationUserInfoKey],

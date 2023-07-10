@@ -34,7 +34,6 @@
 		C22A84DB29666123001244CC /* PersistenceController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C22A84DA29666123001244CC /* PersistenceController.swift */; };
 		C22A84DF29666C23001244CC /* PersistenceController+Card.swift in Sources */ = {isa = PBXBuildFile; fileRef = C22A84DE29666C23001244CC /* PersistenceController+Card.swift */; };
 		C22A84E129666C84001244CC /* CoreDataHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = C22A84E029666C84001244CC /* CoreDataHelper.swift */; };
-		C22A84E32966719A001244CC /* PersistenceController+Deduplicate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C22A84E22966719A001244CC /* PersistenceController+Deduplicate.swift */; };
 		C22A84E529667587001244CC /* PersistenceController+History.swift in Sources */ = {isa = PBXBuildFile; fileRef = C22A84E429667587001244CC /* PersistenceController+History.swift */; };
 		C22A84EA29667929001244CC /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C22A84E929667929001244CC /* SceneDelegate.swift */; };
 		C22CAE4A298EAA3F003302C4 /* PrefMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = C22CAE49298EAA3F003302C4 /* PrefMenu.swift */; };
@@ -101,7 +100,6 @@
 		C22A84DA29666123001244CC /* PersistenceController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersistenceController.swift; sourceTree = "<group>"; };
 		C22A84DE29666C23001244CC /* PersistenceController+Card.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PersistenceController+Card.swift"; sourceTree = "<group>"; };
 		C22A84E029666C84001244CC /* CoreDataHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataHelper.swift; sourceTree = "<group>"; };
-		C22A84E22966719A001244CC /* PersistenceController+Deduplicate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PersistenceController+Deduplicate.swift"; sourceTree = "<group>"; };
 		C22A84E429667587001244CC /* PersistenceController+History.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PersistenceController+History.swift"; sourceTree = "<group>"; };
 		C22A84E929667929001244CC /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 		C22CAE49298EAA3F003302C4 /* PrefMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrefMenu.swift; sourceTree = "<group>"; };
@@ -151,7 +149,6 @@
 				26AD8126281F05160069C3F0 /* WriteNoteView.swift */,
 				C22A180C296D010800A7E9B8 /* MusicSearchView.swift */,
 				26AD8128281F05310069C3F0 /* FinalizeCardView.swift */,
-				C22A84E429667587001244CC /* PersistenceController+History.swift */,
 				C2BC52DA2A1EE55B000BAF60 /* ReportOffensiveContentView.swift */,
 			);
 			path = "Build Card WorkFlow";
@@ -254,6 +251,7 @@
 		C22A5CBE2980B1C1006A0A8B /* Music */ = {
 			isa = PBXGroup;
 			children = (
+				C2764CEA2A06A9CA0083819B /* CleanMusicData.swift */,
 				C2582A3D296F7171009F8FEC /* AppleMusicAPI.swift */,
 				C20DEF5F2986C9F30080AE03 /* SpotifyAPI.swift */,
 				C271B2E629702D2200760B23 /* AMResponses.swift */,
@@ -278,7 +276,6 @@
 			children = (
 				C24B3ABA29574A3D00884E4D /* CustomDataTypes.swift */,
 				C23A9D212897ECA90059B97C /* Card.swift */,
-				C2764CEA2A06A9CA0083819B /* CleanMusicData.swift */,
 			);
 			path = "Data & Types";
 			sourceTree = "<group>";
@@ -300,7 +297,7 @@
 			children = (
 				C22A84DA29666123001244CC /* PersistenceController.swift */,
 				C2233BF629AEEE4F00DB098D /* HandleCloudKitError.swift */,
-				C22A84E22966719A001244CC /* PersistenceController+Deduplicate.swift */,
+				C22A84E429667587001244CC /* PersistenceController+History.swift */,
 				C22A84DE29666C23001244CC /* PersistenceController+Card.swift */,
 				C22A84E029666C84001244CC /* CoreDataHelper.swift */,
 			);
@@ -472,7 +469,6 @@
 				26A7218C281DB8D900ADAE44 /* Saloo.xcdatamodeld in Sources */,
 				C24B3ABB29574A3D00884E4D /* CustomDataTypes.swift in Sources */,
 				C2075AFF295FDBC60048ECEB /* ImagePicker.swift in Sources */,
-				C22A84E32966719A001244CC /* PersistenceController+Deduplicate.swift in Sources */,
 				C22A180B296CF60600A7E9B8 /* StartMenu.swift in Sources */,
 				C22A84E129666C84001244CC /* CoreDataHelper.swift in Sources */,
 				C27430FC286335F000E17B19 /* CameraCapture.swift in Sources */,

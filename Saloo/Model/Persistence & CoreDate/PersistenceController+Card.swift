@@ -14,14 +14,12 @@ extension PersistenceController {
     func addCoreCard(noteField: NoteField, chosenOccassion: Occassion, an1: String, an2: String, an2URL: String, an3: String, an4: String, chosenObject: ChosenCoverImageObject, collageImage: CollageImage, context: NSManagedObjectContext, songID: String?, spotID: String?, spotName: String?, spotArtistName: String?, songName: String?, songArtistName: String?, songAlbumName: String?, songArtImageData: Data?, songPreviewURL: String?, songDuration: String?, inclMusic: Bool, spotImageData: Data?, spotSongDuration: String?, spotPreviewURL: String?, songAddedUsing: String?, cardType: String, appleAlbumArtist: String?, spotAlbumArtist: String?, salooUserID: String, appleSongURL: String?, spotSongURL: String?, completion: @escaping (CoreCard) -> Void) {
         var createdCoreCard: CoreCard!
         context.performAndWait {
-            print("Apple Album Artist is....\(appleAlbumArtist)")
-            print("Collage Data:    \(collageImage.collageImage)")
-            
             let id = CKRecord.ID(recordName: UUID().uuidString)
             print("ID....\(id)")
-            let cardRecord = CKRecord(recordType: "Card", recordID: id)
-            
+            let cardRecord = CKRecord(recordType: "CD_CoreCard", recordID: id)
+
             // Updating the cardRecord with all fields
+            cardRecord["CD_uniqueName"] = id.recordName
             cardRecord["CD_an1"] = an1
             cardRecord["CD_an2"] = an2
             cardRecord["CD_an2URL"] = an2URL
@@ -55,7 +53,7 @@ extension PersistenceController {
             cardRecord["CD_appleSongURL"] = appleSongURL
             cardRecord["CD_spotSongURL"] = spotSongURL
             let coreCard = CoreCard(context: context)
-            coreCard.uniqueName = UUID().uuidString
+            coreCard.uniqueName = id.recordName
             coreCard.cardName = noteField.cardName.value
             coreCard.occassion = chosenOccassion.occassion
             coreCard.recipient = noteField.recipient.value
@@ -96,15 +94,10 @@ extension PersistenceController {
             PersistenceController.shared.cloudKitContainer.fetchUserRecordID { ckRecordID, error in
                 coreCard.creator = (ckRecordID?.recordName)!
             }
-            
-            
             let publicDatabase = PersistenceController.shared.cloudKitContainer.publicCloudDatabase
             publicDatabase.save(cardRecord) { (record, error) in
-                if let error = error {
-                    print("CloudKit Save Error: \(error.localizedDescription)")
-                } else {
-                    print("Record Saved Successfully!")
-                }
+                if let error = error {print("CloudKit Save Error: \(error.localizedDescription)")}
+                else {print("Record Saved Successfully!") }
             }
             context.save(with: .addCoreCard)
             createdCoreCard = coreCard

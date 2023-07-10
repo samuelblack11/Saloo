@@ -123,17 +123,18 @@ struct FinalizeCardView: View {
 extension FinalizeCardView {
     
     private func saveCard(noteField: NoteField, chosenOccassion: Occassion, an1: String, an2: String, an2URL: String, an3: String, an4: String, chosenObject: ChosenCoverImageObject, collageImage: CollageImage, songID: String?, spotID: String?, spotName: String?, spotArtistName: String?, songName: String?, songArtistName: String?, songAlbumName: String?, songArtImageData: Data?, songPreviewURL: String?, songDuration: String?, inclMusic: Bool, spotImageData: Data?, spotSongDuration: String?, spotPreviewURL: String?, songAddedUsing: String?, cardType: String, appleAlbumArtist: String?,spotAlbumArtist: String?, salooUserID: String, appleSongURL: String?, spotSongURL: String?) {
+
         let controller = PersistenceController.shared
-        //let taskContext = controller.persistentContainer.newTaskContext()
         let taskContext = controller.persistentContainer.viewContext
+        controller.persistentContainer
         taskContext.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
-        controller.addCoreCard(noteField: noteField, chosenOccassion: chosenOccassion, an1: an1, an2: an2, an2URL: an2URL, an3: an3, an4: an4, chosenObject: chosenObject, collageImage: collageImage,context: taskContext, songID: songID, spotID: spotID, spotName: spotName, spotArtistName: spotArtistName, songName: songName, songArtistName: songArtistName, songAlbumName: songAlbumName, songArtImageData: songArtImageData, songPreviewURL: songPreviewURL, songDuration: songDuration, inclMusic: inclMusic, spotImageData: spotImageData, spotSongDuration: spotSongDuration, spotPreviewURL: spotPreviewURL, songAddedUsing: songAddedUsing, cardType: cardType, appleAlbumArtist: appleAlbumArtist,spotAlbumArtist: spotAlbumArtist, salooUserID: salooUserID, appleSongURL: appleSongURL, spotSongURL: spotSongURL, completion: ({
+
+        controller.addCoreCard(noteField: noteField, chosenOccassion: chosenOccassion, an1: an1, an2: an2, an2URL: an2URL, an3: an3, an4: an4, chosenObject: chosenObject, collageImage: collageImage,context: taskContext, songID: songID, spotID: spotID, spotName: spotName, spotArtistName: spotArtistName, songName: songName, songArtistName: songArtistName, songAlbumName: songAlbumName, songArtImageData: songArtImageData, songPreviewURL: songPreviewURL, songDuration: songDuration, inclMusic: inclMusic, spotImageData: spotImageData, spotSongDuration: spotSongDuration, spotPreviewURL: spotPreviewURL, songAddedUsing: songAddedUsing, cardType: cardType, appleAlbumArtist: appleAlbumArtist, spotAlbumArtist: spotAlbumArtist, salooUserID: salooUserID, appleSongURL: appleSongURL, spotSongURL: spotSongURL, completion: ({
             
             savedCoreCard in
             if enableShare == true {
                 self.appState.pauseMusic.toggle()
                 cardsForDisplay.addCoreCard(card: savedCoreCard, box: .outbox)
-                // Encoding to JSON
                 createLink(uniqueName: savedCoreCard.uniqueName)
             }
             else {cardsForDisplay.addCoreCard(card: savedCoreCard, box: .draftbox)}
@@ -142,8 +143,8 @@ extension FinalizeCardView {
             noteField.cardName.value = ""
             noteField.noteText.value = "Write Your Message Here"
         }))
-            
     }
+
 
     func createLink(uniqueName: String) {
         var components = URLComponents()
