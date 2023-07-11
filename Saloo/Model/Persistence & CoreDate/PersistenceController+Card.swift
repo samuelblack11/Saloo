@@ -10,7 +10,6 @@ import CloudKit
 import SwiftUI
 
 extension PersistenceController {
-    
     func addCoreCard(noteField: NoteField, chosenOccassion: Occassion, an1: String, an2: String, an2URL: String, an3: String, an4: String, chosenObject: ChosenCoverImageObject, collageImage: CollageImage, context: NSManagedObjectContext, songID: String?, spotID: String?, spotName: String?, spotArtistName: String?, songName: String?, songArtistName: String?, songAlbumName: String?, songArtImageData: Data?, songPreviewURL: String?, songDuration: String?, inclMusic: Bool, spotImageData: Data?, spotSongDuration: String?, spotPreviewURL: String?, songAddedUsing: String?, cardType: String, appleAlbumArtist: String?, spotAlbumArtist: String?, salooUserID: String, appleSongURL: String?, spotSongURL: String?, completion: @escaping (CoreCard) -> Void) {
         var createdCoreCard: CoreCard!
         context.performAndWait {
@@ -20,6 +19,10 @@ extension PersistenceController {
 
             // Updating the cardRecord with all fields
             cardRecord["CD_uniqueName"] = id.recordName
+            cardRecord["CD_date"] = Date.now
+            cardRecord["CD_font"] = noteField.font
+            cardRecord["CD_message"] = noteField.noteText.value
+
             cardRecord["CD_an1"] = an1
             cardRecord["CD_an2"] = an2
             cardRecord["CD_an2URL"] = an2URL
@@ -52,6 +55,10 @@ extension PersistenceController {
             cardRecord["CD_salooUserID"] = salooUserID
             cardRecord["CD_appleSongURL"] = appleSongURL
             cardRecord["CD_spotSongURL"] = spotSongURL
+            cardRecord["CD_coverImage"] = chosenObject.coverImage
+            cardRecord["CD_collage"] = collageImage.collageImage
+            cardRecord["CD_creator"] = UserDefaults.standard.object(forKey: "SalooUserID") as? String
+            
             let coreCard = CoreCard(context: context)
             coreCard.uniqueName = id.recordName
             coreCard.cardName = noteField.cardName.value
@@ -91,9 +98,14 @@ extension PersistenceController {
             coreCard.salooUserID = salooUserID
             coreCard.appleSongURL = appleSongURL
             coreCard.spotSongURL = spotSongURL
-            PersistenceController.shared.cloudKitContainer.fetchUserRecordID { ckRecordID, error in
-                coreCard.creator = (ckRecordID?.recordName)!
-            }
+            coreCard.creator = UserDefaults.standard.object(forKey: "SalooUserID") as? String
+            
+            //PersistenceController.shared.cloudKitContainer.fetchUserRecordID { ckRecordID, error in
+            //    print("::::")
+            //    print(ckRecordID)
+            //    print(error)
+            //    coreCard.creator = (ckRecordID?.recordName)!
+            //}
             let publicDatabase = PersistenceController.shared.cloudKitContainer.publicCloudDatabase
             publicDatabase.save(cardRecord) { (record, error) in
                 if let error = error {print("CloudKit Save Error: \(error.localizedDescription)")}
