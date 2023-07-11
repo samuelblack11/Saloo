@@ -71,17 +71,14 @@ struct StartMenu: View {
                         Button(action: {appState.currentScreen = .buildCard([.photoOptionsView])}) {
                             Text("Build a Card").font(Font.custom("Papyrus", size: 16)).frame(maxWidth: .infinity, alignment: .leading).foregroundColor(.primary)
                         }
-                        Button(action: {screenManager.advance(); appState.currentScreen = .draft}) {
-                            Text("Drafts 📓").font(Font.custom("Papyrus", size: 16)).frame(maxWidth: .infinity, alignment: .leading).foregroundColor(.primary)
-                        }
                         Button(action: {screenManager.advance(); appState.currentScreen = .inbox}) {
-                            Text("Received Cards 📥").font(Font.custom("Papyrus", size: 16)).frame(maxWidth: .infinity, alignment: .leading).foregroundColor(.primary)
+                            Text("Cards from Others").font(Font.custom("Papyrus", size: 16)).frame(maxWidth: .infinity, alignment: .leading).foregroundColor(.primary)
                         }
                         Button(action: {screenManager.advance(); appState.currentScreen = .outbox}) {
-                            Text("Sent Cards 📤").font(Font.custom("Papyrus", size: 16)).frame(maxWidth: .infinity, alignment: .leading).foregroundColor(.primary)
+                            Text("Cards from Me").font(Font.custom("Papyrus", size: 16)).frame(maxWidth: .infinity, alignment: .leading).foregroundColor(.primary)
                         }
                         Button(action: {appState.currentScreen = .preferences}) {
-                            Text("Music Preferences 🎶 ").font(Font.custom("Papyrus", size: 16)).frame(maxWidth: .infinity, alignment: .leading).foregroundColor(.primary)
+                            Text("Music Preferences").font(Font.custom("Papyrus", size: 16)).frame(maxWidth: .infinity, alignment: .leading).foregroundColor(.primary)
                         }
                     }
 

@@ -45,7 +45,7 @@ struct FinalizeCardView: View {
     @EnvironmentObject var chosenSong: ChosenSong
     @EnvironmentObject var cardProgress: CardProgress
     @State private var isShowingMessageComposer = false
-    @State private var linkURL: URL?
+    @EnvironmentObject var linkURL: LinkURL
 
     var saveButton: some View {
         Button("Save to Drafts") {
@@ -112,7 +112,7 @@ struct FinalizeCardView: View {
             }
             .sheet(isPresented: $isShowingMessageComposer) {
                 // Your MessageComposer view
-                MessageComposerView(linkURL: linkURL!)
+                MessageComposerView(linkURL: URL(string: linkURL.linkURL)!, fromFinalize: true)
             }
             .modifier(AlertViewMod(showAlert: alertVars.activateAlertBinding, activeAlert: alertVars.alertType, alertDismissAction: {appState.currentScreen = .startMenu}))
         }
@@ -134,10 +134,9 @@ extension FinalizeCardView {
             savedCoreCard in
             if enableShare == true {
                 self.appState.pauseMusic.toggle()
-                cardsForDisplay.addCoreCard(card: savedCoreCard, box: .outbox)
                 createLink(uniqueName: savedCoreCard.uniqueName)
             }
-            else {cardsForDisplay.addCoreCard(card: savedCoreCard, box: .draftbox)}
+            cardsForDisplay.addCoreCard(card: savedCoreCard, box: .outbox)
             noteField.recipient.value = ""
             noteField.sender.value = ""
             noteField.cardName.value = ""
@@ -158,7 +157,7 @@ extension FinalizeCardView {
         components.queryItems = queryItems
 
         if let richLinkURL = components.url {
-            linkURL = richLinkURL
+            linkURL.linkURL = richLinkURL.absoluteString
             sendViaMessages(richLinkURL: richLinkURL)
         } else {
             print("Failed to create rich link URL")

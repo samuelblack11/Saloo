@@ -194,13 +194,9 @@ class CardsForDisplay: ObservableObject {
                 let cardsFromCore = try PersistenceController.shared.persistentContainer.viewContext.fetch(request)
                 
                 // Split the cards into separate lists
-                self.inboxCards = cardsFromCore.filter { !$0.salooUserID!.contains(self.userID!) }
-                self.outboxCards = cardsFromCore.filter { card in
-                    return self.userID!.contains(card.salooUserID!)
-                }
-                self.draftboxCards = cardsFromCore.filter { card in
-                    return self.userID!.contains(card.salooUserID!)
-                }
+                self.inboxCards = cardsFromCore.filter {!$0.salooUserID!.contains(self.userID!)}
+                self.outboxCards = cardsFromCore.filter {card in return self.userID!.contains(card.salooUserID!)}
+                //self.draftboxCards = cardsFromCore.filter { card in return self.userID!.contains(card.salooUserID!)}
                 self.isLoading = false
                 completion()
             }
@@ -690,6 +686,11 @@ class CollectionManager: ObservableObject {
 }
 
 
+class LinkURL: ObservableObject {
+    static let shared = LinkURL()
+    @Published var linkURL = String()
+}
+
 class SpotifyManager: ObservableObject {
     static let shared = SpotifyManager()
     var config: SPTConfiguration?
@@ -1005,6 +1006,7 @@ struct CodableCoreCard: Codable, Identifiable {
 struct MessageComposerView: UIViewControllerRepresentable {
     
     let linkURL: URL
+    let fromFinalize: Bool
     //let coverImage: Data
     func makeUIViewController(context: UIViewControllerRepresentableContext<MessageComposerView>) -> MFMessageComposeViewController {
         let controller = MFMessageComposeViewController()
@@ -1035,8 +1037,10 @@ struct MessageComposerView: UIViewControllerRepresentable {
 
         func messageComposeViewController(_ controller: MFMessageComposeViewController, didFinishWith result: MessageComposeResult) {
             controller.dismiss(animated: true)
-            AlertVars.shared.alertType = .showCardComplete
-            AlertVars.shared.activateAlert = true
+            if parent.fromFinalize == true {
+                AlertVars.shared.alertType = .showCardComplete
+                AlertVars.shared.activateAlert = true
+            }
         }
     }
 }

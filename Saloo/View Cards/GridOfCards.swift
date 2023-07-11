@@ -11,6 +11,7 @@ import CloudKit
 import CoreData
 import AVFoundation
 import AVFAudio
+import MessageUI
 
 struct GridofCards: View {
     @State private var toggleProgress: Bool = false
@@ -64,7 +65,8 @@ struct GridofCards: View {
     @ObservedObject var alertVars = AlertVars.shared
     @EnvironmentObject var cardsForDisplayEnv: CardsForDisplay
     let columns = [GridItem(.adaptive(minimum: 120))]
-
+    @State private var isShowingMessageComposer = false
+    @EnvironmentObject var linkURL: LinkURL
     @State private var currentUserRecordID: CKRecord.ID?
 
     func fetchCurrentUserRecordID() {
@@ -128,7 +130,7 @@ struct GridofCards: View {
         // "Search by \(sortByValue)"
         .searchable(text: $searchText, prompt: "Search by Card Name")
         .fullScreenCover(isPresented: $showStartMenu) {StartMenu()}
-        
+        .sheet(isPresented: $isShowingMessageComposer) {MessageComposerView(linkURL: URL(string: linkURL.linkURL)!, fromFinalize: false)}
     }
     
     func didDismiss() {chosenCard = nil}
@@ -166,6 +168,10 @@ struct GridofCards: View {
                 
         
         }
+    
+    
+    
+    
 }
 
 // MARK: Returns CKShare participant permission, methods and properties to share
@@ -184,9 +190,9 @@ extension GridofCards {
     }
     
     @ViewBuilder func contextMenuButtons(card: CoreCard) -> some View {
-        if let currentUserRecordID = self.currentUserRecordID, card.creator == currentUserRecordID.recordName {
+        if card.creator == (UserDefaults.standard.object(forKey: "SalooUserID") as? String)  {
             Button {
-                if networkMonitor.isConnected{}
+                if networkMonitor.isConnected{createLink(uniqueName: card.uniqueName)}
                 else{alertVars.alertType = .failedConnection; alertVars.activateAlert = true}
             } label: {Text("Share Card"); Image(systemName: "person.badge.plus")}
         }
@@ -202,6 +208,39 @@ extension GridofCards {
         Button(action: {cardToReport = card}) {
             HStack {Text("Report Offensive Content"); Image(systemName: "exclamationmark.octagon")}}
         }
+    
+    func createLink(uniqueName: String) {
+        var components = URLComponents()
+        components.scheme = "https"
+        components.host = "saloocardshare.azurewebsites.net"
+        
+        let queryItems = [
+            URLQueryItem(name: "uniqueName", value: uniqueName)
+        ]
+        
+        components.queryItems = queryItems
+
+        if let richLinkURL = components.url {
+            linkURL.linkURL = richLinkURL.absoluteString
+            sendViaMessages(richLinkURL: richLinkURL)
+        } else {
+            print("Failed to create rich link URL")
+        }
+    }
+
+
+
+    func sendViaMessages(richLinkURL: URL) {
+        if MFMessageComposeViewController.canSendText() && MFMessageComposeViewController.canSendAttachments() {
+            let messageComposer = MFMessageComposeViewController()
+            messageComposer.body = richLinkURL.absoluteString
+            
+            // Present the message composer view controller
+            isShowingMessageComposer = true
+        } else {
+            print("Cannot send message")
+        }
+    }
     
 
 
