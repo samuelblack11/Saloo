@@ -190,7 +190,7 @@ extension GridofCards {
     }
     
     @ViewBuilder func contextMenuButtons(card: CoreCard) -> some View {
-        if card.creator == (UserDefaults.standard.object(forKey: "SalooUserID") as? String)  {
+        if card.creator == userID  {
             Button {
                 if networkMonitor.isConnected{createLink(uniqueName: card.uniqueName)}
                 else{alertVars.alertType = .failedConnection; alertVars.activateAlert = true}
@@ -268,12 +268,25 @@ extension GridofCards {
         }
     }
     
+    
     func deleteCoreCard(coreCard: CoreCard) {
+        if coreCard.creator == userID  {deleteCoreCardAsOwner(coreCard: coreCard)}
+        else {deleteCoreCardAsRecipient(coreCard: coreCard)}
+    }
+    
+    
+    func deleteCoreCardAsOwner(coreCard: CoreCard) {
         do {persistenceController.persistentContainer.viewContext.delete(coreCard);try persistenceController.persistentContainer.viewContext.save()}
         catch {}
         cardsForDisplayEnv.deleteCoreCard(card: coreCard, box: whichBoxVal)
         loadCards()
     }
+    
+    func deleteCoreCardAsRecipient(coreCard: CoreCard) {
+        cardsForDisplayEnv.deleteCoreCard(card: coreCard, box: whichBoxVal)
+        loadCards()
+    }
+    
     
     func deleteAllCoreCards() {
         let request = CoreCard.createFetchRequest()

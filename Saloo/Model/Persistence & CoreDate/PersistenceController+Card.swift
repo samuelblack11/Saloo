@@ -57,6 +57,7 @@ extension PersistenceController {
             cardRecord["CD_spotSongURL"] = spotSongURL
             cardRecord["CD_coverImage"] = chosenObject.coverImage
             cardRecord["CD_collage"] = collageImage.collageImage
+            cardRecord["CD_isHidden"] = 0
             cardRecord["CD_creator"] = UserDefaults.standard.object(forKey: "SalooUserID") as? String
             
             let coreCard = CoreCard(context: context)
@@ -98,6 +99,7 @@ extension PersistenceController {
             coreCard.salooUserID = salooUserID
             coreCard.appleSongURL = appleSongURL
             coreCard.spotSongURL = spotSongURL
+            coreCard.isHidden = 0
             coreCard.creator = UserDefaults.standard.object(forKey: "SalooUserID") as? String
             
             //PersistenceController.shared.cloudKitContainer.fetchUserRecordID { ckRecordID, error in
@@ -174,10 +176,6 @@ extension PersistenceController {
             spotPreviewURL: coreCard.spotPreviewURL,
             creator: coreCard.creator,
             songAddedUsing: coreCard.songAddedUsing,
-            collage1: coreCard.collage1,
-            collage2: coreCard.collage2,
-            collage3: coreCard.collage3,
-            collage4: coreCard.collage4,
             cardType: coreCard.cardType,
             recordID: coreCard.recordID,
             songAlbumName: coreCard.songAlbumName,

@@ -105,7 +105,10 @@
 		C22CAE49298EAA3F003302C4 /* PrefMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrefMenu.swift; sourceTree = "<group>"; };
 		C237E6E0294E453600E472AD /* GridOfCards.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GridOfCards.swift; sourceTree = "<group>"; };
 		C23A9D212897ECA90059B97C /* Card.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Card.swift; sourceTree = "<group>"; };
+		C2453EC22A5D6CB100FC15D1 /* SalooUpdatedModel.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = SalooUpdatedModel.xcdatamodel; sourceTree = "<group>"; };
+		C2453EC42A5D6CFA00FC15D1 /* Saloo2.0.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Saloo2.0.xcdatamodel; sourceTree = "<group>"; };
 		C24B3ABA29574A3D00884E4D /* CustomDataTypes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomDataTypes.swift; sourceTree = "<group>"; };
+		C2531B2D2A5D6D450096C185 /* SalooNewModel.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = SalooNewModel.xcdatamodel; sourceTree = "<group>"; };
 		C2582A3A296E5841009F8FEC /* eCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = eCardView.swift; sourceTree = "<group>"; };
 		C2582A3D296F7171009F8FEC /* AppleMusicAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppleMusicAPI.swift; sourceTree = "<group>"; };
 		C26890AB299E571D00EA63A4 /* AMPlayerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AMPlayerView.swift; sourceTree = "<group>"; };
@@ -762,6 +765,9 @@
 		26A7218A281DB8D900ADAE44 /* Saloo.xcdatamodeld */ = {
 			isa = XCVersionGroup;
 			children = (
+				C2531B2D2A5D6D450096C185 /* SalooNewModel.xcdatamodel */,
+				C2453EC42A5D6CFA00FC15D1 /* Saloo2.0.xcdatamodel */,
+				C2453EC22A5D6CB100FC15D1 /* SalooUpdatedModel.xcdatamodel */,
 				26A7218B281DB8D900ADAE44 /* Saloo.xcdatamodel */,
 			);
 			currentVersion = 26A7218B281DB8D900ADAE44 /* Saloo.xcdatamodel */;

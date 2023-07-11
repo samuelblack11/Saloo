@@ -53,10 +53,6 @@ extension CoreCard {
     @NSManaged public var spotPreviewURL: String?
     @NSManaged public var creator: String?
     @NSManaged public var songAddedUsing: String?
-    @NSManaged public var collage1: Data?
-    @NSManaged public var collage2: Data?
-    @NSManaged public var collage3: Data?
-    @NSManaged public var collage4: Data?
     @NSManaged public var cardType: String?
     @NSManaged public var recordID: String?
     @NSManaged public var songAlbumName: String?
@@ -66,6 +62,7 @@ extension CoreCard {
     @NSManaged public var sharedRecordID: String?
     @NSManaged public var appleSongURL: String?
     @NSManaged public var spotSongURL: String?
+    @NSManaged public var isHidden: Int64
 
     
 }
@@ -102,10 +99,6 @@ struct Card: Identifiable, Hashable {
     let spotPreviewURL: String?
     let creator: String?
     let songAddedUsing: String?
-    let collage1: Data?
-    let collage2: Data?
-    let collage3: Data?
-    let collage4: Data?
     let cardType: String?
     let recordID: String?
     let songAlbumName: String?
@@ -115,6 +108,7 @@ struct Card: Identifiable, Hashable {
     let sharedRecordID: String?
     let appleSongURL: String?
     let spotSongURL: String?
+    let isHidden: Int64?
 
 }
 
@@ -150,10 +144,6 @@ extension Card {
               let spotPreviewURL = record["spotPreviewURL"] as? String,
               let creator = record["creator"] as? String,
               let songAddedUsing = record["songAddedUsing"] as? String,
-              let collage1 = record["collage1"] as? Data,
-              let collage2 = record["collage2"] as? Data,
-              let collage3 = record["collage3"] as? Data,
-              let collage4 = record["collage4"] as? Data,
               let songAlbumName = record["songAlbumName"] as? String,
               let recordID = record["recordID"] as? String,
               let appleAlbumArtist = record["appleAlbumArtist"] as? String,
@@ -162,6 +152,7 @@ extension Card {
               let sharedRecordID = record["sharedRecordID"] as? String,
               let appleSongURL = record["appleSongURL"] as? String,
               let spotSongURL = record["spotSongURL"] as? String,
+              let isHidden = record["isHidden"] as? Int64,
               let cardType = record["cardType"] as? String else {
             return nil
         }
@@ -197,10 +188,6 @@ extension Card {
         self.spotPreviewURL = spotPreviewURL
         self.creator = creator
         self.songAddedUsing = songAddedUsing
-        self.collage1 = collage1
-        self.collage2 = collage2
-        self.collage3 = collage3
-        self.collage4 = collage4
         self.songAlbumName = songAlbumName
         self.recordID = recordID
         self.appleAlbumArtist = appleAlbumArtist
@@ -210,7 +197,12 @@ extension Card {
         self.sharedRecordID = sharedRecordID
         self.appleSongURL = appleSongURL
         self.spotSongURL = spotSongURL
+        self.isHidden = isHidden
     }
 }
 
 
+public class UniqueNameList: NSManagedObject {
+    
+    @NSManaged public var uniqueNames: [String]
+}

@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="21513" systemVersion="21G72" minimumToolsVersion="Automatic" sourceLanguage="Swift" usedWithCloudKit="YES" userDefinedModelVersionIdentifier="">
+    <entity name="CalendarDate" representedClassName="CalendarDate" syncable="YES">
+        <attribute name="eventDateCore" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="eventNameCore" optional="YES" attributeType="String"/>
+    </entity>
     <entity name="CoreCard" representedClassName=".CoreCard" syncable="YES">
         <attribute name="an1" optional="YES" attributeType="String"/>
         <attribute name="an2" optional="YES" attributeType="String"/>
@@ -12,12 +16,15 @@
         <attribute name="cardName" optional="YES" attributeType="String"/>
         <attribute name="cardType" optional="YES" attributeType="String"/>
         <attribute name="collage" optional="YES" attributeType="Binary"/>
+        <attribute name="collage1" optional="YES" attributeType="Binary"/>
+        <attribute name="collage2" optional="YES" attributeType="Binary"/>
+        <attribute name="collage3" optional="YES" attributeType="Binary"/>
+        <attribute name="collage4" optional="YES" attributeType="Binary"/>
         <attribute name="coverImage" optional="YES" attributeType="Binary"/>
         <attribute name="creator" optional="YES" attributeType="String"/>
         <attribute name="date" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="font" optional="YES" attributeType="String"/>
         <attribute name="inclMusic" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
-        <attribute name="isHidden" optional="YES" attributeType="Integer 64" usesScalarValueType="YES"/>
         <attribute name="message" optional="YES" attributeType="String"/>
         <attribute name="occassion" optional="YES" attributeType="String"/>
         <attribute name="recipient" optional="YES" attributeType="String"/>
@@ -43,7 +50,9 @@
         <attribute name="spotSongURL" optional="YES" attributeType="String"/>
         <attribute name="uniqueName" optional="YES" attributeType="String"/>
     </entity>
-    <entity name="UniqueNameList" representedClassName="UniqueNameList" syncable="YES" codeGenerationType="class">
-        <attribute name="uniqueNames" optional="YES" attributeType="Transformable" valueTransformerName="NSSecureUnarchiveFromDataTransformerName"/>
+    <entity name="FutureDelivery" representedClassName=".FutureDelivery" syncable="YES">
+        <attribute name="card" optional="YES" attributeType="Binary"/>
+        <attribute name="deliveryDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="recipientList" optional="YES" attributeType="Transformable" valueTransformerName="NSSecureUnarchiveFromData" customClassName="[String]"/>
     </entity>
 </model>
