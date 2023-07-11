@@ -22,18 +22,15 @@ extension PersistenceController {
             cardRecord["CD_date"] = Date.now
             cardRecord["CD_font"] = noteField.font
             cardRecord["CD_message"] = noteField.noteText.value
-
             cardRecord["CD_an1"] = an1
             cardRecord["CD_an2"] = an2
             cardRecord["CD_an2URL"] = an2URL
             cardRecord["CD_an3"] = an3
             cardRecord["CD_an4"] = an4
-            // More fields...
             cardRecord["CD_cardName"] = noteField.cardName.value
             cardRecord["CD_occassion"] = chosenOccassion.occassion
             cardRecord["CD_recipient"] = noteField.recipient.value
             cardRecord["CD_sender"] = noteField.sender.value
-            // More fields...
             cardRecord["CD_songID"] = songID
             cardRecord["CD_spotID"] = spotID
             cardRecord["CD_spotName"] = spotName
@@ -57,7 +54,6 @@ extension PersistenceController {
             cardRecord["CD_spotSongURL"] = spotSongURL
             cardRecord["CD_coverImage"] = chosenObject.coverImage
             cardRecord["CD_collage"] = collageImage.collageImage
-            cardRecord["CD_isHidden"] = 0
             cardRecord["CD_creator"] = UserDefaults.standard.object(forKey: "SalooUserID") as? String
             
             let coreCard = CoreCard(context: context)
@@ -66,7 +62,6 @@ extension PersistenceController {
             coreCard.occassion = chosenOccassion.occassion
             coreCard.recipient = noteField.recipient.value
             coreCard.sender = noteField.sender.value
-            coreCard.associatedRecord = cardRecord
             coreCard.an1 = an1
             coreCard.an2 = an2
             coreCard.an2URL = an2URL
@@ -99,20 +94,19 @@ extension PersistenceController {
             coreCard.salooUserID = salooUserID
             coreCard.appleSongURL = appleSongURL
             coreCard.spotSongURL = spotSongURL
-            coreCard.isHidden = 0
             coreCard.creator = UserDefaults.standard.object(forKey: "SalooUserID") as? String
-            
-            //PersistenceController.shared.cloudKitContainer.fetchUserRecordID { ckRecordID, error in
-            //    print("::::")
-            //    print(ckRecordID)
-            //    print(error)
-            //    coreCard.creator = (ckRecordID?.recordName)!
-            //}
             let publicDatabase = PersistenceController.shared.cloudKitContainer.publicCloudDatabase
             publicDatabase.save(cardRecord) { (record, error) in
                 if let error = error {print("CloudKit Save Error: \(error.localizedDescription)")}
-                else {print("Record Saved Successfully!") }
+                else {print("Record Saved Successfully to Public Database!") }
             }
+            
+            let privateDatabase = PersistenceController.shared.cloudKitContainer.privateCloudDatabase
+            privateDatabase.save(cardRecord) { (record, error) in
+                if let error = error {print("CloudKit Private Save Error: \(error.localizedDescription)")}
+                else {print("Record Saved Successfully to Private Database!") }
+            }
+            
             context.save(with: .addCoreCard)
             createdCoreCard = coreCard
             completion(createdCoreCard)

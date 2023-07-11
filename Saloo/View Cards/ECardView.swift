@@ -39,7 +39,6 @@ struct eCardView: View {
     @State var selectedPreviewURL: String?
     @State var eCardType: eCardType = .musicNoGift
     @State var cardType: String
-    @State var associatedRecord: CKRecord?
     @State var coreCard: CoreCard?
     @State var accessedViaGrid = true
     @State var fromFinalize = false

@@ -137,11 +137,7 @@ struct ReportOffensiveContentView: View {
                             appleAlbumArtist: card.appleAlbumArtist,
                             spotAlbumArtist: card.spotAlbumArtist,
                             collage: card.collage,
-                            coverImage: card.coverImage,
-                            collage1: card.collage1,
-                            collage2: card.collage2,
-                            collage3: card.collage3,
-                            collage4: card.collage4)
+                            coverImage: card.coverImage)
         return report
     }
 
@@ -185,10 +181,6 @@ struct ReportOffensiveContentView: View {
         let spotAlbumArtist: String?
         let collage: Data?
         let coverImage: Data?
-        let collage1: Data?
-        let collage2: Data?
-        let collage3: Data?
-        let collage4: Data?
     }
     
     func deleteCoreCard(coreCard: CoreCard) {

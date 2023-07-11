@@ -119,7 +119,7 @@ struct GridofCards: View {
                 ReportOffensiveContentView(card: $cardToReport, whichBoxVal: $whichBoxVal, coreCards: $coreCards)}
             .fullScreenCover(item: $chosenCard, onDismiss: didDismiss) {chosenCard in
                 NavigationView {
-                    eCardView(eCardText: chosenCard.message, font: chosenCard.font, coverImage: chosenCard.coverImage!, collageImage: chosenCard.collage!, text1: chosenCard.an1, text2: chosenCard.an2, text2URL: URL(string: chosenCard.an2URL)!, text3: chosenCard.an3, text4: chosenCard.an4, songID: chosenCard.songID, spotID: chosenCard.spotID, spotName: chosenCard.spotName, spotArtistName: chosenCard.spotArtistName, songName: chosenCard.songName, songArtistName: chosenCard.songArtistName, songAlbumName: chosenCard.songAlbumName, appleAlbumArtist: chosenCard.appleAlbumArtist, spotAlbumArtist: chosenCard.spotAlbumArtist, songArtImageData: chosenCard.songArtImageData, songDuration: Double(chosenCard.songDuration!)!, songPreviewURL: chosenCard.songPreviewURL, inclMusic: chosenCard.inclMusic, spotImageData: chosenCard.spotImageData, spotSongDuration: Double(chosenCard.spotSongDuration!)!, spotPreviewURL: chosenCard.spotPreviewURL, songAddedUsing: chosenCard.songAddedUsing, cardType: chosenCard.cardType!, associatedRecord: chosenCard.associatedRecord, coreCard: chosenCard, chosenCard: $chosenCard, appleSongURL: chosenCard.appleSongURL, spotSongURL: chosenCard.spotSongURL)
+                    eCardView(eCardText: chosenCard.message, font: chosenCard.font, coverImage: chosenCard.coverImage!, collageImage: chosenCard.collage!, text1: chosenCard.an1, text2: chosenCard.an2, text2URL: URL(string: chosenCard.an2URL)!, text3: chosenCard.an3, text4: chosenCard.an4, songID: chosenCard.songID, spotID: chosenCard.spotID, spotName: chosenCard.spotName, spotArtistName: chosenCard.spotArtistName, songName: chosenCard.songName, songArtistName: chosenCard.songArtistName, songAlbumName: chosenCard.songAlbumName, appleAlbumArtist: chosenCard.appleAlbumArtist, spotAlbumArtist: chosenCard.spotAlbumArtist, songArtImageData: chosenCard.songArtImageData, songDuration: Double(chosenCard.songDuration!)!, songPreviewURL: chosenCard.songPreviewURL, inclMusic: chosenCard.inclMusic, spotImageData: chosenCard.spotImageData, spotSongDuration: Double(chosenCard.spotSongDuration!)!, spotPreviewURL: chosenCard.spotPreviewURL, songAddedUsing: chosenCard.songAddedUsing, cardType: chosenCard.cardType!, coreCard: chosenCard, chosenCard: $chosenCard, appleSongURL: chosenCard.appleSongURL, spotSongURL: chosenCard.spotSongURL)
                     }
             }
             .navigationTitle("Your Cards")
@@ -269,24 +269,14 @@ extension GridofCards {
     }
     
     
+
+    
     func deleteCoreCard(coreCard: CoreCard) {
-        if coreCard.creator == userID  {deleteCoreCardAsOwner(coreCard: coreCard)}
-        else {deleteCoreCardAsRecipient(coreCard: coreCard)}
-    }
-    
-    
-    func deleteCoreCardAsOwner(coreCard: CoreCard) {
         do {persistenceController.persistentContainer.viewContext.delete(coreCard);try persistenceController.persistentContainer.viewContext.save()}
         catch {}
         cardsForDisplayEnv.deleteCoreCard(card: coreCard, box: whichBoxVal)
         loadCards()
     }
-    
-    func deleteCoreCardAsRecipient(coreCard: CoreCard) {
-        cardsForDisplayEnv.deleteCoreCard(card: coreCard, box: whichBoxVal)
-        loadCards()
-    }
-    
     
     func deleteAllCoreCards() {
         let request = CoreCard.createFetchRequest()

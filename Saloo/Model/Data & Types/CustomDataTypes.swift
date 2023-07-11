@@ -192,7 +192,6 @@ class CardsForDisplay: ObservableObject {
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
             do {
                 let cardsFromCore = try PersistenceController.shared.persistentContainer.viewContext.fetch(request)
-                
                 // Split the cards into separate lists
                 self.inboxCards = cardsFromCore.filter {!$0.salooUserID!.contains(self.userID!)}
                 self.outboxCards = cardsFromCore.filter {card in return self.userID!.contains(card.salooUserID!)}

@@ -17,7 +17,6 @@
         <attribute name="date" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="font" optional="YES" attributeType="String"/>
         <attribute name="inclMusic" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
-        <attribute name="isHidden" optional="YES" attributeType="Integer 64" usesScalarValueType="YES"/>
         <attribute name="message" optional="YES" attributeType="String"/>
         <attribute name="occassion" optional="YES" attributeType="String"/>
         <attribute name="recipient" optional="YES" attributeType="String"/>
@@ -42,8 +41,5 @@
         <attribute name="spotSongDuration" optional="YES" attributeType="String"/>
         <attribute name="spotSongURL" optional="YES" attributeType="String"/>
         <attribute name="uniqueName" optional="YES" attributeType="String"/>
-    </entity>
-    <entity name="UniqueNameList" representedClassName="UniqueNameList" syncable="YES" codeGenerationType="class">
-        <attribute name="uniqueNames" optional="YES" attributeType="Transformable" valueTransformerName="NSSecureUnarchiveFromDataTransformerName"/>
     </entity>
 </model>

@@ -146,8 +146,13 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
                     for result in results {
                         // Do something with each result
                         print("THE RESULT")
-                        self.parseRecord(record: result)
                         print(result)
+                        let privateDatabase = PersistenceController.shared.cloudKitContainer.privateCloudDatabase
+                        privateDatabase.save(result) { (record, error) in
+                            if let error = error {print("CloudKit Private Save Error: \(error.localizedDescription)")}
+                            else {print("Record Saved Successfully to Private Database!") }
+                            self.parseRecord(record: result)
+                        }
                     }
                 } else {
                     print("No matching record found.")
@@ -160,7 +165,15 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
 
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         print("called* willConnectTo")
+        // Check if the app launched from an inactive state with a URL
+        if let urlContext = connectionOptions.urlContexts.first {
+            if urlContext.url.scheme == "saloo" {
+                let uniqueName = urlContext.url.absoluteString.replacingOccurrences(of: "saloo://", with: "")
+                if !uniqueName.isEmpty {fetchRecord(withUniqueName: uniqueName)}
+            }
+        }
     }
+
     
     private func displayCard(windowScene: UIWindowScene) {
         print("called* displayCard")

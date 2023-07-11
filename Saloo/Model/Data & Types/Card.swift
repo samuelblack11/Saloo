@@ -26,7 +26,6 @@ extension CoreCard {
     @NSManaged public var occassion: String
     @NSManaged public var recipient: String
     @NSManaged public var sender: String?
-    @NSManaged public var associatedRecord: CKRecord
     @NSManaged public var an1: String
     @NSManaged public var an2: String
     @NSManaged public var an2URL: String
@@ -73,7 +72,6 @@ struct Card: Identifiable, Hashable {
     let occassion: String?
     let recipient: String?
     let sender: String?
-    let associatedRecord: CKRecord
     let an1: String?
     let an2: String?
     let an2URL: String?
@@ -162,7 +160,6 @@ extension Card {
         self.occassion = occassion
         self.recipient = recipient
         self.sender = sender
-        self.associatedRecord = record
         self.an1 = an1
         self.an2 = an2
         self.an2URL = an2URL
@@ -199,10 +196,4 @@ extension Card {
         self.spotSongURL = spotSongURL
         self.isHidden = isHidden
     }
-}
-
-
-public class UniqueNameList: NSManagedObject {
-    
-    @NSManaged public var uniqueNames: [String]
 }

@@ -40,7 +40,6 @@ struct AMPlayerView: View {
     let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
     @State var fromFinalize = false
     @State var showGrid = false
-    @State var associatedRecord: CKRecord?
     @State var coreCard: CoreCard?
     @State var accessedViaGrid = true
     //@State var whichBoxVal: InOut.SendReceive = .inbox
