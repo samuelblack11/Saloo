@@ -131,6 +131,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
     
     
     func fetchRecord(withUniqueName uniqueName: String) {
+        GettingRecord.shared.isLoadingAlert = true
         print("called fetch")
         let predicate = NSPredicate(format: "CD_uniqueName == %@", uniqueName)
         let query = CKQuery(recordType: "CD_CoreCard", predicate: predicate)
@@ -147,19 +148,13 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
                         // Do something with each result
                         print("THE RESULT")
                         print(result)
-                        let privateDatabase = PersistenceController.shared.cloudKitContainer.privateCloudDatabase
-                        privateDatabase.save(result) { (record, error) in
-                            if let error = error {print("CloudKit Private Save Error: \(error.localizedDescription)")}
-                            else {print("Record Saved Successfully to Private Database!") }
-                            self.parseRecord(record: result)
-                        }
-                    }
-                } else {
-                    print("No matching record found.")
-                }
+                        self.parseRecord(record: result)
+                    }}
+                else {print("No matching record found.")}
             }
         }
     }
+
 
 
 
@@ -175,14 +170,32 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
     }
 
     
-    private func displayCard(windowScene: UIWindowScene) {
+    private func displayCard(windowScene: UIWindowScene, record: CKRecord, uniqueName: String) {
         print("called* displayCard")
         guard self.gotRecord && self.connectToScene else { return }
         if self.appDelegate.musicSub.type == .Neither {self.updateMusicSubType()}
         //AppState.shared.currentScreen = .startMenu
         CardsForDisplay.shared.addCoreCard(card: self.coreCard, box: self.whichBoxForCKAccept!)
+        GettingRecord.shared.isLoadingAlert = false
         AppState.shared.cardFromShare = self.coreCard
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {self.saveToPrivateDBIfNeeded(record: record, uniqueName: uniqueName)}
         self.gotRecord = false
+    }
+    
+    func saveToPrivateDBIfNeeded(record: CKRecord, uniqueName: String) {
+        let predicate = NSPredicate(format: "CD_uniqueName == %@", uniqueName)
+        let query = CKQuery(recordType: "CD_CoreCard", predicate: predicate)
+        let privateDatabase = PersistenceController.shared.cloudKitContainer.privateCloudDatabase
+        // Query the private database
+        privateDatabase.perform(query, inZoneWith: nil) { privateResults, privateError in
+            // If an error occurred or no matching record was found in the private database
+            if privateError != nil || (privateResults?.isEmpty ?? true) {
+                privateDatabase.save(record) { (record, error) in
+                    if let error = error {print("CloudKit Private Save Error: \(error.localizedDescription)")}
+                    else { print("Record Saved Successfully to Private Database!")}
+                }}
+            else {print("Record already exists in Private Database.")}
+        }
     }
     
     
@@ -242,7 +255,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
                 // Try to get the window scene from the shared application instance.
                 if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene {
                     print("Trying to handle Display after parseRecord...")
-                    self.displayCard(windowScene: windowScene)
+                    self.displayCard(windowScene: windowScene, record: record!, uniqueName: self.coreCard.uniqueName)
                 }
             }
         }
