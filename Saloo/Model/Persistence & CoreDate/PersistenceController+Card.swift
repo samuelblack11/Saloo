@@ -52,11 +52,12 @@ extension PersistenceController {
             cardRecord["CD_salooUserID"] = salooUserID
             cardRecord["CD_appleSongURL"] = appleSongURL
             cardRecord["CD_spotSongURL"] = spotSongURL
-            cardRecord["CD_coverImage"] = chosenObject.coverImage
             cardRecord["CD_collage"] = collageImage.collageImage
             cardRecord["CD_creator"] = UserDefaults.standard.object(forKey: "SalooUserID") as? String
-            
+            cardRecord["CD_unsplashImageURL"] = chosenObject.smallImageURLString
+            cardRecord["CD_coverSizeDetails"] = chosenObject.coverSizeDetails
             let coreCard = CoreCard(context: context)
+            coreCard.coverSizeDetails = chosenObject.coverSizeDetails
             coreCard.uniqueName = id.recordName
             coreCard.cardName = noteField.cardName.value
             coreCard.occassion = chosenOccassion.occassion
@@ -68,7 +69,6 @@ extension PersistenceController {
             coreCard.an3 = an3
             coreCard.an4 = an4
             coreCard.collage = collageImage.collageImage
-            coreCard.coverImage = chosenObject.coverImage
             coreCard.date = Date.now
             coreCard.font = noteField.font
             coreCard.message = noteField.noteText.value
@@ -94,14 +94,13 @@ extension PersistenceController {
             coreCard.salooUserID = salooUserID
             coreCard.appleSongURL = appleSongURL
             coreCard.spotSongURL = spotSongURL
+            coreCard.unsplashImageURL = chosenObject.smallImageURLString
             coreCard.creator = UserDefaults.standard.object(forKey: "SalooUserID") as? String
             let publicDatabase = PersistenceController.shared.cloudKitContainer.publicCloudDatabase
             let privateDatabase = PersistenceController.shared.cloudKitContainer.privateCloudDatabase
             let group = DispatchGroup()
-            let publicDatabaseOperation = generateModifyRecordsOperation(with: cardRecord, for: publicDatabase, using: group)
-            publicDatabase.add(publicDatabaseOperation)
-            let privateDatabaseOperation = generateModifyRecordsOperation(with: cardRecord, for: privateDatabase, using: group)
-            privateDatabase.add(privateDatabaseOperation)
+            saveRecord(with: cardRecord, for: publicDatabase, using: group)
+            saveRecord(with: cardRecord, for: privateDatabase, using: group)
             group.notify(queue: .main) {
                 print("Context saved after both CloudKit operations completed")
                 context.save(with: .addCoreCard)
@@ -115,117 +114,30 @@ extension PersistenceController {
     
     
     
-    func generateModifyRecordsOperation(with record: CKRecord, for database: CKDatabase, using group: DispatchGroup) -> CKModifyRecordsOperation {
-        let operation = CKModifyRecordsOperation(recordsToSave: [record])
-        operation.savePolicy = .allKeys
-        operation.modifyRecordsCompletionBlock = { savedRecords, deletedRecordIDs, error in
+    func saveRecord(with record: CKRecord, for database: CKDatabase, using group: DispatchGroup) {
+        group.enter()
+        database.save(record) { savedRecord, error in
             if let error = error {
                 print("CloudKit Save Error: \(error.localizedDescription)")
                 ErrorMessageViewModel.shared.errorMessage = error.localizedDescription
-                if database.databaseScope == .public {GettingRecord.shared.shareFail = true}
-                if database.databaseScope == .public {DispatchQueue.main.asyncAfter(deadline: .now() + 20) {GettingRecord.shared.shareFail = false}}
+                if database.databaseScope == .public {
+                    GettingRecord.shared.shareFail = true
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 20) {
+                        GettingRecord.shared.shareFail = false
+                    }
+                }
             } else {
                 print("Record Saved Successfully to \(database.databaseScope == .public ? "Public" : "Private") Database!")
                 ErrorMessageViewModel.shared.errorMessage = "Save Successful"
-                if database.databaseScope == .public {GettingRecord.shared.shareSuccess = true}
-                if database.databaseScope == .public {DispatchQueue.main.asyncAfter(deadline: .now() + 10) {GettingRecord.shared.shareSuccess = false}}
+                if database.databaseScope == .public {
+                    GettingRecord.shared.shareSuccess = true
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 10) {
+                        GettingRecord.shared.shareSuccess = false
+                    }
+                }
             }
             group.leave()
         }
-        group.enter()
-        return operation
-    }
-    
-    
-    
-    
-    
-    
-    
- //   publicDatabase.save(cardRecord) { (record, error) in
-  //      if let error = error {
-  //          print("CloudKit Save Error: \(error.localizedDescription)")
-  //      } else {
-  //          print("Attempting to Fetch Record After Save...")
-  //          let fetchPredicate = NSPredicate(format: "recordID == %@", record!.recordID)
-  //          let fetchQuery = CKQuery(recordType: "CD_CoreCard", predicate: fetchPredicate)
-  //          publicDatabase.perform(fetchQuery, inZoneWith: nil) { results, error in
-  //              if let error = error {
-   //                 print("CloudKit Fetch After Save Error: \(error.localizedDescription)")
-   //             } else {
-   //                 if let _ = results?.first {
-   //                     print("Record Fetch Successful After Save! Save Operation Confirmed.")
-    //                    GettingRecord.shared.shareSuccess = true
-   //                     DispatchQueue.main.asyncAfter(deadline: .now() + 10) {GettingRecord.shared.shareSuccess = false}
-   //                 } else {
-   //                     print("No matching record found after save. Save Operation Not Confirmed.")
-   //                     GettingRecord.shared.shareFail = true
-   //                     DispatchQueue.main.asyncAfter(deadline: .now() + 10) {GettingRecord.shared.shareFail = false}
-    //                }
-   //             }
-   //         }
-   //     }
-   // }
-    
-   // privateDatabase.save(cardRecord) { (record, error) in
-   //     if let error = error {print("CloudKit Private Save Error: \(error.localizedDescription)")}
-   //     else {print("Record Saved Successfully to Private Database!") }
-   // }
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    func convertCoreCardToCodable(coreCard: CoreCard) -> CodableCoreCard {
-        return CodableCoreCard(
-            id: coreCard.uniqueName,  // Assuming the uniqueName is being used as an id
-            cardName: coreCard.cardName,
-            occassion: coreCard.occassion,
-            recipient: coreCard.recipient,
-            sender: coreCard.sender,
-            an1: coreCard.an1,
-            an2: coreCard.an2,
-            an2URL: coreCard.an2URL,
-            an3: coreCard.an3,
-            an4: coreCard.an4,
-            collage: coreCard.collage,
-            coverImage: coreCard.coverImage,
-            date: coreCard.date,
-            font: coreCard.font,
-            message: coreCard.message,
-            uniqueName: coreCard.uniqueName,
-            songID: coreCard.songID,
-            spotID: coreCard.spotID,
-            spotName: coreCard.spotName,
-            spotArtistName: coreCard.spotArtistName,
-            songName: coreCard.songName,
-            songArtistName: coreCard.songArtistName,
-            songArtImageData: coreCard.songArtImageData,
-            songPreviewURL: coreCard.songPreviewURL,
-            songDuration: coreCard.songDuration,
-            inclMusic: coreCard.inclMusic,
-            spotImageData: coreCard.spotImageData,
-            spotSongDuration: coreCard.spotSongDuration,
-            spotPreviewURL: coreCard.spotPreviewURL,
-            creator: coreCard.creator,
-            songAddedUsing: coreCard.songAddedUsing,
-            cardType: coreCard.cardType,
-            recordID: coreCard.recordID,
-            songAlbumName: coreCard.songAlbumName,
-            appleAlbumArtist: coreCard.appleAlbumArtist,
-            spotAlbumArtist: coreCard.spotAlbumArtist,
-            salooUserID: coreCard.salooUserID,
-            sharedRecordID: coreCard.sharedRecordID,
-            appleSongURL: coreCard.appleSongURL,
-            spotSongURL: coreCard.spotSongURL
-        )
     }
     func loadCoreCards() -> [CoreCard] {
         let request = CoreCard.createFetchRequest()

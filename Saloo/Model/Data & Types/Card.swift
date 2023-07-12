@@ -62,6 +62,8 @@ extension CoreCard {
     @NSManaged public var appleSongURL: String?
     @NSManaged public var spotSongURL: String?
     @NSManaged public var isHidden: Int64
+    @NSManaged public var unsplashImageURL: String?
+    @NSManaged public var coverSizeDetails: String?
 
     
 }
@@ -107,7 +109,8 @@ struct Card: Identifiable, Hashable {
     let appleSongURL: String?
     let spotSongURL: String?
     let isHidden: Int64?
-
+    let unsplashImageURL: String?
+    let coverSizeDetails: String?
 }
 
 extension Card {
@@ -151,6 +154,8 @@ extension Card {
               let appleSongURL = record["appleSongURL"] as? String,
               let spotSongURL = record["spotSongURL"] as? String,
               let isHidden = record["isHidden"] as? Int64,
+              let unsplashImageURL = record["unsplashImageURL"] as? String,
+              let coverSizeDetails = record["coverSizeDetails"] as? String,
               let cardType = record["cardType"] as? String else {
             return nil
         }
@@ -195,5 +200,7 @@ extension Card {
         self.appleSongURL = appleSongURL
         self.spotSongURL = spotSongURL
         self.isHidden = isHidden
+        self.unsplashImageURL = unsplashImageURL
+        self.coverSizeDetails = coverSizeDetails
     }
 }

@@ -18,19 +18,7 @@ struct ConfirmFrontCoverView: View {
     @State private var hasShownLaunchView: Bool = true
     @EnvironmentObject var cardProgress: CardProgress
 
-    func getCoverSize() -> (CGSize, Double) {
-        var size = CGSize()
-        var widthToHeightRatio = Double()
-        if let image = UIImage(data: chosenObject.coverImage) {
-            let imageSize = image.size
-            size = imageSize
-        }
-        print("Image Size....")
-        widthToHeightRatio = size.width/size.height
-        print(size)
-        print(widthToHeightRatio)
-        return (size, widthToHeightRatio)
-    }
+
 
     var body: some View {
         NavigationView {
@@ -66,7 +54,6 @@ struct ConfirmFrontCoverView: View {
                     LoadingOverlay(hasShownLaunchView: $hasShownLaunchView)
                 }
             }
-            .onAppear{getCoverSize()}
         .modifier(AlertViewMod(showAlert: alertVars.activateAlertBinding, activeAlert: alertVars.alertType))
         .navigationBarItems(leading:
             Button {
@@ -79,4 +66,6 @@ struct ConfirmFrontCoverView: View {
             }.disabled(gettingRecord.isShowingActivityIndicator))
         }
     }
+    
+    
 }

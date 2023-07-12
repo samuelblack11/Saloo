@@ -265,7 +265,9 @@ class ChosenSong: ObservableObject {
 
 class ChosenCoverImageObject: ObservableObject {
     static let shared = ChosenCoverImageObject()
+    @Published var coverSizeDetails = String()
     @Published var id = UUID()
+    @Published var imageID = UUID()
     @Published var coverImage = Data()
     @Published var smallImageURLString = String()
     @Published var coverImagePhotographer = String()
@@ -493,6 +495,30 @@ class CardPrep: ObservableObject {
     static let shared = CardPrep()
     var chosenSong =  ChosenSong()
     var cardType = String()
+}
+
+
+class ImageLoader: ObservableObject {
+    static let shared = ImageLoader()
+    @Published var image: UIImage?
+    
+    func loadImage(from urlString: String, completion: @escaping (Data?) -> Void) {
+        guard let url = URL(string: urlString) else {
+            print("Invalid URL string.")
+            return
+        }
+
+        let task = URLSession.shared.dataTask(with: url) { (data, _, error) in
+            if let error = error {
+                print("Data Task Error: \(error)")
+                completion(nil)
+                return
+            }
+            
+            completion(data)
+        }
+        task.resume()
+    }
 }
 
 

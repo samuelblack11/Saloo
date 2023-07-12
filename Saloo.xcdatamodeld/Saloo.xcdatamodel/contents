@@ -13,6 +13,7 @@
         <attribute name="cardType" optional="YES" attributeType="String"/>
         <attribute name="collage" optional="YES" attributeType="Binary"/>
         <attribute name="coverImage" optional="YES" attributeType="Binary"/>
+        <attribute name="coverSizeDetails" optional="YES" attributeType="String"/>
         <attribute name="creator" optional="YES" attributeType="String"/>
         <attribute name="date" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="font" optional="YES" attributeType="String"/>
@@ -41,5 +42,6 @@
         <attribute name="spotSongDuration" optional="YES" attributeType="String"/>
         <attribute name="spotSongURL" optional="YES" attributeType="String"/>
         <attribute name="uniqueName" optional="YES" attributeType="String"/>
+        <attribute name="unsplashImageURL" optional="YES" attributeType="String"/>
     </entity>
 </model>

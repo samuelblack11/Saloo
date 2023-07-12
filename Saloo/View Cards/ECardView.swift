@@ -8,7 +8,6 @@ struct eCardView: View {
     
     @State var eCardText: String
     @State var font: String
-    @State var coverImage: Data
     @State var collageImage: Data
     @State var text1: String
     @State var text2: String
@@ -34,6 +33,7 @@ struct eCardView: View {
     let defaults = UserDefaults.standard
     @EnvironmentObject var appDelegate: AppDelegate
     @State var songAddedUsing: String?
+    @EnvironmentObject var imageLoader: ImageLoader
 
     //@State var player: AVPlayer?
     @State var selectedPreviewURL: String?
@@ -55,7 +55,10 @@ struct eCardView: View {
     @ObservedObject var alertVars = AlertVars.shared
     @State var appleSongURL: String?
     @State var spotSongURL: String?
+    @State var unsplashImageURL: String?
+    @State var coverSizeDetails: String
     @EnvironmentObject var userSession: UserSession
+    
     @State private var hasShownLaunchView: Bool = true
     let screenPadding: CGFloat = 5
     var body: some View {
@@ -84,7 +87,7 @@ struct eCardView: View {
     
     var MusicNoGiftView: some View {
         return VStack {
-            if getCoverSize().1 < 1.3 {
+            if getRatio(from: coverSizeDetails) < 1.3 {
                 HStack {
                     VStack {CoverViewTall(); Spacer(); CollageView()}
                     VStack {
@@ -113,7 +116,7 @@ struct eCardView: View {
     var NoMusicNoGiftView: some View {
         return GeometryReader { geometry in
             VStack(alignment: .center) {
-                if getCoverSize().1 < 1.3 {
+                if getRatio(from: coverSizeDetails) < 1.3 {
                     let height = geometry.size.height / 2.2
                     HStack{CoverViewTall();CollageView()}.frame(height: height)
                     NoteViewSquare()
@@ -151,50 +154,59 @@ struct eCardView: View {
     }
     
     
-    
     func CoverView() -> some View {
-        return
         VStack {
-            Image(uiImage: UIImage(data: coverImage)!)
-            //.interpolation(.none).resizable().scaledToFit()
+            AsyncImage(url: URL(string: unsplashImageURL!)) { image in
+                image.resizable()
+            } placeholder: {
+                ProgressView()
+            }
             annotationView()
         }
     }
-    
+
     func CoverViewWide1() -> some View {
-        return
         VStack {
-            Image(uiImage: UIImage(data: coverImage)!)
-                .interpolation(.none).resizable()
-                .frame(width: UIScreen.main.bounds.width/1.05, height: UIScreen.main.bounds.height / 4.4, alignment: .center)
-                .scaledToFill()
+            AsyncImage(url: URL(string: unsplashImageURL!)) { image in
+                image.resizable()
+                    .interpolation(.none)
+                    .scaledToFill()
+            } placeholder: {
+                ProgressView()
+            }
+            .frame(width: UIScreen.main.bounds.width/1.05, height: UIScreen.main.bounds.height / 4.4)
             annotationView()
         }
     }
 
     func CoverViewWide2() -> some View {
-        return
         VStack {
-            Image(uiImage: UIImage(data: coverImage)!)
-                .interpolation(.none).resizable()
-                .frame(width: UIScreen.main.bounds.width/1.05, height: UIScreen.main.bounds.height / 3.3, alignment: .center)
-                .scaledToFill()
+            AsyncImage(url: URL(string: unsplashImageURL!)) { image in
+                image.resizable()
+                    .interpolation(.none)
+                    .scaledToFill()
+            } placeholder: {
+                ProgressView()
+            }
+            .frame(width: UIScreen.main.bounds.width/1.05, height: UIScreen.main.bounds.height / 3.3)
             annotationView()
         }
     }
-    
-    
+
+
     func CoverViewTall() -> some View {
-        return
         VStack {
-            Image(uiImage: UIImage(data: coverImage)!)
-                .resizable()
-                .aspectRatio(contentMode: .fit)
-                .frame(maxWidth: UIScreen.main.bounds.height / 2.2, maxHeight: UIScreen.main.bounds.height / 2.3)
+            AsyncImage(url: URL(string: unsplashImageURL!)) { image in
+                image.resizable()
+            } placeholder: {
+                ProgressView()
+            }
+            .aspectRatio(contentMode: .fit)
+            .frame(maxWidth: UIScreen.main.bounds.height / 2.2, maxHeight: UIScreen.main.bounds.height / 2.3)
             annotationView()
         }
     }
-    
+
     func NoteView() -> some View {
         return
         Text(eCardText)
@@ -244,60 +256,14 @@ struct eCardView: View {
             }
     }
     
-    
-    func getCoverSize() -> (CGSize, Double) {
-        var size = CGSize()
-        var widthToHeightRatio = Double()
-        if let image = UIImage(data: coverImage) {
-            let imageSize = image.size
-            size = imageSize
+    func getRatio(from imageDataString: String) -> Double {
+        let components = imageDataString.split(separator: ",")
+        guard components.count >= 3, let ratio = Double(components[2]) else {
+            return 0.0 // return default value or handle error
         }
-        print("Image Size....")
-        widthToHeightRatio = size.width/size.height
-        print(size)
-        print(widthToHeightRatio)
-        return (size, widthToHeightRatio)
+        return ratio
     }
-    
-    func scaledFrame(for size: CGSize, scalingFactor: CGFloat) -> CGRect {
-        let maxWidth = size.width * scalingFactor
-        let maxHeight = size.height * scalingFactor
-        let aspectRatio = size.width / size.height
-
-        var width = maxWidth
-        var height = maxHeight
-
-        if aspectRatio > 1 {
-            // landscape image
-            height = maxWidth / aspectRatio
-        } else {
-            // portrait image
-            width = maxHeight * aspectRatio
-        }
-
-        let x = (maxWidth - width) / 2
-        let y = (maxHeight - height) / 2
-
-        return CGRect(x: x, y: y, width: width, height: height)
-    }
-    
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 extension eCardView {
     

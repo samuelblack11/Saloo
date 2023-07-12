@@ -169,19 +169,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
             }
         }
     }
-
-    
-    private func displayCard(windowScene: UIWindowScene, record: CKRecord, uniqueName: String) {
-        print("called* displayCard")
-        guard self.gotRecord && self.connectToScene else { return }
-        if self.appDelegate.musicSub.type == .Neither {self.updateMusicSubType()}
-        //AppState.shared.currentScreen = .startMenu
-        CardsForDisplay.shared.addCoreCard(card: self.coreCard, box: self.whichBoxForCKAccept!, record: record)
-        GettingRecord.shared.isLoadingAlert = false
-        AppState.shared.cardFromShare = self.coreCard
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {self.saveToPrivateDBIfNeeded(record: record, uniqueName: uniqueName)}
-        self.gotRecord = false
-    }
     
     func saveToPrivateDBIfNeeded(record: CKRecord, uniqueName: String) {
         let predicate = NSPredicate(format: "CD_uniqueName == %@", uniqueName)
@@ -199,7 +186,17 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
         }
     }
     
-    
+    private func displayCard(windowScene: UIWindowScene, record: CKRecord, uniqueName: String) {
+        print("called* displayCard")
+        guard self.gotRecord && self.connectToScene else { return }
+        if self.appDelegate.musicSub.type == .Neither {self.updateMusicSubType()}
+        //AppState.shared.currentScreen = .startMenu
+        CardsForDisplay.shared.addCoreCard(card: self.coreCard, box: self.whichBoxForCKAccept!, record: record)
+        GettingRecord.shared.isLoadingAlert = false
+        AppState.shared.cardFromShare = self.coreCard
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {self.saveToPrivateDBIfNeeded(record: record, uniqueName: uniqueName)}
+        self.gotRecord = false
+    }
     
     func parseRecord(record: CKRecord?) {
         print("Parsing Record....")
@@ -219,7 +216,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
             self.coreCard.an3 = record?.object(forKey: "CD_an3") as! String
             self.coreCard.an4 = record?.object(forKey: "CD_an4") as! String
             self.coreCard.collage = record?.object(forKey: "CD_collage") as? Data
-            self.coreCard.coverImage = record?.object(forKey: "CD_coverImage") as? Data
+            //self.coreCard.coverImage = record?.object(forKey: "CD_coverImage") as? Data
             self.coreCard.date = record?.object(forKey: "CD_date") as! Date
             self.coreCard.font = record?.object(forKey: "CD_font") as! String
             self.coreCard.message = record?.object(forKey: "CD_message") as! String
@@ -247,16 +244,21 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
             self.coreCard.appleSongURL = record?.object(forKey: "CD_appleSongURL") as! String
             self.coreCard.spotSongURL = record?.object(forKey: "CD_spotSongURL") as! String
             self.coreCard.uniqueName = record?.object(forKey: "CD_uniqueName") as! String
-            self.appDelegate.chosenGridCard = self.coreCard
-            self.determineWhichBox {}
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) {
-                self.gotRecord = true
-                self.checkIfRecordAddedToStore = true
-                print("getRecord complete...")
-                // Try to get the window scene from the shared application instance.
-                if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene {
-                    print("Trying to handle Display after parseRecord...")
-                    self.displayCard(windowScene: windowScene, record: record!, uniqueName: self.coreCard.uniqueName)
+            self.coreCard.coverSizeDetails = record?.object(forKey: "CD_coverSizeDetails") as! String
+            self.coreCard.unsplashImageURL = record?.object(forKey: "CD_unsplashImageURL") as! String
+            ImageLoader.shared.loadImage(from: self.coreCard.unsplashImageURL!) { data in
+                DispatchQueue.main.async {
+                    self.coreCard.coverImage = data
+                    self.determineWhichBox {}
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) {
+                        self.gotRecord = true
+                        self.checkIfRecordAddedToStore = true
+                        print("getRecord complete...")
+                        if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene {
+                            print("Trying to handle Display after parseRecord...")
+                            self.displayCard(windowScene: windowScene, record: record!, uniqueName: self.coreCard.uniqueName)
+                        }
+                    }
                 }
             }
         }

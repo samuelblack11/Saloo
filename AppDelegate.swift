@@ -20,7 +20,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, ObservableObject {
     @Published var deferToPreview = false
     @State var gotRecord = false
     @Published var showGrid = false
-    @Published var chosenGridCard: CoreCard? = nil
+    //@Published var chosenGridCard: CoreCard? = nil
     @Published var showProgViewOnAcceptShare = false
     @Published var chosenGridCardType: String?
     var songFilterForSearchRegex = ["\\(live\\)", "\\[live\\]", "live at", "live in", "live from", "\\(mixed\\)", "\\[mixed\\]"]

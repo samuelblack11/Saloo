@@ -22,7 +22,6 @@ struct GridofCards: View {
     @State var showCloudShareController = false
     @State var activeShare: CKShare?
     @State var activeContainer: CKContainer?
-    @State private var showStartMenu = false
     @State var cards = [Card]()
     @State var coreCards: [CoreCard] = []
     @State var segueToEnlarge = false
@@ -119,19 +118,13 @@ struct GridofCards: View {
             }
             .fullScreenCover(item: $cardToReport, onDismiss: didDismiss) {cardToReport in
                 ReportOffensiveContentView(card: $cardToReport, whichBoxVal: $whichBoxVal, coreCards: $coreCards)}
-            //.fullScreenCover(item: $chosenCardParent.chosenCard, onDismiss: didDismiss) {chosenCard in
-            //    NavigationView {
-            //        eCardView(eCardText: chosenCard.message, font: chosenCard.font, coverImage: chosenCard.coverImage!, collageImage: chosenCard.collage!, text1: chosenCard.an1, text2: chosenCard.an2, text2URL: URL(string: chosenCard.an2URL)!, text3: chosenCard.an3, text4: chosenCard.an4, songID: chosenCard.songID, spotID: chosenCard.spotID, spotName: chosenCard.spotName, spotArtistName: chosenCard.spotArtistName, songName: chosenCard.songName, songArtistName: chosenCard.songArtistName, songAlbumName: chosenCard.songAlbumName, appleAlbumArtist: chosenCard.appleAlbumArtist, spotAlbumArtist: chosenCard.spotAlbumArtist, songArtImageData: chosenCard.songArtImageData, songDuration: Double(chosenCard.songDuration!)!, songPreviewURL: chosenCard.songPreviewURL, inclMusic: chosenCard.inclMusic, spotImageData: chosenCard.spotImageData, spotSongDuration: Double(chosenCard.spotSongDuration!)!, spotPreviewURL: chosenCard.spotPreviewURL, songAddedUsing: chosenCard.songAddedUsing, cardType: chosenCard.cardType!, coreCard: chosenCard, chosenCard: $chosenCardParent.chosenCard, appleSongURL: chosenCard.appleSongURL, spotSongURL: chosenCard.spotSongURL)
-            //        }
-            //}
             .navigationTitle("Your Cards")
-            .navigationBarItems(leading:Button {print("Back Button pressed to Start menu..."); showStartMenu.toggle()} label: {Image(systemName: "chevron.left").foregroundColor(.blue); Text("Back")}.disabled(gettingRecord.isShowingActivityIndicator))
+            .navigationBarItems(leading:Button {print("Back Button pressed to Start menu..."); appState.currentScreen = .startMenu} label: {Image(systemName: "chevron.left").foregroundColor(.blue); Text("Back")}.disabled(gettingRecord.isShowingActivityIndicator))
         }
         .modifier(AlertViewMod(showAlert: alertVars.activateAlertBinding, activeAlert: alertVars.alertType, alertDismissAction: {
             deleteCoreCard(coreCard: cardToDelete!)}))
         // "Search by \(sortByValue)"
         .searchable(text: $searchText, prompt: "Search by Card Name")
-        .fullScreenCover(isPresented: $showStartMenu) {StartMenu()}
         .sheet(isPresented: $isShowingMessageComposer) {MessageComposerView(linkURL: URL(string: linkURL.linkURL)!, fromFinalize: false)}
     }
     
@@ -140,8 +133,8 @@ struct GridofCards: View {
     private func cardView(for gridCard: CoreCard, shareable: Bool = true) -> some View {
         VStack(spacing: 0) {
             VStack(spacing:1) {
-                Image(uiImage: UIImage(data: gridCard.coverImage!)!)
-                    .resizable()
+                AsyncImage(url: URL(string: gridCard.unsplashImageURL!)) { image in image.resizable()}
+                placeholder: {ProgressView()}
                     .frame(width: (UIScreen.screenWidth/4), height: (UIScreen.screenHeight/7))
                 Text(gridCard.message)
                     .font(Font.custom(gridCard.font, size: 500)).minimumScaleFactor(0.01)
@@ -154,7 +147,6 @@ struct GridofCards: View {
                 }
             }
             .onTapGesture {print("gridCard Card Name...\(gridCard.cardName)")}
-                //.sheet(isPresented: $showDeliveryScheduler) {ScheduleDelivery(card: card)}
                 Divider().padding(.bottom, 5)
                 HStack(spacing: 3) {
                     Text(determineDisplayName(coreCard: gridCard)).font(.system(size: 8)).minimumScaleFactor(0.1)
@@ -167,13 +159,7 @@ struct GridofCards: View {
             }
             .padding().overlay(RoundedRectangle(cornerRadius: 6).stroke(Color("SalooTheme"), lineWidth: 2))
                 .font(.headline).padding(.horizontal).frame(maxHeight: 600)
-                
-        
         }
-    
-    
-    
-    
 }
 
 // MARK: Returns CKShare participant permission, methods and properties to share
@@ -199,7 +185,14 @@ extension GridofCards {
             } label: {Text("Share Card"); Image(systemName: "person.badge.plus")}
         }
         Button {
-            if networkMonitor.isConnected {appState.cardFromShare = card; chosenGridCardType = card.cardType;segueToEnlarge = true; displayCard = true}
+            if networkMonitor.isConnected {
+                ImageLoader.shared.loadImage(from: card.unsplashImageURL!) { data in
+                    DispatchQueue.main.async {
+                        appState.cardFromShare?.coverImage = data
+                        appState.cardFromShare = card; chosenGridCardType = card.cardType;segueToEnlarge = true; displayCard = true
+                    }
+                }
+            }
             else {alertVars.alertType = .failedConnection; alertVars.activateAlert = true}
         } label: {Text("View Card"); Image(systemName: "plus.magnifyingglass")}
         Button(action: {

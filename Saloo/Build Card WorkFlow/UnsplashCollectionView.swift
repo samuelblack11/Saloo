@@ -105,9 +105,25 @@ extension UnsplashCollectionView {
         print(imageObjects.count)
         return disableButton!
     }
+    
+    func getCoverSize() -> (CGSize, Double) {
+        var size = CGSize()
+        var widthToHeightRatio = Double()
+        if let image = UIImage(data: chosenObject.coverImage) {
+            let imageSize = image.size
+            size = imageSize
+        }
+        print("Image Size....")
+        widthToHeightRatio = size.width/size.height
+        print(size)
+        print(widthToHeightRatio)
+        return (size, widthToHeightRatio)
+    }
+    
 
     func handleTap(index: Int) async throws {
         print("handle tap has been called....")
+        print(imageObjectModel.imageObjects[index])
             do {
                 let imageObjects = imageObjectModel.imageObjects
                 let (data1, _) = try await URLSession.shared.data(from: imageObjects[index].smallImageURL)
@@ -117,6 +133,9 @@ extension UnsplashCollectionView {
                 chosenObject.coverImageUserName = imageObjects[index].coverImageUserName
                 chosenObject.downloadLocation = imageObjects[index].downloadLocation
                 chosenObject.index = index
+                let (size, ratio) = getCoverSize()
+                chosenObject.coverSizeDetails = "\(size.width),\(size.height),\(ratio)"
+                //chosenObject.imageID = imageObjects[index].
                 print("Tap Handled....")
                 appState.currentScreen = .buildCard([.confirmFrontCoverView])
             }
