@@ -37,8 +37,8 @@ struct GridofCards: View {
     @State private var nameToDisplay: String?
     @State private var userID = UserDefaults.standard.object(forKey: "SalooUserID") as? String
     @State private var displayCard = false
-    @State var chosenCard: CoreCard?
-    @EnvironmentObject var chosenCardParent: ChosenCoreCard
+    //@State var chosenCard: CoreCard?
+    //@EnvironmentObject var chosenCardParent: ChosenCoreCard
     @State var cardToReport: CoreCard?
     @State var cardToReportThenDelete: CoreCard?
     @State var cardToDelete: CoreCard?
@@ -50,6 +50,7 @@ struct GridofCards: View {
     @State private var showReportOffensiveContentView = false
     @EnvironmentObject var spotifyManager: SpotifyManager
     @EnvironmentObject var persistenceController: PersistenceController
+    @EnvironmentObject var appState: AppState
     @State private var hasShownLaunchView: Bool = true
 
     var cardsFilteredBySearch: [CoreCard] {
@@ -118,12 +119,11 @@ struct GridofCards: View {
             }
             .fullScreenCover(item: $cardToReport, onDismiss: didDismiss) {cardToReport in
                 ReportOffensiveContentView(card: $cardToReport, whichBoxVal: $whichBoxVal, coreCards: $coreCards)}
-            .onReceive(chosenCardParent.$chosenCard){cardFromShare in self.chosenCard = cardFromShare}
-            .fullScreenCover(item: $chosenCard, onDismiss: didDismiss) {chosenCard in
-                NavigationView {
-                    eCardView(eCardText: chosenCard.message, font: chosenCard.font, coverImage: chosenCard.coverImage!, collageImage: chosenCard.collage!, text1: chosenCard.an1, text2: chosenCard.an2, text2URL: URL(string: chosenCard.an2URL)!, text3: chosenCard.an3, text4: chosenCard.an4, songID: chosenCard.songID, spotID: chosenCard.spotID, spotName: chosenCard.spotName, spotArtistName: chosenCard.spotArtistName, songName: chosenCard.songName, songArtistName: chosenCard.songArtistName, songAlbumName: chosenCard.songAlbumName, appleAlbumArtist: chosenCard.appleAlbumArtist, spotAlbumArtist: chosenCard.spotAlbumArtist, songArtImageData: chosenCard.songArtImageData, songDuration: Double(chosenCard.songDuration!)!, songPreviewURL: chosenCard.songPreviewURL, inclMusic: chosenCard.inclMusic, spotImageData: chosenCard.spotImageData, spotSongDuration: Double(chosenCard.spotSongDuration!)!, spotPreviewURL: chosenCard.spotPreviewURL, songAddedUsing: chosenCard.songAddedUsing, cardType: chosenCard.cardType!, coreCard: chosenCard, chosenCard: $chosenCard, appleSongURL: chosenCard.appleSongURL, spotSongURL: chosenCard.spotSongURL)
-                    }
-            }
+            //.fullScreenCover(item: $chosenCardParent.chosenCard, onDismiss: didDismiss) {chosenCard in
+            //    NavigationView {
+            //        eCardView(eCardText: chosenCard.message, font: chosenCard.font, coverImage: chosenCard.coverImage!, collageImage: chosenCard.collage!, text1: chosenCard.an1, text2: chosenCard.an2, text2URL: URL(string: chosenCard.an2URL)!, text3: chosenCard.an3, text4: chosenCard.an4, songID: chosenCard.songID, spotID: chosenCard.spotID, spotName: chosenCard.spotName, spotArtistName: chosenCard.spotArtistName, songName: chosenCard.songName, songArtistName: chosenCard.songArtistName, songAlbumName: chosenCard.songAlbumName, appleAlbumArtist: chosenCard.appleAlbumArtist, spotAlbumArtist: chosenCard.spotAlbumArtist, songArtImageData: chosenCard.songArtImageData, songDuration: Double(chosenCard.songDuration!)!, songPreviewURL: chosenCard.songPreviewURL, inclMusic: chosenCard.inclMusic, spotImageData: chosenCard.spotImageData, spotSongDuration: Double(chosenCard.spotSongDuration!)!, spotPreviewURL: chosenCard.spotPreviewURL, songAddedUsing: chosenCard.songAddedUsing, cardType: chosenCard.cardType!, coreCard: chosenCard, chosenCard: $chosenCardParent.chosenCard, appleSongURL: chosenCard.appleSongURL, spotSongURL: chosenCard.spotSongURL)
+            //        }
+            //}
             .navigationTitle("Your Cards")
             .navigationBarItems(leading:Button {print("Back Button pressed to Start menu..."); showStartMenu.toggle()} label: {Image(systemName: "chevron.left").foregroundColor(.blue); Text("Back")}.disabled(gettingRecord.isShowingActivityIndicator))
         }
@@ -135,7 +135,7 @@ struct GridofCards: View {
         .sheet(isPresented: $isShowingMessageComposer) {MessageComposerView(linkURL: URL(string: linkURL.linkURL)!, fromFinalize: false)}
     }
     
-    func didDismiss() {chosenCardParent.chosenCard = nil; chosenCard = nil}
+    func didDismiss() {appState.cardFromShare = nil}
     
     private func cardView(for gridCard: CoreCard, shareable: Bool = true) -> some View {
         VStack(spacing: 0) {
@@ -199,7 +199,7 @@ extension GridofCards {
             } label: {Text("Share Card"); Image(systemName: "person.badge.plus")}
         }
         Button {
-            if networkMonitor.isConnected {chosenCard = card; chosenGridCardType = card.cardType;segueToEnlarge = true; displayCard = true}
+            if networkMonitor.isConnected {appState.cardFromShare = card; chosenGridCardType = card.cardType;segueToEnlarge = true; displayCard = true}
             else {alertVars.alertType = .failedConnection; alertVars.activateAlert = true}
         } label: {Text("View Card"); Image(systemName: "plus.magnifyingglass")}
         Button(action: {

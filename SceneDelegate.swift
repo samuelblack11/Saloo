@@ -132,7 +132,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
     
     func fetchRecord(withUniqueName uniqueName: String) {
         GettingRecord.shared.isLoadingAlert = true
-        ChosenCoreCard.shared.chosenCard = nil
+        //if ChosenCoreCard.shared.chosenCard != nil {ChosenCoreCard.shared.chosenCard = nil}
         print("called fetch")
         let predicate = NSPredicate(format: "CD_uniqueName == %@", uniqueName)
         let query = CKQuery(recordType: "CD_CoreCard", predicate: predicate)

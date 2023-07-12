@@ -307,7 +307,7 @@ struct LoadingOverlay: View {
             VStack {
                 Spacer()
                 Text("✅")
-                Text("Added to Inbox")
+                Text(ErrorMessageViewModel.shared.errorMessage)
                     .bold()
                     .font(.system(size: 24))
                     .foregroundColor(.green)

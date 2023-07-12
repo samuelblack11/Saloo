@@ -125,12 +125,17 @@ class CardsForDisplay: ObservableObject {
 
     func generateModifyRecordsOperation(with record: CKRecord, for database: CKDatabase, using group: DispatchGroup) -> CKModifyRecordsOperation {
         let operation = CKModifyRecordsOperation(recordsToSave: [record])
+        //GettingRecord.shared.addedToInbox = true
         operation.savePolicy = .allKeys
         operation.modifyRecordsCompletionBlock = { savedRecords, deletedRecordIDs, error in
             if let error = error {
                 print("CloudKit Save Error: \(error.localizedDescription)")
+                //ErrorMessageViewModel.shared.errorMessage = error.localizedDescription
+                //DispatchQueue.main.asyncAfter(deadline: .now() + 5) {GettingRecord.shared.addedToInbox = false}
             } else {
                 print("Record Saved Successfully to \(database.databaseScope == .public ? "Public" : "Private") Database!")
+                //ErrorMessageViewModel.shared.errorMessage = "Added to Inbox"
+                //DispatchQueue.main.asyncAfter(deadline: .now() + 5) {GettingRecord.shared.addedToInbox = false}
             }
             group.leave()
         }
