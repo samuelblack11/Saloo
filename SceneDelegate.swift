@@ -132,6 +132,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
     
     func fetchRecord(withUniqueName uniqueName: String) {
         GettingRecord.shared.isLoadingAlert = true
+        ChosenCoreCard.shared.chosenCard = nil
         print("called fetch")
         let predicate = NSPredicate(format: "CD_uniqueName == %@", uniqueName)
         let query = CKQuery(recordType: "CD_CoreCard", predicate: predicate)
@@ -150,7 +151,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
                         print(result)
                         self.parseRecord(record: result)
                     }}
-                else {print("No matching record found.")}
+                else {print("No matching record found."); GettingRecord.shared.isLoadingAlert = false}
             }
         }
     }
@@ -175,7 +176,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
         guard self.gotRecord && self.connectToScene else { return }
         if self.appDelegate.musicSub.type == .Neither {self.updateMusicSubType()}
         //AppState.shared.currentScreen = .startMenu
-        CardsForDisplay.shared.addCoreCard(card: self.coreCard, box: self.whichBoxForCKAccept!)
+        CardsForDisplay.shared.addCoreCard(card: self.coreCard, box: self.whichBoxForCKAccept!, record: record)
         GettingRecord.shared.isLoadingAlert = false
         AppState.shared.cardFromShare = self.coreCard
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {self.saveToPrivateDBIfNeeded(record: record, uniqueName: uniqueName)}
@@ -268,8 +269,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
     }
     func determineWhichBox(completion: @escaping () -> Void) {
         let thisUsersID = self.defaults.object(forKey: "SalooUserID") as? String
-        let controller = PersistenceController.shared
-        let ckContainer = PersistenceController.shared.cloudKitContainer
         if self.coreCard.creator == thisUsersID {
             print("Creator = recordname")
             self.whichBoxForCKAccept = .outbox

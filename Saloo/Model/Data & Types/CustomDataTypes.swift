@@ -14,7 +14,11 @@ import Security
 import MessageUI
 
 struct ChosenCollection {@State var occassion: String!; @State var collectionID: String!}
-class ChosenCoreCard: ObservableObject {@Published var chosenCard = CoreCard()}
+class ChosenCoreCard: ObservableObject {
+    static let shared = ChosenCoreCard()
+    @Published var chosenCard: CoreCard? = nil
+    
+}
 class Occassion: ObservableObject {
     static let shared = Occassion()
     @Published var occassion = String(); @Published var collectionID = String()
@@ -116,8 +120,25 @@ class CardsForDisplay: ObservableObject {
     @Published var draftboxCards: [CoreCard] = []
     @Published var userID = UserDefaults.standard.object(forKey: "SalooUserID") as? String
     @Published var isLoading = false
+    let privateDatabase = PersistenceController.shared.cloudKitContainer.privateCloudDatabase
+    let group = DispatchGroup()
+
+    func generateModifyRecordsOperation(with record: CKRecord, for database: CKDatabase, using group: DispatchGroup) -> CKModifyRecordsOperation {
+        let operation = CKModifyRecordsOperation(recordsToSave: [record])
+        operation.savePolicy = .allKeys
+        operation.modifyRecordsCompletionBlock = { savedRecords, deletedRecordIDs, error in
+            if let error = error {
+                print("CloudKit Save Error: \(error.localizedDescription)")
+            } else {
+                print("Record Saved Successfully to \(database.databaseScope == .public ? "Public" : "Private") Database!")
+            }
+            group.leave()
+        }
+        group.enter()
+        return operation
+    }
     
-    func addCoreCard(card: CoreCard, box: InOut.SendReceive) {
+    func addCoreCard(card: CoreCard, box: InOut.SendReceive, record: CKRecord?) {
         print("Adding card with uniqueName: \(card.uniqueName)")
         switch box {
         case .inbox:
@@ -125,6 +146,7 @@ class CardsForDisplay: ObservableObject {
             self.inboxCards.forEach { print($0.uniqueName) }
             if !self.inboxCards.contains(where: { $0.uniqueName == card.uniqueName }) {
                 self.inboxCards.append(card)
+                generateModifyRecordsOperation(with: record!, for: privateDatabase, using: group)
             }
         case .outbox:
             print("Current cards in outbox:")
@@ -999,6 +1021,11 @@ struct CodableCoreCard: Codable, Identifiable {
     var sharedRecordID: String?
     var appleSongURL: String?
     var spotSongURL: String?
+}
+
+class ErrorMessageViewModel: ObservableObject {
+    static let shared = ErrorMessageViewModel()
+    @Published var errorMessage: String = ""
 }
 
 

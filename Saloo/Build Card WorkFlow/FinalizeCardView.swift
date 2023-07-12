@@ -137,7 +137,7 @@ extension FinalizeCardView {
                 self.appState.pauseMusic.toggle()
                 createLink(uniqueName: savedCoreCard.uniqueName)
             }
-            cardsForDisplay.addCoreCard(card: savedCoreCard, box: .outbox)
+            cardsForDisplay.addCoreCard(card: savedCoreCard, box: .outbox, record: nil)
             noteField.recipient.value = ""
             noteField.sender.value = ""
             noteField.cardName.value = ""

@@ -96,23 +96,44 @@ extension PersistenceController {
             coreCard.spotSongURL = spotSongURL
             coreCard.creator = UserDefaults.standard.object(forKey: "SalooUserID") as? String
             let publicDatabase = PersistenceController.shared.cloudKitContainer.publicCloudDatabase
-            publicDatabase.save(cardRecord) { (record, error) in
-                if let error = error {print("CloudKit Save Error: \(error.localizedDescription)")}
-                else {print("Record Saved Successfully to Public Database!") }
-            }
-            
             let privateDatabase = PersistenceController.shared.cloudKitContainer.privateCloudDatabase
-            privateDatabase.save(cardRecord) { (record, error) in
-                if let error = error {print("CloudKit Private Save Error: \(error.localizedDescription)")}
-                else {print("Record Saved Successfully to Private Database!") }
+            let group = DispatchGroup()
+            let publicDatabaseOperation = generateModifyRecordsOperation(with: cardRecord, for: publicDatabase, using: group)
+            publicDatabase.add(publicDatabaseOperation)
+            let privateDatabaseOperation = generateModifyRecordsOperation(with: cardRecord, for: privateDatabase, using: group)
+            privateDatabase.add(privateDatabaseOperation)
+            group.notify(queue: .main) {
+                print("Context saved after both CloudKit operations completed")
+                context.save(with: .addCoreCard)
+                createdCoreCard = coreCard
+                completion(createdCoreCard)
+                print("Save Successful")
+                print(coreCard.collage)
             }
-            
-            context.save(with: .addCoreCard)
-            createdCoreCard = coreCard
-            completion(createdCoreCard)
-            print("Save Successful")
-            print(coreCard.collage)
         }
+    }
+    
+    
+    
+    func generateModifyRecordsOperation(with record: CKRecord, for database: CKDatabase, using group: DispatchGroup) -> CKModifyRecordsOperation {
+        let operation = CKModifyRecordsOperation(recordsToSave: [record])
+        operation.savePolicy = .allKeys
+        operation.modifyRecordsCompletionBlock = { savedRecords, deletedRecordIDs, error in
+            if let error = error {
+                print("CloudKit Save Error: \(error.localizedDescription)")
+                ErrorMessageViewModel.shared.errorMessage = error.localizedDescription
+                if database.databaseScope == .public {GettingRecord.shared.shareFail = true}
+                if database.databaseScope == .public {DispatchQueue.main.asyncAfter(deadline: .now() + 20) {GettingRecord.shared.shareFail = false}}
+            } else {
+                print("Record Saved Successfully to \(database.databaseScope == .public ? "Public" : "Private") Database!")
+                ErrorMessageViewModel.shared.errorMessage = "Save Successful"
+                if database.databaseScope == .public {GettingRecord.shared.shareSuccess = true}
+                if database.databaseScope == .public {DispatchQueue.main.asyncAfter(deadline: .now() + 10) {GettingRecord.shared.shareSuccess = false}}
+            }
+            group.leave()
+        }
+        group.enter()
+        return operation
     }
     
     
@@ -121,10 +142,35 @@ extension PersistenceController {
     
     
     
+ //   publicDatabase.save(cardRecord) { (record, error) in
+  //      if let error = error {
+  //          print("CloudKit Save Error: \(error.localizedDescription)")
+  //      } else {
+  //          print("Attempting to Fetch Record After Save...")
+  //          let fetchPredicate = NSPredicate(format: "recordID == %@", record!.recordID)
+  //          let fetchQuery = CKQuery(recordType: "CD_CoreCard", predicate: fetchPredicate)
+  //          publicDatabase.perform(fetchQuery, inZoneWith: nil) { results, error in
+  //              if let error = error {
+   //                 print("CloudKit Fetch After Save Error: \(error.localizedDescription)")
+   //             } else {
+   //                 if let _ = results?.first {
+   //                     print("Record Fetch Successful After Save! Save Operation Confirmed.")
+    //                    GettingRecord.shared.shareSuccess = true
+   //                     DispatchQueue.main.asyncAfter(deadline: .now() + 10) {GettingRecord.shared.shareSuccess = false}
+   //                 } else {
+   //                     print("No matching record found after save. Save Operation Not Confirmed.")
+   //                     GettingRecord.shared.shareFail = true
+   //                     DispatchQueue.main.asyncAfter(deadline: .now() + 10) {GettingRecord.shared.shareFail = false}
+    //                }
+   //             }
+   //         }
+   //     }
+   // }
     
-    
-    
-    
+   // privateDatabase.save(cardRecord) { (record, error) in
+   //     if let error = error {print("CloudKit Private Save Error: \(error.localizedDescription)")}
+   //     else {print("Record Saved Successfully to Private Database!") }
+   // }
     
     
     

@@ -58,6 +58,7 @@ struct Saloo_App: App {
                 .environmentObject(APIManager.shared)
                 .environmentObject(PersistenceController.shared)
                 .environmentObject(LinkURL.shared)
+                .environmentObject(ChosenCoreCard.shared)
                 .onChange(of: scenePhase) { newPhase in
                     if newPhase == .active {
                         if UserSession.shared.isSignedIn{
@@ -271,6 +272,12 @@ class GettingRecord: ObservableObject {
     @Published var didDismissRecordAlert: Bool = false
     @Published var isShowingActivityIndicator: Bool = false
     @Published var willTryAgainLater: Bool = false
+    @Published var shareSuccess: Bool = false
+    @Published var shareFail: Bool = false
+    @Published var addedToInbox: Bool = false
+
+    
+    
     private init() {} // Ensures no other instances can be created
 }
 
@@ -296,6 +303,39 @@ struct LoadingOverlay: View {
     let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
     @State private var backgroundTime = Date()
     var body: some View {
+        if gettingRecord.addedToInbox == true {
+            VStack {
+                Spacer()
+                Text("✅")
+                Text("Added to Inbox")
+                    .bold()
+                    .font(.system(size: 24))
+                    .foregroundColor(.green)
+                Spacer().frame(height: UIScreen.screenHeight/5)
+            }
+        }
+        if gettingRecord.shareSuccess == true {
+            VStack {
+                Spacer()
+                Text("✅")
+                Text(ErrorMessageViewModel.shared.errorMessage)
+                    .bold()
+                    .font(.system(size: 24))
+                    .foregroundColor(.green)
+                Spacer().frame(height: UIScreen.screenHeight/5)
+            }
+        }
+        if gettingRecord.shareFail == true {
+            VStack {
+                Spacer()
+                Text("❌")
+                Text(ErrorMessageViewModel.shared.errorMessage)
+                    .bold()
+                    .font(.system(size: 24))
+                    .foregroundColor(.red)
+                Spacer().frame(height: UIScreen.screenHeight/5)
+            }
+        }
         if gettingRecord.isLoadingAlert == true && hasShownLaunchView {
             ZStack {
                 ProgressView() // This is the built-in iOS activity indicator
