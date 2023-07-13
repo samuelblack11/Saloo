@@ -200,12 +200,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
     
     func parseRecord(record: CKRecord?) {
         print("Parsing Record....")
-        print(record)
-        print("--------")
         DispatchQueue.main.async() {
-            
-            print("^^^^")
-            print(record?.object(forKey: "CD_collage") as? Data)
             self.getCurrentUserID()
             self.coreCard.occassion = record?.object(forKey: "CD_occassion") as! String
             self.coreCard.recipient = record?.object(forKey: "CD_recipient") as! String
@@ -215,7 +210,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
             self.coreCard.an2URL = record?.object(forKey: "CD_an2URL") as! String
             self.coreCard.an3 = record?.object(forKey: "CD_an3") as! String
             self.coreCard.an4 = record?.object(forKey: "CD_an4") as! String
-            self.coreCard.collage = record?.object(forKey: "CD_collage") as? Data
             //self.coreCard.coverImage = record?.object(forKey: "CD_coverImage") as? Data
             self.coreCard.date = record?.object(forKey: "CD_date") as! Date
             self.coreCard.font = record?.object(forKey: "CD_font") as! String
@@ -246,18 +240,52 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
             self.coreCard.uniqueName = record?.object(forKey: "CD_uniqueName") as! String
             self.coreCard.coverSizeDetails = record?.object(forKey: "CD_coverSizeDetails") as! String
             self.coreCard.unsplashImageURL = record?.object(forKey: "CD_unsplashImageURL") as! String
+            //self.coreCard.collage = record?.object(forKey: "CD_collage") as? Data
+            print("999999")
+            print(self.coreCard.songArtImageData)
+            let dispatchGroup = DispatchGroup()
+            dispatchGroup.enter()
+            if let asset = record?["CD_collageAsset"] as? CKAsset {
+                DispatchQueue.global(qos: .userInitiated).async {
+                    do {
+                        let collageData = try Data(contentsOf: asset.fileURL!)
+                        DispatchQueue.main.async {
+                            self.coreCard.collage = collageData
+                            // Leave the group after the data is loaded
+                            dispatchGroup.leave()
+                        }
+                    }
+                    catch {
+                        print("Failed to read data from CKAsset: \(error)")
+                        // Be sure to leave the group even if an error occurs,
+                        // otherwise your app could hang indefinitely
+                        dispatchGroup.leave()
+                    }
+                }
+            }
+
+            // Also enter the group before loading the image
+            dispatchGroup.enter()
+
             ImageLoader.shared.loadImage(from: self.coreCard.unsplashImageURL!) { data in
                 DispatchQueue.main.async {
                     self.coreCard.coverImage = data
                     self.determineWhichBox {}
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) {
-                        self.gotRecord = true
-                        self.checkIfRecordAddedToStore = true
-                        print("getRecord complete...")
-                        if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene {
-                            print("Trying to handle Display after parseRecord...")
-                            self.displayCard(windowScene: windowScene, record: record!, uniqueName: self.coreCard.uniqueName)
-                        }
+                    // Leave the group after the image is loaded
+                    dispatchGroup.leave()
+                }
+            }
+
+            // Use the notify method to schedule the displayCard method
+            // to run after the data loading tasks are complete
+            dispatchGroup.notify(queue: .main) {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) {
+                    self.gotRecord = true
+                    self.checkIfRecordAddedToStore = true
+                    print("getRecord complete...")
+                    if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene {
+                        print("Trying to handle Display after parseRecord...")
+                        self.displayCard(windowScene: windowScene, record: record!, uniqueName: self.coreCard.uniqueName)
                     }
                 }
             }
@@ -281,11 +309,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
             self.whichBoxForCKAccept = .inbox
             completion()
         }
-
-        
-        
-        
-          
       }
 }
 

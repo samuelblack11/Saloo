@@ -91,8 +91,10 @@ struct AMPlayerView: View {
         
         
         
-            .onAppear{print("AM PLAYER APPEARED...."); if songArtImageData == nil{
-                if networkMonitor.isConnected{getAMUserTokenAndStoreFront{}}
+            .onAppear{print("AM PLAYER APPEARED...."); if let songArtImageData = songArtImageData, songArtImageData.isEmpty {
+                if networkMonitor.isConnected{
+                    print("calling get storefront and token")
+                    getAMUserTokenAndStoreFront{}}
                 else{activeAlert = .noConnection}
             }
                 
@@ -109,7 +111,10 @@ struct AMPlayerView: View {
     
     var AMPlayerView: some View {
         VStack(alignment: .center) {
-            if songArtImageData != nil {Image(uiImage: UIImage(data: songArtImageData!)!)}
+            //if songArtImageData != nil {Image(uiImage: UIImage(data: songArtImageData!)!)}
+            if let songArtImageData = songArtImageData, let uiImage = UIImage(data: songArtImageData) {
+                        Image(uiImage: uiImage)
+                    }
             if let name = songName, let urlString = songURL, let url = URL(string: urlString) {
                 Link(name, destination: url)
             }
@@ -258,7 +263,12 @@ extension AMPlayerView {
             if status == .authorized {
                 amAPI.fetchUserStorefront(userToken: amAPI.taskToken!) { response, error in
                     amAPI.storeFrontID = response!.data[0].id
-                    if songName! == "" {convertSong(offset: nil)}
+                    if songName! == "" {
+                        print("attempting convert...")
+                        convertSong(offset: nil)
+                        
+                        
+                    }
                     completion()
                 }
             }

@@ -123,7 +123,8 @@ struct SpotPlayerView: View {
         ZStack {
             //if showProgressView {ProgressView().progressViewStyle(.circular) .tint(.green).frame(maxWidth: UIScreen.screenHeight/9, maxHeight: UIScreen.screenHeight/9)}
             VStack(alignment: .center) {
-                if songArtImageData != nil {Image(uiImage: UIImage(data: songArtImageData!)!) }
+                //if songArtImageData != nil {Image(uiImage: UIImage(data: songArtImageData!)!) }
+                if let songArtImageData = songArtImageData, let uiImage = UIImage(data: songArtImageData) {Image(uiImage: uiImage)}
                 if let name = spotName, let urlString = songURL, let url = URL(string: urlString) {
                     Link(name, destination: url)
                 }

@@ -8,7 +8,7 @@ struct eCardView: View {
     
     @State var eCardText: String
     @State var font: String
-    @State var collageImage: Data
+    @State var collageImage: Data?
     @State var text1: String
     @State var text2: String
     @State var text2URL: URL
@@ -174,7 +174,7 @@ struct eCardView: View {
             } placeholder: {
                 ProgressView()
             }
-            .frame(width: UIScreen.main.bounds.width/1.05, height: UIScreen.main.bounds.height / 4.4)
+            .frame(width: UIScreen.main.bounds.width/1.05, height: UIScreen.main.bounds.height / 4.7)
             annotationView()
         }
     }
@@ -188,7 +188,7 @@ struct eCardView: View {
             } placeholder: {
                 ProgressView()
             }
-            .frame(width: UIScreen.main.bounds.width/1.05, height: UIScreen.main.bounds.height / 3.3)
+            .frame(width: UIScreen.main.bounds.width/1.05, height: UIScreen.main.bounds.height / 3.6)
             annotationView()
         }
     }
@@ -222,14 +222,19 @@ struct eCardView: View {
     }
     
     func CollageView() -> some View {
-        return VStack(spacing: 5) {
-            Image(uiImage: UIImage(data: collageImage)!)
-                .interpolation(.high)
-                .resizable()
-                .scaledToFit()
+        VStack(spacing: 5) {
+            if let imageData = collageImage, let uiImage = UIImage(data: imageData) {
+                Image(uiImage: uiImage)
+                    .interpolation(.high)
+                    .resizable()
+                    .scaledToFit()
+            }
+            else {Text("No image available")}
         }
         .frame(maxWidth: UIScreen.main.bounds.height / 2.2, maxHeight: UIScreen.main.bounds.height / 2.3, alignment: .center)
     }
+
+
 
     
     var MusicView: some View {

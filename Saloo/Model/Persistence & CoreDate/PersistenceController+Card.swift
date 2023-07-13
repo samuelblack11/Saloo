@@ -52,7 +52,6 @@ extension PersistenceController {
             cardRecord["CD_salooUserID"] = salooUserID
             cardRecord["CD_appleSongURL"] = appleSongURL
             cardRecord["CD_spotSongURL"] = spotSongURL
-            cardRecord["CD_collage"] = collageImage.collageImage
             cardRecord["CD_creator"] = UserDefaults.standard.object(forKey: "SalooUserID") as? String
             cardRecord["CD_unsplashImageURL"] = chosenObject.smallImageURLString
             cardRecord["CD_coverSizeDetails"] = chosenObject.coverSizeDetails
@@ -68,7 +67,6 @@ extension PersistenceController {
             coreCard.an2URL = an2URL
             coreCard.an3 = an3
             coreCard.an4 = an4
-            coreCard.collage = collageImage.collageImage
             coreCard.date = Date.now
             coreCard.font = noteField.font
             coreCard.message = noteField.noteText.value
@@ -95,47 +93,57 @@ extension PersistenceController {
             coreCard.appleSongURL = appleSongURL
             coreCard.spotSongURL = spotSongURL
             coreCard.unsplashImageURL = chosenObject.smallImageURLString
+            
+            print("Testing collageAsset...")
+            coreCard.collage = collageImage.collageImage
+            let tempDirectory = FileManager.default.temporaryDirectory
+            let fileURL = tempDirectory.appendingPathComponent(UUID().uuidString)
+            do {try collageImage.collageImage.write(to: fileURL)}
+            catch {print("Failed to write image data to disk: \(error)")}
+            let collageAsset = CKAsset(fileURL: fileURL)
+            //cardRecord["CD_collage"] = collageImage.collageImage
+            cardRecord["CD_collageAsset"] = collageAsset
+            
             coreCard.creator = UserDefaults.standard.object(forKey: "SalooUserID") as? String
             let publicDatabase = PersistenceController.shared.cloudKitContainer.publicCloudDatabase
             let privateDatabase = PersistenceController.shared.cloudKitContainer.privateCloudDatabase
             let group = DispatchGroup()
-            saveRecord(with: cardRecord, for: publicDatabase, using: group)
-            saveRecord(with: cardRecord, for: privateDatabase, using: group)
+            saveRecord(with: cardRecord, for: publicDatabase, using: group, fileURL: fileURL)
+            saveRecord(with: cardRecord, for: privateDatabase, using: group, fileURL: fileURL)
             group.notify(queue: .main) {
                 print("Context saved after both CloudKit operations completed")
                 context.save(with: .addCoreCard)
                 createdCoreCard = coreCard
                 completion(createdCoreCard)
                 print("Save Successful")
-                print(coreCard.collage)
             }
         }
     }
     
-    
-    
-    func saveRecord(with record: CKRecord, for database: CKDatabase, using group: DispatchGroup) {
+    func saveRecord(with record: CKRecord, for database: CKDatabase, using group: DispatchGroup, fileURL: URL) {
         group.enter()
         database.save(record) { savedRecord, error in
             if let error = error {
                 print("CloudKit Save Error: \(error.localizedDescription)")
-                ErrorMessageViewModel.shared.errorMessage = error.localizedDescription
-                if database.databaseScope == .public {
-                    GettingRecord.shared.shareFail = true
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 20) {
-                        GettingRecord.shared.shareFail = false
-                    }
-                }
+                //ErrorMessageViewModel.shared.errorMessage = error.localizedDescription
+                //if database.databaseScope == .public {
+                //    GettingRecord.shared.shareFail = true
+                //    DispatchQueue.main.asyncAfter(deadline: .now() + 20) {
+                //        GettingRecord.shared.shareFail = false
+                //    }
+                //}
             } else {
                 print("Record Saved Successfully to \(database.databaseScope == .public ? "Public" : "Private") Database!")
-                ErrorMessageViewModel.shared.errorMessage = "Save Successful"
-                if database.databaseScope == .public {
-                    GettingRecord.shared.shareSuccess = true
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 10) {
-                        GettingRecord.shared.shareSuccess = false
-                    }
-                }
+                //ErrorMessageViewModel.shared.errorMessage = "Save Successful"
+                //if database.databaseScope == .public {
+                //    GettingRecord.shared.shareSuccess = true
+                //    DispatchQueue.main.asyncAfter(deadline: .now() + 10) {
+                //        GettingRecord.shared.shareSuccess = false
+                //    }
+                //}
             }
+            do {try FileManager.default.removeItem(at: fileURL)}
+            catch {print("Failed to remove temporary image file: \(error)")}
             group.leave()
         }
     }
