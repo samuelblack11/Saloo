@@ -62,6 +62,7 @@ struct SpotPlayerView: View {
     @State private var currentPlaybackPosition: Int = 0
     @State var fromFinalize = false
     @EnvironmentObject var cardProgress: CardProgress
+    @EnvironmentObject var cardPrep: CardPrep
 
     var body: some View {
         SpotPlayerView2
@@ -101,8 +102,8 @@ struct SpotPlayerView: View {
             self.isLoading = true
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) {
                 self.isLoading = false
-                CardPrep.shared.chosenSong = chosenSong
-                CardPrep.shared.cardType = "musicNoGift"
+                cardPrep.chosenSong = chosenSong
+                cardPrep.cardType = "musicNoGift"
                 cardProgress.currentStep = 5
                 appState.currentScreen = .buildCard([.finalizeCardView])
             }
@@ -483,10 +484,14 @@ extension SpotPlayerView {
         if songID!.count == 0 {getSongViaAlbumSearch(completion: {(foundMatchBool)
             in print("Did Find Match? \(foundMatchBool)")
             if foundMatchBool == false {
-                if songPreviewURL != nil {
+                if songPreviewURL == nil || songPreviewURL == "" {
+                    //chosenCard?.cardType = "noMusicNoGift"
+                    CardPrep.shared.objectWillChange.send()
+                    ; cardPrep.cardType = "noMusicNoGift"}
+                else {
+                    print("Defer to preview")
                     deferToPreview = true
                 }
-                else {chosenCard?.cardType = "noMusicNoGift"}
             }
         })}
         else {

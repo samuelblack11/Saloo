@@ -33,32 +33,18 @@ class PersistenceController: NSObject, ObservableObject {
     var cloudSharingControllerDelegate: UICloudSharingControllerDelegate?
     
     lazy var persistentContainer: NSPersistentCloudKitContainer = {
-        /**
-         Prepare the containing folder for the Core Data stores.
-         A Core Data store has companion files, so it's a good practice to put a store under a folder.
-         */
         let baseURL = NSPersistentContainer.defaultDirectoryURL()
         let storeFolderURL = baseURL.appendingPathComponent("CoreDataStores")
         let publichStoreFolderURL = storeFolderURL.appendingPathComponent("Public")
-        let sharedStoreFolderURL = storeFolderURL.appendingPathComponent("Shared")
+        let privateStoreFolderURL = storeFolderURL.appendingPathComponent("Private")
 
         let fileManager = FileManager.default
-        for folderURL in [publichStoreFolderURL, sharedStoreFolderURL] where !fileManager.fileExists(atPath: folderURL.path) {
-            do {
-                try fileManager.createDirectory(at: folderURL, withIntermediateDirectories: true, attributes: nil)
-            } catch {
-                fatalError("#\(#function): Failed to create the store folder: \(error)")
-            }
+        for folderURL in [publichStoreFolderURL, privateStoreFolderURL] where !fileManager.fileExists(atPath: folderURL.path) {
+            do {try fileManager.createDirectory(at: folderURL, withIntermediateDirectories: true, attributes: nil)}
+            catch {fatalError("#\(#function): Failed to create the store folder: \(error)")}
         }
 
         let container = NSPersistentCloudKitContainer(name: "Saloo")
-        /**
-         Grab the default (first) store and associate it with the CloudKit private database.
-         Set up the store description by:
-         - Specifying a filename for the store.
-         - Enabling history tracking and remote notifications.
-         - Specifying the iCloud container and database scope.
-        */
         guard let publicStoreDescription = container.persistentStoreDescriptions.first else {
             fatalError("#\(#function): Failed to retrieve a persistent store description.")
         }
@@ -68,28 +54,22 @@ class PersistenceController: NSObject, ObservableObject {
         publicStoreDescription.setOption(true as NSNumber, forKey: NSPersistentStoreRemoteChangeNotificationPostOptionKey)
 
         let cloudKitContainerOptions = NSPersistentCloudKitContainerOptions(containerIdentifier: gCloudKitContainerIdentifier)
-        
-        //cloudKitContainerOptions.databaseScope = .private
         cloudKitContainerOptions.databaseScope = .public
-
         publicStoreDescription.cloudKitContainerOptions = cloudKitContainerOptions
-                
-        /**
-         Similarly, add a second store and associate it with the CloudKit shared database.
-         */
-        guard let sharedStoreDescription = publicStoreDescription.copy() as? NSPersistentStoreDescription else {
+        
+        guard let privateStoreDescription = publicStoreDescription.copy() as? NSPersistentStoreDescription else {
             fatalError("#\(#function): Copying the public store description returned an unexpected value.")
         }
-        sharedStoreDescription.url = sharedStoreFolderURL.appendingPathComponent("shared.sqlite")
+        privateStoreDescription.url = privateStoreFolderURL.appendingPathComponent("private.sqlite")
         
-        let sharedStoreOptions = NSPersistentCloudKitContainerOptions(containerIdentifier: gCloudKitContainerIdentifier)
-        sharedStoreOptions.databaseScope = .shared
-        sharedStoreDescription.cloudKitContainerOptions = sharedStoreOptions
+        let privateStoreOptions = NSPersistentCloudKitContainerOptions(containerIdentifier: gCloudKitContainerIdentifier)
+        privateStoreOptions.databaseScope = .private
+        privateStoreDescription.cloudKitContainerOptions = privateStoreOptions
 
         /**
          Load the persistent stores.
          */
-        container.persistentStoreDescriptions.append(sharedStoreDescription)
+        container.persistentStoreDescriptions.append(privateStoreDescription)
         container.loadPersistentStores(completionHandler: { (loadedStoreDescription, error) in
             guard error == nil else {
                 fatalError("#\(#function): Failed to load persistent stores:\(error!)")
@@ -99,8 +79,8 @@ class PersistenceController: NSObject, ObservableObject {
             }
             if cloudKitContainerOptions.databaseScope == .public {
                 self._publicPersistentStore = container.persistentStoreCoordinator.persistentStore(for: loadedStoreDescription.url!)
-            } else if cloudKitContainerOptions.databaseScope  == .shared {
-                self._sharedPersistentStore = container.persistentStoreCoordinator.persistentStore(for: loadedStoreDescription.url!)
+            } else if cloudKitContainerOptions.databaseScope  == .private {
+                self._privatePersistentStore = container.persistentStoreCoordinator.persistentStore(for: loadedStoreDescription.url!)
             }
         })
 
@@ -126,51 +106,17 @@ class PersistenceController: NSObject, ObservableObject {
         /**
          Pin the viewContext to the current generation token and set it to keep itself up-to-date with local changes.
          */
-        do {
-            try container.viewContext.setQueryGenerationFrom(.current)
-        } catch {
-            fatalError("#\(#function): Failed to pin viewContext to the current generation:\(error)")
-        }
-        
-        /**
-         Observe the following notifications:
-         - The remote change notifications from container.persistentStoreCoordinator.
-         - The .NSManagedObjectContextDidSave notifications from any context.
-         - The event change notifications from the container.
-         */
-        //NotificationCenter.default.addObserver(self, selector: #selector(storeRemoteChange(_:)),
-                                               //name: .NSPersistentStoreRemoteChange,
-                                               //object: container.persistentStoreCoordinator)
-        //NotificationCenter.default.addObserver(self, selector: #selector(containerEventChanged(_:)),
-                                               //name: NSPersistentCloudKitContainer.eventChangedNotification,
-                                               //object: container)
+        do {try container.viewContext.setQueryGenerationFrom(.current)}
+        catch { fatalError("#\(#function): Failed to pin viewContext to the current generation:\(error)")}
         #endif
         return container
     }()
     
     private var _privatePersistentStore: NSPersistentStore?
-    var privatePersistentStore: NSPersistentStore {
-        return _privatePersistentStore!
-    }
-    
-    
+    var privatePersistentStore: NSPersistentStore {return _privatePersistentStore!}
     private var _publicPersistentStore: NSPersistentStore?
-    var publicPersistentStore: NSPersistentStore {
-        return _publicPersistentStore!
-    }
-
-    private var _sharedPersistentStore: NSPersistentStore?
-    var sharedPersistentStore: NSPersistentStore {
-        return _sharedPersistentStore!
-    }
-    
-    lazy var cloudKitContainer: CKContainer = {
-        return CKContainer(identifier: gCloudKitContainerIdentifier)
-    }()
-        
-    /**
-     An operation queue for handling history-processing tasks: watching changes, deduplicating tags, and triggering UI updates, if needed.
-     */
+    var publicPersistentStore: NSPersistentStore {return _publicPersistentStore!}
+    lazy var cloudKitContainer: CKContainer = { return CKContainer(identifier: gCloudKitContainerIdentifier)}()
     lazy var historyQueue: OperationQueue = {
         let queue = OperationQueue()
         queue.maxConcurrentOperationCount = 1

@@ -219,10 +219,8 @@ class CardsForDisplay: ObservableObject {
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
             do {
                 let cardsFromCore = try PersistenceController.shared.persistentContainer.viewContext.fetch(request)
-                // Split the cards into separate lists
-                self.inboxCards = cardsFromCore.filter {!$0.salooUserID!.contains(self.userID!)}
                 self.outboxCards = cardsFromCore.filter {card in return self.userID!.contains(card.salooUserID!)}
-                //self.draftboxCards = cardsFromCore.filter { card in return self.userID!.contains(card.salooUserID!)}
+                self.inboxCards = cardsFromCore.filter { !self.outboxCards.contains($0) }
                 self.isLoading = false
                 completion()
             }
@@ -235,6 +233,11 @@ class CardsForDisplay: ObservableObject {
         }
         
     }
+}
+
+class AMAuthError: ObservableObject {
+    static let shared = AMAuthError()
+    @Published var errorMessage = String()
 }
 
 
@@ -261,6 +264,11 @@ class ChosenSong: ObservableObject {
     @Published var appleSongURL = String()
     @Published var spotSongURL = String()
 
+}
+
+class CloudRecord: ObservableObject {
+    static let shared = CloudRecord()
+    @Published var theRecord: CKRecord?
 }
 
 class ChosenCoverImageObject: ObservableObject {
@@ -566,7 +574,7 @@ class APIManager: ObservableObject {
 
     init() {
         DispatchQueue.global(qos: .background).async {
-            self.getSecret(keyName: "unsplashAPIKey") { keyval in
+            self.getSecret(keyName: "unsplashAPIKey", forceGetFromAzure: nil) { keyval in
                 DispatchQueue.main.async {
                     self.unsplashAPIKey = keyval ?? ""
                     CollectionManager.shared.createOccassionsFromUserCollections()
@@ -575,10 +583,24 @@ class APIManager: ObservableObject {
         }
     }
     
+    func generateNewAMDevToken(completion: @escaping () -> Void) {
+        
+    }
+    
+    
+    
+    
     
     func initializeAM(completion: @escaping () -> Void) {
-        self.getSecret(keyName: "appleMusicDevToken") { keyval in
-            DispatchQueue.main.async {self.appleMusicDevToken = keyval ?? ""; completion()}
+        self.getSecret(keyName: "appleMusicDevToken", forceGetFromAzure: false) { keyval in
+            print("GOT SECRET \(keyval)")
+            if keyval != nil {
+                DispatchQueue.main.async {self.appleMusicDevToken = keyval ?? ""; completion()}
+            }
+            else {self.getSecret(keyName: "appleMusicDevToken", forceGetFromAzure: true) { keyval2 in
+                DispatchQueue.main.async {self.appleMusicDevToken = keyval ?? ""; completion()}
+            }
+            }
         }
     }
     
@@ -587,10 +609,10 @@ class APIManager: ObservableObject {
     func initializeSpotifyManager(completion: @escaping () -> Void) {
         // Here, you're getting the keys for Spotify API
         DispatchQueue.global(qos: .background).async {
-            self.getSecret(keyName: "spotClientIdentifier") { keyval in
+            self.getSecret(keyName: "spotClientIdentifier", forceGetFromAzure: false) { keyval in
                 DispatchQueue.main.async {
                 self.spotClientIdentifier = keyval!
-                    self.getSecret(keyName: "spotSecretKey"){keyval in print("spotSecretKey is \(String(describing: keyval))")
+                    self.getSecret(keyName: "spotSecretKey", forceGetFromAzure: false){keyval in print("spotSecretKey is \(String(describing: keyval))")
                         self.spotSecretKey = keyval!
                         SpotifyManager.shared.initializeConfiguration()
                         completion()
@@ -600,20 +622,37 @@ class APIManager: ObservableObject {
         }
     }
 
-    func getSecret(keyName: String, completion: @escaping (String?) -> Void) {
-        //let url = baseURL.appendingPathComponent("getkey")
-        if let storedKey = loadFromKeychain(key: keyName) {
-            completion(storedKey)
-            return
-        }
-        
+    func getSecret(keyName: String, forceGetFromAzure: Bool?, completion: @escaping (String?) -> Void) {
         let fullURL = baseURL + "?keyName=\(keyName)"
         print(fullURL)
         guard let url = URL(string: fullURL) else {fatalError("Invalid URL")}
+        
+        if forceGetFromAzure == false {
+            if let storedKey = loadFromKeychain(key: keyName) {
+                completion(storedKey)
+                return
+            }
+            self.fetchSecretFromURL(url: url, completion: { value in
+                if let value = value {
+                    self.saveToKeychain(key: keyName, value: value)
+                    completion(value)
+                }
+                else {completion(nil)}
+            })
+        }
+        else {
+            self.fetchSecretFromURL(url: url, completion: { value in
+                if let value = value {
+                    self.saveToKeychain(key: keyName, value: value)
+                    completion(value)
+                }
+                else {completion(nil)}
+            })
+        }
+    }
+
+    func fetchSecretFromURL(url: URL, completion: @escaping (String?) -> Void) {
         let task = URLSession.shared.dataTask(with: url) { (data, response, error) in
-            //print(response)
-            //print(String(data: data!, encoding: .utf8))
-            
             if let error = error {
                 print("Error: \(error)")
                 completion(nil)
@@ -624,8 +663,6 @@ class APIManager: ObservableObject {
                     do {
                         let json = try JSONDecoder().decode([String: String].self, from: data!)
                         if let value = json["value"] {
-                            // Save the key to Keychain
-                            self.saveToKeychain(key: keyName, value: value)
                             completion(value)
                         }
                     } catch {
@@ -637,6 +674,7 @@ class APIManager: ObservableObject {
 
         task.resume()
     }
+
     
     
     
@@ -644,16 +682,22 @@ class APIManager: ObservableObject {
         let keyData = key.data(using: .utf8)!
         let valueData = value.data(using: .utf8)!
         
-        let query: [String: Any] = [kSecClass as String: kSecClassGenericPassword,
-                                    kSecAttrAccount as String: keyData,
-                                    kSecValueData as String: valueData]
+        // First delete any existing items with the same key
+        let deleteQuery: [String: Any] = [kSecClass as String: kSecClassGenericPassword,
+                                          kSecAttrAccount as String: keyData]
+        SecItemDelete(deleteQuery as CFDictionary)
         
-        let status = SecItemAdd(query as CFDictionary, nil)
+        // Then add the new item
+        let addQuery: [String: Any] = [kSecClass as String: kSecClassGenericPassword,
+                                       kSecAttrAccount as String: keyData,
+                                       kSecValueData as String: valueData]
+        let status = SecItemAdd(addQuery as CFDictionary, nil)
         guard status == errSecSuccess else {
             print("Failed to save data to Keychain")
             return
         }
     }
+
 
     func loadFromKeychain(key: String) -> String? {
         let keyData = key.data(using: .utf8)!

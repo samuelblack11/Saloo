@@ -60,6 +60,7 @@ struct Saloo_App: App {
                 .environmentObject(LinkURL.shared)
                 .environmentObject(ChosenCoreCard.shared)
                 .environmentObject(ImageLoader.shared)
+                .environmentObject(CardPrep.shared)
                 .onChange(of: scenePhase) { newPhase in
                     if newPhase == .active {
                         if UserSession.shared.isSignedIn{
@@ -220,7 +221,7 @@ struct AlertViewMod: ViewModifier {
                     
                     
                 case .amAuthFailed:
-                    return Alert(title: Text("Apple Music Authorization Failed"), message: Text("If you have an Apple Music Subscription and are logged into it on this device, please try again"), dismissButton: .default(Text("OK"), action: {alertDismissAction?()}))
+                    return Alert(title: Text("Apple Music Authorization Failed"), message: Text(AMAuthError.shared.errorMessage), dismissButton: .default(Text("OK"), action: {alertDismissAction?()}))
                 case .gettingRecord:
                     return Alert(
                         title: Text("We're Saving Your Card to the Cloud."),

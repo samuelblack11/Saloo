@@ -34,6 +34,7 @@ struct eCardView: View {
     @EnvironmentObject var appDelegate: AppDelegate
     @State var songAddedUsing: String?
     @EnvironmentObject var imageLoader: ImageLoader
+    @EnvironmentObject var appState: AppState
 
     //@State var player: AVPlayer?
     @State var selectedPreviewURL: String?
@@ -42,7 +43,6 @@ struct eCardView: View {
     @State var coreCard: CoreCard?
     @State var accessedViaGrid = true
     @State var fromFinalize = false
-    //@State private var deferToPreview: Bool?
     @Binding var chosenCard: CoreCard?
     @State var deferToPreview = false
     @State private var showAPV = true
@@ -58,12 +58,13 @@ struct eCardView: View {
     @State var unsplashImageURL: String?
     @State var coverSizeDetails: String
     @EnvironmentObject var userSession: UserSession
-    
+    @EnvironmentObject var cardPrep: CardPrep
+
     @State private var hasShownLaunchView: Bool = true
     let screenPadding: CGFloat = 5
     var body: some View {
         ZStack {
-            if cardType == "musicNoGift" {MusicNoGiftView.modifier(AlertViewMod(showAlert: alertVars.activateAlertBinding, activeAlert: alertVars.alertType))}
+            if cardPrep.cardType == "musicNoGift" {MusicNoGiftView.modifier(AlertViewMod(showAlert: alertVars.activateAlertBinding, activeAlert: alertVars.alertType))}
             else{
                 if fromFinalize == false {
                     NoMusicNoGiftView
@@ -79,6 +80,24 @@ struct eCardView: View {
             }
             LoadingOverlay(hasShownLaunchView: $hasShownLaunchView)
 
+        }
+        .id(cardType)
+        .onAppear {
+            print("$$$$")
+            print(spotPreviewURL)
+            print(songPreviewURL)
+            if CloudRecord.shared.theRecord != nil {
+                do {try saveToPrivateDBIfNeeded(record: CloudRecord.shared.theRecord!)}
+                catch let SaveError.missingValueForKey(key) {print("Missing value for key: \(key)"); //GettingRecord.shared.shareFail = true
+                    ErrorMessageViewModel.shared.errorMessage = key}
+                catch let error {print("An error occurred: \(error)")}
+            }
+            DispatchQueue.main.async {
+                if appDelegate.musicSub.type == .Neither && (spotPreviewURL == "" || songPreviewURL == "") {
+                    cardType = "noMusicNoGift"
+                    print("preview logic true")
+                }
+            }
         }
         .fullScreenCover(isPresented: $showLoginView) {LaunchView(isFirstLaunch: true, isPresentedFromECardView: $showLoginView, cardFromShare: $chosenCard)}
     }
@@ -165,33 +184,47 @@ struct eCardView: View {
         }
     }
 
+
+    
     func CoverViewWide1() -> some View {
-        VStack {
-            AsyncImage(url: URL(string: unsplashImageURL!)) { image in
-                image.resizable()
-                    .interpolation(.none)
-                    .scaledToFill()
-            } placeholder: {
-                ProgressView()
+        GeometryReader { geometry in
+            VStack {
+                AsyncImage(url: URL(string: unsplashImageURL!)) { image in
+                    image
+                        .resizable()
+                        .aspectRatio(contentMode: .fill)
+                        .frame(maxWidth: geometry.size.width, maxHeight: geometry.size.height * 0.85)
+                        .clipped()
+                } placeholder: {
+                    ProgressView()
+                }
+                annotationView()
             }
-            .frame(width: UIScreen.main.bounds.width/1.05, height: UIScreen.main.bounds.height / 4.7)
-            annotationView()
         }
+        .frame(width: UIScreen.main.bounds.width/1.05, height: UIScreen.main.bounds.height / 4.0)
+        .clipped() // This will clip the VStack to its bounds
     }
 
     func CoverViewWide2() -> some View {
-        VStack {
-            AsyncImage(url: URL(string: unsplashImageURL!)) { image in
-                image.resizable()
-                    .interpolation(.none)
-                    .scaledToFill()
-            } placeholder: {
-                ProgressView()
+        GeometryReader { geometry in
+            VStack {
+                AsyncImage(url: URL(string: unsplashImageURL!)) { image in
+                    image
+                        .resizable()
+                        .aspectRatio(contentMode: .fill)
+                        .frame(maxWidth: geometry.size.width, maxHeight: geometry.size.height * 0.85)
+                        .clipped()
+                } placeholder: {
+                    ProgressView()
+                }
+                annotationView()
             }
-            .frame(width: UIScreen.main.bounds.width/1.05, height: UIScreen.main.bounds.height / 3.6)
-            annotationView()
         }
+        .frame(width: UIScreen.main.bounds.width/1.05, height: UIScreen.main.bounds.height / 3.1)
+        .clipped() // This will clip the VStack to its bounds
     }
+
+
 
 
     func CoverViewTall() -> some View {
@@ -234,12 +267,10 @@ struct eCardView: View {
         .frame(maxWidth: UIScreen.main.bounds.height / 2.2, maxHeight: UIScreen.main.bounds.height / 2.3, alignment: .center)
     }
 
-
-
-    
     var MusicView: some View {
         VStack {
-            if (deferToPreview == true || spotName == "LookupFailed"  || songName == "LookupFailed" || appDelegate.musicSub.type == .Neither) {
+            if (deferToPreview == true || spotName == "LookupFailed"  || songName == "LookupFailed" || (appDelegate.musicSub.type == .Neither && (spotPreviewURL != "" || songPreviewURL != "")))
+                {
                 if songAddedUsing! == "Spotify"  {
                     SongPreviewPlayer(songID: spotID, songName: spotName, songArtistName: spotArtistName, songArtImageData: spotImageData, songDuration: spotSongDuration, songPreviewURL: spotPreviewURL, songURL: spotSongURL,confirmButton: false, songAddedUsing: songAddedUsing!, chosenCard: $chosenCard)
                         .frame(maxHeight: UIScreen.main.bounds.height / 2.3, alignment: .bottom)
@@ -251,11 +282,11 @@ struct eCardView: View {
             }
              
             else if (appDelegate.musicSub.type == .Apple)  { // && (songName != "LookupFailed")
-                AMPlayerView(songID: songID, songName: songName, songArtistName: songArtistName, spotName: spotName, spotArtistName: spotArtistName, songAlbumName: songAlbumName, songArtImageData: songArtImageData, songDuration: songDuration, songPreviewURL: songPreviewURL, confirmButton: false, fromFinalize: fromFinalize, coreCard: coreCard, appleAlbumArtist: appleAlbumArtist, spotAlbumArtist: spotAlbumArtist, chosenCard: $chosenCard, deferToPreview: $deferToPreview, showAPV: $showAPV, isLoading: $isLoading,songURL: appleSongURL)
+                AMPlayerView(songID: songID, songName: songName, songArtistName: songArtistName, spotName: spotName, spotArtistName: spotArtistName, songAlbumName: songAlbumName, songArtImageData: songArtImageData, songDuration: songDuration, songPreviewURL: spotPreviewURL, confirmButton: false, fromFinalize: fromFinalize, coreCard: coreCard, appleAlbumArtist: appleAlbumArtist, spotAlbumArtist: spotAlbumArtist, chosenCard: $chosenCard, deferToPreview: $deferToPreview, showAPV: $showAPV, isLoading: $isLoading,songURL: appleSongURL)
                         .frame(maxHeight: UIScreen.main.bounds.height / 2.3, alignment: .bottom)
                 }
             else if (appDelegate.musicSub.type == .Spotify) { // && (spotName != "LookupFailed")
-                SpotPlayerView(songID: spotID, songName: songName, songArtistName: songArtistName, spotName: spotName, spotArtistName: spotArtistName, songAlbumName: songAlbumName, songArtImageData: spotImageData, songDuration: spotSongDuration, songPreviewURL: spotPreviewURL, appleAlbumArtist: appleAlbumArtist, spotAlbumArtist: spotAlbumArtist, confirmButton: false, songURL: spotSongURL, accessedViaGrid: accessedViaGrid, coreCard: coreCard, chosenCard: $chosenCard, deferToPreview: $deferToPreview, showSPV: $showSPV, isLoading: $isLoading, fromFinalize: fromFinalize)
+                SpotPlayerView(songID: spotID, songName: songName, songArtistName: songArtistName, spotName: spotName, spotArtistName: spotArtistName, songAlbumName: songAlbumName, songArtImageData: spotImageData, songDuration: spotSongDuration, songPreviewURL: songPreviewURL, appleAlbumArtist: appleAlbumArtist, spotAlbumArtist: spotAlbumArtist, confirmButton: false, songURL: spotSongURL, accessedViaGrid: accessedViaGrid, coreCard: coreCard, chosenCard: $chosenCard, deferToPreview: $deferToPreview, showSPV: $showSPV, isLoading: $isLoading, fromFinalize: fromFinalize)
                         .frame(maxHeight: UIScreen.main.bounds.height / 2.3, alignment: .bottom)
                 }
             }
@@ -336,4 +367,151 @@ extension eCardView {
             }
             dataTask.resume()
         }
+    
+    func saveToPrivateDBIfNeeded(record: CKRecord) throws {
+        let uniqueName = record.object(forKey: "CD_uniqueName") as! String
+        let predicate = NSPredicate(format: "CD_uniqueName == %@", uniqueName)
+        let query = CKQuery(recordType: "CD_CoreCard", predicate: predicate)
+        let privateDatabase = PersistenceController.shared.cloudKitContainer.privateCloudDatabase
+        // Query the private database
+        privateDatabase.perform(query, inZoneWith: nil) { privateResults, privateError in
+            do {
+                // If an error occurred or no matching record was found in the private database
+                if privateError != nil || (privateResults?.isEmpty ?? true) {
+                    let newRecord = try self.recordWithAllKeys(record: record)
+                    privateDatabase.save(newRecord) { (record, error) in
+                        if let error = error {
+                            print("CloudKit Private Save Error: \(error.localizedDescription)")
+                            //GettingRecord.shared.shareFail = true
+                            ErrorMessageViewModel.shared.errorMessage = error.localizedDescription
+                            CloudRecord.shared.theRecord = nil
+                        } else {
+                            print("Record Saved Successfully to Private Database!")
+                            //GettingRecord.shared.shareSuccess = true
+                            ErrorMessageViewModel.shared.errorMessage = "Save Success"
+                            CloudRecord.shared.theRecord = nil
+                            //createNewCoreCard()
+                        }
+                    }
+                } else {
+                    print("Record already exists in Private Database.")
+                    //GettingRecord.shared.shareSuccess = true
+                    ErrorMessageViewModel.shared.errorMessage = "Record already exists in private DB"
+                    CloudRecord.shared.theRecord = nil
+                    //self.createNewCoreCardIfNeeded(uniqueName: uniqueName)
+                }
+            } catch let error {
+                // handle the thrown error here
+                print("Error: \(error)")
+            }
+        }
+
+    }
+    
+    
+    func createNewCoreCardIfNeeded(uniqueName: String) {
+        let context = PersistenceController.shared.persistentContainer.viewContext
+        
+        let fetchRequest: NSFetchRequest<CoreCard> = CoreCard.createFetchRequest()
+        fetchRequest.predicate = NSPredicate(format: "uniqueName == %@", uniqueName)
+        
+        do {
+            let results = try context.fetch(fetchRequest)
+            if results.isEmpty {createNewCoreCard()}
+            else {print("CoreCard already exists.")}
+        }
+        catch {print("Error fetching CoreCard: \(error)")}
+    }
+    
+    func createNewCoreCard() {
+        let context = PersistenceController.shared.persistentContainer.viewContext
+        let newCard = CoreCard(context: context) // Create a new CoreCard entity in the context
+        newCard.occassion = appState.cardFromShare!.occassion
+        newCard.recipient = appState.cardFromShare!.recipient
+        newCard.sender = appState.cardFromShare!.sender
+        newCard.an1 = appState.cardFromShare!.an1
+        newCard.an2 = appState.cardFromShare!.an2
+        newCard.an2URL = appState.cardFromShare!.an2URL
+        newCard.an3 = appState.cardFromShare!.an3
+        newCard.an4 = appState.cardFromShare!.an4
+        newCard.date = appState.cardFromShare!.date
+        newCard.font = appState.cardFromShare!.font
+        newCard.message = appState.cardFromShare!.message
+        newCard.songID = appState.cardFromShare!.songID
+        newCard.spotID = appState.cardFromShare!.spotID
+        newCard.songName = appState.cardFromShare!.songName
+        newCard.spotName = appState.cardFromShare!.spotName
+        newCard.songArtistName = appState.cardFromShare!.songArtistName
+        newCard.spotArtistName = appState.cardFromShare!.spotArtistName
+        newCard.songArtImageData = appState.cardFromShare!.songArtImageData
+        newCard.songPreviewURL = appState.cardFromShare!.songPreviewURL
+        newCard.songDuration = appState.cardFromShare!.songDuration
+        newCard.inclMusic = appState.cardFromShare!.inclMusic
+        newCard.spotImageData = appState.cardFromShare!.spotImageData
+        newCard.spotSongDuration = appState.cardFromShare!.spotSongDuration
+        newCard.spotPreviewURL = appState.cardFromShare!.spotPreviewURL
+        newCard.songAlbumName = appState.cardFromShare!.songAlbumName
+        newCard.spotAlbumArtist = appState.cardFromShare!.spotAlbumArtist
+        newCard.appleAlbumArtist = appState.cardFromShare!.appleAlbumArtist
+        newCard.creator = appState.cardFromShare!.creator
+        newCard.songAddedUsing = appState.cardFromShare!.songAddedUsing
+        newCard.cardName = appState.cardFromShare!.cardName
+        newCard.cardType = appState.cardFromShare!.cardType
+        newCard.appleSongURL = appState.cardFromShare!.appleSongURL
+        newCard.spotSongURL = appState.cardFromShare!.spotSongURL
+        newCard.uniqueName = appState.cardFromShare!.uniqueName
+        newCard.coverSizeDetails = appState.cardFromShare!.coverSizeDetails
+        newCard.unsplashImageURL = appState.cardFromShare!.unsplashImageURL
+        newCard.salooUserID = appState.cardFromShare!.salooUserID
+        newCard.collage = appState.cardFromShare!.collage
+
+        do {try context.save(with: .addCoreCard); ErrorMessageViewModel.shared.errorMessage = "Saved to Core Successfully"}
+        catch {print("Failed to save CoreCard: \(error)"); ErrorMessageViewModel.shared.errorMessage = error.localizedDescription; //GettingRecord.shared.shareFail = true
+        }
+    }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    func recordWithAllKeys(record: CKRecord) throws -> CKRecord {
+        // Create a new record with the same recordID as the original
+        let newRecord = CKRecord(recordType: record.recordType, recordID: record.recordID)
+        
+        // Iterate over all keys in the original record
+        for key in record.allKeys() {
+            // Skip the recordChangeTag key
+            if key == "recordChangeTag" {
+                continue
+            }
+            
+            // Safely get the value for the key
+            guard let value = record.object(forKey: key) else {
+                throw SaveError.missingValueForKey(key)
+            }
+            
+            // Set the value for the key in the new record
+            newRecord.setObject(value, forKey: key)
+        }
+        
+        return newRecord
+    }
+
+}
+
+enum SaveError: Error, LocalizedError {
+    case missingValueForKey(String)
+
+    var errorDescription: String? {
+        switch self {
+        case .missingValueForKey(let key):
+            return "Record key not found: \(key)"
+        }
+    }
 }

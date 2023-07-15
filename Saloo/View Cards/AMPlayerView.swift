@@ -56,6 +56,7 @@ struct AMPlayerView: View {
     @Binding var isLoading: Bool
     @State var songURL: String?
     @EnvironmentObject var cardProgress: CardProgress
+    @EnvironmentObject var cardPrep: CardPrep
 
     
     
@@ -216,8 +217,8 @@ struct AMPlayerView: View {
             self.isLoading = true
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) {
                 self.isLoading = false
-                CardPrep.shared.chosenSong = chosenSong
-                CardPrep.shared.cardType = "musicNoGift"
+                cardPrep.chosenSong = chosenSong
+                cardPrep.cardType = "musicNoGift"
                 cardProgress.currentStep = 5;
                 appState.currentScreen = .buildCard([.finalizeCardView])
             }
@@ -288,12 +289,17 @@ extension AMPlayerView {
                 print(error?.localizedDescription as Any)
                 if error != nil {
                     print("search did fail...")
-                    foundMatch = "searchFailed"
-                    if songPreviewURL != nil {
-                        print("Defer to preview")
-                        deferToPreview = true
+                    print(songPreviewURL)
+                    DispatchQueue.main.async {
+                        
+                        foundMatch = "searchFailed"
+                        if songPreviewURL == nil || songPreviewURL == "" {CardPrep.shared.objectWillChange.send()
+                            ; cardPrep.cardType = "noMusicNoGift"}
+                        else {
+                            print("Defer to preview")
+                            deferToPreview = true
+                        }
                     }
-                    else {chosenCard?.cardType = "noMusicNoGift"}
                 }
             else {
                 //if error != nil {foundMatch = "searchFailed"}
@@ -334,20 +340,22 @@ extension AMPlayerView {
                                             print("Trigerred Found Match Check...")
                                             triggerFoundMatchCheck = true}
                                     }
-                                    
                                 }}
-                            
                         })}
                     group.notify(queue: .main) {
                         // This code is executed after all the requests have been completed
                         if (triggerFoundMatchCheck && foundMatch == "isSearching") {
                             print("search did fail...")
-                            foundMatch = "searchFailed"
-                            if songPreviewURL != nil {
-                                print("Defer to preview")
-                                deferToPreview = true
+                            print(songPreviewURL == "")
+                            DispatchQueue.main.async {
+                                foundMatch = "searchFailed"
+                                if songPreviewURL == nil || songPreviewURL == "" {CardPrep.shared.objectWillChange.send()
+                                    ; cardPrep.cardType = "noMusicNoGift"}
+                                else {
+                                    print("Defer to preview")
+                                    deferToPreview = true
+                                }
                             }
-                            else {chosenCard?.cardType = "noMusicNoGift"}
                         }}
                     }}})}
 

@@ -41,6 +41,7 @@ class AppState: ObservableObject {
 
 struct ContentView: View {
     @EnvironmentObject var apiManager: APIManager
+    @EnvironmentObject var appDelegate: AppDelegate
     @EnvironmentObject var appState: AppState
     @EnvironmentObject var cardsForDisplay: CardsForDisplay
     @EnvironmentObject var userSession: UserSession
@@ -108,8 +109,20 @@ struct ContentView: View {
         .onReceive(appState.$cardFromShare){cardFromShare in self.cardFromShare = cardFromShare}
         .fullScreenCover(item: $cardFromShare, onDismiss: didDismiss) {cardFromShare in
             NavigationView {
-                eCardView(eCardText: cardFromShare.message, font: cardFromShare.font, collageImage: cardFromShare.collage, text1: cardFromShare.an1, text2: cardFromShare.an2, text2URL: URL(string: cardFromShare.an2URL)!, text3: cardFromShare.an3, text4: cardFromShare.an4, songID: cardFromShare.songID, spotID: cardFromShare.spotID, spotName: cardFromShare.spotName, spotArtistName: cardFromShare.spotArtistName, songName: cardFromShare.songName, songArtistName: cardFromShare.songArtistName, songAlbumName: cardFromShare.songAlbumName, appleAlbumArtist: cardFromShare.appleAlbumArtist, spotAlbumArtist: cardFromShare.spotAlbumArtist, songArtImageData: cardFromShare.songArtImageData, songDuration: Double(cardFromShare.songDuration!)!, songPreviewURL: cardFromShare.songPreviewURL, inclMusic: cardFromShare.inclMusic, spotImageData: cardFromShare.spotImageData, spotSongDuration: Double(cardFromShare.spotSongDuration!)!, spotPreviewURL: cardFromShare.spotPreviewURL, songAddedUsing: cardFromShare.songAddedUsing, cardType: cardFromShare.cardType!, coreCard: cardFromShare, chosenCard: $cardFromShare, appleSongURL: cardFromShare.appleSongURL, spotSongURL: cardFromShare.spotSongURL, unsplashImageURL: cardFromShare.unsplashImageURL, coverSizeDetails: cardFromShare.coverSizeDetails!)
+                
+                
+                eCardView(eCardText: cardFromShare.message, font: cardFromShare.font, collageImage: cardFromShare.collage, text1: cardFromShare.an1, text2: cardFromShare.an2, text2URL: URL(string: cardFromShare.an2URL)!, text3: cardFromShare.an3, text4: cardFromShare.an4, songID: cardFromShare.songID, spotID: cardFromShare.spotID, spotName: cardFromShare.spotName, spotArtistName: cardFromShare.spotArtistName, songName: cardFromShare.songName, songArtistName: cardFromShare.songArtistName, songAlbumName: cardFromShare.songAlbumName, appleAlbumArtist: cardFromShare.appleAlbumArtist, spotAlbumArtist: cardFromShare.spotAlbumArtist, songArtImageData: cardFromShare.songArtImageData, songDuration: Double(cardFromShare.songDuration!)!, songPreviewURL: cardFromShare.songPreviewURL, inclMusic: cardFromShare.inclMusic, spotImageData: cardFromShare.spotImageData, spotSongDuration: Double(cardFromShare.spotSongDuration!)!, spotPreviewURL: cardFromShare.spotPreviewURL, songAddedUsing: cardFromShare.songAddedUsing, cardType: computeCardType(from: cardFromShare), coreCard: cardFromShare, chosenCard: $cardFromShare, appleSongURL: cardFromShare.appleSongURL, spotSongURL: cardFromShare.spotSongURL, unsplashImageURL: cardFromShare.unsplashImageURL, coverSizeDetails: cardFromShare.coverSizeDetails!)
                 }
+        }
+    }
+    func computeCardType(from card: CoreCard) -> String {
+        if appDelegate.musicSub.type == .Neither && (card.spotPreviewURL == "" || card.songPreviewURL == "") {
+            CardPrep.shared.cardType = "noMusicNoGift"
+            return "noMusicNoGift"
+        }
+        else {
+            CardPrep.shared.cardType = card.cardType!
+            return card.cardType!
         }
     }
 }

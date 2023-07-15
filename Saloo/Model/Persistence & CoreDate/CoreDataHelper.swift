@@ -30,8 +30,8 @@ extension NSPersistentStore {
 extension NSManagedObject {
     var persistentStore: NSPersistentStore? {
         let persistenceController = PersistenceController.shared
-        if persistenceController.sharedPersistentStore.contains(manageObject: self) {
-            return persistenceController.sharedPersistentStore
+        if persistenceController.privatePersistentStore.contains(manageObject: self) {
+            return persistenceController.privatePersistentStore
         } else if persistenceController.publicPersistentStore.contains(manageObject: self) {
             return persistenceController.publicPersistentStore
         }

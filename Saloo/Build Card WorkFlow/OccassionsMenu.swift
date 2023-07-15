@@ -139,7 +139,7 @@ struct OccassionsMenu: View {
             }
             if apiManager.unsplashAPIKey == "" {
                 isLoadingMenu = true
-                apiManager.getSecret(keyName: "unsplashAPIKey"){keyval in print("UnsplashAPIKey is \(String(describing: keyval))")
+                apiManager.getSecret(keyName: "unsplashAPIKey", forceGetFromAzure: false){keyval in print("UnsplashAPIKey is \(String(describing: keyval))")
                     isLoadingMenu = false
                 }
             }

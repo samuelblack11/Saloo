@@ -170,22 +170,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
         }
     }
     
-    func saveToPrivateDBIfNeeded(record: CKRecord, uniqueName: String) {
-        let predicate = NSPredicate(format: "CD_uniqueName == %@", uniqueName)
-        let query = CKQuery(recordType: "CD_CoreCard", predicate: predicate)
-        let privateDatabase = PersistenceController.shared.cloudKitContainer.privateCloudDatabase
-        // Query the private database
-        privateDatabase.perform(query, inZoneWith: nil) { privateResults, privateError in
-            // If an error occurred or no matching record was found in the private database
-            if privateError != nil || (privateResults?.isEmpty ?? true) {
-                privateDatabase.save(record) { (record, error) in
-                    if let error = error {print("CloudKit Private Save Error: \(error.localizedDescription)")}
-                    else { print("Record Saved Successfully to Private Database!")}
-                }}
-            else {print("Record already exists in Private Database.")}
-        }
-    }
-    
     private func displayCard(windowScene: UIWindowScene, record: CKRecord, uniqueName: String) {
         print("called* displayCard")
         guard self.gotRecord && self.connectToScene else { return }
@@ -194,7 +178,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
         CardsForDisplay.shared.addCoreCard(card: self.coreCard, box: self.whichBoxForCKAccept!, record: record)
         GettingRecord.shared.isLoadingAlert = false
         AppState.shared.cardFromShare = self.coreCard
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {self.saveToPrivateDBIfNeeded(record: record, uniqueName: uniqueName)}
         self.gotRecord = false
     }
     
@@ -238,8 +221,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
             self.coreCard.appleSongURL = record?.object(forKey: "CD_appleSongURL") as! String
             self.coreCard.spotSongURL = record?.object(forKey: "CD_spotSongURL") as! String
             self.coreCard.uniqueName = record?.object(forKey: "CD_uniqueName") as! String
+            self.coreCard.salooUserID = record?.object(forKey: "CD_salooUserID") as! String
             self.coreCard.coverSizeDetails = record?.object(forKey: "CD_coverSizeDetails") as! String
             self.coreCard.unsplashImageURL = record?.object(forKey: "CD_unsplashImageURL") as! String
+            CloudRecord.shared.theRecord = record
             //self.coreCard.collage = record?.object(forKey: "CD_collage") as? Data
             print("999999")
             print(self.coreCard.songArtImageData)

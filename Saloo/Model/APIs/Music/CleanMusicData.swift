@@ -15,7 +15,6 @@ class CleanMusicData {
     
     func compileMusicString(songOrAlbum: String, artist: String?, removeList: [String]) -> String {
         // musicString is songName followed by artistName
-        //Run Away feat Felix Raphael Single Ben Bhmer Tinlicker
         var cleanString = String()
         print("##")
         print(songOrAlbum)
@@ -97,25 +96,28 @@ class CleanMusicData {
         var artistsInSongOrAlbumName = String()
         
 
-        let featStrings = ["(feat."]
-        for featString in featStrings {
+        let featStrings = ["(feat.", "[feat."]
+        let endStrings = [")", "]"]
+
+        for (index, featString) in featStrings.enumerated() {
             if songOrAlbum.lowercased().contains(featString) {
                 print("contains feat string")
                 let songComponents = songOrAlbum.lowercased().components(separatedBy: featString)
                 print(songComponents)
                 songOrAlbumString = songComponents[0]
-                artistsInSongOrAlbumName = songComponents[1].components(separatedBy: ")")[0]
+                artistsInSongOrAlbumName = songComponents[1].components(separatedBy: endStrings[index])[0]
                 artistsInSongOrAlbumName = artistsInSongOrAlbumName.replacingOccurrences(of: "&", with: "")
                 print(songOrAlbumString)
                 print(artistsInSongOrAlbumName)
-                if songComponents[1].components(separatedBy: ")").count > 1 {
-                    let songOrAlbumStringPt2 = songComponents[1].components(separatedBy: ")")[1]
+                if songComponents[1].components(separatedBy: endStrings[index]).count > 1 {
+                    let songOrAlbumStringPt2 = songComponents[1].components(separatedBy: endStrings[index])[1]
                     songOrAlbumString = songOrAlbumString + " " + songOrAlbumStringPt2
                 }
                 break
             }
             //else {print("Else called...");songOrAlbumString = songOrAlbum}
         }
+
         
         //songOrAlbumString = (songOrAlbumString + " " + cleanSongArtistName + artistsInSongOrAlbumName)
         //print("songOrAlbumString....")

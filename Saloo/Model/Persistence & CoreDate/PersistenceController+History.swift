@@ -19,7 +19,7 @@ extension PersistenceController {
     @objc
     func storeRemoteChange(_ notification: Notification) {
         guard let storeUUID = notification.userInfo?[NSStoreUUIDKey] as? String,
-              [publicPersistentStore.identifier, sharedPersistentStore.identifier].contains(storeUUID) else {
+              [publicPersistentStore.identifier, privatePersistentStore.identifier].contains(storeUUID) else {
             print("\(#function): Ignore a store remote Change notification because of no valid storeUUID.")
             return
         }
@@ -68,8 +68,8 @@ extension PersistenceController {
 
         if publicPersistentStore.identifier == storeUUID {
             request.affectedStores = [publicPersistentStore]
-        } else if sharedPersistentStore.identifier == storeUUID {
-            request.affectedStores = [sharedPersistentStore]
+        } else if privatePersistentStore.identifier == storeUUID {
+            request.affectedStores = [privatePersistentStore]
         }
 
         let result = (try? performingContext.execute(request)) as? NSPersistentHistoryResult

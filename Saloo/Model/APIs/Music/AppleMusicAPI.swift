@@ -51,20 +51,34 @@ class AppleMusicAPI {
     
 
     
-    func getUserToken(completionHandler: @escaping (String?,Error?) -> Void) {
-        //let lock = DispatchSemaphore(value: 1)
-        SKCloudServiceController().requestUserToken(forDeveloperToken: APIManager.shared.appleMusicDevToken) {(receivedToken, error) in
-            //guard error == nil else { return }
-            if error != nil {print("Token Error..."); self.tokenError = true; completionHandler(nil, error)}
-            else{
-                print("receivedToken....\(receivedToken!)"); self.taskToken = receivedToken!
+    func getUserToken(completionHandler: @escaping (String?, Error?) -> Void) {
+        print("AMDevToken...")
+        print(APIManager.shared.appleMusicDevToken)
+        
+        SKCloudServiceController().requestUserToken(forDeveloperToken: APIManager.shared.appleMusicDevToken) { (receivedToken, error) in
+            print("----")
+            print(receivedToken)
+            
+            if let error = error {
+                print("Token Error...")
+                self.tokenError = true
+                AMAuthError.shared.errorMessage = error.localizedDescription
+                APIManager.shared.getSecret(keyName: "appleMusicDevToken", forceGetFromAzure: true) { token4 in
+                    DispatchQueue.main.async {
+                        APIManager.shared.appleMusicDevToken = token4 ?? ""
+                        self.getUserToken { (token, error) in
+                            completionHandler(token, error) // Pass error4 instead of error
+                        }
+                    }
+                }
+            } else {
+                print("receivedToken....\(receivedToken!)")
+                self.taskToken = receivedToken!
                 completionHandler(receivedToken, nil)
-                //lock.signal()
             }
         }
-        //lock.wait()
-        //print("getUserToken.....\(self.taskToken!)")
     }
+
     
     
     
