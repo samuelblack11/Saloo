@@ -87,7 +87,10 @@ struct eCardView: View {
             print(spotPreviewURL)
             print(songPreviewURL)
             if CloudRecord.shared.theRecord != nil {
-                do {try saveToPrivateDBIfNeeded(record: CloudRecord.shared.theRecord!)}
+                CloudRecord.shared.theRecord!
+                
+                
+                do {try saveToCoreDataIfNeeded(coreCard: appState.cardFromShare!)}
                 catch let SaveError.missingValueForKey(key) {print("Missing value for key: \(key)"); //GettingRecord.shared.shareFail = true
                     ErrorMessageViewModel.shared.errorMessage = key}
                 catch let error {print("An error occurred: \(error)")}
@@ -368,117 +371,70 @@ extension eCardView {
             dataTask.resume()
         }
     
-    func saveToPrivateDBIfNeeded(record: CKRecord) throws {
-        let uniqueName = record.object(forKey: "CD_uniqueName") as! String
-        let predicate = NSPredicate(format: "CD_uniqueName == %@", uniqueName)
-        let query = CKQuery(recordType: "CD_CoreCard", predicate: predicate)
-        let privateDatabase = PersistenceController.shared.cloudKitContainer.privateCloudDatabase
-        // Query the private database
-        privateDatabase.perform(query, inZoneWith: nil) { privateResults, privateError in
-            do {
-                // If an error occurred or no matching record was found in the private database
-                if privateError != nil || (privateResults?.isEmpty ?? true) {
-                    let newRecord = try self.recordWithAllKeys(record: record)
-                    privateDatabase.save(newRecord) { (record, error) in
-                        if let error = error {
-                            print("CloudKit Private Save Error: \(error.localizedDescription)")
-                            //GettingRecord.shared.shareFail = true
-                            ErrorMessageViewModel.shared.errorMessage = error.localizedDescription
-                            CloudRecord.shared.theRecord = nil
-                        } else {
-                            print("Record Saved Successfully to Private Database!")
-                            //GettingRecord.shared.shareSuccess = true
-                            ErrorMessageViewModel.shared.errorMessage = "Save Success"
-                            CloudRecord.shared.theRecord = nil
-                            //createNewCoreCard()
-                        }
-                    }
-                } else {
-                    print("Record already exists in Private Database.")
-                    //GettingRecord.shared.shareSuccess = true
-                    ErrorMessageViewModel.shared.errorMessage = "Record already exists in private DB"
-                    CloudRecord.shared.theRecord = nil
-                    //self.createNewCoreCardIfNeeded(uniqueName: uniqueName)
-                }
-            } catch let error {
-                // handle the thrown error here
-                print("Error: \(error)")
-            }
-        }
-
-    }
-    
-    
-    func createNewCoreCardIfNeeded(uniqueName: String) {
+    func saveToCoreDataIfNeeded(coreCard: CoreCard) {
         let context = PersistenceController.shared.persistentContainer.viewContext
-        
         let fetchRequest: NSFetchRequest<CoreCard> = CoreCard.createFetchRequest()
-        fetchRequest.predicate = NSPredicate(format: "uniqueName == %@", uniqueName)
-        
+        fetchRequest.predicate = NSPredicate(format: "uniqueName == %@", coreCard.uniqueName)
         do {
             let results = try context.fetch(fetchRequest)
-            if results.isEmpty {createNewCoreCard()}
+            if results.isEmpty {createNewCoreCard(coreCard: coreCard)}
             else {print("CoreCard already exists.")}
         }
         catch {print("Error fetching CoreCard: \(error)")}
     }
-    
-    func createNewCoreCard() {
-        let context = PersistenceController.shared.persistentContainer.viewContext
-        let newCard = CoreCard(context: context) // Create a new CoreCard entity in the context
-        newCard.occassion = appState.cardFromShare!.occassion
-        newCard.recipient = appState.cardFromShare!.recipient
-        newCard.sender = appState.cardFromShare!.sender
-        newCard.an1 = appState.cardFromShare!.an1
-        newCard.an2 = appState.cardFromShare!.an2
-        newCard.an2URL = appState.cardFromShare!.an2URL
-        newCard.an3 = appState.cardFromShare!.an3
-        newCard.an4 = appState.cardFromShare!.an4
-        newCard.date = appState.cardFromShare!.date
-        newCard.font = appState.cardFromShare!.font
-        newCard.message = appState.cardFromShare!.message
-        newCard.songID = appState.cardFromShare!.songID
-        newCard.spotID = appState.cardFromShare!.spotID
-        newCard.songName = appState.cardFromShare!.songName
-        newCard.spotName = appState.cardFromShare!.spotName
-        newCard.songArtistName = appState.cardFromShare!.songArtistName
-        newCard.spotArtistName = appState.cardFromShare!.spotArtistName
-        newCard.songArtImageData = appState.cardFromShare!.songArtImageData
-        newCard.songPreviewURL = appState.cardFromShare!.songPreviewURL
-        newCard.songDuration = appState.cardFromShare!.songDuration
-        newCard.inclMusic = appState.cardFromShare!.inclMusic
-        newCard.spotImageData = appState.cardFromShare!.spotImageData
-        newCard.spotSongDuration = appState.cardFromShare!.spotSongDuration
-        newCard.spotPreviewURL = appState.cardFromShare!.spotPreviewURL
-        newCard.songAlbumName = appState.cardFromShare!.songAlbumName
-        newCard.spotAlbumArtist = appState.cardFromShare!.spotAlbumArtist
-        newCard.appleAlbumArtist = appState.cardFromShare!.appleAlbumArtist
-        newCard.creator = appState.cardFromShare!.creator
-        newCard.songAddedUsing = appState.cardFromShare!.songAddedUsing
-        newCard.cardName = appState.cardFromShare!.cardName
-        newCard.cardType = appState.cardFromShare!.cardType
-        newCard.appleSongURL = appState.cardFromShare!.appleSongURL
-        newCard.spotSongURL = appState.cardFromShare!.spotSongURL
-        newCard.uniqueName = appState.cardFromShare!.uniqueName
-        newCard.coverSizeDetails = appState.cardFromShare!.coverSizeDetails
-        newCard.unsplashImageURL = appState.cardFromShare!.unsplashImageURL
-        newCard.salooUserID = appState.cardFromShare!.salooUserID
-        newCard.collage = appState.cardFromShare!.collage
 
-        do {try context.save(with: .addCoreCard); ErrorMessageViewModel.shared.errorMessage = "Saved to Core Successfully"}
-        catch {print("Failed to save CoreCard: \(error)"); ErrorMessageViewModel.shared.errorMessage = error.localizedDescription; //GettingRecord.shared.shareFail = true
+    
+    func createNewCoreCard(coreCard: CoreCard) {
+        let context = PersistenceController.shared.persistentContainer.viewContext
+        let newCard = CoreCard(context: context)
+
+        newCard.occassion = coreCard.occassion
+        newCard.recipient = coreCard.recipient
+        newCard.sender = coreCard.sender
+        newCard.an1 = coreCard.an1
+        newCard.an2 = coreCard.an2
+        newCard.an2URL = coreCard.an2URL
+        newCard.an3 = coreCard.an3
+        newCard.an4 = coreCard.an4
+        newCard.date = coreCard.date
+        newCard.font = coreCard.font
+        newCard.message = coreCard.message
+        newCard.songID = coreCard.songID
+        newCard.spotID = coreCard.spotID
+        newCard.songName = coreCard.songName
+        newCard.spotName = coreCard.spotName
+        newCard.songArtistName = coreCard.songArtistName
+        newCard.spotArtistName = coreCard.spotArtistName
+        newCard.songArtImageData = coreCard.songArtImageData
+        newCard.songPreviewURL = coreCard.songPreviewURL
+        newCard.songDuration = coreCard.songDuration
+        newCard.inclMusic = coreCard.inclMusic
+        newCard.spotImageData = coreCard.spotImageData
+        newCard.spotSongDuration = coreCard.spotSongDuration
+        newCard.spotPreviewURL = coreCard.spotPreviewURL
+        newCard.songAlbumName = coreCard.songAlbumName
+        newCard.spotAlbumArtist = coreCard.spotAlbumArtist
+        newCard.appleAlbumArtist = coreCard.appleAlbumArtist
+        newCard.creator = coreCard.creator
+        newCard.songAddedUsing = coreCard.songAddedUsing
+        newCard.cardName = coreCard.cardName
+        newCard.cardType = coreCard.cardType
+        newCard.appleSongURL = coreCard.appleSongURL
+        newCard.spotSongURL = coreCard.spotSongURL
+        newCard.uniqueName = coreCard.uniqueName
+        newCard.coverSizeDetails = coreCard.coverSizeDetails
+        newCard.unsplashImageURL = coreCard.unsplashImageURL
+        newCard.salooUserID = coreCard.salooUserID
+        newCard.collage = coreCard.collage
+
+        do {
+            try context.save(with: .addCoreCard)
+            ErrorMessageViewModel.shared.errorMessage = "Saved to Core Successfully"
+        } catch {
+            print("Failed to save CoreCard: \(error)")
+            ErrorMessageViewModel.shared.errorMessage = error.localizedDescription
         }
     }
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
     
     func recordWithAllKeys(record: CKRecord) throws -> CKRecord {
         // Create a new record with the same recordID as the original

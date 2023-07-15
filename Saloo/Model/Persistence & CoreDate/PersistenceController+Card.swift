@@ -103,13 +103,12 @@ extension PersistenceController {
             let collageAsset = CKAsset(fileURL: fileURL)
             //cardRecord["CD_collage"] = collageImage.collageImage
             cardRecord["CD_collageAsset"] = collageAsset
-            
             coreCard.creator = UserDefaults.standard.object(forKey: "SalooUserID") as? String
             let publicDatabase = PersistenceController.shared.cloudKitContainer.publicCloudDatabase
-            let privateDatabase = PersistenceController.shared.cloudKitContainer.privateCloudDatabase
+            //let privateDatabase = PersistenceController.shared.cloudKitContainer.privateCloudDatabase
             let group = DispatchGroup()
             saveRecord(with: cardRecord, for: publicDatabase, using: group, fileURL: fileURL)
-            saveRecord(with: cardRecord, for: privateDatabase, using: group, fileURL: fileURL)
+            //saveRecord(with: cardRecord, for: privateDatabase, using: group, fileURL: fileURL)
             group.notify(queue: .main) {
                 print("Context saved after both CloudKit operations completed")
                 context.save(with: .addCoreCard)
