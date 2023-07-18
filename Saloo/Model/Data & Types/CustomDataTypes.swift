@@ -174,6 +174,13 @@ class CardsForDisplay: ObservableObject {
     
     
     func deleteCoreCard(card: CoreCard, box: InOut.SendReceive) {
+        if box == .outbox {deleteFromPublicDB(uniqueName: card.uniqueName)}
+        let context = PersistenceController.shared.persistentContainer.viewContext
+        print("DELETING \(card.message)")
+        print("DELETING \(card.uniqueName)")
+        context.delete(card)
+        do {try context.save(); print("Successfully deleted card from Core Data and saved context.")}
+        catch {print("Error saving context after deleting: \(error)")}
         switch box {
         case .inbox:
             if let index = self.inboxCards.firstIndex(of: card) {
@@ -187,13 +194,118 @@ class CardsForDisplay: ObservableObject {
             if let index = self.draftboxCards.firstIndex(of: card) {
                 self.draftboxCards.remove(at: index)
             }
-        default:
-            print("Invalid box type")
         }
     }
+
+    func deleteFromPublicDB(uniqueName: String) {
+        print("Called deleteFromPublic")
+        let publicDatabase = PersistenceController.shared.cloudKitContainer.publicCloudDatabase
+        let predicate = NSPredicate(format: "CD_uniqueName == %@", uniqueName)
+        let query = CKQuery(recordType: "CD_CoreCard", predicate: predicate)
+        
+            publicDatabase.fetch(withQuery: query, inZoneWith: nil, desiredKeys: nil, resultsLimit: 1) { result in
+                switch result {
+                case .success(let (matchResults, _)):
+                    matchResults.forEach { (recordID, fetchResult) in
+                        switch fetchResult {
+                        case .success(let record):
+                            publicDatabase.delete(withRecordID: record.recordID) { _, error in
+                                if let error = error {
+                                    print("Error deleting record: \(error)")
+                                } else {
+                                    print("Successfully deleted record from CloudKit.")
+                                }
+                            }
+                        case .failure(let error):
+                            print("Error fetching individual record: \(error)")
+                        }
+                    }
+                case .failure(let error):
+                    print("Error fetching records: \(error)")
+                }
+            }
+    }
+
+    func findAndDeleteCloudKitOrphans() {
+        let privateDatabase = PersistenceController.shared.cloudKitContainer.privateCloudDatabase
+        let predicate = NSPredicate(value: true)
+        let query = CKQuery(recordType: "CD_CoreCard", predicate: predicate)
+        
+        privateDatabase.perform(query, inZoneWith: nil) { (records, error) in
+            if let error = error {
+                print("CloudKit fetch error: \(error.localizedDescription)")
+            } else if let records = records {
+                // Fetch all uniqueNames from CloudKit
+                let cloudKitUniqueNames = records.compactMap { ($0["CD_uniqueName"] as? String, $0.recordID) }
+                
+                // Fetch all uniqueNames from Core Data
+                let request = CoreCard.createFetchRequest()
+                do {
+                    let cardsFromCore = try PersistenceController.shared.persistentContainer.viewContext.fetch(request)
+                    let coreDataUniqueNames = cardsFromCore.compactMap { $0.uniqueName }
+                    
+                    // Find uniqueNames that exist in CloudKit but not in Core Data
+                    let cloudKitOrphans = cloudKitUniqueNames.filter { uniqueName, _ in
+                        return !coreDataUniqueNames.contains(uniqueName!)
+                    }
+                    
+                    // Print orphans
+                    print("Found orphans in CloudKit: \(cloudKitOrphans)")
+                    
+                    // Delete orphans
+                    for (_, recordID) in cloudKitOrphans {
+                        privateDatabase.delete(withRecordID: recordID) { (recordID, error) in
+                            if let error = error {
+                                print("Failed to delete record: \(error)")
+                            } else {
+                                print("Deleted record: \(recordID?.recordName ?? "unknown")")
+                            }
+                        }
+                    }
+                    
+                } catch {
+                    print("Core Data fetch error: \(error)")
+                }
+            }
+        }
+    }
+
+
     
     
-    
+    func fetchFromCloudKit() {
+          self.findAndDeleteCloudKitOrphans()
+          let privateDatabase = PersistenceController.shared.cloudKitContainer.privateCloudDatabase
+          let predicate = NSPredicate(value: true) // Fetches all records
+          let query = CKQuery(recordType: "CD_CoreCard", predicate: predicate)
+
+          privateDatabase.perform(query, inZoneWith: nil) { (records, error) in
+              if let error = error {
+                  print("CloudKit fetch error: \(error.localizedDescription)")
+              } else if let records = records {
+                  let group = DispatchGroup()
+                  for record in records {
+                      group.enter()
+                      self.parseRecord(record: record) { coreCard in
+                          if coreCard != nil {
+                              self.saveContext()
+                              print("Record parsed and saved successfully")
+                          }
+                          group.leave()
+                      }
+                  }
+                  group.notify(queue: .main) { print("All records fetched and parsed")}
+              }
+              else {print("No records returned from CloudKit")}
+          }
+      }
+
+    func saveContext() {
+        let context = PersistenceController.shared.persistentContainer.viewContext
+        do {try context.save()}
+        catch {print("Error saving context: \(error)")}
+    }
+
     func needToLoadCards() -> Bool {
         var needToLoad = Bool()
         var cardCount = self.inboxCards.count + self.outboxCards.count + self.draftboxCards.count
@@ -211,16 +323,22 @@ class CardsForDisplay: ObservableObject {
         let request = CoreCard.createFetchRequest()
         let sort = NSSortDescriptor(key: "date", ascending: false)
         request.sortDescriptors = [sort]
-        if userID == nil {
-            userID = UserSession.shared.salooID
-            print("**")
-            print(userID)
-        }
+        if userID == nil {userID = UserSession.shared.salooID}
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
             do {
                 let cardsFromCore = try PersistenceController.shared.persistentContainer.viewContext.fetch(request)
-                self.outboxCards = cardsFromCore.filter {card in return self.userID!.contains(card.salooUserID!)}
-                self.inboxCards = cardsFromCore.filter { !self.outboxCards.contains($0) }
+                let validCardsFromCore = cardsFromCore.filter { $0.uniqueName != "" && $0.unsplashImageURL != nil && $0.coverSizeDetails != nil && $0.collage != nil && $0.salooUserID != nil}
+                // Log each field of each card in cardsFromCore
+                for card in validCardsFromCore {
+                    print("Unique Name: \(card.uniqueName ?? "nil")")
+                    print("Unsplash Image URL: \(card.unsplashImageURL ?? "nil")")
+                    print("Cover Size Details: \(card.coverSizeDetails ?? "nil")")
+                    //print("Collage: \(card.collage ?? "nil")")
+                    print("Saloo User ID: \(card.salooUserID ?? "nil")")
+                    // Add more fields if you need
+                }
+                self.outboxCards = validCardsFromCore.filter {card in return self.userID!.contains(card.salooUserID!)}
+                self.inboxCards = validCardsFromCore.filter { !self.outboxCards.contains($0) }
                 self.isLoading = false
                 completion()
             }
@@ -231,7 +349,82 @@ class CardsForDisplay: ObservableObject {
             }
             //}
         }
-        
+    }
+
+    func parseRecord(record: CKRecord?, completion: @escaping (CoreCard?) -> Void) {
+        guard let record = record else {
+            print("Invalid record.")
+            completion(nil)
+            return
+        }
+        let context = PersistenceController.shared.persistentContainer.viewContext
+        let coreCard = CoreCard(context: context)
+        print("Parsing Record....")
+        DispatchQueue.main.async() {
+            coreCard.occassion = record.object(forKey: "CD_occassion") as! String
+            coreCard.recipient = record.object(forKey: "CD_recipient") as! String
+            coreCard.sender = record.object(forKey: "CD_sender") as? String
+            coreCard.an1 = record.object(forKey: "CD_an1") as! String
+            coreCard.an2 = record.object(forKey: "CD_an2") as! String
+            coreCard.an2URL = record.object(forKey: "CD_an2URL") as! String
+            coreCard.an3 = record.object(forKey: "CD_an3") as! String
+            coreCard.an4 = record.object(forKey: "CD_an4") as! String
+            coreCard.date = record.object(forKey: "CD_date") as! Date
+            coreCard.font = record.object(forKey: "CD_font") as! String
+            coreCard.message = record.object(forKey: "CD_message") as! String
+            coreCard.songID = record.object(forKey: "CD_songID") as? String
+            coreCard.spotID = record.object(forKey: "CD_spotID") as? String
+            coreCard.songName = record.object(forKey: "CD_songName") as? String
+            coreCard.spotName = record.object(forKey: "CD_spotName") as? String
+            coreCard.songArtistName = record.object(forKey: "CD_songArtistName") as? String
+            coreCard.spotArtistName = record.object(forKey: "CD_spotArtistName") as? String
+            coreCard.songArtImageData = record.object(forKey: "CD_songArtImageData") as? Data
+            coreCard.songPreviewURL = record.object(forKey: "CD_songPreviewURL") as? String
+            coreCard.songDuration = record.object(forKey: "CD_songDuration") as? String
+            coreCard.inclMusic = record.object(forKey: "CD_inclMusic") as! Bool
+            coreCard.spotImageData = record.object(forKey: "CD_spotImageData") as? Data
+            coreCard.spotSongDuration = record.object(forKey: "CD_spotSongDuration") as? String
+            coreCard.spotPreviewURL = record.object(forKey: "CD_spotPreviewURL") as? String
+            coreCard.songAlbumName = record.object(forKey: "CD_songAlbumName") as? String
+            coreCard.spotAlbumArtist = record.object(forKey: "CD_spotAlbumArtist") as? String
+            coreCard.appleAlbumArtist = record.object(forKey: "CD_appleAlbumArtist") as? String
+            coreCard.creator = record.object(forKey: "CD_creator") as? String
+            coreCard.songAddedUsing = record.object(forKey: "CD_songAddedUsing") as? String
+            coreCard.cardName = record.object(forKey: "CD_cardName") as! String
+            coreCard.cardName = record.object(forKey: "CD_cardName") as! String
+            coreCard.cardType = record.object(forKey: "CD_cardType") as! String
+            coreCard.appleSongURL = record.object(forKey: "CD_appleSongURL") as! String
+            coreCard.spotSongURL = record.object(forKey: "CD_spotSongURL") as! String
+            coreCard.uniqueName = record.object(forKey: "CD_uniqueName") as! String
+            coreCard.salooUserID = record.object(forKey: "CD_salooUserID") as! String
+            coreCard.coverSizeDetails = record.object(forKey: "CD_coverSizeDetails") as! String
+            coreCard.unsplashImageURL = record.object(forKey: "CD_unsplashImageURL") as! String
+            let dispatchGroup = DispatchGroup()
+            dispatchGroup.enter()
+            if let asset = record["CD_collageAsset"] as? CKAsset {
+                DispatchQueue.global(qos: .userInitiated).async {
+                    do {
+                        let collageData = try Data(contentsOf: asset.fileURL!)
+                        DispatchQueue.main.async {
+                            coreCard.collage = collageData
+                            dispatchGroup.leave()
+                        }
+                    }
+                    catch {
+                        print("Failed to read data from CKAsset: \(error)")
+                        dispatchGroup.leave()
+                    }
+                }
+            }
+            dispatchGroup.enter()
+            ImageLoader.shared.loadImage(from: coreCard.unsplashImageURL!) { data in
+                DispatchQueue.main.async {
+                    coreCard.coverImage = data
+                    dispatchGroup.leave()
+                }
+            }
+            dispatchGroup.notify(queue: .main) {DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) { print("getRecord complete..."); completion(coreCard)}}
+        }
     }
 }
 
@@ -348,7 +541,7 @@ class Annotation: ObservableObject {
     static let shared = Annotation()
     @Published var text1 = String()
     @Published var text2 = String()
-    @Published var text2URL = URL(string: "https://google.com")!
+    @Published var text2URL = URL(string: "https://salooapp.com")!
     @Published var text3 = String()
     @Published var text4 = String()
 }
@@ -927,7 +1120,7 @@ class SpotifyManager: ObservableObject {
         SpotifyAPI.shared.requestAuth(completionHandler: {(response, error) in
             if response != nil {
                 DispatchQueue.main.async {
-                    if response!.contains("https://www.google.com/?code="){}
+                    if response!.contains("https://salooapp.com/?code="){}
                     else{self.authForRedirect = response!; self.showWebView = true}
                     self.refreshAccessToken = true
                     completion(response)

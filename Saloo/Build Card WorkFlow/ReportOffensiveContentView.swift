@@ -184,8 +184,6 @@ struct ReportOffensiveContentView: View {
     }
     
     func deleteCoreCard(coreCard: CoreCard) {
-        do {persistenceController.persistentContainer.viewContext.delete(coreCard);try persistenceController.persistentContainer.viewContext.save()}
-        catch {}
         cardsForDisplayEnv.deleteCoreCard(card: coreCard, box: whichBoxVal)
     }
     

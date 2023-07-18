@@ -27,7 +27,10 @@ struct LaunchView: View {
             ZStack {
                 appDelegate.appColor.ignoresSafeArea()
                 Image("logo180").frame(maxWidth: UIScreen.screenWidth/2,maxHeight: UIScreen.screenHeight/3, alignment: .center)
-                if isFirstLaunch{SignInButtonView(isPresentedFromECardView: $isPresentedFromECardView, cardFromShare: $cardFromShare)}
+                if isFirstLaunch{
+                    SignInButtonView(isPresentedFromECardView: $isPresentedFromECardView, cardFromShare: $cardFromShare)
+                        .onAppear{cardsForDisplay.fetchFromCloudKit()}
+                }
                 LoadingOverlay(hasShownLaunchView: $hasShownLaunchView)
             }
             .background(appDelegate.appColor)

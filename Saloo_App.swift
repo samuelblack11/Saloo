@@ -64,7 +64,9 @@ struct Saloo_App: App {
                 .onChange(of: scenePhase) { newPhase in
                     if newPhase == .active {
                         if UserSession.shared.isSignedIn{
-                            if CardsForDisplay.shared.needToLoadCards(){CardsForDisplay.shared.loadCoreCards{}}
+                            if CardsForDisplay.shared.needToLoadCards(){CardsForDisplay.shared.loadCoreCards{
+                                
+                            }}
                         }
                         else {appState.currentScreen = .login}
                         // Check if user is banned when the app comes to foreground

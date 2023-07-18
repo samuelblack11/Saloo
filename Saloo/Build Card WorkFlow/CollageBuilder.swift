@@ -34,7 +34,8 @@ struct CollageBuilder: View {
     @State private var chosenImage: UIImage?
     @State var fillColor = Color.secondary
     @EnvironmentObject var appState: AppState
-    
+    @Environment(\.colorScheme) var colorScheme
+
     @State private var imageA: Image?
     @State private var imageB: Image?
     @State private var imageC: Image?
@@ -65,21 +66,30 @@ struct CollageBuilder: View {
     @State private var scaleD: CGFloat = 1.0
     @State private var offsetD: CGSize = .zero
 
-    // Add the remaining @State properties for scale and offset (scaleC, offsetC, scaleD, offsetD)
-
-
-    
     var collageView: some View {
         VStack {chosenTemplate}.frame(width: width, height: height)
     }
     
     var body: some View {
+            let pinchText = collageImage.chosenStyle != 1 ? "Pinch the images to zoom in or out" : "Pinch the image to zoom in or out"
+         let dragText = collageImage.chosenStyle != 1 ? "Drag the images within their frames to position them how you prefer" : "Drag the image within the frame to position it how you prefer"
+
         NavigationStack {
             VStack {
                 ProgressBar().frame(height: 20)
                     .frame(height: 20)
                 ZStack {
                     VStack {
+                        Text(pinchText)
+                            .foregroundColor(colorScheme == .dark ? .white : .black)
+                            .font(Font.custom("Papyrus", size: 16))
+                            .textCase(.none)
+                            .multilineTextAlignment(.center)
+                        Text(dragText)
+                            .foregroundColor(colorScheme == .dark ? .white : .black)
+                            .font(Font.custom("Papyrus", size: 16))
+                            .textCase(.none)
+                            .multilineTextAlignment(.center)
                         Spacer()
                         collageView//.frame(width: UIScreen.screenHeight/4, height: UIScreen.screenHeight/4)
                         Button(action: resetZoomAndOffset) {
@@ -182,7 +192,7 @@ extension CollageBuilder {
                 }
                 imageForBlock?
                     .resizable()
-                    .scaledToFill()
+                    .scaledToFit()
                     .frame(width: w2, height: h2)
                     //.clipped()
                     .scaleEffect(scale.wrappedValue, anchor: .center)
