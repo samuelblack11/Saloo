@@ -26,7 +26,6 @@
 		C20DEF602986C9F30080AE03 /* SpotifyAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = C20DEF5F2986C9F30080AE03 /* SpotifyAPI.swift */; };
 		C217021029AC0C9500BE48DC /* SongPreviewPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = C217020F29AC0C9500BE48DC /* SongPreviewPlayer.swift */; };
 		C21EACE02998525000401DC8 /* WebVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = C21EACDF2998525000401DC8 /* WebVC.swift */; };
-		C2233BF729AEEE4F00DB098D /* HandleCloudKitError.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2233BF629AEEE4F00DB098D /* HandleCloudKitError.swift */; };
 		C225A84B29873B4D008FC699 /* SpotifyiOS.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C225A84A29873B4D008FC699 /* SpotifyiOS.framework */; };
 		C225A8512989E074008FC699 /* SpotResponses.swift in Sources */ = {isa = PBXBuildFile; fileRef = C225A8502989E074008FC699 /* SpotResponses.swift */; };
 		C22A180B296CF60600A7E9B8 /* StartMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = C22A180A296CF60600A7E9B8 /* StartMenu.swift */; };
@@ -90,7 +89,6 @@
 		C217020F29AC0C9500BE48DC /* SongPreviewPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SongPreviewPlayer.swift; sourceTree = "<group>"; };
 		C217B029294FE5F200544B17 /* Pods.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Pods.xcodeproj; path = Pods/Pods.xcodeproj; sourceTree = "<group>"; };
 		C21EACDF2998525000401DC8 /* WebVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebVC.swift; sourceTree = "<group>"; };
-		C2233BF629AEEE4F00DB098D /* HandleCloudKitError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HandleCloudKitError.swift; sourceTree = "<group>"; };
 		C223EB7B2A59DAE7002EFA23 /* DancingScript-VariableFont_wght.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "DancingScript-VariableFont_wght.ttf"; sourceTree = "<group>"; };
 		C223EB7D2A59DAEE002EFA23 /* AmaticSC-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "AmaticSC-Regular.ttf"; sourceTree = "<group>"; };
 		C225A84A29873B4D008FC699 /* SpotifyiOS.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = SpotifyiOS.framework; sourceTree = "<group>"; };
@@ -299,7 +297,6 @@
 			isa = PBXGroup;
 			children = (
 				C22A84DA29666123001244CC /* PersistenceController.swift */,
-				C2233BF629AEEE4F00DB098D /* HandleCloudKitError.swift */,
 				C22A84E429667587001244CC /* PersistenceController+History.swift */,
 				C22A84DE29666C23001244CC /* PersistenceController+Card.swift */,
 				C22A84E029666C84001244CC /* CoreDataHelper.swift */,
@@ -482,7 +479,6 @@
 				C208A3FC2A387C1F00F87739 /* AppState.swift in Sources */,
 				26AD8129281F05310069C3F0 /* FinalizeCardView.swift in Sources */,
 				260F68F5281DBDCD002E864B /* OccassionsMenu.swift in Sources */,
-				C2233BF729AEEE4F00DB098D /* HandleCloudKitError.swift in Sources */,
 				260F68FA281DBE61002E864B /* PhotoAPI.swift in Sources */,
 				C21EACE02998525000401DC8 /* WebVC.swift in Sources */,
 				C2950E822A4B6221001E175F /* PhotoOptionsView.swift in Sources */,
@@ -636,7 +632,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = Saloo/Saloo.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = Saloo/Preview_Content/;
@@ -675,7 +671,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.Saloo.saloo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
-				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = Sam;
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "Sam (App Store Distribution)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_OBJC_BRIDGING_HEADER = "Saloo-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
@@ -691,7 +687,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = Saloo/Saloo.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = Saloo/Preview_Content/;
@@ -730,7 +726,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.Saloo.saloo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
-				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = Sam;
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "Sam (App Store Distribution)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_OBJC_BRIDGING_HEADER = "Saloo-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
