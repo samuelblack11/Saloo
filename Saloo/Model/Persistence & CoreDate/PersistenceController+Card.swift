@@ -106,8 +106,8 @@ extension PersistenceController {
             let publicDatabase = PersistenceController.shared.cloudKitContainer.publicCloudDatabase
             let privateDatabase = PersistenceController.shared.cloudKitContainer.privateCloudDatabase
             let group = DispatchGroup()
-            saveRecord(with: cardRecord, for: publicDatabase, using: group, fileURL: fileURL)
-            //saveRecord(with: cardRecord, for: privateDatabase, using: group, fileURL: fileURL)
+            saveRecord(with: cardRecord, for: publicDatabase, using: group, fileURL: nil)
+            saveRecord(with: cardRecord, for: privateDatabase, using: group, fileURL: fileURL)
             group.notify(queue: .main) {
                 print("Context saved after both CloudKit operations completed")
                 do {try PersistenceController.shared.persistentContainer.viewContext.save(with: .addCoreCard)}

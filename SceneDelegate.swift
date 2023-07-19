@@ -16,7 +16,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
     var window: UIWindow?
     @State var userID = String()
     var acceptedShare: CKShare?
-    let coreCard = CoreCard(context: PersistenceController.shared.persistentContainer.newTaskContext())
+    let coreCard = CoreCard(context: PersistenceController.shared.persistentContainer.viewContext)
     var whichBoxForCKAccept: InOut.SendReceive?
     var gotRecord = false
     var connectToScene = true

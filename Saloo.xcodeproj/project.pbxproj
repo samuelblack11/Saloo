@@ -33,7 +33,6 @@
 		C22A84DB29666123001244CC /* PersistenceController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C22A84DA29666123001244CC /* PersistenceController.swift */; };
 		C22A84DF29666C23001244CC /* PersistenceController+Card.swift in Sources */ = {isa = PBXBuildFile; fileRef = C22A84DE29666C23001244CC /* PersistenceController+Card.swift */; };
 		C22A84E129666C84001244CC /* CoreDataHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = C22A84E029666C84001244CC /* CoreDataHelper.swift */; };
-		C22A84E529667587001244CC /* PersistenceController+History.swift in Sources */ = {isa = PBXBuildFile; fileRef = C22A84E429667587001244CC /* PersistenceController+History.swift */; };
 		C22A84EA29667929001244CC /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C22A84E929667929001244CC /* SceneDelegate.swift */; };
 		C22CAE4A298EAA3F003302C4 /* PrefMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = C22CAE49298EAA3F003302C4 /* PrefMenu.swift */; };
 		C237E6E1294E453600E472AD /* GridOfCards.swift in Sources */ = {isa = PBXBuildFile; fileRef = C237E6E0294E453600E472AD /* GridOfCards.swift */; };
@@ -46,7 +45,6 @@
 		C271B2E729702D2200760B23 /* AMResponses.swift in Sources */ = {isa = PBXBuildFile; fileRef = C271B2E629702D2200760B23 /* AMResponses.swift */; };
 		C27430FC286335F000E17B19 /* CameraCapture.swift in Sources */ = {isa = PBXBuildFile; fileRef = C27430FB286335F000E17B19 /* CameraCapture.swift */; };
 		C2764CEB2A06A9CA0083819B /* CleanMusicData.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2764CEA2A06A9CA0083819B /* CleanMusicData.swift */; };
-		C28194AA2A672C0100DEA47D /* HandleCloudKitError.swift in Sources */ = {isa = PBXBuildFile; fileRef = C28194A92A672C0100DEA47D /* HandleCloudKitError.swift */; };
 		C28B13F828E3E106008E2C4C /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C28B13F728E3E106008E2C4C /* AppDelegate.swift */; };
 		C2950E822A4B6221001E175F /* PhotoOptionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2950E812A4B6221001E175F /* PhotoOptionsView.swift */; };
 		C2950E892A4B6693001E175F /* MiniCollageMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2950E862A4B6693001E175F /* MiniCollageMenu.swift */; };
@@ -99,7 +97,6 @@
 		C22A84DA29666123001244CC /* PersistenceController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersistenceController.swift; sourceTree = "<group>"; };
 		C22A84DE29666C23001244CC /* PersistenceController+Card.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PersistenceController+Card.swift"; sourceTree = "<group>"; };
 		C22A84E029666C84001244CC /* CoreDataHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataHelper.swift; sourceTree = "<group>"; };
-		C22A84E429667587001244CC /* PersistenceController+History.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PersistenceController+History.swift"; sourceTree = "<group>"; };
 		C22A84E929667929001244CC /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 		C22CAE49298EAA3F003302C4 /* PrefMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrefMenu.swift; sourceTree = "<group>"; };
 		C237E6E0294E453600E472AD /* GridOfCards.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GridOfCards.swift; sourceTree = "<group>"; };
@@ -115,7 +112,6 @@
 		C271B2E629702D2200760B23 /* AMResponses.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AMResponses.swift; sourceTree = "<group>"; };
 		C27430FB286335F000E17B19 /* CameraCapture.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraCapture.swift; sourceTree = "<group>"; };
 		C2764CEA2A06A9CA0083819B /* CleanMusicData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CleanMusicData.swift; sourceTree = "<group>"; };
-		C28194A92A672C0100DEA47D /* HandleCloudKitError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HandleCloudKitError.swift; sourceTree = "<group>"; };
 		C28B13F728E3E106008E2C4C /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		C2950E812A4B6221001E175F /* PhotoOptionsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoOptionsView.swift; sourceTree = "<group>"; };
 		C2950E862A4B6693001E175F /* MiniCollageMenu.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MiniCollageMenu.swift; sourceTree = "<group>"; };
@@ -298,9 +294,7 @@
 		C2582A3C296F7151009F8FEC /* Persistence & CoreDate */ = {
 			isa = PBXGroup;
 			children = (
-				C28194A92A672C0100DEA47D /* HandleCloudKitError.swift */,
 				C22A84DA29666123001244CC /* PersistenceController.swift */,
-				C22A84E429667587001244CC /* PersistenceController+History.swift */,
 				C22A84DE29666C23001244CC /* PersistenceController+Card.swift */,
 				C22A84E029666C84001244CC /* CoreDataHelper.swift */,
 			);
@@ -463,9 +457,7 @@
 				260F68F7281DBDD2002E864B /* UnsplashCollectionView.swift in Sources */,
 				260F68FE281DBEBD002E864B /* PingDownloadResponse.swift in Sources */,
 				C217021029AC0C9500BE48DC /* SongPreviewPlayer.swift in Sources */,
-				C28194AA2A672C0100DEA47D /* HandleCloudKitError.swift in Sources */,
 				C237E6E1294E453600E472AD /* GridOfCards.swift in Sources */,
-				C22A84E529667587001244CC /* PersistenceController+History.swift in Sources */,
 				C2764CEB2A06A9CA0083819B /* CleanMusicData.swift in Sources */,
 				C2BC52DB2A1EE55B000BAF60 /* ReportOffensiveContentView.swift in Sources */,
 				C20DEF602986C9F30080AE03 /* SpotifyAPI.swift in Sources */,
@@ -636,7 +628,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = Saloo/Saloo.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = Saloo/Preview_Content/;
@@ -675,7 +667,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.Saloo.saloo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
-				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "Sam (App Store Distribution)";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = Sam;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_OBJC_BRIDGING_HEADER = "Saloo-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
@@ -691,7 +683,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = Saloo/Saloo.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = Saloo/Preview_Content/;
@@ -730,7 +722,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.Saloo.saloo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
-				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "Sam (App Store Distribution)";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = Sam;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_OBJC_BRIDGING_HEADER = "Saloo-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;

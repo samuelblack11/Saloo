@@ -66,6 +66,9 @@ struct Saloo_App: App {
                         if UserSession.shared.isSignedIn{
                             if CardsForDisplay.shared.needToLoadCards(){CardsForDisplay.shared.loadCoreCards{
                                 //CardsForDisplay.shared.fetchFromCloudKit()
+                                if !CardsForDisplay.shared.inboxCards.isEmpty && !CardsForDisplay.shared.outboxCards.isEmpty {
+                                    CardsForDisplay.shared.syncCloudKitAndCoreData()
+                                }
                             }}
                         }
                         else {appState.currentScreen = .login}

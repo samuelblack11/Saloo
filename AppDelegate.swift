@@ -15,7 +15,7 @@ import UIKit
 class AppDelegate: UIResponder, UIApplicationDelegate, ObservableObject {
     @State var acceptedShare: CKShare?
     @State var coreCard: CoreCard?
-    let coreCardB = CoreCard(context: PersistenceController.shared.persistentContainer.newTaskContext())
+    let coreCardB = CoreCard(context: PersistenceController.shared.persistentContainer.viewContext)
     @State var musicSub = MusicSubscription()
     @Published var deferToPreview = false
     @State var gotRecord = false

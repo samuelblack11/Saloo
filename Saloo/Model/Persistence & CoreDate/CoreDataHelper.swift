@@ -29,15 +29,16 @@ extension NSPersistentStore {
 
 extension NSManagedObject {
     var persistentStore: NSPersistentStore? {
-        let persistenceController = PersistenceController.shared
-        if persistenceController.privatePersistentStore.contains(manageObject: self) {
-            return persistenceController.privatePersistentStore
-        } else if persistenceController.publicPersistentStore.contains(manageObject: self) {
-            return persistenceController.publicPersistentStore
+        guard let context = self.managedObjectContext,
+              let persistentStoreCoordinator = context.persistentStoreCoordinator,
+              let persistentStore = persistentStoreCoordinator.persistentStores.first(where: { $0.contains(manageObject: self) })
+        else {
+            return nil
         }
-        return nil
+        return persistentStore
     }
 }
+
 
 extension NSManagedObjectContext {
     /**
