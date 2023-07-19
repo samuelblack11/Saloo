@@ -116,7 +116,8 @@ struct ContentView: View {
         }
     }
     func computeCardType(from card: CoreCard) -> String {
-        if appDelegate.musicSub.type == .Neither && (card.spotPreviewURL == "" || card.songPreviewURL == "") {
+        let noPreview = (card.spotPreviewURL ?? "").isEmpty && (card.songPreviewURL ?? "").isEmpty
+        if appDelegate.musicSub.type == .Neither && noPreview {
             CardPrep.shared.cardType = "noMusicNoGift"
             return "noMusicNoGift"
         }

@@ -133,7 +133,8 @@ class CleanMusicData {
     }
     
     func removeSubstrings(from string: String, removeList: [String]) -> String {
-        var result = string
+        var result = string.replacingOccurrences(of: "&", with: "And", options: .regularExpression, range: nil)
+
         for pattern in removeList {
             let regex = try? NSRegularExpression(pattern: pattern, options: .caseInsensitive)
             let range = NSRange(location: 0, length: result.utf16.count)

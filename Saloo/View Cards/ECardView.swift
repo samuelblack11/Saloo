@@ -96,7 +96,8 @@ struct eCardView: View {
                 catch let error {print("An error occurred: \(error)")}
             }
             DispatchQueue.main.async {
-                if appDelegate.musicSub.type == .Neither && (spotPreviewURL == "" || songPreviewURL == "") {
+                let noPreview = (spotPreviewURL ?? "").isEmpty && (songPreviewURL ?? "").isEmpty
+                if appDelegate.musicSub.type == .Neither && noPreview {
                     cardType = "noMusicNoGift"
                     print("preview logic true")
                 }
@@ -114,7 +115,6 @@ struct eCardView: View {
                     VStack {CoverViewTall(); Spacer(); CollageView()}
                     VStack {
                         VStack{NoteViewSquare()}.frame(height: UIScreen.main.bounds.height / 2.3)
-
                         Spacer()
                         MusicView
                     }
@@ -204,6 +204,7 @@ struct eCardView: View {
                 annotationView()
             }
         }
+        .onAppear{print(unsplashImageURL)}
         .frame(width: UIScreen.main.bounds.width/1.05, height: UIScreen.main.bounds.height / 4.0)
         .clipped() // This will clip the VStack to its bounds
     }
@@ -223,6 +224,7 @@ struct eCardView: View {
                 annotationView()
             }
         }
+        .onAppear{print(unsplashImageURL)}
         .frame(width: UIScreen.main.bounds.width/1.05, height: UIScreen.main.bounds.height / 3.1)
         .clipped() // This will clip the VStack to its bounds
     }
@@ -241,6 +243,7 @@ struct eCardView: View {
             .frame(maxWidth: UIScreen.main.bounds.height / 2.2, maxHeight: UIScreen.main.bounds.height / 2.3)
             annotationView()
         }
+        .onAppear{print(unsplashImageURL)}
     }
 
     func NoteView() -> some View {
@@ -272,8 +275,12 @@ struct eCardView: View {
 
     var MusicView: some View {
         VStack {
-            if (deferToPreview == true || spotName == "LookupFailed"  || songName == "LookupFailed" || (appDelegate.musicSub.type == .Neither && (spotPreviewURL != "" || songPreviewURL != "")))
-                {
+            let isDeferToPreview = deferToPreview
+            let isSpotLookupFailed = spotName == "LookupFailed"
+            let isSongLookupFailed = songName == "LookupFailed"
+            let hasPreview = !(spotPreviewURL ?? "").isEmpty || !(songPreviewURL ?? "").isEmpty
+            let isSubTypeNeitherWithPreview = appDelegate.musicSub.type == .Neither && hasPreview
+            if isDeferToPreview || isSpotLookupFailed || isSongLookupFailed || isSubTypeNeitherWithPreview {
                 if songAddedUsing! == "Spotify"  {
                     SongPreviewPlayer(songID: spotID, songName: spotName, songArtistName: spotArtistName, songArtImageData: spotImageData, songDuration: spotSongDuration, songPreviewURL: spotPreviewURL, songURL: spotSongURL,confirmButton: false, songAddedUsing: songAddedUsing!, chosenCard: $chosenCard)
                         .frame(maxHeight: UIScreen.main.bounds.height / 2.3, alignment: .bottom)
@@ -293,6 +300,20 @@ struct eCardView: View {
                         .frame(maxHeight: UIScreen.main.bounds.height / 2.3, alignment: .bottom)
                 }
             }
+        .onAppear {
+            let isDeferToPreview = deferToPreview
+            let isSpotLookupFailed = spotName == "LookupFailed"
+            let isSongLookupFailed = songName == "LookupFailed"
+            let hasPreview = !(spotPreviewURL ?? "").isEmpty || !(songPreviewURL ?? "").isEmpty
+            let isSubTypeNeither = appDelegate.musicSub.type == .Neither
+            let isSubTypeNeitherWithPreview = isSubTypeNeither && hasPreview
+            print("&&&&&&&&")
+            print(isDeferToPreview)
+            print(isSpotLookupFailed)
+            print(isSongLookupFailed)
+            print(isSubTypeNeither)
+            print(isSubTypeNeitherWithPreview)
+        }
     }
     
     func getRatio(from imageDataString: String) -> Double {

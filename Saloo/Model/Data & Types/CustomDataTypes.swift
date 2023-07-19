@@ -194,6 +194,46 @@ class CardsForDisplay: ObservableObject {
         }
     }
     
+    
+    func deleteAllFromDB(dataBase: CKDatabase) {
+        let predicate = NSPredicate(value: true) // Match all records
+        let query = CKQuery(recordType: "CD_CoreCard", predicate: predicate)
+        
+        dataBase.fetch(withQuery: query, inZoneWith: nil, desiredKeys: nil, resultsLimit: 100) { result in
+            switch result {
+            case .success(let (matchResults, _)):
+                matchResults.forEach { (recordID, fetchResult) in
+                    switch fetchResult {
+                    case .success(let record):
+                        dataBase.delete(withRecordID: record.recordID) { _, error in
+                            if let error = error {
+                                print("Error deleting record: \(error)")
+                            } else {
+                                print("Successfully deleted record from CloudKit.")
+                            }
+                        }
+                    case .failure(let error):
+                        print("Error fetching individual record: \(error)")
+                    }
+                }
+            case .failure(let error):
+                print("Error fetching records: \(error)")
+            }
+        }
+    }
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     func deleteFromDB(uniqueName: String, dataBase: CKDatabase) {
         print("Called deleteFromPublic")
         let predicate = NSPredicate(format: "CD_uniqueName == %@", uniqueName)

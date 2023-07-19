@@ -30,6 +30,7 @@ struct LaunchView: View {
                 if isFirstLaunch{
                     SignInButtonView(isPresentedFromECardView: $isPresentedFromECardView, cardFromShare: $cardFromShare)
                         .onAppear{cardsForDisplay.fetchFromCloudKit()}
+                        //.onAppear{cardsForDisplay.deleteAllFromDB(dataBase: PersistenceController.shared.cloudKitContainer.privateCloudDatabase)}
                 }
                 LoadingOverlay(hasShownLaunchView: $hasShownLaunchView)
             }
