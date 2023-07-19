@@ -131,11 +131,15 @@ class CardsForDisplay: ObservableObject {
             self.inboxCards.forEach { print($0.uniqueName) }
             if !self.inboxCards.contains(where: { $0.uniqueName == card.uniqueName }) {
                 self.inboxCards.append(card)
-                self.parseRecord(record: record) { (coreCard,record) in
+                self.parseRecord(record: record) { (coreCard, record) in
                     if coreCard != nil {
                         self.saveContext()
-                        self.saveRecord(with: record!, for: PersistenceController.shared.cloudKitContainer.privateCloudDatabase)
-                        print("Record parsed and saved successfully")
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+                            self.coreCardToRecord(card: coreCard!) { record2 in
+                                self.saveRecord(with: record2!, for: PersistenceController.shared.cloudKitContainer.privateCloudDatabase)
+                                print("Record parsed and saved successfully")
+                            }
+                        }
                     }
                 }
                 
@@ -222,12 +226,12 @@ class CardsForDisplay: ObservableObject {
         let privateDatabase = PersistenceController.shared.cloudKitContainer.privateCloudDatabase
         let publicDatabase = PersistenceController.shared.cloudKitContainer.publicCloudDatabase
         
-        syncDatabaseWithCoreData(database: privateDatabase)
-        syncDatabaseWithCoreData(database: publicDatabase, isPublicDatabase: true)
+        syncPrivateDatabaseWithCoreData(database: privateDatabase)
+        syncPublicDatabaseWithCoreData(database: publicDatabase)
     }
 
     
-    func syncDatabaseWithCoreData(database: CKDatabase, isPublicDatabase: Bool = false) {
+    func syncPrivateDatabaseWithCoreData(database: CKDatabase) {
         print("DATABASE")
         print(database.databaseScope.rawValue)
         let predicate = NSPredicate(value: true)
@@ -249,11 +253,7 @@ class CardsForDisplay: ObservableObject {
             let request = CoreCard.createFetchRequest()
 
             do {
-                var cardsFromCore = try PersistenceController.shared.persistentContainer.viewContext.fetch(request)
-                // Filter cardsFromCore based on owner if isPublicDatabase
-                if isPublicDatabase, let currentUserID = UserDefaults.standard.object(forKey: "SalooUserID") as? String {
-                    cardsFromCore = cardsFromCore.filter { $0.salooUserID == currentUserID }
-                }
+                let cardsFromCore = try PersistenceController.shared.persistentContainer.viewContext.fetch(request)
 
                 // Filter out cards with empty uniqueName
                 let validCardsFromCore = cardsFromCore.filter { !$0.uniqueName.isEmpty }
@@ -285,6 +285,62 @@ class CardsForDisplay: ObservableObject {
             }
         }
     }
+
+    func syncPublicDatabaseWithCoreData(database: CKDatabase) {
+        guard let currentUserID = UserDefaults.standard.object(forKey: "SalooUserID") as? String else {
+            print("User ID not found")
+            return
+        }
+        
+        print("PUBLIC DATABASE")
+        print(database.databaseScope.rawValue)
+        let predicate = NSPredicate(format: "CD_salooUserID = %@", currentUserID)
+        let query = CKQuery(recordType: "CD_CoreCard", predicate: predicate)
+
+        database.perform(query, inZoneWith: nil) { (records, error) in
+            if let error = error {
+                print("CloudKit fetch error: \(error.localizedDescription)")
+                return
+            }
+            guard let records = records else { return }
+
+            // Fetch all uniqueNames from CloudKit for the current user and filter out empty ones
+            let cloudKitUniqueNames = records.compactMap { ($0["CD_uniqueName"] as? String, $0.recordID) }
+            let validCloudKitUniqueNames = cloudKitUniqueNames.filter { uniqueName, _ in !uniqueName!.isEmpty }
+            
+            // Fetch all uniqueNames from Core Data for the current user
+            let request = CoreCard.createFetchRequest()
+            request.predicate = NSPredicate(format: "salooUserID = %@", currentUserID)
+
+            do {
+                let cardsFromCore = try PersistenceController.shared.persistentContainer.viewContext.fetch(request)
+
+                // Filter out cards with empty uniqueName
+                let validCardsFromCore = cardsFromCore.filter { !$0.uniqueName.isEmpty }
+
+                let coreDataUniqueNames = validCardsFromCore.map { $0.uniqueName }
+                
+                // Find uniqueNames that exist in CloudKit but not in Core Data and delete them
+                for (uniqueName, recordID) in validCloudKitUniqueNames where !coreDataUniqueNames.contains(uniqueName!) {
+                    database.delete(withRecordID: recordID) { (recordID, error) in
+                        if let error = error {print("Failed to delete record: \(error)")}
+                        else {print("Deleted record: \(recordID?.recordName ?? "unknown")")}
+                    }
+                }
+                
+                // Find Core Data records that don't exist in CloudKit and upload them
+                for card in validCardsFromCore where !validCloudKitUniqueNames.map({ $0.0 }).contains(card.uniqueName) {
+                    self.coreCardToRecord(card: card) { cardRecord in
+                        self.saveRecord(with: cardRecord!, for: database)
+                    }
+                }
+
+            } catch {
+                print("Core Data fetch error: \(error)")
+            }
+        }
+    }
+
 
 
 
