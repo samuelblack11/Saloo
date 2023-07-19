@@ -72,6 +72,8 @@ class PersistenceController: NSObject, ObservableObject {
         container.persistentStoreDescriptions.append(privateStoreDescription)
         container.loadPersistentStores(completionHandler: { (loadedStoreDescription, error) in
             guard error == nil else {
+                print("Failed to load persistent stores: \(error)")
+
                 fatalError("#\(#function): Failed to load persistent stores:\(error!)")
             }
             guard let cloudKitContainerOptions = loadedStoreDescription.cloudKitContainerOptions else {
@@ -108,6 +110,18 @@ class PersistenceController: NSObject, ObservableObject {
          */
         do {try container.viewContext.setQueryGenerationFrom(.current)}
         catch { fatalError("#\(#function): Failed to pin viewContext to the current generation:\(error)")}
+        /**
+         Observe the following notifications:
+         - The remote change notifications from container.persistentStoreCoordinator.
+         - The .NSManagedObjectContextDidSave notifications from any context.
+         - The event change notifications from the container.
+         */
+        NotificationCenter.default.addObserver(self, selector: #selector(storeRemoteChange(_:)),
+                                               name: .NSPersistentStoreRemoteChange,
+                                               object: container.persistentStoreCoordinator)
+        NotificationCenter.default.addObserver(self, selector: #selector(containerEventChanged(_:)),
+                                               name: NSPersistentCloudKitContainer.eventChangedNotification,
+                                               object: container)
         #endif
         return container
     }()

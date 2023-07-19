@@ -151,7 +151,13 @@ class CardsForDisplay: ObservableObject {
             self.inboxCards.forEach { print($0.uniqueName) }
             if !self.inboxCards.contains(where: { $0.uniqueName == card.uniqueName }) {
                 self.inboxCards.append(card)
-                generateModifyRecordsOperation(with: record!, for: privateDatabase, using: group)
+                self.parseRecord(record: record) { coreCard in
+                    if coreCard != nil {
+                        self.saveContext()
+                        print("Record parsed and saved successfully")
+                    }
+                }
+                
             }
         case .outbox:
             print("Current cards in outbox:")
@@ -170,7 +176,7 @@ class CardsForDisplay: ObservableObject {
         }
     }
     
-    
+
     
     
     func deleteCoreCard(card: CoreCard, box: InOut.SendReceive) {
@@ -270,21 +276,47 @@ class CardsForDisplay: ObservableObject {
         }
     }
 
-
-    
-    
-    func fetchFromCloudKit() {
-          self.findAndDeleteCloudKitOrphans()
+    func fetchAndDeleteFromCloudKit() {
+          //self.findAndDeleteCloudKitOrphans()
           let privateDatabase = PersistenceController.shared.cloudKitContainer.privateCloudDatabase
           let predicate = NSPredicate(value: true) // Fetches all records
           let query = CKQuery(recordType: "CD_CoreCard", predicate: predicate)
-
+        privateDatabase.fetch(withQuery: query, inZoneWith: nil, desiredKeys: nil, resultsLimit: 1) { result in
+            switch result {
+            case .success(let (matchResults, _)):
+                matchResults.forEach { (recordID, fetchResult) in
+                    switch fetchResult {
+                    case .success(let record):
+                        privateDatabase.delete(withRecordID: record.recordID) { _, error in
+                            if let error = error {
+                                print("Error deleting record: \(error)")
+                            } else {
+                                print("Successfully deleted record from CloudKit.")
+                            }
+                        }
+                    case .failure(let error):
+                        print("Error fetching individual record: \(error)")
+                    }
+                }
+            case .failure(let error):
+                print("Error fetching records: \(error)")
+            }
+        }
+      }
+    
+    func fetchFromCloudKit() {
+          //self.findAndDeleteCloudKitOrphans()
+          let privateDatabase = PersistenceController.shared.cloudKitContainer.privateCloudDatabase
+          let predicate = NSPredicate(value: true) // Fetches all records
+          let query = CKQuery(recordType: "CD_CoreCard", predicate: predicate)
           privateDatabase.perform(query, inZoneWith: nil) { (records, error) in
               if let error = error {
                   print("CloudKit fetch error: \(error.localizedDescription)")
               } else if let records = records {
                   let group = DispatchGroup()
                   for record in records {
+                      print("RECORD......")
+                      print(record)
                       group.enter()
                       self.parseRecord(record: record) { coreCard in
                           if coreCard != nil {
@@ -328,15 +360,6 @@ class CardsForDisplay: ObservableObject {
             do {
                 let cardsFromCore = try PersistenceController.shared.persistentContainer.viewContext.fetch(request)
                 let validCardsFromCore = cardsFromCore.filter { $0.uniqueName != "" && $0.unsplashImageURL != nil && $0.coverSizeDetails != nil && $0.collage != nil && $0.salooUserID != nil}
-                // Log each field of each card in cardsFromCore
-                for card in validCardsFromCore {
-                    print("Unique Name: \(card.uniqueName ?? "nil")")
-                    print("Unsplash Image URL: \(card.unsplashImageURL ?? "nil")")
-                    print("Cover Size Details: \(card.coverSizeDetails ?? "nil")")
-                    //print("Collage: \(card.collage ?? "nil")")
-                    print("Saloo User ID: \(card.salooUserID ?? "nil")")
-                    // Add more fields if you need
-                }
                 self.outboxCards = validCardsFromCore.filter {card in return self.userID!.contains(card.salooUserID!)}
                 self.inboxCards = validCardsFromCore.filter { !self.outboxCards.contains($0) }
                 self.isLoading = false

@@ -29,7 +29,7 @@ struct LaunchView: View {
                 Image("logo180").frame(maxWidth: UIScreen.screenWidth/2,maxHeight: UIScreen.screenHeight/3, alignment: .center)
                 if isFirstLaunch{
                     SignInButtonView(isPresentedFromECardView: $isPresentedFromECardView, cardFromShare: $cardFromShare)
-                        .onAppear{cardsForDisplay.fetchFromCloudKit()}
+                        //.onAppear{cardsForDisplay.fetchFromCloudKit()}
                 }
                 LoadingOverlay(hasShownLaunchView: $hasShownLaunchView)
             }

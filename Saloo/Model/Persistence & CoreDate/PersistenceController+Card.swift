@@ -12,7 +12,7 @@ import SwiftUI
 extension PersistenceController {
     func addCoreCard(noteField: NoteField, chosenOccassion: Occassion, an1: String, an2: String, an2URL: String, an3: String, an4: String, chosenObject: ChosenCoverImageObject, collageImage: CollageImage, context: NSManagedObjectContext, songID: String?, spotID: String?, spotName: String?, spotArtistName: String?, songName: String?, songArtistName: String?, songAlbumName: String?, songArtImageData: Data?, songPreviewURL: String?, songDuration: String?, inclMusic: Bool, spotImageData: Data?, spotSongDuration: String?, spotPreviewURL: String?, songAddedUsing: String?, cardType: String, appleAlbumArtist: String?, spotAlbumArtist: String?, salooUserID: String, appleSongURL: String?, spotSongURL: String?, completion: @escaping (CoreCard) -> Void) {
         var createdCoreCard: CoreCard!
-        context.performAndWait {
+        PersistenceController.shared.persistentContainer.viewContext.performAndWait {
             let id = CKRecord.ID(recordName: UUID().uuidString)
             print("ID....\(id)")
             let cardRecord = CKRecord(recordType: "CD_CoreCard", recordID: id)
@@ -101,17 +101,17 @@ extension PersistenceController {
             do {try collageImage.collageImage.write(to: fileURL)}
             catch {print("Failed to write image data to disk: \(error)")}
             let collageAsset = CKAsset(fileURL: fileURL)
-            //cardRecord["CD_collage"] = collageImage.collageImage
             cardRecord["CD_collageAsset"] = collageAsset
             coreCard.creator = UserDefaults.standard.object(forKey: "SalooUserID") as? String
             let publicDatabase = PersistenceController.shared.cloudKitContainer.publicCloudDatabase
-            //let privateDatabase = PersistenceController.shared.cloudKitContainer.privateCloudDatabase
+            let privateDatabase = PersistenceController.shared.cloudKitContainer.privateCloudDatabase
             let group = DispatchGroup()
             saveRecord(with: cardRecord, for: publicDatabase, using: group, fileURL: fileURL)
             //saveRecord(with: cardRecord, for: privateDatabase, using: group, fileURL: fileURL)
             group.notify(queue: .main) {
                 print("Context saved after both CloudKit operations completed")
-                context.save(with: .addCoreCard)
+                do {try PersistenceController.shared.persistentContainer.viewContext.save(with: .addCoreCard)}
+                catch {print("PERSISTENCE ERROR>>>>>>"); print(error.localizedDescription)}
                 createdCoreCard = coreCard
                 completion(createdCoreCard)
                 print("Save Successful")
@@ -119,30 +119,15 @@ extension PersistenceController {
         }
     }
     
-    func saveRecord(with record: CKRecord, for database: CKDatabase, using group: DispatchGroup, fileURL: URL) {
+    func saveRecord(with record: CKRecord, for database: CKDatabase, using group: DispatchGroup, fileURL: URL?) {
         group.enter()
         database.save(record) { savedRecord, error in
-            if let error = error {
-                print("CloudKit Save Error: \(error.localizedDescription)")
-                //ErrorMessageViewModel.shared.errorMessage = error.localizedDescription
-                //if database.databaseScope == .public {
-                //    GettingRecord.shared.shareFail = true
-                //    DispatchQueue.main.asyncAfter(deadline: .now() + 20) {
-                //        GettingRecord.shared.shareFail = false
-                //    }
-                //}
-            } else {
-                print("Record Saved Successfully to \(database.databaseScope == .public ? "Public" : "Private") Database!")
-                //ErrorMessageViewModel.shared.errorMessage = "Save Successful"
-                //if database.databaseScope == .public {
-                //    GettingRecord.shared.shareSuccess = true
-                //    DispatchQueue.main.asyncAfter(deadline: .now() + 10) {
-                //        GettingRecord.shared.shareSuccess = false
-                //    }
-                //}
+            if let error = error {print("CloudKit Save Error: \(error.localizedDescription)")}
+            else {print("Record Saved Successfully to \(database.databaseScope == .public ? "Public" : "Private") Database!")}
+            if fileURL != nil {
+                do {try FileManager.default.removeItem(at: fileURL!)}
+                catch {print("Failed to remove temporary image file: \(error)")}
             }
-            do {try FileManager.default.removeItem(at: fileURL)}
-            catch {print("Failed to remove temporary image file: \(error)")}
             group.leave()
         }
     }

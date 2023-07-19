@@ -65,7 +65,7 @@ struct Saloo_App: App {
                     if newPhase == .active {
                         if UserSession.shared.isSignedIn{
                             if CardsForDisplay.shared.needToLoadCards(){CardsForDisplay.shared.loadCoreCards{
-                                
+                                //CardsForDisplay.shared.fetchFromCloudKit()
                             }}
                         }
                         else {appState.currentScreen = .login}

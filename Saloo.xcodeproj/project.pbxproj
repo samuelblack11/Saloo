@@ -46,6 +46,7 @@
 		C271B2E729702D2200760B23 /* AMResponses.swift in Sources */ = {isa = PBXBuildFile; fileRef = C271B2E629702D2200760B23 /* AMResponses.swift */; };
 		C27430FC286335F000E17B19 /* CameraCapture.swift in Sources */ = {isa = PBXBuildFile; fileRef = C27430FB286335F000E17B19 /* CameraCapture.swift */; };
 		C2764CEB2A06A9CA0083819B /* CleanMusicData.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2764CEA2A06A9CA0083819B /* CleanMusicData.swift */; };
+		C28194AA2A672C0100DEA47D /* HandleCloudKitError.swift in Sources */ = {isa = PBXBuildFile; fileRef = C28194A92A672C0100DEA47D /* HandleCloudKitError.swift */; };
 		C28B13F828E3E106008E2C4C /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C28B13F728E3E106008E2C4C /* AppDelegate.swift */; };
 		C2950E822A4B6221001E175F /* PhotoOptionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2950E812A4B6221001E175F /* PhotoOptionsView.swift */; };
 		C2950E892A4B6693001E175F /* MiniCollageMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2950E862A4B6693001E175F /* MiniCollageMenu.swift */; };
@@ -114,6 +115,7 @@
 		C271B2E629702D2200760B23 /* AMResponses.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AMResponses.swift; sourceTree = "<group>"; };
 		C27430FB286335F000E17B19 /* CameraCapture.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraCapture.swift; sourceTree = "<group>"; };
 		C2764CEA2A06A9CA0083819B /* CleanMusicData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CleanMusicData.swift; sourceTree = "<group>"; };
+		C28194A92A672C0100DEA47D /* HandleCloudKitError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HandleCloudKitError.swift; sourceTree = "<group>"; };
 		C28B13F728E3E106008E2C4C /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		C2950E812A4B6221001E175F /* PhotoOptionsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoOptionsView.swift; sourceTree = "<group>"; };
 		C2950E862A4B6693001E175F /* MiniCollageMenu.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MiniCollageMenu.swift; sourceTree = "<group>"; };
@@ -296,6 +298,7 @@
 		C2582A3C296F7151009F8FEC /* Persistence & CoreDate */ = {
 			isa = PBXGroup;
 			children = (
+				C28194A92A672C0100DEA47D /* HandleCloudKitError.swift */,
 				C22A84DA29666123001244CC /* PersistenceController.swift */,
 				C22A84E429667587001244CC /* PersistenceController+History.swift */,
 				C22A84DE29666C23001244CC /* PersistenceController+Card.swift */,
@@ -460,6 +463,7 @@
 				260F68F7281DBDD2002E864B /* UnsplashCollectionView.swift in Sources */,
 				260F68FE281DBEBD002E864B /* PingDownloadResponse.swift in Sources */,
 				C217021029AC0C9500BE48DC /* SongPreviewPlayer.swift in Sources */,
+				C28194AA2A672C0100DEA47D /* HandleCloudKitError.swift in Sources */,
 				C237E6E1294E453600E472AD /* GridOfCards.swift in Sources */,
 				C22A84E529667587001244CC /* PersistenceController+History.swift in Sources */,
 				C2764CEB2A06A9CA0083819B /* CleanMusicData.swift in Sources */,

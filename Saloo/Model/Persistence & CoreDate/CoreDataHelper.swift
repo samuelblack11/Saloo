@@ -58,6 +58,7 @@ extension NSManagedObjectContext {
         if hasChanges {
             do {
                 try save()
+                print("CoreDataContextSave successful")
             } catch {
                 print("\(#function): Failed to save Core Data context for \(contextualInfo.rawValue): \(error)")
             }
