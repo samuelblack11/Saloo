@@ -122,26 +122,6 @@ class CardsForDisplay: ObservableObject {
     @Published var isLoading = false
     let privateDatabase = PersistenceController.shared.cloudKitContainer.privateCloudDatabase
     let group = DispatchGroup()
-
-    func generateModifyRecordsOperation(with record: CKRecord, for database: CKDatabase, using group: DispatchGroup) -> CKModifyRecordsOperation {
-        let operation = CKModifyRecordsOperation(recordsToSave: [record])
-        //GettingRecord.shared.addedToInbox = true
-        operation.savePolicy = .allKeys
-        operation.modifyRecordsCompletionBlock = { savedRecords, deletedRecordIDs, error in
-            if let error = error {
-                print("CloudKit Save Error: \(error.localizedDescription)")
-                //ErrorMessageViewModel.shared.errorMessage = error.localizedDescription
-                //DispatchQueue.main.asyncAfter(deadline: .now() + 5) {GettingRecord.shared.addedToInbox = false}
-            } else {
-                print("Record Saved Successfully to \(database.databaseScope == .public ? "Public" : "Private") Database!")
-                //ErrorMessageViewModel.shared.errorMessage = "Added to Inbox"
-                //DispatchQueue.main.asyncAfter(deadline: .now() + 5) {GettingRecord.shared.addedToInbox = false}
-            }
-            group.leave()
-        }
-        group.enter()
-        return operation
-    }
     
     func addCoreCard(card: CoreCard, box: InOut.SendReceive, record: CKRecord?) {
         print("Adding card with uniqueName: \(card.uniqueName)")
@@ -222,11 +202,8 @@ class CardsForDisplay: ObservableObject {
                         switch fetchResult {
                         case .success(let record):
                             dataBase.delete(withRecordID: record.recordID) { _, error in
-                                if let error = error {
-                                    print("Error deleting record: \(error)")
-                                } else {
-                                    print("Successfully deleted record from CloudKit.")
-                                }
+                                if let error = error {print("Error deleting record: \(error)")}
+                                else {print("Successfully deleted record from CloudKit.")}
                             }
                         case .failure(let error):
                             print("Error fetching individual record: \(error)")
@@ -238,103 +215,83 @@ class CardsForDisplay: ObservableObject {
             }
     }
 
-    func findAndDeleteCloudKitOrphans() {
-        let privateDatabase = PersistenceController.shared.cloudKitContainer.privateCloudDatabase
-        let predicate = NSPredicate(value: true)
-        let query = CKQuery(recordType: "CD_CoreCard", predicate: predicate)
-        
-        privateDatabase.perform(query, inZoneWith: nil) { (records, error) in
-            if let error = error {
-                print("CloudKit fetch error: \(error.localizedDescription)")
-            } else if let records = records {
-                // Fetch all uniqueNames from CloudKit
-                let cloudKitUniqueNames = records.compactMap { ($0["CD_uniqueName"] as? String, $0.recordID) }
-                
-                // Fetch all uniqueNames from Core Data
-                let request = CoreCard.createFetchRequest()
-                do {
-                    let cardsFromCore = try PersistenceController.shared.persistentContainer.viewContext.fetch(request)
-                    let coreDataUniqueNames = cardsFromCore.compactMap { $0.uniqueName }
-                    
-                    // Find uniqueNames that exist in CloudKit but not in Core Data
-                    let cloudKitOrphans = cloudKitUniqueNames.filter { uniqueName, _ in
-                        return !coreDataUniqueNames.contains(uniqueName!)
-                    }
-                    
-                    // Print orphans
-                    print("Found orphans in CloudKit: \(cloudKitOrphans)")
-                    
-                    // Delete orphans
-                    for (_, recordID) in cloudKitOrphans {
-                        privateDatabase.delete(withRecordID: recordID) { (recordID, error) in
-                            if let error = error {
-                                print("Failed to delete record: \(error)")
-                            } else {
-                                print("Deleted record: \(recordID?.recordName ?? "unknown")")
-                            }
-                        }
-                    }
-                    
-                } catch {
-                    print("Core Data fetch error: \(error)")
-                }
-            }
-        }
-    }
+
     
     func syncCloudKitAndCoreData() {
+        print("Called syncCloudKitAndCoreData")
         let privateDatabase = PersistenceController.shared.cloudKitContainer.privateCloudDatabase
+        let publicDatabase = PersistenceController.shared.cloudKitContainer.publicCloudDatabase
+        
+        syncDatabaseWithCoreData(database: privateDatabase)
+        syncDatabaseWithCoreData(database: publicDatabase, isPublicDatabase: true)
+    }
+
+    
+    func syncDatabaseWithCoreData(database: CKDatabase, isPublicDatabase: Bool = false) {
+        print("DATABASE")
+        print(database.databaseScope.rawValue)
         let predicate = NSPredicate(value: true)
         let query = CKQuery(recordType: "CD_CoreCard", predicate: predicate)
-        
-        privateDatabase.perform(query, inZoneWith: nil) { (records, error) in
+
+        database.perform(query, inZoneWith: nil) { (records, error) in
             if let error = error {
                 print("CloudKit fetch error: \(error.localizedDescription)")
-            } else if let records = records {
-                // Fetch all uniqueNames from CloudKit
-                let cloudKitUniqueNames = records.compactMap { ($0["CD_uniqueName"] as? String, $0.recordID) }
-                // Fetch all uniqueNames from Core Data
-                let request = CoreCard.createFetchRequest()
-                do {
-                    let cardsFromCore = try PersistenceController.shared.persistentContainer.viewContext.fetch(request)
-                    let coreDataUniqueNames = cardsFromCore.compactMap { $0.uniqueName }
-                    
-                    // Find uniqueNames that exist in CloudKit but not in Core Data
-                    let cloudKitOrphans = cloudKitUniqueNames.filter { uniqueName, _ in
-                        return !coreDataUniqueNames.contains(uniqueName!)
-                    }
-                    // Print orphans
-                    print("Found orphans in CloudKit: \(cloudKitOrphans)")
-                    // Delete orphans
-                    for (_, recordID) in cloudKitOrphans {
-                        privateDatabase.delete(withRecordID: recordID) { (recordID, error) in
-                            if let error = error {print("Failed to delete record: \(error)")}
-                            else {print("Deleted record: \(recordID?.recordName ?? "unknown")")}
-                        }
-                    }
-                    // Find Core Data records that don't exist in CloudKit
-                    let coreDataOrphans = cardsFromCore.filter { card in
-                        return !cloudKitUniqueNames.map { $0.0 }.contains(card.uniqueName)
-                    }
-                    // Print coreDataOrphans
-                    print("Found orphans in Core Data: \(coreDataOrphans)")
-                    // Upload coreDataOrphans to CloudKit
-                    for card in coreDataOrphans {
-                        self.coreCardToRecord(card: card) { cardRecord in
-                            self.saveRecord(with: cardRecord!, for: PersistenceController.shared.cloudKitContainer.privateCloudDatabase)
-                        }
-                    }
+                return
+            }
+            print("Check1")
+            guard let records = records else { return }
 
+            // Fetch all uniqueNames from CloudKit and filter out empty ones
+            let cloudKitUniqueNames = records.compactMap { ($0["CD_uniqueName"] as? String, $0.recordID) }
+            let validCloudKitUniqueNames = cloudKitUniqueNames.filter { uniqueName, _ in !uniqueName!.isEmpty }
+            
+            // Fetch all uniqueNames from Core Data
+            let request = CoreCard.createFetchRequest()
+
+            do {
+                var cardsFromCore = try PersistenceController.shared.persistentContainer.viewContext.fetch(request)
+                // Filter cardsFromCore based on owner if isPublicDatabase
+                if isPublicDatabase, let currentUserID = UserDefaults.standard.object(forKey: "SalooUserID") as? String {
+                    cardsFromCore = cardsFromCore.filter { $0.salooUserID == currentUserID }
                 }
-                catch {print("Core Data fetch error: \(error)")}
+
+                // Filter out cards with empty uniqueName
+                let validCardsFromCore = cardsFromCore.filter { !$0.uniqueName.isEmpty }
+
+                let coreDataUniqueNames = validCardsFromCore.map { $0.uniqueName }
+                print("Check2")
+                print(coreDataUniqueNames)
+                
+                // Find uniqueNames that exist in CloudKit but not in Core Data and delete them
+                for (uniqueName, recordID) in validCloudKitUniqueNames where !coreDataUniqueNames.contains(uniqueName!) {
+                    database.delete(withRecordID: recordID) { (recordID, error) in
+                        if let error = error {print("Failed to delete record: \(error)")}
+                        else {print("Deleted record: \(recordID?.recordName ?? "unknown")")}
+                    }
+                }
+                print("Check3")
+                
+                // Find Core Data records that don't exist in CloudKit and upload them
+                for card in validCardsFromCore where !validCloudKitUniqueNames.map({ $0.0 }).contains(card.uniqueName) {
+                    print("Check4")
+                    print(card.uniqueName)
+                    self.coreCardToRecord(card: card) { cardRecord in
+                        self.saveRecord(with: cardRecord!, for: database)
+                    }
+                }
+
+            } catch {
+                print("Core Data fetch error: \(error)")
             }
         }
     }
+
+
 
     func coreCardToRecord(card: CoreCard, completion: @escaping (CKRecord?) -> Void) {
         let recordID = CKRecord.ID(recordName: card.uniqueName)
         let record = CKRecord(recordType: "CD_CoreCard", recordID: recordID)
-        
+        print("Check5")
         record["CD_occassion"] = card.occassion
         record["CD_recipient"] = card.recipient
         record["CD_sender"] = card.sender
@@ -372,7 +329,7 @@ class CardsForDisplay: ObservableObject {
         record["CD_salooUserID"] = card.salooUserID
         record["CD_coverSizeDetails"] = card.coverSizeDetails
         record["CD_unsplashImageURL"] = card.unsplashImageURL
-        
+        print("Check6")
         if let collage = card.collage {
             let temporaryDirectoryURL = FileManager.default.temporaryDirectory
             let fileURL = temporaryDirectoryURL.appendingPathComponent(UUID().uuidString)
@@ -383,41 +340,10 @@ class CardsForDisplay: ObservableObject {
                 print("Failed to write data to file: \(error)")
             }
         }
-
         completion(record)
     }
-
-
-    func fetchAndDeleteFromCloudKit() {
-          //self.findAndDeleteCloudKitOrphans()
-          let privateDatabase = PersistenceController.shared.cloudKitContainer.privateCloudDatabase
-          let predicate = NSPredicate(value: true) // Fetches all records
-          let query = CKQuery(recordType: "CD_CoreCard", predicate: predicate)
-        privateDatabase.fetch(withQuery: query, inZoneWith: nil, desiredKeys: nil, resultsLimit: 1) { result in
-            switch result {
-            case .success(let (matchResults, _)):
-                matchResults.forEach { (recordID, fetchResult) in
-                    switch fetchResult {
-                    case .success(let record):
-                        privateDatabase.delete(withRecordID: record.recordID) { _, error in
-                            if let error = error {
-                                print("Error deleting record: \(error)")
-                            } else {
-                                print("Successfully deleted record from CloudKit.")
-                            }
-                        }
-                    case .failure(let error):
-                        print("Error fetching individual record: \(error)")
-                    }
-                }
-            case .failure(let error):
-                print("Error fetching records: \(error)")
-            }
-        }
-      }
     
     func fetchFromCloudKit() {
-          //self.findAndDeleteCloudKitOrphans()
           let privateDatabase = PersistenceController.shared.cloudKitContainer.privateCloudDatabase
           let predicate = NSPredicate(value: true) // Fetches all records
           let query = CKQuery(recordType: "CD_CoreCard", predicate: predicate)

@@ -108,6 +108,7 @@ extension PersistenceController {
             let group = DispatchGroup()
             saveRecord(with: cardRecord, for: publicDatabase, using: group, fileURL: nil)
             saveRecord(with: cardRecord, for: privateDatabase, using: group, fileURL: fileURL)
+            //DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {self.saveRecord(with: cardRecord, for: privateDatabase, using: group, fileURL: fileURL)}
             group.notify(queue: .main) {
                 print("Context saved after both CloudKit operations completed")
                 do {try PersistenceController.shared.persistentContainer.viewContext.save(with: .addCoreCard)}
