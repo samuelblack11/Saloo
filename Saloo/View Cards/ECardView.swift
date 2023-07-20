@@ -300,20 +300,6 @@ struct eCardView: View {
                         .frame(maxHeight: UIScreen.main.bounds.height / 2.3, alignment: .bottom)
                 }
             }
-        .onAppear {
-            let isDeferToPreview = deferToPreview
-            let isSpotLookupFailed = spotName == "LookupFailed"
-            let isSongLookupFailed = songName == "LookupFailed"
-            let hasPreview = !(spotPreviewURL ?? "").isEmpty || !(songPreviewURL ?? "").isEmpty
-            let isSubTypeNeither = appDelegate.musicSub.type == .Neither
-            let isSubTypeNeitherWithPreview = isSubTypeNeither && hasPreview
-            print("&&&&&&&&")
-            print(isDeferToPreview)
-            print(isSpotLookupFailed)
-            print(isSongLookupFailed)
-            print(isSubTypeNeither)
-            print(isSubTypeNeitherWithPreview)
-        }
     }
     
     func getRatio(from imageDataString: String) -> Double {

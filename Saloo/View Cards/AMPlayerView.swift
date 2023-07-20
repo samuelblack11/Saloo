@@ -58,9 +58,6 @@ struct AMPlayerView: View {
     @EnvironmentObject var cardProgress: CardProgress
     @EnvironmentObject var cardPrep: CardPrep
 
-    
-    
-    
     @State private var disableSelect = false
     @ObservedObject var gettingRecord = GettingRecord.shared
     @EnvironmentObject var chosenSong: ChosenSong
@@ -88,11 +85,9 @@ struct AMPlayerView: View {
                     return Alert(title: Text("Network Error"), message: Text("Sorry, we weren't able to connect to the internet. Please reconnect and try again."), dismissButton: .default(Text("OK")))
                 }
             }
-        
-        
-        
-        
-            .onAppear{print("AM PLAYER APPEARED...."); if let songArtImageData = songArtImageData, songArtImageData.isEmpty {
+            .onAppear{
+                print("AM PLAYER APPEARED....")
+                if songArtImageData == nil || (songArtImageData != nil && songArtImageData!.isEmpty) {
                 if networkMonitor.isConnected{
                     print("calling get storefront and token")
                     getAMUserTokenAndStoreFront{}}
@@ -245,6 +240,7 @@ extension AMPlayerView {
     
     
     func getAMUserTokenAndStoreFront(completion: @escaping () -> Void) {
+        print("called getAMUserToken")
         getAMUserToken {[self] in self.getAMStoreFront(completion: completion)}
     }
 
@@ -333,6 +329,17 @@ extension AMPlayerView {
                                                 songURL = track.attributes.url
                                                 songArtImageData = artResponse!
                                                 songDuration = Double(track.attributes.durationInMillis) * 0.001
+                                                
+                                                let context = PersistenceController.shared.persistentContainer.viewContext
+                                                chosenCard?.songName = track.attributes.name
+                                                chosenCard?.songArtistName = track.attributes.artistName
+                                                chosenCard?.songID = track.id
+                                                chosenCard?.appleSongURL = track.attributes.url
+                                                chosenCard?.songArtImageData = artResponse!
+                                                chosenCard?.songDuration = String(Double(track.attributes.durationInMillis) * 0.001)
+                                                do {try context.save(with: .addCoreCard)}
+                                                catch {print("Failed to save CoreCard: \(error)")}
+                                                
                                                 musicPlayer.setQueue(with: [songID!])
                                                 musicPlayer.play()
                                             })}

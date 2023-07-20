@@ -422,9 +422,29 @@ struct SpotPlayerView: View {
                     songID = song.id
                     if let songIdUnwrapped = songID {spotifyManager.currentTrackId = songIdUnwrapped}
                     else { print("songID is nil")}
+                    let blankString: String? = ""
+                    var songPrev: String?
+                    if song.preview_url != nil {songPrev = song.preview_url}
+                    else {songPrev = blankString}
+                    
+                    
                     songURL = song.external_urls?.spotify
                     songArtImageData = artResponse!
                     songDuration = Double(song.duration_ms) * 0.001
+                    let context = PersistenceController.shared.persistentContainer.viewContext
+                    chosenCard?.spotName = song.name
+                    chosenCard?.spotPreviewURL = songPrev
+                    chosenCard?.spotArtistName = allArtists
+                    chosenCard?.spotID = song.id
+                    chosenCard?.spotSongURL = song.external_urls?.spotify
+                    chosenCard?.spotImageData = artResponse!
+                    chosenCard?.spotSongDuration = String(Double(song.duration_ms) * 0.001)
+                    do {try context.save(with: .addCoreCard)}
+                    catch {print("Failed to save CoreCard: \(error)")}
+                    
+                    
+                    
+                    
                     if networkMonitor.isConnected{playSong()}
                     else {showFailedConnectionAlert = true}
                     completion(foundMatch)

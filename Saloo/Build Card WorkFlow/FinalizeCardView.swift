@@ -48,7 +48,7 @@ struct FinalizeCardView: View {
     @EnvironmentObject var linkURL: LinkURL
 
     var saveButton: some View {
-        Button("Save to Drafts") {
+        Button("Save Card") {
             Task {saveCard(noteField: noteField, chosenOccassion: chosenOccassion, an1: annotation.text1, an2: annotation.text2, an2URL: annotation.text2URL.absoluteString, an3: annotation.text3, an4: annotation.text4, chosenObject: chosenObject, collageImage: collageImage, songID: chosenSong.id, spotID: chosenSong.spotID, spotName: chosenSong.spotName, spotArtistName: chosenSong.spotArtistName, songName: chosenSong.name, songArtistName: chosenSong.artistName, songAlbumName: chosenSong.songAlbumName, songArtImageData: chosenSong.artwork, songPreviewURL: chosenSong.songPreviewURL, songDuration: String(chosenSong.durationInSeconds), inclMusic: addMusic.addMusic, spotImageData: chosenSong.spotImageData, spotSongDuration: String(chosenSong.spotSongDuration), spotPreviewURL: chosenSong.spotPreviewURL, songAddedUsing: chosenSong.songAddedUsing, cardType: cardType, appleAlbumArtist: chosenSong.appleAlbumArtist,spotAlbumArtist: chosenSong.spotAlbumArtist, salooUserID: (UserDefaults.standard.object(forKey: "SalooUserID") as? String)!, appleSongURL: chosenSong.appleSongURL, spotSongURL: chosenSong.spotSongURL)
                 alertVars.alertType = .showCardComplete
                 alertVars.activateAlert = true
