@@ -90,10 +90,10 @@ struct eCardView: View {
                 CloudRecord.shared.theRecord!
                 
                 
-                do {try saveToCoreDataIfNeeded(coreCard: appState.cardFromShare!)}
-                catch let SaveError.missingValueForKey(key) {print("Missing value for key: \(key)"); //GettingRecord.shared.shareFail = true
-                    ErrorMessageViewModel.shared.errorMessage = key}
-                catch let error {print("An error occurred: \(error)")}
+                //do {try saveToCoreDataIfNeeded(coreCard: appState.cardFromShare!)}
+                //catch let SaveError.missingValueForKey(key) {print("Missing value for key: \(key)"); //GettingRecord.shared.shareFail = true
+                //    ErrorMessageViewModel.shared.errorMessage = key}
+                //catch let error {print("An error occurred: \(error)")}
             }
             DispatchQueue.main.async {
                 let noPreview = (spotPreviewURL ?? "").isEmpty && (songPreviewURL ?? "").isEmpty
@@ -440,6 +440,14 @@ extension eCardView {
         } catch {
             print("Failed to save CoreCard: \(error)")
             ErrorMessageViewModel.shared.errorMessage = error.localizedDescription
+        }
+    }
+    
+    
+    func saveRecord(with record: CKRecord, for database: CKDatabase) {
+        database.save(record) { savedRecord, error in
+            if let error = error {print("CloudKit Save Error: \(error.localizedDescription)")}
+            else {print("Record Saved Successfully to \(database.databaseScope == .public ? "Public" : "Private") Database!")}
         }
     }
     

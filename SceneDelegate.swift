@@ -182,7 +182,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
     }
     
     func parseRecord(record: CKRecord?) {
-        print("Parsing Record....")
+        print("Parsing Record in sceneDelegate....")
         DispatchQueue.main.async() {
             self.getCurrentUserID()
             self.coreCard.occassion = record?.object(forKey: "CD_occassion") as! String

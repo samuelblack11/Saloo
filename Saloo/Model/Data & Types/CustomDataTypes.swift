@@ -148,7 +148,19 @@ class CardsForDisplay: ObservableObject {
             print("Current cards in outbox:")
             self.outboxCards.forEach { print($0.uniqueName) }
             if !self.outboxCards.contains(where: { $0.uniqueName == card.uniqueName }) {
+                print("NOT IN LIST")
                 self.outboxCards.append(card)
+                self.parseRecord(record: record) { (coreCard, record) in
+                    if coreCard != nil {
+                        self.saveContext()
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+                            self.coreCardToRecord(card: coreCard!) { record2 in
+                                self.saveRecord(with: record2!, for: PersistenceController.shared.cloudKitContainer.privateCloudDatabase)
+                                print("Record parsed and saved successfully")
+                            }
+                        }
+                    }
+                }
             }
         case .draftbox:
             print("Current cards in draftbox:")
