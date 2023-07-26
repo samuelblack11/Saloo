@@ -69,16 +69,16 @@ struct StartMenu: View {
                         .multilineTextAlignment(.center)
                     List {
                         Button(action: {appState.currentScreen = .buildCard([.photoOptionsView])}) {
-                            Text("Build a Card").font(Font.custom("Papyrus", size: 16)).frame(maxWidth: .infinity, alignment: .leading).foregroundColor(.primary)
+                            Text("Build a Card").font(Font.custom("Papyrus", size: 18)).frame(maxWidth: .infinity, alignment: .leading).foregroundColor(.primary)
                         }
                         Button(action: {screenManager.advance(); appState.currentScreen = .inbox}) {
-                            Text("Cards from Others").font(Font.custom("Papyrus", size: 16)).frame(maxWidth: .infinity, alignment: .leading).foregroundColor(.primary)
+                            Text("Cards from Others").font(Font.custom("Papyrus", size: 18)).frame(maxWidth: .infinity, alignment: .leading).foregroundColor(.primary)
                         }
                         Button(action: {screenManager.advance(); appState.currentScreen = .outbox}) {
-                            Text("Cards from Me").font(Font.custom("Papyrus", size: 16)).frame(maxWidth: .infinity, alignment: .leading).foregroundColor(.primary)
+                            Text("Cards from Me").font(Font.custom("Papyrus", size: 18)).frame(maxWidth: .infinity, alignment: .leading).foregroundColor(.primary)
                         }
                         Button(action: {appState.currentScreen = .preferences}) {
-                            Text("Music Preferences").font(Font.custom("Papyrus", size: 16)).frame(maxWidth: .infinity, alignment: .leading).foregroundColor(.primary)
+                            Text("Music Preferences").font(Font.custom("Papyrus", size: 18)).frame(maxWidth: .infinity, alignment: .leading).foregroundColor(.primary)
                         }
                     }
 

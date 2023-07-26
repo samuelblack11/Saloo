@@ -95,8 +95,8 @@ struct CollageBuilder: View {
                         Button(action: resetZoomAndOffset) {
                             Image(systemName: "arrow.uturn.left")
                                 .foregroundColor(.blue)
-                            Text("Reset Zoom & Offset")
-                                .font(.system(size: 7)) // Set the font size here
+                            Text("Reset to Original Scale")
+                                .font(.system(size: 8))
                         }
                         .frame(alignment: .trailing)
                         Spacer()
@@ -123,7 +123,14 @@ struct CollageBuilder: View {
                                 Image(systemName: "chevron.left").foregroundColor(.blue)
                                 Text("Back")}.disabled(gettingRecord.isShowingActivityIndicator))
                     }
-                    .onAppear{countBlocks()}
+                    .onAppear{
+                        
+                        countBlocks()
+                        if chosenImagesObject.chosenImageA != nil {
+                            imageA = Image(uiImage: chosenImagesObject.chosenImageA!)
+                        }
+                        
+                    }
                     .alert(isPresented: $explicitPhotoAlert) {
                         Alert(title: Text("Error"), message: Text("The selected image contains explicit content and cannot be used."), dismissButton: .default(Text("OK")))
                     }

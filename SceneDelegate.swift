@@ -193,7 +193,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
             self.coreCard.an2URL = record?.object(forKey: "CD_an2URL") as! String
             self.coreCard.an3 = record?.object(forKey: "CD_an3") as! String
             self.coreCard.an4 = record?.object(forKey: "CD_an4") as! String
-            //self.coreCard.coverImage = record?.object(forKey: "CD_coverImage") as? Data
             self.coreCard.date = record?.object(forKey: "CD_date") as! Date
             self.coreCard.font = record?.object(forKey: "CD_font") as! String
             self.coreCard.message = record?.object(forKey: "CD_message") as! String
@@ -225,9 +224,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
             self.coreCard.coverSizeDetails = record?.object(forKey: "CD_coverSizeDetails") as! String
             self.coreCard.unsplashImageURL = record?.object(forKey: "CD_unsplashImageURL") as! String
             CloudRecord.shared.theRecord = record
-            //self.coreCard.collage = record?.object(forKey: "CD_collage") as? Data
-            print("999999")
-            print(self.coreCard.songArtImageData)
             let dispatchGroup = DispatchGroup()
             dispatchGroup.enter()
             if let asset = record?["CD_collageAsset"] as? CKAsset {
@@ -248,16 +244,42 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
                     }
                 }
             }
-
-            // Also enter the group before loading the image
-            dispatchGroup.enter()
-
-            ImageLoader.shared.loadImage(from: self.coreCard.unsplashImageURL!) { data in
-                DispatchQueue.main.async {
-                    self.coreCard.coverImage = data
-                    self.determineWhichBox {}
-                    // Leave the group after the image is loaded
-                    dispatchGroup.leave()
+            if self.coreCard.unsplashImageURL == "https://salooapp.com" {
+                dispatchGroup.enter()
+                if let asset = record?["CD_coverImageAsset"] as? CKAsset {
+                    DispatchQueue.global(qos: .userInitiated).async {
+                        do {
+                            let coverImageData = try Data(contentsOf: asset.fileURL!)
+                            DispatchQueue.main.async {
+                                self.coreCard.coverImage = coverImageData
+                                print("GOT CK ASSET")
+                                print(coverImageData)
+                                self.determineWhichBox {}
+                                // Leave the group after the data is loaded
+                                dispatchGroup.leave()
+                            }
+                        }
+                        catch {
+                            print("Failed to read data from CKAsset: \(error)")
+                            self.determineWhichBox {}
+                            // Be sure to leave the group even if an error occurs,
+                            // otherwise your app could hang indefinitely
+                            dispatchGroup.leave()
+                        }
+                    }
+                }
+            }
+            else {
+                // Also enter the group before loading the image
+                dispatchGroup.enter()
+                
+                ImageLoader.shared.loadImage(from: self.coreCard.unsplashImageURL!) { data in
+                    DispatchQueue.main.async {
+                        self.coreCard.coverImage = data
+                        self.determineWhichBox {}
+                        // Leave the group after the image is loaded
+                        dispatchGroup.leave()
+                    }
                 }
             }
 

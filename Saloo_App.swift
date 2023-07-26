@@ -164,7 +164,7 @@ extension View {
 }
 
 enum ActiveAlert {
-    case failedConnection, signInFailure, explicitPhoto, offensiveText, namesNotEntered, showCardComplete, showFailedToShare, addMusicPrompt, spotAuthFailed, amAuthFailed, AMSongNotAvailable, gettingRecord, userBanned, reportComplete, deleteCard, mustSelectPic, musicAuthSuccessful, spotNeedPremium, switchSpotAccounts, loginToiCloud
+    case failedConnection, signInFailure, explicitPhoto, offensiveText, namesNotEntered, showCardComplete, showFailedToShare, addMusicPrompt, spotAuthFailed, amAuthFailed, AMSongNotAvailable, gettingRecord, userBanned, reportComplete, deleteCard, mustSelectPic, musicAuthSuccessful, spotNeedPremium, switchSpotAccounts, loginToiCloud, spotPasswordReset
 }
 
 struct AlertViewMod: ViewModifier {
@@ -222,8 +222,9 @@ struct AlertViewMod: ViewModifier {
                         UIApplication.shared.open(URL(string: "https://spotify.com/premium")!)}
                     ))
                 case .switchSpotAccounts:
-                    return Alert(title: Text("You're currently connected to a Spotify account"), message: Text("Would you like to connect to a different one?"), primaryButton: .default(Text("Yes"), action: {switchSpotAccounts?()}), secondaryButton: .default(Text("No"), action: {keepSpotAccount?()}))
-                    
+                    return Alert(title: Text("You're already connected to a Spotify account"), message: Text("Would you like to connect to a different one?"), primaryButton: .default(Text("Yes"), action: {switchSpotAccounts?()}), secondaryButton: .default(Text("No"), action: {keepSpotAccount?()}))
+                case .spotPasswordReset:
+                    return Alert(title: Text("Please try authorizing again after you've reset your password."), dismissButton: .default(Text("OK"), action: {}))
                     
                 case .amAuthFailed:
                     return Alert(title: Text("Apple Music Authorization Failed"), message: Text(AMAuthError.shared.errorMessage), dismissButton: .default(Text("OK"), action: {alertDismissAction?()}))

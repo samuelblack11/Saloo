@@ -134,9 +134,9 @@ class CardsForDisplay: ObservableObject {
                 self.parseRecord(record: record) { (coreCard, record) in
                     if coreCard != nil {
                         self.saveContext()
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                             self.coreCardToRecord(card: coreCard!) { record2 in
-                                self.saveRecord(with: record2!, for: PersistenceController.shared.cloudKitContainer.privateCloudDatabase)
+                                self.saveRecord(with: record2!, for: self.privateDatabase)
                                 print("Record parsed and saved successfully")
                             }
                         }
@@ -153,9 +153,9 @@ class CardsForDisplay: ObservableObject {
                 self.parseRecord(record: record) { (coreCard, record) in
                     if coreCard != nil {
                         self.saveContext()
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                             self.coreCardToRecord(card: coreCard!) { record2 in
-                                self.saveRecord(with: record2!, for: PersistenceController.shared.cloudKitContainer.privateCloudDatabase)
+                                self.saveRecord(with: record2!, for: self.privateDatabase)
                                 print("Record parsed and saved successfully")
                             }
                         }
@@ -448,6 +448,16 @@ class CardsForDisplay: ObservableObject {
                 print("Failed to write data to file: \(error)")
             }
         }
+        if let coverImage = card.coverImage {
+            let temporaryDirectoryURL = FileManager.default.temporaryDirectory
+            let fileURL = temporaryDirectoryURL.appendingPathComponent(UUID().uuidString)
+            do {
+                try coverImage.write(to: fileURL, options: .atomic)
+                record["CD_coverImageAsset"] = CKAsset(fileURL: fileURL)
+            } catch {
+                print("Failed to write data to file: \(error)")
+            }
+        }
         completion(record)
     }
     
@@ -581,6 +591,25 @@ class CardsForDisplay: ObservableObject {
                     }
                     catch {
                         print("Failed to read data from CKAsset: \(error)")
+                        dispatchGroup.leave()
+                    }
+                }
+            }
+            dispatchGroup.enter()
+            if let asset = record["CD_coverImageAsset"] as? CKAsset {
+                DispatchQueue.global(qos: .userInitiated).async {
+                    do {
+                        let coverImageData = try Data(contentsOf: asset.fileURL!)
+                        DispatchQueue.main.async {
+                            coreCard.coverImage = coverImageData
+                            // Leave the group after the data is loaded
+                            dispatchGroup.leave()
+                        }
+                    }
+                    catch {
+                        print("Failed to read data from CKAsset: \(error)")
+                        // Be sure to leave the group even if an error occurs,
+                        // otherwise your app could hang indefinitely
                         dispatchGroup.leave()
                     }
                 }
@@ -1214,7 +1243,7 @@ class SpotifyManager: ObservableObject {
     func updateCredentialsIfNeeded(completion: @escaping (Bool) -> Void) {
 
         if NetworkMonitor.shared.isConnected {
-            if auth_code.isEmpty || auth_code == "AuthFailed" {
+            if auth_code.isEmpty || auth_code == "AuthFailed" || auth_code == "password-reset" || auth_code == "signup"{
                 print("auth_code is empty")
                 requestSpotAuth {response in
                     self.authForRedirect = response!
@@ -1287,9 +1316,11 @@ class SpotifyManager: ObservableObject {
         print("called....requestSpotAuth")
         invalidAuthCode = false
         SpotifyAPI.shared.requestAuth(completionHandler: {(response, error) in
+            print("in request spot auth....")
+            print(response)
             if response != nil {
                 DispatchQueue.main.async {
-                    if response!.contains("https://salooapp.com/?code="){}
+                    if response!.contains("https://www.salooapp.com/?code="){}
                     else{self.authForRedirect = response!; self.showWebView = true}
                     self.refreshAccessToken = true
                     completion(response)
@@ -1300,6 +1331,31 @@ class SpotifyManager: ObservableObject {
         
     }
 
+    
+    //func requestSpotAuth(completion: @escaping (String?) -> Void) {
+    //    print("called....requestSpotAuth")
+    //    invalidAuthCode = false
+    //    SpotifyAPI.shared.requestAuth(completionHandler: {(response, error) in
+    //        print("in request spot auth....")
+    //        print(response)
+    //        if response != nil {
+    //            DispatchQueue.main.async {
+    //                if response!.contains("https://www.salooapp.com/?code="){self.authForRedirect = "https://accounts.spotify.com/authorize?"; self.showWebView = true
+     //                   self.refreshAccessToken = true
+     //                   completion("https://accounts.spotify.com/authorize?")
+     ////               }
+     //               else{self.authForRedirect = response!; self.showWebView = true
+     //                   self.refreshAccessToken = true
+      //                  completion(response)
+     ////               }
+     //           }
+      //      }
+     //       else{completion(nil)}
+     //   })
+        
+   // }
+  
+    
     
     func instantiateAppRemote() {
         self.appRemote = SPTAppRemote(configuration: self.config!, logLevel: .debug)

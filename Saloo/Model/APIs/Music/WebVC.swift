@@ -41,10 +41,20 @@ class WebVC: UIViewController, WKNavigationDelegate {
         super.viewWillDisappear(animated)
         //print("called view will disapper")
         //print((defaults.object(forKey: "SpotifyAuthCode") as? String))
-        if defaults.object(forKey: "SpotifyAuthCode") == nil || (defaults.object(forKey: "SpotifyAuthCode") as? String) == "AuthFailed" {
+        if (defaults.object(forKey: "SpotifyAuthCode") as? String) == "AuthFailed" {
             print("AuthFailed...")
             self.defaults.set("AuthFailed", forKey: "SpotifyAuthCode")
             self.delegate?.sendDataToFirstViewController(strCode: "AuthFailed")
+        }
+        else if (defaults.object(forKey: "SpotifyAuthCode") as? String) == "password-reset" {
+            print("Password Reset...")
+            self.defaults.set("password-reset", forKey: "SpotifyAuthCode")
+            self.delegate?.sendDataToFirstViewController(strCode: "password-reset")
+        }
+        else if (defaults.object(forKey: "SpotifyAuthCode") as? String) == "signup" {
+            print("Signup...")
+            self.defaults.set("signup", forKey: "SpotifyAuthCode")
+            self.delegate?.sendDataToFirstViewController(strCode: "signup")
         }
     }
     
@@ -63,7 +73,21 @@ class WebVC: UIViewController, WKNavigationDelegate {
         if let key = change?[NSKeyValueChangeKey.newKey] {
             //print("observeValue \(key)")
             let key_string = "\(key)"
-            if key_string.contains("code=") {
+            print("-----")
+            print(key_string)
+            if key_string.contains("password-reset") {
+                self.delegate?.sendDataToFirstViewController(strCode: "password-reset")
+                self.defaults.set("password-reset", forKey: "SpotifyAuthCode")
+                webView.removeObserver(self, forKeyPath: "URL")
+                //self.dismiss(animated: true)
+            }
+            else if key_string.contains("signup") {
+                self.delegate?.sendDataToFirstViewController(strCode: "signup")
+                self.defaults.set("signup", forKey: "SpotifyAuthCode")
+                webView.removeObserver(self, forKeyPath: "URL")
+                //self.dismiss(animated: true)
+            }
+            else if key_string.contains("code=") {
                 DispatchQueue.main.async {
                     let redirectURL = self.webView.url!.absoluteString
                     let splitRedirectURL = redirectURL.components(separatedBy: "code=")
@@ -80,7 +104,12 @@ class WebVC: UIViewController, WKNavigationDelegate {
     
     func webView(_ webView: WKWebView, didReceiveServerRedirectForProvisionalNavigation navigation: WKNavigation!) {
         print("redirect received. The accounts.spotify url was the input, and it converted to the redirectURI after Spotify Login")
-        self.dismiss(animated: true)
+        if (defaults.object(forKey: "SpotifyAuthCode") as? String) != "password-reset" && (defaults.object(forKey: "SpotifyAuthCode") as? String) != "signup"  {
+            self.dismiss(animated: true)
+        }
+        else {
+            
+        }
     }
     
 }

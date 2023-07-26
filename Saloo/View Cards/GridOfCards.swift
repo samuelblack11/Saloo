@@ -133,9 +133,15 @@ struct GridofCards: View {
     private func cardView(for gridCard: CoreCard, shareable: Bool = true) -> some View {
         VStack(spacing: 0) {
             VStack(spacing:1) {
-                AsyncImage(url: URL(string: gridCard.unsplashImageURL!)) { image in image.resizable()}
-                placeholder: {ProgressView()}
-                    .frame(width: (UIScreen.screenWidth/4), height: (UIScreen.screenHeight/7))
+                VStack {
+                    if gridCard.unsplashImageURL != "https://salooapp.com" {
+                        AsyncImage(url: URL(string: gridCard.unsplashImageURL!)) { image in
+                            image.resizable()} placeholder: {ProgressView()}
+                    } else if let coverUIImage = UIImage(data: gridCard.coverImage!) {
+                        Image(uiImage: coverUIImage).resizable()
+                    }
+                }
+                .frame(width: (UIScreen.screenWidth/4), height: (UIScreen.screenHeight/7))
                 Text(gridCard.message)
                     .font(Font.custom(gridCard.font, size: 500)).minimumScaleFactor(0.01)
                     .frame(width: (UIScreen.screenWidth/4), height: (UIScreen.screenHeight/8))

@@ -103,7 +103,7 @@ struct MusicSearchView: View {
                                     .frame(height: 24)
                                     .padding(.top, 15)
                             }
-                            TextField("Search Songs", text: $songSearch, onCommit: {
+                            TextField("Search Songs and/or Artists", text: $songSearch, onCommit: {
                                 UIApplication.shared.resignFirstResponder()
                                 if networkMonitor.isConnected {
                                     if self.songSearch.isEmpty {self.searchResults = []}
@@ -125,30 +125,33 @@ struct MusicSearchView: View {
                     LoadingOverlay(hasShownLaunchView: $hasShownLaunchView)
                 }
             }
-                NavigationView {
-                    ZStack {
-                        List {
-                            ForEach(searchResults, id: \.self) { song in
-                                HStack {
-                                    Image(uiImage: UIImage(data: song.artImageData)!)
-                                    VStack{
-                                        Text(song.name).font(.headline).lineLimit(2).frame(maxWidth: .infinity, alignment: .leading)
-                                        Text(song.artistName).font(.caption).foregroundColor(.secondary).lineLimit(1).frame(maxWidth: .infinity, alignment: .leading)
-                                    }
-                                    Spacer()
+            NavigationView {
+                ZStack {
+                    List {
+                        ForEach(searchResults, id: \.self) { song in
+                            HStack {
+                                Image(uiImage: UIImage(data: song.artImageData)!)
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fit)
+                                    .frame(width: 64, height: 64)  // <-- Fixed size
+                                VStack(alignment: .leading) {
+                                    Text(song.name).font(.headline).lineLimit(2)
+                                    Text(song.artistName).font(.caption).foregroundColor(.secondary).lineLimit(1)
                                 }
-                                .frame(width: UIScreen.screenWidth, height: (UIScreen.screenHeight/7))
-                                .onTapGesture {isLoading = true ; print("Playing \(song.name)");createChosenSong(song: song)}
+                                Spacer()
                             }
-                        }
-                        if isLoading {
-                            ProgressView().frame(width: UIScreen.screenWidth/2,height: UIScreen.screenHeight/2)
-                                .progressViewStyle(CircularProgressViewStyle(tint: colorScheme == .dark ? .white : appDelegate.appColor))
-                                .scaleEffect(2)
+                            .onTapGesture {isLoading = true ; print("Playing \(song.name)");createChosenSong(song: song)}
                         }
                     }
+                    if isLoading {
+                        ProgressView().frame(width: UIScreen.screenWidth/2,height: UIScreen.screenHeight/2)
+                            .progressViewStyle(CircularProgressViewStyle(tint: colorScheme == .dark ? .white : appDelegate.appColor))
+                            .scaleEffect(2)
+                    }
                 }
-                .onAppear{
+            }
+
+            .onAppear{
                     if appDelegate.musicSub.type == .Spotify {
                             spotifyManager.updateCredentialsIfNeeded{success in
                                 spotifyManager.verifySubType{isPremium in
@@ -414,7 +417,11 @@ extension MusicSearchView {
                     for song in response! {
                         print("^^^")
                         print(song)
-                        let artURL = URL(string:song.album!.images[2].url)
+                        var artURL: URL? = nil
+
+                        if let imageURL = song.album?.images[safe: 2]?.url {artURL = URL(string: imageURL)}
+                        else  {artURL = URL(string: "https://storage.googleapis.com/pr-newsroom-wp/1/2018/11/Spotify_Logo_RGB_Green.png")}
+                        
                         let _ = getURLData(url: artURL!, completionHandler: {(artResponse, error2) in
                             let blankString: String? = ""
                             var songPrev: String?
@@ -433,7 +440,15 @@ extension MusicSearchView {
                                 
                             }
                             else {allArtists = song.artists[0].name}
-                            let songForList = SongForList(id: song.id, name: song.name, artistName: allArtists, albumName: song.album!.name, artImageData: artResponse!, durationInMillis: song.duration_ms, isPlaying: false, previewURL: songPrev!, disc_number: song.disc_number, url: (song.external_urls?.spotify!)!)
+                            var artResponseforSFL = artResponse
+                            if let artResponse = artResponse, let image = UIImage(data: artResponse), image.size.width > 64 || image.size.height > 64 {
+                                let sideLength: CGFloat = 64
+                                if let newImage = image.resizedImageForSquareCanvas(sideLength: sideLength) {
+                                    let resizedArtResponse = newImage.jpegData(compressionQuality: 1.0)
+                                    artResponseforSFL = resizedArtResponse
+                                }
+                            }
+                            let songForList = SongForList(id: song.id, name: song.name, artistName: allArtists, albumName: song.album!.name, artImageData: artResponseforSFL!, durationInMillis: song.duration_ms, isPlaying: false, previewURL: songPrev!, disc_number: song.disc_number, url: (song.external_urls?.spotify!)!)
                             if song.restrictions?.reason == nil {
                                 //if containsString(listOfSubStrings: songKeyWordsToFilterOut, songName: songForList.name) || containsString(listOfSubStrings: songKeyWordsToFilterOut, songName: songForList.albumName) || song.album?.album_type == "single" {
                                 if cleanMusicData.containsString(listOfSubStrings: appDelegate.songFilterForSearchRegex, songName: songForList.name) || cleanMusicData.containsString(listOfSubStrings: appDelegate.songFilterForSearchRegex, songName: songForList.albumName) {
@@ -589,3 +604,21 @@ extension UIApplication {
 }
 
             
+extension Collection {
+    subscript (safe index: Index) -> Element? {
+        return indices.contains(index) ? self[index] : nil
+    }
+}
+extension UIImage {
+    func resizedImageForSquareCanvas(sideLength: CGFloat) -> UIImage? {
+        let scale = sideLength / max(size.width, size.height)
+        let scaledSize = CGSize(width: size.width * scale, height: size.height * scale)
+        let origin = CGPoint(x: (sideLength - scaledSize.width) / 2, y: (sideLength - scaledSize.height) / 2)
+
+        UIGraphicsBeginImageContextWithOptions(CGSize(width: sideLength, height: sideLength), false, 0.0)
+        defer { UIGraphicsEndImageContext() }
+        draw(in: CGRect(origin: origin, size: scaledSize))
+
+        return UIGraphicsGetImageFromCurrentImageContext()
+    }
+}

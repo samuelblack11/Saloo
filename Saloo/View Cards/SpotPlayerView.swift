@@ -125,7 +125,13 @@ struct SpotPlayerView: View {
             //if showProgressView {ProgressView().progressViewStyle(.circular) .tint(.green).frame(maxWidth: UIScreen.screenHeight/9, maxHeight: UIScreen.screenHeight/9)}
             VStack(alignment: .center) {
                 //if songArtImageData != nil {Image(uiImage: UIImage(data: songArtImageData!)!) }
-                if let songArtImageData = songArtImageData, let uiImage = UIImage(data: songArtImageData) {Image(uiImage: uiImage)}
+                if let songArtImageData = songArtImageData, let uiImage = UIImage(data: songArtImageData) {
+                    Image(uiImage: uiImage)
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(maxWidth: UIScreen.screenHeight/6, maxHeight: UIScreen.screenHeight/6)
+                        //.frame(width: 64, height: 64)
+                }
                 if let name = spotName, let urlString = songURL, let url = URL(string: urlString) {
                     Link(name, destination: url)
                 }
@@ -168,7 +174,7 @@ struct SpotPlayerView: View {
                                     .font(.system(.title))
                             }
                         }
-                        .frame(maxWidth: UIScreen.screenHeight/12, maxHeight: UIScreen.screenHeight/12)
+                        .frame(maxWidth: UIScreen.screenHeight/15, maxHeight: UIScreen.screenHeight/15)
                         Button {
                             if isPlaying {
                                 spotifyManager.appRemote?.playerAPI?.pause()
@@ -194,7 +200,7 @@ struct SpotPlayerView: View {
                                     .font(.system(.title))
                             }
                         }
-                        .frame(maxWidth: UIScreen.screenHeight/12, maxHeight: UIScreen.screenHeight/12)
+                        .frame(maxWidth: UIScreen.screenHeight/15, maxHeight: UIScreen.screenHeight/15)
 
 
                     }

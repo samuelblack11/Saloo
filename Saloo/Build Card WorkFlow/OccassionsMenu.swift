@@ -174,7 +174,7 @@ extension OccassionsMenu {
                 alertVars.alertType = .failedConnection
                 alertVars.activateAlert = true
             }
-        }) {Text(collectionTitle).frame(maxWidth: .infinity, alignment: .leading).foregroundColor(.primary) }
+        }) {Text(collectionTitle).font(Font.custom("Papyrus", size: 18)).frame(maxWidth: .infinity, alignment: .leading).foregroundColor(.primary) }
     }
 
 

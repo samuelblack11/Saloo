@@ -55,6 +55,11 @@ extension PersistenceController {
             cardRecord["CD_creator"] = UserDefaults.standard.object(forKey: "SalooUserID") as? String
             cardRecord["CD_unsplashImageURL"] = chosenObject.smallImageURLString
             cardRecord["CD_coverSizeDetails"] = chosenObject.coverSizeDetails
+            
+            cardRecord["CD_coverSizeDetails"] = chosenObject.coverSizeDetails
+
+            
+            
             let coreCard = CoreCard(context: context)
             coreCard.coverSizeDetails = chosenObject.coverSizeDetails
             coreCard.uniqueName = id.recordName
@@ -102,12 +107,22 @@ extension PersistenceController {
             catch {print("Failed to write image data to disk: \(error)")}
             let collageAsset = CKAsset(fileURL: fileURL)
             cardRecord["CD_collageAsset"] = collageAsset
+            
+            
+            print("Testing collageAsset...")
+            coreCard.coverImage = chosenObject.coverImage
+            let fileURL2 = tempDirectory.appendingPathComponent(UUID().uuidString)
+            do {try chosenObject.coverImage.write(to: fileURL2)}
+            catch {print("Failed to write image data to disk: \(error)")}
+            let coverImageAsset = CKAsset(fileURL: fileURL2)
+            cardRecord["CD_coverImageAsset"] = coverImageAsset
+
             coreCard.creator = UserDefaults.standard.object(forKey: "SalooUserID") as? String
             let publicDatabase = PersistenceController.shared.cloudKitContainer.publicCloudDatabase
             let privateDatabase = PersistenceController.shared.cloudKitContainer.privateCloudDatabase
             let group = DispatchGroup()
-            saveRecord(with: cardRecord, for: publicDatabase, using: group, fileURL: nil)
-            saveRecord(with: cardRecord, for: privateDatabase, using: group, fileURL: fileURL)
+            saveRecord(with: cardRecord, for: publicDatabase, using: group, fileURL: nil, fileURL2: nil)
+            saveRecord(with: cardRecord, for: privateDatabase, using: group, fileURL: fileURL, fileURL2: fileURL2)
             //DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {self.saveRecord(with: cardRecord, for: privateDatabase, using: group, fileURL: fileURL)}
             group.notify(queue: .main) {
                 print("Context saved after both CloudKit operations completed")
@@ -120,16 +135,32 @@ extension PersistenceController {
         }
     }
     
-    func saveRecord(with record: CKRecord, for database: CKDatabase, using group: DispatchGroup, fileURL: URL?) {
+    func saveRecord(with record: CKRecord, for database: CKDatabase, using group: DispatchGroup, fileURL: URL?, fileURL2: URL?) {
+        print("Save1")
         group.enter()
+        print("Save2")
         database.save(record) { savedRecord, error in
-            if let error = error {print("CloudKit Save Error: \(error.localizedDescription)")}
-            else {print("Record Saved Successfully to \(database.databaseScope == .public ? "Public" : "Private") Database!")}
+            if let error = error {
+                //GettingRecord.shared.shareFail = true
+                //ErrorMessageViewModel.shared.errorMessage = "\(database.databaseScope == .public ? "Public" : "Private")--------\(error.localizedDescription)"
+                print("CloudKit Save Error: \(error.localizedDescription)")
+                
+            }
+            else {
+                //GettingRecord.shared.shareSuccess = true
+                //ErrorMessageViewModel.shared.errorMessage = "Record Saved Successfully to \(database.databaseScope == .public ? "Public" : "Private") Database!"
+                print("Record Saved Successfully to \(database.databaseScope == .public ? "Public" : "Private") Database!")
+                
+            }
             if fileURL != nil {
                 do {try FileManager.default.removeItem(at: fileURL!)}
                 catch {print("Failed to remove temporary image file: \(error)")}
+                do {try FileManager.default.removeItem(at: fileURL2!)}
+                catch {print("Failed to remove temporary image file: \(error)")}
             }
+            print("Save3")
             group.leave()
+            print("Save4")
         }
     }
     func loadCoreCards() -> [CoreCard] {

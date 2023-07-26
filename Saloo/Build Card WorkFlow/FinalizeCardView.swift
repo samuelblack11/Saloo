@@ -14,6 +14,7 @@ import MessageUI
 
 struct FinalizeCardView: View {
     @ObservedObject var alertVars = AlertVars.shared
+    @EnvironmentObject var chosenImagesObject: ChosenImages
 
     @EnvironmentObject var chosenOccassion: Occassion
     @EnvironmentObject var chosenObject: ChosenCoverImageObject
@@ -82,7 +83,7 @@ struct FinalizeCardView: View {
                     .frame(height: 20)
                 GeometryReader { geometry in
                     VStack(spacing: 0){
-                        eCardView(eCardText: noteField.noteText.value, font: noteField.font, collageImage: collageImage.collageImage, text1: annotation.text1, text2: annotation.text2, text2URL: annotation.text2URL, text3: annotation.text3, text4: annotation.text4, songID: chosenSong.id, spotID: chosenSong.spotID, spotName: chosenSong.spotName, spotArtistName: chosenSong.spotArtistName, songName: chosenSong.name, songArtistName: chosenSong.artistName, songArtImageData: chosenSong.artwork, songDuration: chosenSong.durationInSeconds, songPreviewURL: chosenSong.songPreviewURL, inclMusic: addMusic.addMusic, spotImageData: chosenSong.spotImageData, spotSongDuration: chosenSong.spotSongDuration, spotPreviewURL: chosenSong.spotPreviewURL, songAddedUsing: chosenSong.songAddedUsing, cardType: cardType, accessedViaGrid: false, fromFinalize: true, chosenCard: $emptyCard, appleSongURL: chosenSong.appleSongURL, spotSongURL: chosenSong.spotSongURL, unsplashImageURL: chosenObject.smallImageURLString, coverSizeDetails: chosenObject.coverSizeDetails)
+                        eCardView(eCardText: noteField.noteText.value, font: noteField.font, collageImage: collageImage.collageImage, text1: annotation.text1, text2: annotation.text2, text2URL: annotation.text2URL, text3: annotation.text3, text4: annotation.text4, songID: chosenSong.id, spotID: chosenSong.spotID, spotName: chosenSong.spotName, spotArtistName: chosenSong.spotArtistName, songName: chosenSong.name, songArtistName: chosenSong.artistName, songArtImageData: chosenSong.artwork, songDuration: chosenSong.durationInSeconds, songPreviewURL: chosenSong.songPreviewURL, inclMusic: addMusic.addMusic, spotImageData: chosenSong.spotImageData, spotSongDuration: chosenSong.spotSongDuration, spotPreviewURL: chosenSong.spotPreviewURL, songAddedUsing: chosenSong.songAddedUsing, cardType: cardType, accessedViaGrid: false, fromFinalize: true, chosenCard: $emptyCard, appleSongURL: chosenSong.appleSongURL, spotSongURL: chosenSong.spotSongURL, unsplashImageURL: chosenObject.smallImageURLString, coverSizeDetails: chosenObject.coverSizeDetails, coverImageIfPersonal: chosenObject.coverImage)
                             .frame(maxHeight: geometry.size.height - geometry.safeAreaInsets.bottom) // subtract height of toolbar
                         Spacer()
                         HStack {
@@ -141,6 +142,11 @@ extension FinalizeCardView {
             noteField.sender.value = ""
             noteField.cardName.value = ""
             noteField.noteText.value = "Write Your Message Here"
+            chosenImagesObject.chosenImageA = nil
+            chosenImagesObject.chosenImageB = nil
+            chosenImagesObject.chosenImageC = nil
+            chosenImagesObject.chosenImageD = nil
+
         }))
     }
 

@@ -61,6 +61,8 @@ struct eCardView: View {
     @EnvironmentObject var cardPrep: CardPrep
 
     @State private var hasShownLaunchView: Bool = true
+    @State var coverImageIfPersonal: Data?
+
     let screenPadding: CGFloat = 5
     var body: some View {
         ZStack {
@@ -178,29 +180,20 @@ struct eCardView: View {
     
     func CoverView() -> some View {
         VStack {
-            AsyncImage(url: URL(string: unsplashImageURL!)) { image in
-                image.resizable()
-            } placeholder: {
-                ProgressView()
-            }
+            primaryPhotoView(aspectRatio: .fit,
+                      maxWidth: .infinity,
+                      maxHeight: .infinity)
             annotationView()
         }
+        .onAppear{print(unsplashImageURL)}
     }
 
-
-    
     func CoverViewWide1() -> some View {
         GeometryReader { geometry in
             VStack {
-                AsyncImage(url: URL(string: unsplashImageURL!)) { image in
-                    image
-                        .resizable()
-                        .aspectRatio(contentMode: .fill)
-                        .frame(maxWidth: geometry.size.width, maxHeight: geometry.size.height * 0.85)
-                        .clipped()
-                } placeholder: {
-                    ProgressView()
-                }
+                primaryPhotoView(aspectRatio: .fill,
+                          maxWidth: geometry.size.width,
+                          maxHeight: geometry.size.height * 0.85)
                 annotationView()
             }
         }
@@ -209,18 +202,34 @@ struct eCardView: View {
         .clipped() // This will clip the VStack to its bounds
     }
 
-    func CoverViewWide2() -> some View {
-        GeometryReader { geometry in
-            VStack {
+
+    func primaryPhotoView(aspectRatio: ContentMode, maxWidth: CGFloat, maxHeight: CGFloat) -> some View {
+        Group {
+            if unsplashImageURL != "https://salooapp.com" {
                 AsyncImage(url: URL(string: unsplashImageURL!)) { image in
-                    image
-                        .resizable()
-                        .aspectRatio(contentMode: .fill)
-                        .frame(maxWidth: geometry.size.width, maxHeight: geometry.size.height * 0.85)
+                    image.resizable()
+                        .aspectRatio(contentMode: aspectRatio)
+                        .frame(maxWidth: maxWidth, maxHeight: maxHeight)
                         .clipped()
                 } placeholder: {
                     ProgressView()
                 }
+            } else if let coverUIImage = UIImage(data: coverImageIfPersonal!) {
+                Image(uiImage: coverUIImage)
+                    .resizable()
+                    .aspectRatio(contentMode: aspectRatio)
+                    .frame(maxWidth: maxWidth, maxHeight: maxHeight)
+                    .clipped()
+            }
+        }
+    }
+
+    func CoverViewWide2() -> some View {
+        GeometryReader { geometry in
+            VStack {
+                primaryPhotoView(aspectRatio: .fill,
+                          maxWidth: geometry.size.width,
+                          maxHeight: geometry.size.height * 0.85)
                 annotationView()
             }
         }
@@ -229,18 +238,11 @@ struct eCardView: View {
         .clipped() // This will clip the VStack to its bounds
     }
 
-
-
-
     func CoverViewTall() -> some View {
         VStack {
-            AsyncImage(url: URL(string: unsplashImageURL!)) { image in
-                image.resizable()
-            } placeholder: {
-                ProgressView()
-            }
-            .aspectRatio(contentMode: .fit)
-            .frame(maxWidth: UIScreen.main.bounds.height / 2.2, maxHeight: UIScreen.main.bounds.height / 2.3)
+            primaryPhotoView(aspectRatio: .fit,
+                      maxWidth: UIScreen.main.bounds.height / 2.2,
+                      maxHeight: UIScreen.main.bounds.height / 2.3)
             annotationView()
         }
         .onAppear{print(unsplashImageURL)}

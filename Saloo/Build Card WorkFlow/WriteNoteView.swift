@@ -25,10 +25,11 @@ struct WriteNoteView: View {
     @ObservedObject var sender = MaximumText(limit: 20, value: "From:")
     @ObservedObject var cardName = MaximumText(limit: 20, value: "Name Your Card")
     @State private var namesNotEntered = false
-    @ObservedObject var gettingRecord = GettingRecord.shared
+    @EnvironmentObject var gettingRecord: GettingRecord
     @State private var isEditing = false
     @State private var hasShownLaunchView: Bool = true
     @EnvironmentObject var cardProgress: CardProgress
+    @Environment(\.colorScheme) var colorScheme
 
     var fonts = ["Zapfino","Papyrus","American-Typewriter-Bold"]
     var fontMenu: some View {
@@ -52,19 +53,24 @@ struct WriteNoteView: View {
                     .frame(height: 20)
                 ZStack {
                     ScrollView {
+                        Text("Scroll Down to Confirm Your Message")
+                            .foregroundColor(colorScheme == .dark ? .white : .black)
+                            .font(Font.custom("Papyrus", size: 16))
+                            .textCase(.none)
+                            .multilineTextAlignment(.center)
                         TextEditor(text: $message.value)
                             .onTapGesture {if message.value == "Write Your Message Here" {message.value = ""}}
                             .border(Color.red, width: message.hasReachedLimit ? 1 : 0)
-                            .frame(minHeight: UIScreen.screenHeight/2.5)
+                            .frame(minHeight: UIScreen.screenHeight/3.0)
                             .font(Font.custom(noteField.font, size: 16))
                         fontMenu
                         Text("Enter the following details to save your card")
-                            .font(.caption)
+                            .font(.custom("Papyrus", size: 12)) // Adjust size as needed
                             .foregroundColor(.gray)
                             .textCase(.none)
                             .multilineTextAlignment(.center)
                         Text("This will not appear in the card")
-                            .font(.caption)
+                            .font(.custom("Papyrus", size: 12)) // Adjust size as needed
                             .foregroundColor(.gray)
                             .textCase(.none)
                             .multilineTextAlignment(.center)
@@ -104,14 +110,17 @@ struct WriteNoteView: View {
                                 else {
                                     noteField.cardName.value = noteField.cardName.value.components(separatedBy: CharacterSet.punctuationCharacters).joined()
                                     if appDelegate.musicSub.type == .Apple {
+                                        GettingRecord.shared.isLoadingAlert = false
                                         alertVars.alertType = .addMusicPrompt
                                         alertVars.activateAlert = true
                                     }
                                     if appDelegate.musicSub.type == .Spotify {
+                                        GettingRecord.shared.isLoadingAlert = false
                                         alertVars.alertType = .addMusicPrompt
                                         alertVars.activateAlert = true
                                     }
-                                    if appDelegate.musicSub.type == .Neither {checkRequiredFields(); annotateIfNeeded();CardPrep.shared.chosenSong = chosenSong; cardProgress.currentStep = 4; appState.currentScreen = .buildCard([.finalizeCardView])}
+                                    if appDelegate.musicSub.type == .Neither {checkRequiredFields(); annotateIfNeeded();CardPrep.shared.chosenSong = chosenSong;
+                                    GettingRecord.shared.isLoadingAlert = false;cardProgress.currentStep = 4; appState.currentScreen = .buildCard([.finalizeCardView])}
                                 }
                             }
                         }
@@ -184,7 +193,7 @@ extension WriteNoteView {
     static func checkTextForOffensiveContent(text: String, completion: @escaping (Bool?, Error?) -> Void) {
         // Endpoint for Microsoft's Content Moderator API (text moderation)
         guard let url = URL(string: textBase) else { return }
-        
+        GettingRecord.shared.isLoadingAlert = true
         // Prepare the URL request
         var request = URLRequest(url: url)
         request.httpMethod = "POST"

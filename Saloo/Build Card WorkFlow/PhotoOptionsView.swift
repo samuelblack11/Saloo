@@ -23,23 +23,32 @@ struct PhotoOptionsView: View {
     @Environment(\.colorScheme) var colorScheme
     @EnvironmentObject var appState: AppState
     @EnvironmentObject var cardProgress: CardProgress
+    @EnvironmentObject var chosenImagesObject: ChosenImages
 
     var body: some View {
         NavigationView {
             ZStack {
                 VStack {
-                    Text("Saloo has curated professional photos for each holiday and special occassion. One of these will serve as your card's primary photo.")
-                        .multilineTextAlignment(.center)
+                    Text("Saloo has curated professional photos for each holiday and special occassion.Would you like to use one of these as your card's primary photo, or use a personal one?")
                         .foregroundColor(colorScheme == .dark ? .white : .black)
+                        .font(Font.custom("Papyrus", size: 16))
+                        .textCase(.none)
+                        .multilineTextAlignment(.center)
+                        .fixedSize(horizontal: false, vertical: true)
                         .padding(.top, 15)
                     Text("This photo will display separately from your collage")
-                        .font(.caption)
+                        .font(.custom("Papyrus", size: 12)) // Adjust size as needed
                         .foregroundColor(.gray)
                         .textCase(.none)
                         .multilineTextAlignment(.center)
+                    RadioButtonGroup(items: ["Use Professional Photo", "Use Personal Photo"], selectedId: $chosenObject.frontCoverIsPersonalPhoto)
                     Spacer()
                     Text("You'll also make a collage of personal photos.\nWhich of the below options would you like to use?")
+                        .foregroundColor(colorScheme == .dark ? .white : .black)
+                        .font(Font.custom("Papyrus", size: 16))
+                        .textCase(.none)
                         .multilineTextAlignment(.center)
+                        .fixedSize(horizontal: false, vertical: true)
                     MiniCollageMenu()
                         .padding(.bottom, 5)
                     Button(action: {
@@ -56,7 +65,14 @@ struct PhotoOptionsView: View {
             .onAppear {chosenObject.frontCoverIsPersonalPhoto = 0}
             .environmentObject(collageImage)
             .modifier(AlertViewMod(showAlert: alertVars.activateAlertBinding, activeAlert: alertVars.alertType))
-            .navigationBarItems(leading:Button {cardProgress.currentStep = 1; cardProgress.maxStep = 1; appState.currentScreen = .startMenu} label: {Image(systemName: "chevron.left").foregroundColor(.blue); Text("Back")})
+            .navigationBarItems(leading:Button {
+                cardProgress.currentStep = 1; cardProgress.maxStep = 1; appState.currentScreen = .startMenu
+                chosenImagesObject.chosenImageA = nil
+                chosenImagesObject.chosenImageB = nil
+                chosenImagesObject.chosenImageC = nil
+                chosenImagesObject.chosenImageD = nil
+                
+            } label: {Image(systemName: "chevron.left").foregroundColor(.blue); Text("Back")})
         }
 
     }
@@ -76,7 +92,7 @@ struct RadioButtonGroup: View {
         VStack {
             ForEach(0..<items.count) { index in
                 HStack {
-                    Text(items[index])
+                    Text(items[index]).font(Font.custom("Papyrus", size: 16))
                     RadioButton(id: index, selectedId: $selectedId)
                 }
                 .contentShape(Rectangle())

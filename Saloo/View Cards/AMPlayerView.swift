@@ -110,6 +110,10 @@ struct AMPlayerView: View {
             //if songArtImageData != nil {Image(uiImage: UIImage(data: songArtImageData!)!)}
             if let songArtImageData = songArtImageData, let uiImage = UIImage(data: songArtImageData) {
                         Image(uiImage: uiImage)
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                            .frame(maxWidth: UIScreen.screenHeight/6, maxHeight: UIScreen.screenHeight/6)
+                            //.frame(width: 64, height: 64)
                     }
             if let name = songName, let urlString = songURL, let url = URL(string: urlString) {
                 Link(name, destination: url)
@@ -140,7 +144,7 @@ struct AMPlayerView: View {
                                 .font(.system(.title))
                         }
                     }
-                    .frame(maxWidth: UIScreen.screenHeight/12, maxHeight: UIScreen.screenHeight/12)
+                    .frame(maxWidth: UIScreen.screenHeight/15, maxHeight: UIScreen.screenHeight/15)
                     Button {
                         isPlaying.toggle()
                         if musicPlayer.playbackState.rawValue == 1 {musicPlayer.pause()}
@@ -155,7 +159,7 @@ struct AMPlayerView: View {
                                 .font(.system(.title))
                         }
                     }
-                    .frame(maxWidth: UIScreen.screenHeight/12, maxHeight: UIScreen.screenHeight/12)
+                    .frame(maxWidth: UIScreen.screenHeight/15, maxHeight: UIScreen.screenHeight/15)
                 }
                 Spacer()
             }

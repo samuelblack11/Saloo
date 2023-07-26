@@ -31,10 +31,10 @@ struct ConfirmFrontCoverView: View {
                             .frame(width: 250, height: 250)
                             .padding(.top, 50)
                         VStack(spacing: 0) {
-                            Text("Photo By ")
-                            Link(String(chosenObject.coverImagePhotographer), destination: URL(string: "https://unsplash.com/@\(chosenObject.coverImageUserName)")!)
-                            Text(" On ")
-                            Link("Unsplash", destination: URL(string: "https://unsplash.com")!)
+                            Text("Photo By ").font(Font.custom("Papyrus", size: 16))
+                            Link(String(chosenObject.coverImagePhotographer), destination: URL(string: "https://unsplash.com/@\(chosenObject.coverImageUserName)")!).font(Font.custom("Papyrus", size: 16))
+                            Text(" On ").font(Font.custom("Papyrus", size: 16))
+                            Link("Unsplash", destination: URL(string: "https://unsplash.com")!).font(Font.custom("Papyrus", size: 16))
                         }
                         Spacer()
                         Button("Confirm Image") {
