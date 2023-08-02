@@ -107,6 +107,10 @@ struct FinalizeCardView: View {
                             noteField.recipient = MaximumText(limit: 20, value: "To:")
                             noteField.sender = MaximumText(limit: 20, value: "From:")
                             noteField.cardName = MaximumText(limit: 20, value: "Name Your Card")
+                            chosenImagesObject.chosenImageA = nil
+                            chosenImagesObject.chosenImageB = nil
+                            chosenImagesObject.chosenImageC = nil
+                            chosenImagesObject.chosenImageD = nil
                             appState.currentScreen = .startMenu} label: {Image(systemName: "menucard.fill").foregroundColor(.blue)
                             Text("Menu")}
                     }

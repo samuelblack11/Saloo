@@ -110,15 +110,14 @@ struct CollageBuilder: View {
                                 cardProgress.currentStep = 3
                                 appState.currentScreen = .buildCard([.writeNoteView])
                                 Task {
-                                    if let imageData = await snap2() {
-                                        collageImage.collageImage = imageData
-                                    } else {
-                                        // Handle the case where imageData is nil.
-                                    }
+                                    if let imageData = await snap2() {collageImage.collageImage = imageData}
+                                    else {}
                                 }
                                 
                             }
-                        }.padding(.bottom, 30)
+                        }
+                        .font(.system(size: 16))
+                        .padding(.bottom, 30)
                             .navigationBarItems(leading: Button {cardProgress.currentStep = 1; appState.currentScreen = .buildCard([.photoOptionsView])} label: {
                                 Image(systemName: "chevron.left").foregroundColor(.blue)
                                 Text("Back")}.disabled(gettingRecord.isShowingActivityIndicator))
@@ -228,6 +227,7 @@ extension CollageBuilder {
                                 onOffsetChanged(newOffset)
                             }
                     )
+                    .clipped()
 
 
             }

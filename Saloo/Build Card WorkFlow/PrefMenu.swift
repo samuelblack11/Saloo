@@ -201,6 +201,7 @@ struct PrefMenu: View {
                             }
                         //}
                     }
+                    else {hideProgressView = true}
                 }
         }
     }

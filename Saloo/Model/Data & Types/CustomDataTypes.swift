@@ -146,7 +146,12 @@ class CardsForDisplay: ObservableObject {
             }
         case .outbox:
             print("Current cards in outbox:")
-            self.outboxCards.forEach { print($0.uniqueName) }
+            self.outboxCards.forEach {
+                print("--------")
+                print($0.uniqueName)
+                print(card.uniqueName)
+                print(!self.outboxCards.contains(where: { $0.uniqueName == card.uniqueName }))
+            }
             if !self.outboxCards.contains(where: { $0.uniqueName == card.uniqueName }) {
                 print("NOT IN LIST")
                 self.outboxCards.append(card)
@@ -174,11 +179,27 @@ class CardsForDisplay: ObservableObject {
     }
     
     func saveRecord(with record: CKRecord, for database: CKDatabase) {
+        var backgroundTask: UIBackgroundTaskIdentifier = .invalid
+        
+        backgroundTask = UIApplication.shared.beginBackgroundTask {
+            // End the task if time expires.
+            UIApplication.shared.endBackgroundTask(backgroundTask)
+            backgroundTask = .invalid
+        }
+        
         database.save(record) { savedRecord, error in
-            if let error = error {print("CloudKit Save Error: \(error.localizedDescription)")}
-            else {print("Record Saved Successfully to \(database.databaseScope == .public ? "Public" : "Private") Database!")}
+            if let error = error {
+                print("CloudKit Save Error: \(error.localizedDescription)")
+            } else {
+                print("Record Saved Successfully to \(database.databaseScope == .public ? "Public" : "Private") Database!")
+            }
+            
+            // Mark the task as complete and end it.
+            UIApplication.shared.endBackgroundTask(backgroundTask)
+            backgroundTask = .invalid
         }
     }
+
     
     
     func deleteCoreCard(card: CoreCard, box: InOut.SendReceive) {
@@ -1139,8 +1160,8 @@ class CollectionManager: ObservableObject {
         "Halloween 🎃": CollectionType.fall,
         "Lunar New Year 🐉": CollectionType.winter,
         "Valentine’s Day ❤️": CollectionType.winter,
-        "Baby Shower 🐣": CollectionType.yearRound
-
+        "Baby Shower 🐣": CollectionType.yearRound,
+        "Thinking of You 💭": CollectionType.yearRound
     ]
 
     
@@ -1519,6 +1540,8 @@ struct CodableCoreCard: Codable, Identifiable {
 class ErrorMessageViewModel: ObservableObject {
     static let shared = ErrorMessageViewModel()
     @Published var errorMessage: String = ""
+    @Published var successMessage: String = ""
+
 }
 
 

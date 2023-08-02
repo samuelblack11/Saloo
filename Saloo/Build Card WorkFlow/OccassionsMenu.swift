@@ -99,6 +99,7 @@ struct OccassionsMenu: View {
                                 menuSection(for: "Wedding and Anniversary 💒")
                                 menuSection(for: "Baby Shower 🐣")
                                 menuSection(for: "Postcard ✈️")
+                                menuSection(for: "Thinking of You 💭")
                                 menuSection(for: "Graduation 🎓")
                             }
                             Section(header: Text("Summer Holidays")) {
@@ -185,6 +186,18 @@ extension OccassionsMenu {
         if showImagePicker  {loadedImagefromLibraryOrCamera = true}
     }
     
+    func getImageSize() -> (CGSize, Double) {
+        var size = CGSize()
+        var widthToHeightRatio = Double()
+        if let image = UIImage(data: chosenObject.coverImage) {
+            let imageSize = image.size
+            size = imageSize
+        }
+        print("Image Size....")
+        widthToHeightRatio = size.width/size.height
+        return (size, widthToHeightRatio)
+    }
+    
     func handlePersonalPhotoSelection() {
         chosenObject.smallImageURLString = "https://salooapp.com"
         chosenObject.coverImage = coverImage!.jpegData(compressionQuality: 1)!
@@ -192,6 +205,8 @@ extension OccassionsMenu {
         chosenObject.coverImageUserName = ""
         chosenObject.downloadLocation = ""
         chosenObject.index = 1
+        let (size, ratio) = getImageSize()
+        chosenObject.coverSizeDetails = "\(size.width),\(size.height),\(ratio)"
     }
 
 }
