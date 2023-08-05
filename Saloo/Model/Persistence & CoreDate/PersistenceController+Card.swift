@@ -156,13 +156,13 @@ extension PersistenceController {
             }
 
             if let error = error {
-                GettingRecord.shared.shareFail = true
-                ErrorMessageViewModel.shared.errorMessage = "\(database.databaseScope == .public ? "Public" : "Private")--------\(error.localizedDescription)"
+                //GettingRecord.shared.shareFail = true
+                //ErrorMessageViewModel.shared.errorMessage = "\(database.databaseScope == .public ? "Public" : "Private")--------\(error.localizedDescription)"
                 print("CloudKit Save Error: \(error.localizedDescription)")
                 
             } else {
-                GettingRecord.shared.shareSuccess = true
-                ErrorMessageViewModel.shared.successMessage = "Record Saved Successfully to \(database.databaseScope == .public ? "Public" : "Private") Database!"
+                //GettingRecord.shared.shareSuccess = true
+                //ErrorMessageViewModel.shared.successMessage = "Record Saved Successfully to \(database.databaseScope == .public ? "Public" : "Private") Database!"
                 print("Record Saved Successfully to \(database.databaseScope == .public ? "Public" : "Private") Database!")
             }
             

@@ -13,6 +13,7 @@ import MediaPlayer
 import StoreKit
 import WebKit
 import Combine
+import CloudKit
 
 struct PrefMenu: View {
     @Environment(\.colorScheme) var colorScheme
@@ -52,7 +53,8 @@ struct PrefMenu: View {
     let appleBlack = Color(red: 11.0 / 255.0, green: 11.0 / 255.0, blue: 9.0 / 255.0)
     @State private var hasShownLaunchView: Bool = true
     @State var hasResetPassword = false
-
+    @EnvironmentObject var userSession: UserSession
+    var divideByVal = 1.2
     var listItemHeight: CGFloat = 95
     init() {
         if defaults.object(forKey: "MusicSubType") != nil {_currentSubSelection = State(initialValue: (defaults.object(forKey: "MusicSubType") as? String)!)}
@@ -62,89 +64,100 @@ struct PrefMenu: View {
     
     var body: some View {
         NavigationStack {
-            VStack {
-                Text("Do you subscribe to either of these services?").foregroundColor(colorScheme == .dark ? .white : .black)
-                Text("This will optimize your experience").foregroundColor(colorScheme == .dark ? .white : .black)
-                Text("Current Selection: \(currentSubSelection)").foregroundColor(colorScheme == .dark ? .white : .black)
-                Text("If you don't select a service and authorize your account")
-                    .font(.caption)
-                    .foregroundColor(.gray)
-                    .textCase(.none)
-                Text("you won't be able to include music in your cards")
-                    .font(.caption)
-                    .foregroundColor(.gray)
-                    .textCase(.none)
-                ZStack {
-                    //ScrollView {
-                    VStack {
-                        Divider()
-                        VStack {
-                            if colorScheme == .dark {
-                                Image("AMBadge")
-                                    .resizable()
-                                    .scaledToFit()
-                                    .frame(width: UIScreen.main.bounds.width)
-                                    .clipped()
-                            } else {
-                                Image("AMLockupBlackType")
-                                    .resizable()
-                                    .scaledToFit()
-                                    .frame(width: UIScreen.main.bounds.width)
-                                    .clipped()
-                            }
-                        }
-                        .background(colorScheme == .dark ? Color.black : Color.white) // Setting the background color
-                        .onTapGesture {
-                            musicColor = .pink
-                            hideProgressView = false
-                            apiManager.initializeAM() {
-                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.3){getAMUserTokenAndStoreFront{}}
-                            }
-                        }
-                        Divider()
-                        HStack{
-                            Image("SpotifyLogo")
-                                .resizable()
-                                .scaledToFit()
-                                .frame(width: UIScreen.main.bounds.width)
-                                .clipped()
-                        }
-                        .frame(height: listItemHeight)
-                        .onTapGesture {spotAuthLogic()}
-                        Divider()
-                        Text("I don't subscribe to either")
-                            .font(.system(size: 24))
+            ZStack {
+                List {
+                    VStack(alignment: .center, spacing: 10) {
+                        Text("Do you subscribe to either of these services?")
                             .foregroundColor(colorScheme == .dark ? .white : .black)
-                            .frame(height: listItemHeight)
-                            .onTapGesture {appDelegate.musicSub.type = .Neither; defaults.set("Neither", forKey: "MusicSubType"); appState.currentScreen = .startMenu}
-                        Divider()
-                        Spacer()
-                        HStack {
-                            Button(action: {
-                                openAppOrAppStore(scheme: "music://", appStore: "https://apps.apple.com/app/spotify-music-and-podcasts/id324684580")
-                            }) {Text("Visit the Music App")}
-                            Spacer()
-                            Button(action: {
-                                openAppOrAppStore(scheme: "spotify://", appStore: "https://apps.apple.com/app/spotify-music-and-podcasts/id324684580")
-                            }) {Text("Visit the Spotify App")}
-                        }
+                            .font(Font.custom("Papyrus", size: 16))
+                            .textCase(.none)
+                            .multilineTextAlignment(.center)
+                        Text("Current Selection: \(currentSubSelection)")
+                            .foregroundColor(colorScheme == .dark ? .white : .black)
+                            .font(Font.custom("Papyrus", size: 16))
+                            .textCase(.none)
+                            .multilineTextAlignment(.center)
+                        Text("If you don't select a service and authorize your account you won't be able to include music in your cards")
+                            .font(.caption)
+                            .foregroundColor(.gray)
+                            .multilineTextAlignment(.center)
+                            .textCase(.none)
                     }
-               // }
-                    VStack {
-                        Spacer()
-                        ProgressView()
-                            .hidden(hideProgressView)
-                            .tint(musicColor)
-                            .scaleEffect(3)
-                            .progressViewStyle(CircularProgressViewStyle())
-                        Spacer()
-                        .frame(height: UIScreen.screenHeight/5)
+                    Section(header: Text("Music Preferences").font(.system(size: 20))) {
+                        VStack {
+                                VStack {
+                                    if colorScheme == .dark {
+                                        Image("AMBadge")
+                                            .resizable()
+                                            .scaledToFit()
+                                            .frame(width: UIScreen.main.bounds.width/divideByVal)
+                                            .clipped()
+                                    } else {
+                                        Image("AMLockupBlackType")
+                                            .resizable()
+                                            .scaledToFit()
+                                            .frame(width: UIScreen.main.bounds.width/divideByVal)
+                                            .clipped()
+                                    }
+                                }
+                                .background(colorScheme == .dark ? Color.black : Color.white)
+                                .onTapGesture {
+                                    musicColor = .pink
+                                    hideProgressView = false
+                                    apiManager.initializeAM() {
+                                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3){getAMUserTokenAndStoreFront{}}
+                                    }
+                                }
+                                Divider()
+                                HStack{
+                                    Image("SpotifyLogo")
+                                        .resizable()
+                                        .scaledToFit()
+                                        .frame(width: UIScreen.main.bounds.width/divideByVal)
+                                        .clipped()
+                                }
+                                .frame(height: listItemHeight)
+                                .onTapGesture {spotAuthLogic()}
+                                Divider()
+                                Text("I don't subscribe to either")
+                                    .font(.system(size: 24))
+                                    .foregroundColor(colorScheme == .dark ? .white : .black)
+                                    .frame(height: listItemHeight)
+                                    .onTapGesture {appDelegate.musicSub.type = .Neither; defaults.set("Neither", forKey: "MusicSubType"); appState.currentScreen = .startMenu}
+                            }
                     }
-                    LoadingOverlay(hasShownLaunchView: $hasShownLaunchView)
+                    
+                    Section(header: Text("Music Service Links").font(.system(size: 20))) {
+                        Button(action: {
+                            openAppOrAppStore(scheme: "music://", appStore: "https://apps.apple.com/app/spotify-music-and-podcasts/id324684580")
+                        }) {Text("Visit the Music App")}
+                        Button(action: {
+                            openAppOrAppStore(scheme: "spotify://", appStore: "https://apps.apple.com/app/spotify-music-and-podcasts/id324684580")
+                        }) {Text("Visit the Spotify App")}
+                    }
+                    Section(header: Text("Account").font(.system(size: 20))) {
+                        Button(action: {
+                            alertVars.alertType = .deleteAccount
+                            alertVars.activateAlert = true
+                        })
+                        {Text("Delete My Account").foregroundColor(Color.red)}
+                            .padding()
+                    }
                 }
-                
+                VStack {
+                    Spacer()
+                    ProgressView()
+                        .hidden(hideProgressView)
+                        .tint(musicColor)
+                        .scaleEffect(3)
+                        .progressViewStyle(CircularProgressViewStyle())
+                    Spacer()
+                        .frame(height: UIScreen.screenHeight/5)
+                }
+                .navigationTitle("Preferences")
+                .navigationBarItems(leading:Button {appState.currentScreen = .startMenu} label: {Image(systemName: "chevron.left").foregroundColor(.blue); Text("Back")}.disabled(gettingRecord.isShowingActivityIndicator))
+                LoadingOverlay(hasShownLaunchView: $hasShownLaunchView)
             }
-            .navigationBarItems(leading:Button {appState.currentScreen = .startMenu} label: {Image(systemName: "chevron.left").foregroundColor(.blue); Text("Back")}.disabled(gettingRecord.isShowingActivityIndicator))
         }
         .onDisappear {
             UserDefaults.standard.set(false, forKey: "FirstLaunch")
@@ -156,6 +169,7 @@ struct PrefMenu: View {
         }
         .modifier(AlertViewMod(showAlert: alertVars.activateAlertBinding, activeAlert: alertVars.alertType,
                   alertDismissAction: {hideProgressView = true},
+                  deleteAccountAction:{deleteAccount()},
                   switchSpotAccounts: {self.resetSpotCredentials{self.spotAuthLogic()}},
                   keepSpotAccount: {}))
         .sheet(isPresented: $spotifyManager.showWebView) {
@@ -209,7 +223,93 @@ struct PrefMenu: View {
 
 extension PrefMenu {
     
+    func deleteAccount() {
+        gettingRecord.isLoadingAlert = true
+        deleteAllCoreCards {
+            deleteFromPrivate(database: PersistenceController.shared.cloudKitContainer.privateCloudDatabase) {
+                deleteFromPublic(database: PersistenceController.shared.cloudKitContainer.publicCloudDatabase) {
+                    clearUserDefaults()
+                    DispatchQueue.main.async {
+                        gettingRecord.isLoadingAlert = false
+                        userSession.isSignedIn = false
+                        hasShownLaunchView = false
+                    }
+                }
+            }
+            
+        }
+
+    }
+    func deleteFromPrivate(database: CKDatabase, completion: @escaping () -> Void) {
+        print("called delete from private")
+        let predicate = NSPredicate(value: true)
+        let query = CKQuery(recordType: "CD_CoreCard", predicate: predicate)
+        database.perform(query, inZoneWith: nil) { (records, error) in
+            if let error = error {
+                print("CloudKit fetch error: \(error.localizedDescription)")
+                return
+            }
+            guard let records = records else { return }
+            for record in records {
+                database.delete(withRecordID: record.recordID) { (recordID, error) in
+                    if let error = error {
+                        print("Failed to delete record: \(error.localizedDescription)")
+                    } else if let recordID = recordID {
+                        print("Deleted record: \(recordID.recordName)")
+                    }
+                }
+            }
+            completion()
+        }
+    }
     
+    func deleteFromPublic(database: CKDatabase, completion: @escaping () -> Void) {
+        print("called delete from public")
+        let predicate = NSPredicate(format: "CD_salooUserID == %@", CardsForDisplay.shared.userID!)
+        let query = CKQuery(recordType: "CD_CoreCard", predicate: predicate)
+        database.perform(query, inZoneWith: nil) { (records, error) in
+            if let error = error {
+                print("CloudKit fetch error: \(error.localizedDescription)")
+                return
+            }
+            guard let records = records else { return }
+            for record in records {
+                database.delete(withRecordID: record.recordID) { (recordID, error) in
+                    if let error = error {
+                        print("Failed to delete record: \(error.localizedDescription)")
+                    } else if let recordID = recordID {
+                        print("Deleted record: \(recordID.recordName)")
+                    }
+                }
+            }
+            completion()
+        }
+    }
+
+
+    
+    func clearUserDefaults() {
+        if let appDomain = Bundle.main.bundleIdentifier {
+            print("**")
+            print(appDomain)
+            UserDefaults.standard.removePersistentDomain(forName: appDomain)
+            UserDefaults.standard.synchronize()
+        }
+    }
+
+    
+    func deleteAllCoreCards(completion: @escaping () -> Void) {
+        let request = CoreCard.createFetchRequest()
+        var cardsFromCore: [CoreCard] = []
+        do {cardsFromCore = try PersistenceController.shared.persistentContainer.viewContext.fetch(request); for card in cardsFromCore {deleteCoreCard(coreCard: card)}}
+        catch{}
+        completion()
+    }
+    
+    func deleteCoreCard(coreCard: CoreCard) {
+        do {PersistenceController.shared.persistentContainer.viewContext.delete(coreCard);try PersistenceController.shared.persistentContainer.viewContext.save()}
+        catch {}
+    }
     
     func resetSpotCredentials(completion: @escaping () -> Void) {
         spotifyManager.auth_code =  ""

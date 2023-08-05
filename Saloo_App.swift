@@ -164,7 +164,7 @@ extension View {
 }
 
 enum ActiveAlert {
-    case failedConnection, signInFailure, explicitPhoto, offensiveText, namesNotEntered, showCardComplete, showFailedToShare, addMusicPrompt, spotAuthFailed, amAuthFailed, AMSongNotAvailable, gettingRecord, userBanned, reportComplete, deleteCard, mustSelectPic, musicAuthSuccessful, spotNeedPremium, switchSpotAccounts, loginToiCloud, spotPasswordReset
+    case failedConnection, signInFailure, explicitPhoto, offensiveText, namesNotEntered, showCardComplete, showFailedToShare, addMusicPrompt, spotAuthFailed, amAuthFailed, AMSongNotAvailable, gettingRecord, userBanned, reportComplete, deleteCard, mustSelectPic, musicAuthSuccessful, spotNeedPremium, switchSpotAccounts, loginToiCloud, spotPasswordReset, deleteAccount
 }
 
 struct AlertViewMod: ViewModifier {
@@ -172,6 +172,7 @@ struct AlertViewMod: ViewModifier {
     @Binding var showAlert: Bool
     var activeAlert: ActiveAlert
     var alertDismissAction: (() -> Void)?
+    var deleteAccountAction: (() -> Void)?
     var secondDismissAction: (() -> Void)?
     var switchSpotAccounts: (() -> Void)?
     var keepSpotAccount: (() -> Void)?
@@ -196,6 +197,10 @@ struct AlertViewMod: ViewModifier {
                     }))
                 case .musicAuthSuccessful:
                     return Alert(title: Text("You're All Set 🎶"), dismissButton: .default(Text("Ok")))
+                    
+                case .deleteAccount:
+                    return Alert(title: Text("Are you sure you want to delete your account?"), message: Text("This will delete all of your cards and invalidate the links associated with them."), primaryButton: .default(Text("Yes"), action: {deleteAccountAction?()}), secondaryButton: .default(Text("No"), action: {}))
+                    
                 case .mustSelectPic:
                     return Alert(title: Text("Please select a Picture!"), dismissButton: .default(Text("Ok")))
                 case .deleteCard:

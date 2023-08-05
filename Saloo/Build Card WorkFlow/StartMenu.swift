@@ -78,7 +78,7 @@ struct StartMenu: View {
                             Text("Cards from Me").font(Font.custom("Papyrus", size: 18)).frame(maxWidth: .infinity, alignment: .leading).foregroundColor(.primary)
                         }
                         Button(action: {appState.currentScreen = .preferences}) {
-                            Text("Music Preferences").font(Font.custom("Papyrus", size: 18)).frame(maxWidth: .infinity, alignment: .leading).foregroundColor(.primary)
+                            Text("Preferences").font(Font.custom("Papyrus", size: 18)).frame(maxWidth: .infinity, alignment: .leading).foregroundColor(.primary)
                         }
                     }
 

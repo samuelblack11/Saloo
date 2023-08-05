@@ -251,11 +251,9 @@ struct ProgressBar: View {
 
                 Capsule() // Progress filler
                     .frame(width: geometry.size.width * CGFloat(progress))
-                    .padding(.leading, 5)
-                    .padding(.trailing, 5)
                     .foregroundColor(Color("SalooTheme"))
                 
-                HStack {
+                HStack(spacing: 0) {
                     ForEach(0..<steps.count) { index in
                         Button(action: {
                             // Call the corresponding action
@@ -265,11 +263,12 @@ struct ProgressBar: View {
                         }) {
                             Text(steps[index])
                         }
-                        .padding(.horizontal)
-                        .frame(width: geometry.size.width / CGFloat(steps.count), alignment: .center)
+                        .frame(width: (geometry.size.width - CGFloat(steps.count * 4)) / CGFloat(steps.count), alignment: .center) // Subtracting the total padding from the available width
+                        .padding(.horizontal, 2) // The amount subtracted should be twice the padding amount since there's padding on both sides
                         .disabled(index >= cardProgress.maxStep)
                     }
                 }
+
             }
             .frame(height: 20)
             .onChange(of: cardProgress.currentStep) { newValue in
@@ -281,6 +280,7 @@ struct ProgressBar: View {
             }
         }
     }
+
 }
 
 
