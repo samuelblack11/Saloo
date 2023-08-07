@@ -48,6 +48,10 @@ struct StartMenu: View {
         NavigationView {
             ZStack {
                 VStack {
+                    Image("logo1024-noBackground")
+                        .resizable()
+                        .colorMultiply(colorScheme == .dark ? .white : appDelegate.appColor)
+                        .frame(maxWidth: UIScreen.screenWidth/8, maxHeight: UIScreen.screenHeight/15, alignment: .center)
                     Text("Welcome To Saloo")
                         .foregroundColor(colorScheme == .dark ? .white : .black)
                         .font(Font.custom("Papyrus", size: 32))
@@ -78,7 +82,7 @@ struct StartMenu: View {
                             Text("Cards from Me").font(Font.custom("Papyrus", size: 18)).frame(maxWidth: .infinity, alignment: .leading).foregroundColor(.primary)
                         }
                         Button(action: {appState.currentScreen = .preferences}) {
-                            Text("Preferences").font(Font.custom("Papyrus", size: 18)).frame(maxWidth: .infinity, alignment: .leading).foregroundColor(.primary)
+                            Text("Settings").font(Font.custom("Papyrus", size: 18)).frame(maxWidth: .infinity, alignment: .leading).foregroundColor(.primary)
                         }
                     }
 

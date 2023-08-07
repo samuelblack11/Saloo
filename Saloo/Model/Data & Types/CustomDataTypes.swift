@@ -13,6 +13,49 @@ import Network
 import Security
 import MessageUI
 
+struct CustomNavigationBar: View {
+    let onBackButtonTap: () -> Void
+    let title: String
+    @Environment(\.colorScheme) var colorScheme
+    @EnvironmentObject var gettingRecord: GettingRecord
+
+    var body: some View {
+        HStack {
+            Button(action: onBackButtonTap) {
+                HStack {
+                    Image(systemName: "chevron.left").foregroundColor(.blue)
+                    Text("Back")
+                        .foregroundColor(.blue)
+                }
+            }
+            .disabled(gettingRecord.isShowingActivityIndicator)
+            .padding(.leading, 10)
+
+            Spacer()
+
+            Text(title)
+                .foregroundColor(colorScheme == .dark ? Color.white : Color.black)
+                .font(Font.custom("Papyrus", size: 20))
+
+            Spacer()
+
+            // Dummy view to balance the width of the back button.
+            HStack {
+                Image(systemName: "chevron.left")
+                    .opacity(0)  // make it invisible
+                Text("Back")
+                    .opacity(0)  // make it invisible
+            }
+            .padding(.trailing, 10)
+        }
+        .padding(.top, UIApplication.shared.windows.first?.safeAreaInsets.top)
+        .background(Color(UIColor.systemBackground))  // This matches the system background color. Change as needed.
+        .shadow(color: Color.black.opacity(0.1), radius: 2, x: 0, y: 2) // Optional shadow for aesthetics
+    }
+}
+
+
+
 struct ChosenCollection {@State var occassion: String!; @State var collectionID: String!}
 class ChosenCoreCard: ObservableObject {
     static let shared = ChosenCoreCard()

@@ -110,17 +110,17 @@ struct WriteNoteView: View {
                                 else {
                                     noteField.cardName.value = noteField.cardName.value.components(separatedBy: CharacterSet.punctuationCharacters).joined()
                                     if appDelegate.musicSub.type == .Apple {
-                                        GettingRecord.shared.isLoadingAlert = false
+                                        DispatchQueue.main.async{GettingRecord.shared.isLoadingAlert = false}
                                         alertVars.alertType = .addMusicPrompt
                                         alertVars.activateAlert = true
                                     }
                                     if appDelegate.musicSub.type == .Spotify {
-                                        GettingRecord.shared.isLoadingAlert = false
+                                        DispatchQueue.main.async{GettingRecord.shared.isLoadingAlert = false}
                                         alertVars.alertType = .addMusicPrompt
                                         alertVars.activateAlert = true
                                     }
                                     if appDelegate.musicSub.type == .Neither {checkRequiredFields(); annotateIfNeeded();CardPrep.shared.chosenSong = chosenSong;
-                                    GettingRecord.shared.isLoadingAlert = false;cardProgress.currentStep = 4; appState.currentScreen = .buildCard([.finalizeCardView])}
+                                        DispatchQueue.main.async{GettingRecord.shared.isLoadingAlert = false} ;cardProgress.currentStep = 4; appState.currentScreen = .buildCard([.finalizeCardView])}
                                 }
                             }
                         }
@@ -193,7 +193,7 @@ extension WriteNoteView {
     static func checkTextForOffensiveContent(text: String, completion: @escaping (Bool?, Error?) -> Void) {
         // Endpoint for Microsoft's Content Moderator API (text moderation)
         guard let url = URL(string: textBase) else { return }
-        GettingRecord.shared.isLoadingAlert = true
+        DispatchQueue.main.async{GettingRecord.shared.isLoadingAlert = true}
         // Prepare the URL request
         var request = URLRequest(url: url)
         request.httpMethod = "POST"

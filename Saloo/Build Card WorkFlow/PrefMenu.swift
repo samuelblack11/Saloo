@@ -62,101 +62,184 @@ struct PrefMenu: View {
     }
     
     
+    private var settingsList: some View {
+        List {
+            subscriptionSection
+            musicPreferenceSection
+            privacySection
+            accountSection
+            musicServiceLinksSection
+        }
+    }
+
+    private var subscriptionSection: some View {
+        VStack {
+            Text("Do you subscribe to either of these services?")
+                .foregroundColor(colorScheme == .dark ? .white : .black)
+                .font(Font.custom("Papyrus", size: 16))
+                .textCase(.none)
+                .multilineTextAlignment(.center)
+            Text("If you don't select a service and authorize your account you won't be able to include music in your cards")
+                .font(.caption)
+                .foregroundColor(.gray)
+                .multilineTextAlignment(.center)
+                .textCase(.none)
+            }
+        }
+
+    private var musicPreferenceSection: some View {
+        VStack {
+                VStack {
+                    if colorScheme == .dark {
+                        Image("AMBadge")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: UIScreen.main.bounds.width/divideByVal, height: listItemHeight)
+                            .clipped()
+                    } else {
+                        Image("AMLockupBlackType")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: UIScreen.main.bounds.width/divideByVal, height: listItemHeight)
+                            .clipped()
+                    }
+                }
+                .background(colorScheme == .dark ? Color.black : Color.white)
+                .onTapGesture {
+                    musicColor = .pink
+                    hideProgressView = false
+                    apiManager.initializeAM() {
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3){getAMUserTokenAndStoreFront{}}
+                    }
+                }
+                Divider()
+                HStack{
+                    Image("SpotifyLogo")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: UIScreen.main.bounds.width/divideByVal, height: listItemHeight)
+                        .clipped()
+                }
+                .frame(height: listItemHeight)
+                .onTapGesture {spotAuthLogic()}
+                Divider()
+                Text("I don't subscribe to either")
+                    .font(.system(size: 24))
+                    .foregroundColor(colorScheme == .dark ? .white : .black)
+                    .frame(height: listItemHeight)
+                    .onTapGesture {appDelegate.musicSub.type = .Neither; defaults.set("Neither", forKey: "MusicSubType"); appState.currentScreen = .startMenu}
+            }
+    }
+
+    private var privacySection: some View {
+        VStack(alignment: .leading) {
+            Link("Privacy Policy", destination: URL(string: "https://www.salooapp.com/privacy-policy")!)
+                .foregroundColor(Color.blue)
+                .padding()
+        }
+    }
+
+    private var accountSection: some View {
+        VStack(alignment: .leading) {
+            Button(action: {
+                alertVars.alertType = .deleteAccount
+                alertVars.activateAlert = true
+            })
+            {Text("Delete My Account").foregroundColor(Color.red)}
+                .padding()
+        }
+    }
+
+    private var musicServiceLinksSection: some View {
+        VStack(alignment: .leading) {
+            Button(action: {
+                openAppOrAppStore(scheme: "music://", appStore: "https://apps.apple.com/app/spotify-music-and-podcasts/id324684580")
+            }) {Text("Visit the Music App")}
+            Divider()
+            Button(action: {
+                openAppOrAppStore(scheme: "spotify://", appStore: "https://apps.apple.com/app/spotify-music-and-podcasts/id324684580")
+            }) {Text("Visit the Spotify App")}
+        }
+    }
+
+    private var spotifyAuthView: some View {
+        WebVCView(authURLForView: spotifyManager.authForRedirect, authCode: $authCode)
+            .onReceive(Just(authCode)) { newAuthCode in
+                if let unwrappedAuthCode = newAuthCode, !unwrappedAuthCode.isEmpty {
+                    spotifyManager.auth_code = newAuthCode!
+                    print("++++++")
+                    print(newAuthCode!)
+                        spotifyManager.getSpotToken { success in
+                            print("getSpotToken Completion Handler...")
+                            print(newAuthCode)
+                            if newAuthCode == "AuthFailed" {
+                                currentSubSelection = "Neither"
+                                appDelegate.musicSub.type = .Neither
+                                alertVars.alertType = .spotAuthFailed
+                                alertVars.activateAlert = true
+                            }
+                            else {
+                                print("getSpotToken completion called...")
+                                print(success)
+                                spotifyManager.verifySubType { isPremium in
+                                    if isPremium {
+                                        currentSubSelection = "Spotify"
+                                        appDelegate.musicSub.type = .Spotify
+                                        defaults.set("Spotify", forKey: "MusicSubType")
+                                        spotifyManager.instantiateAppRemote()
+                                        alertVars.alertType = .musicAuthSuccessful
+                                        alertVars.activateAlert = true
+                                        appState.currentScreen = .startMenu
+                                    }
+                                    else {
+                                        currentSubSelection = "Neither"
+                                        appDelegate.musicSub.type = .Neither
+                                        defaults.set("Neither", forKey: "MusicSubType")
+                                        alertVars.alertType = .spotNeedPremium
+                                        alertVars.activateAlert = true
+                                    }
+                                    hideProgressView = true
+                                }
+                                
+                            }
+                        }
+                    //}
+                }
+                else {hideProgressView = true}
+            }    }
+    
+    
+    
     var body: some View {
         NavigationStack {
-            ZStack {
-                List {
-                    VStack(alignment: .center, spacing: 10) {
-                        Text("Do you subscribe to either of these services?")
-                            .foregroundColor(colorScheme == .dark ? .white : .black)
-                            .font(Font.custom("Papyrus", size: 16))
-                            .textCase(.none)
-                            .multilineTextAlignment(.center)
-                        Text("Current Selection: \(currentSubSelection)")
-                            .foregroundColor(colorScheme == .dark ? .white : .black)
-                            .font(Font.custom("Papyrus", size: 16))
-                            .textCase(.none)
-                            .multilineTextAlignment(.center)
-                        Text("If you don't select a service and authorize your account you won't be able to include music in your cards")
-                            .font(.caption)
-                            .foregroundColor(.gray)
-                            .multilineTextAlignment(.center)
-                            .textCase(.none)
+            VStack {
+                CustomNavigationBar(onBackButtonTap: {appState.currentScreen = .startMenu}, title: "Settings")
+                ZStack {
+                    List {
+                        VStack(alignment: .center, spacing: 10) {subscriptionSection}
+                        Section(header: VStack(alignment: .leading) {
+                            Text("Music Preferences").font(.system(size: 20))
+                            Text("Current Selection: \(currentSubSelection)")
+                                .foregroundColor(colorScheme == .dark ? .white : .black)
+                                .font(Font.custom("Papyrus", size: 16))
+                            .textCase(.none) })
+                        {musicPreferenceSection}
+                        Section(header: Text("Privacy Policy").font(.system(size: 20))) {privacySection}
+                        Section(header: Text("Account").font(.system(size: 20))) {accountSection}
+                        Section(header: Text("Music Service Links").font(.system(size: 20))) {musicServiceLinksSection}
                     }
-                    Section(header: Text("Music Preferences").font(.system(size: 20))) {
-                        VStack {
-                                VStack {
-                                    if colorScheme == .dark {
-                                        Image("AMBadge")
-                                            .resizable()
-                                            .scaledToFit()
-                                            .frame(width: UIScreen.main.bounds.width/divideByVal)
-                                            .clipped()
-                                    } else {
-                                        Image("AMLockupBlackType")
-                                            .resizable()
-                                            .scaledToFit()
-                                            .frame(width: UIScreen.main.bounds.width/divideByVal)
-                                            .clipped()
-                                    }
-                                }
-                                .background(colorScheme == .dark ? Color.black : Color.white)
-                                .onTapGesture {
-                                    musicColor = .pink
-                                    hideProgressView = false
-                                    apiManager.initializeAM() {
-                                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3){getAMUserTokenAndStoreFront{}}
-                                    }
-                                }
-                                Divider()
-                                HStack{
-                                    Image("SpotifyLogo")
-                                        .resizable()
-                                        .scaledToFit()
-                                        .frame(width: UIScreen.main.bounds.width/divideByVal)
-                                        .clipped()
-                                }
-                                .frame(height: listItemHeight)
-                                .onTapGesture {spotAuthLogic()}
-                                Divider()
-                                Text("I don't subscribe to either")
-                                    .font(.system(size: 24))
-                                    .foregroundColor(colorScheme == .dark ? .white : .black)
-                                    .frame(height: listItemHeight)
-                                    .onTapGesture {appDelegate.musicSub.type = .Neither; defaults.set("Neither", forKey: "MusicSubType"); appState.currentScreen = .startMenu}
-                            }
+                    VStack {
+                        Spacer()
+                        ProgressView()
+                            .hidden(hideProgressView)
+                            .tint(musicColor)
+                            .scaleEffect(3)
+                            .progressViewStyle(CircularProgressViewStyle())
+                        Spacer()
+                            .frame(height: UIScreen.screenHeight/5)
                     }
-                    
-                    Section(header: Text("Music Service Links").font(.system(size: 20))) {
-                        Button(action: {
-                            openAppOrAppStore(scheme: "music://", appStore: "https://apps.apple.com/app/spotify-music-and-podcasts/id324684580")
-                        }) {Text("Visit the Music App")}
-                        Button(action: {
-                            openAppOrAppStore(scheme: "spotify://", appStore: "https://apps.apple.com/app/spotify-music-and-podcasts/id324684580")
-                        }) {Text("Visit the Spotify App")}
-                    }
-                    Section(header: Text("Account").font(.system(size: 20))) {
-                        Button(action: {
-                            alertVars.alertType = .deleteAccount
-                            alertVars.activateAlert = true
-                        })
-                        {Text("Delete My Account").foregroundColor(Color.red)}
-                            .padding()
-                    }
+                    LoadingOverlay(hasShownLaunchView: $hasShownLaunchView)
                 }
-                VStack {
-                    Spacer()
-                    ProgressView()
-                        .hidden(hideProgressView)
-                        .tint(musicColor)
-                        .scaleEffect(3)
-                        .progressViewStyle(CircularProgressViewStyle())
-                    Spacer()
-                        .frame(height: UIScreen.screenHeight/5)
-                }
-                .navigationTitle("Preferences")
-                .navigationBarItems(leading:Button {appState.currentScreen = .startMenu} label: {Image(systemName: "chevron.left").foregroundColor(.blue); Text("Back")}.disabled(gettingRecord.isShowingActivityIndicator))
-                LoadingOverlay(hasShownLaunchView: $hasShownLaunchView)
             }
         }
         .onDisappear {
@@ -172,52 +255,7 @@ struct PrefMenu: View {
                   deleteAccountAction:{deleteAccount()},
                   switchSpotAccounts: {self.resetSpotCredentials{self.spotAuthLogic()}},
                   keepSpotAccount: {}))
-        .sheet(isPresented: $spotifyManager.showWebView) {
-            WebVCView(authURLForView: spotifyManager.authForRedirect, authCode: $authCode)
-                .onReceive(Just(authCode)) { newAuthCode in
-                    if let unwrappedAuthCode = newAuthCode, !unwrappedAuthCode.isEmpty {
-                        spotifyManager.auth_code = newAuthCode!
-                        print("++++++")
-                        print(newAuthCode!)
-                            spotifyManager.getSpotToken { success in
-                                print("getSpotToken Completion Handler...")
-                                print(newAuthCode)
-                                if newAuthCode == "AuthFailed" {
-                                    currentSubSelection = "Neither"
-                                    appDelegate.musicSub.type = .Neither
-                                    alertVars.alertType = .spotAuthFailed
-                                    alertVars.activateAlert = true
-                                }
-                                else {
-                                    print("getSpotToken completion called...")
-                                    print(success)
-                                    spotifyManager.verifySubType { isPremium in
-                                        if isPremium {
-                                            currentSubSelection = "Spotify"
-                                            appDelegate.musicSub.type = .Spotify
-                                            defaults.set("Spotify", forKey: "MusicSubType")
-                                            spotifyManager.instantiateAppRemote()
-                                            alertVars.alertType = .musicAuthSuccessful
-                                            alertVars.activateAlert = true
-                                            appState.currentScreen = .startMenu
-                                        }
-                                        else {
-                                            currentSubSelection = "Neither"
-                                            appDelegate.musicSub.type = .Neither
-                                            defaults.set("Neither", forKey: "MusicSubType")
-                                            alertVars.alertType = .spotNeedPremium
-                                            alertVars.activateAlert = true
-                                        }
-                                        hideProgressView = true
-                                    }
-                                    
-                                }
-                            }
-                        //}
-                    }
-                    else {hideProgressView = true}
-                }
-        }
+        .sheet(isPresented: $spotifyManager.showWebView) {spotifyAuthView}
     }
 }
 

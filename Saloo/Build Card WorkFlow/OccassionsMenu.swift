@@ -50,6 +50,7 @@ struct OccassionsMenu: View {
         // Hold cmd + ctrl, then click space bar to show emoji menu
         NavigationView {
             VStack {
+                CustomNavigationBar(onBackButtonTap: {appState.currentScreen = .buildCard([.photoOptionsView])}, title: chosenObject.frontCoverIsPersonalPhoto == 0 ? "Choose Occasion": "Primary Photo")
                 ProgressBar()
                     .frame(height: 20)
                 ZStack {
@@ -150,8 +151,6 @@ struct OccassionsMenu: View {
         //.alert(isPresented: $explicitPhotoAlert) {
         //    Alert(title: Text("Error"), message: Text("The selected image contains explicit content and cannot be used."), dismissButton: .default(Text("OK")))
         //}
-        .navigationTitle(chosenObject.frontCoverIsPersonalPhoto == 0 ? "Choose Occasion": "Primary Photo")
-        .navigationBarItems(leading:Button {appState.currentScreen = .buildCard([.photoOptionsView])} label: {Image(systemName: "chevron.left").foregroundColor(.blue); Text("Back")}.disabled(gettingRecord.isShowingActivityIndicator))
         .font(.headline)
         .listStyle(GroupedListStyle())
         }

@@ -14,6 +14,7 @@ import AVFAudio
 import MessageUI
 
 struct GridofCards: View {
+    @Environment(\.colorScheme) var colorScheme
     @State private var toggleProgress: Bool = false
     @State private var hasAnyShare: Bool?
     @State private var isCardShared: Bool?
@@ -98,17 +99,19 @@ struct GridofCards: View {
 
     var body: some View {
         NavigationView {
-            ZStack {
-                ScrollView {
-                    sortResults
-                    LazyVGrid(columns: calculateGridColumns(), spacing: 10) {
-                        ForEach(sortedCards(cardsFilteredBySearch, sortBy: sortByValue), id: \.self) { gridCard in
-                            cardView(for: gridCard, shareable: false)
+            VStack {
+                CustomNavigationBar(onBackButtonTap: {appState.currentScreen = .startMenu}, title: whichBoxVal == .inbox ? "Cards from Others" : "Cards from Me")
+                ZStack {
+                    ScrollView {
+                        sortResults
+                        LazyVGrid(columns: calculateGridColumns(), spacing: 10) {
+                            ForEach(sortedCards(cardsFilteredBySearch, sortBy: sortByValue), id: \.self) { gridCard in
+                                cardView(for: gridCard, shareable: false)
+                            }
                         }
                     }
+                    LoadingOverlay(hasShownLaunchView: $hasShownLaunchView)
                 }
-                LoadingOverlay(hasShownLaunchView: $hasShownLaunchView)
-
             }
             .onAppear{
             print("Grid Appeared...")
@@ -118,8 +121,6 @@ struct GridofCards: View {
             }
             .fullScreenCover(item: $cardToReport, onDismiss: didDismiss) {cardToReport in
                 ReportOffensiveContentView(card: $cardToReport, whichBoxVal: $whichBoxVal, coreCards: $coreCards)}
-            .navigationTitle("Your Cards")
-            .navigationBarItems(leading:Button {print("Back Button pressed to Start menu..."); appState.currentScreen = .startMenu} label: {Image(systemName: "chevron.left").foregroundColor(.blue); Text("Back")}.disabled(gettingRecord.isShowingActivityIndicator))
         }
         .modifier(AlertViewMod(showAlert: alertVars.activateAlertBinding, activeAlert: alertVars.alertType, alertDismissAction: {
             deleteCoreCard(coreCard: cardToDelete!)}))
@@ -262,8 +263,7 @@ extension GridofCards {
             }
             if coreCards.count > 0 {
                 Text("Tap and Hold to Access Card")
-                    .font(.caption)
-                    .foregroundColor(.gray)
+                    .font(Font.custom("Papyrus", size: 16))
                     .textCase(.none)
             }
         }

@@ -140,7 +140,7 @@ struct MusicSearchView: View {
                                 }
                                 Spacer()
                             }
-                            .onTapGesture {isLoading = true ; print("Playing \(song.name)");createChosenSong(song: song)}
+                            .onTapGesture {DispatchQueue.main.async {isLoading = true}; print("Playing \(song.name)");createChosenSong(song: song)}
                         }
                     }
                     if isLoading {
@@ -158,7 +158,7 @@ struct MusicSearchView: View {
                                     if !isPremium {
                                         alertVars.alertType = .spotNeedPremium
                                         alertVars.activateAlert = true
-                                        isLoading = false
+                                        DispatchQueue.main.async {isLoading = false}
                                     }
                                 }
                                 spotifyManager.noInternet = {
@@ -196,7 +196,7 @@ struct MusicSearchView: View {
 extension MusicSearchView {
     
     func searchWithAM() {
-        if amAPI.storeFrontID == nil {isLoading = true; getAMUserTokenAndStoreFront{performAMSearch()}}
+        if amAPI.storeFrontID == nil {DispatchQueue.main.async {isLoading = true}; getAMUserTokenAndStoreFront{performAMSearch()}}
         else {performAMSearch()}
     }
 
@@ -278,7 +278,7 @@ extension MusicSearchView {
                         foundMatch = true
                         UIApplication.shared.endEditing()
                         showSPV = true
-                        isLoading = false
+                        DispatchQueue.main.async {isLoading = false}
                         isPlaying = false
                         //break
                     }
@@ -292,7 +292,7 @@ extension MusicSearchView {
                 chosenSong.spotAlbumArtist = albumArtistList.first ?? ""
                 UIApplication.shared.endEditing()
                 showSPV = true
-                isLoading = false
+                DispatchQueue.main.async {isLoading = false}
                 isPlaying = false
             }
         }
@@ -385,12 +385,12 @@ extension MusicSearchView {
     func searchWithSpotify() {
         print("searchWithSpotifyCalled...")
         print(spotifyManager.access_token)
-        if spotifyManager.access_token == "" || spotifyManager.access_token == nil {isLoading = true; spotifyManager.updateCredentialsIfNeeded{success in
+        if spotifyManager.access_token == "" || spotifyManager.access_token == nil {DispatchQueue.main.async {isLoading = true}; spotifyManager.updateCredentialsIfNeeded{success in
             spotifyManager.verifySubType{isPremium in
                 if !isPremium {
                     alertVars.alertType = .spotNeedPremium
                     alertVars.activateAlert = true
-                    isLoading = false
+                    DispatchQueue.main.async {isLoading = false}
                 }
                 else {performSPOTSearch()}}
             }
@@ -405,7 +405,7 @@ extension MusicSearchView {
     
     
     func performSPOTSearch() {
-        isLoading = true
+        DispatchQueue.main.async {isLoading = true}
         print("!!!")
         print(spotifyManager.access_token)
         let songTerm = cleanMusicData.cleanMusicString(input: self.songSearch, removeList: appDelegate.songFilterForSearchRegex)
@@ -457,7 +457,7 @@ extension MusicSearchView {
                                 else{searchResults.append(songForList)}
                             }
                         })
-                    }; isLoading = false}}; if response != nil {print("No Response!")}
+                    }; DispatchQueue.main.async {isLoading = false}}}; if response != nil {print("No Response!")}
                         else{debugPrint(error?.localizedDescription)}
         })
     }
@@ -501,7 +501,7 @@ extension MusicSearchView {
 
     
     func performAMSearch() {
-        isLoading = true
+        DispatchQueue.main.async {isLoading = true}
         print("---")
         print("isLoading...\(isLoading)");
         SKCloudServiceController.requestAuthorization {(status) in if status == .authorized {
@@ -524,7 +524,7 @@ extension MusicSearchView {
                                 print(songForList.name)
                             }
                             else {searchResults.append(songForList)}
-                            })}; isLoading = false}
+                            })}; DispatchQueue.main.async {isLoading = false}}
                 }; if response != nil {print("No Response!")}
                 else {debugPrint(error?.localizedDescription)}}
             )}}
@@ -555,7 +555,8 @@ extension MusicSearchView {
                         if !isPremium {
                             alertVars.alertType = .spotNeedPremium
                             alertVars.activateAlert = true
-                            isLoading = false
+                            DispatchQueue.main.async {isLoading = false}
+                            
                         }
                         else {getSpotAlbum()}
                     }
@@ -590,7 +591,7 @@ extension MusicSearchView {
             }
             UIApplication.shared.endEditing()
             showAPV = true
-            isLoading = false
+            DispatchQueue.main.async {isLoading = false}
             isPlaying = false
         }
     }

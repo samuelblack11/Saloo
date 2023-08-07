@@ -52,7 +52,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, ObservableObject {
            // Check if the app is launching from a terminated state
            if let launchOptions = launchOptions, launchOptions[UIApplication.LaunchOptionsKey.annotation] == nil {
                print("isLaunchingFromClosed")
-               //GettingRecord.shared.isLoadingAlert = true
                isLaunchingFromClosed = true
            } else {isLaunchingFromClosed = false}
            

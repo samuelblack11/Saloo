@@ -131,7 +131,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
     
     
     func fetchRecord(withUniqueName uniqueName: String) {
-        GettingRecord.shared.isLoadingAlert = true
+        DispatchQueue.main.async{GettingRecord.shared.isLoadingAlert = true}
         //if ChosenCoreCard.shared.chosenCard != nil {ChosenCoreCard.shared.chosenCard = nil}
         print("called fetch")
         let predicate = NSPredicate(format: "CD_uniqueName == %@", uniqueName)
@@ -151,7 +151,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
                         print(result)
                         self.parseRecord(record: result)
                     }}
-                else {print("No matching record found."); GettingRecord.shared.isLoadingAlert = false}
+                else {print("No matching record found.");         DispatchQueue.main.async{GettingRecord.shared.isLoadingAlert = false}}
             }
         }
     }
@@ -176,7 +176,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
         if self.appDelegate.musicSub.type == .Neither {self.updateMusicSubType()}
         //AppState.shared.currentScreen = .startMenu
         CardsForDisplay.shared.addCoreCard(card: self.coreCard, box: self.whichBoxForCKAccept!, record: record)
-        GettingRecord.shared.isLoadingAlert = false
+        DispatchQueue.main.async{GettingRecord.shared.isLoadingAlert = false}
         AppState.shared.cardFromShare = self.coreCard
         self.gotRecord = false
     }
