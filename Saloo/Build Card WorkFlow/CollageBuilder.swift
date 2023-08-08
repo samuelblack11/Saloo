@@ -76,6 +76,7 @@ struct CollageBuilder: View {
 
         NavigationStack {
             VStack {
+                CustomNavigationBar(onBackButtonTap: {cardProgress.currentStep = 1; appState.currentScreen = .buildCard([.photoOptionsView])}, titleContent: .text("Build Collage"))
                 ProgressBar().frame(height: 20)
                     .frame(height: 20)
                 ZStack {
@@ -96,12 +97,12 @@ struct CollageBuilder: View {
                             Image(systemName: "arrow.uturn.left")
                                 .foregroundColor(.blue)
                             Text("Reset to Original Scale")
-                                .font(.system(size: 8))
+                                .font(Font.custom("Papyrus", size: 9))
                         }
                         .frame(alignment: .trailing)
                         Spacer()
                         Spacer()
-                        Button("Confirm Collage") {
+                        Button(action: {
                             if blockCount != (4 - countNilImages()) {
                                 alertVars.alertType = .mustSelectPic
                                 alertVars.activateAlert = true
@@ -115,12 +116,11 @@ struct CollageBuilder: View {
                                 }
                                 
                             }
+                        }) {
+                            Text("Confirm Collage")
+                                .font(Font.custom("Papyrus", size: 16))
                         }
-                        .font(.system(size: 16))
                         .padding(.bottom, 30)
-                            .navigationBarItems(leading: Button {cardProgress.currentStep = 1; appState.currentScreen = .buildCard([.photoOptionsView])} label: {
-                                Image(systemName: "chevron.left").foregroundColor(.blue)
-                                Text("Back")}.disabled(gettingRecord.isShowingActivityIndicator))
                     }
                     .onAppear{
                         
@@ -137,7 +137,6 @@ struct CollageBuilder: View {
                 }
             }
             .modifier(AlertViewMod(showAlert: alertVars.activateAlertBinding, activeAlert: alertVars.alertType))
-            .navigationTitle("Build Your Collage")
         }
     }
         @ViewBuilder var chosenTemplate: some View {
@@ -189,7 +188,10 @@ extension CollageBuilder {
             ZStack(alignment: .center) {
                 if imageForBlock == nil {
                     Rectangle().fill(Color.gray)
-                    Text("Tap to select a picture").foregroundColor(.white).font(.headline)
+                    Text("Tap to select a picture")
+                        .foregroundColor(.white)
+                        .font(Font.custom("Papyrus", size: 16))
+
                 }
                 if isImageLoading[imageNum - 1] {
                     ProgressView()

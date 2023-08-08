@@ -23,6 +23,7 @@ struct ConfirmFrontCoverView: View {
     var body: some View {
         NavigationView {
             VStack {
+                CustomNavigationBar(onBackButtonTap: {cardProgress.currentStep = 1; appState.currentScreen = .buildCard([.unsplashCollectionView])}, titleContent: .text("Confirm Photo"))
                 ProgressBar().frame(height: 20)
                 ZStack {
                     VStack {
@@ -37,7 +38,9 @@ struct ConfirmFrontCoverView: View {
                             Link("Unsplash", destination: URL(string: "https://unsplash.com")!).font(Font.custom("Papyrus", size: 16))
                         }
                         Spacer()
-                        Button("Confirm Image") {
+                        
+
+                        Button(action: {
                             cardProgress.currentStep = 2
                             appState.currentScreen = .buildCard([.collageBuilder])
                             PhotoAPI.pingDownloadURL(downloadLocation: chosenObject.downloadLocation, completionHandler: { (response, error) in
@@ -47,23 +50,16 @@ struct ConfirmFrontCoverView: View {
                                 }
                                 if response == nil {
                                     //debugPrint("Ping Failed!.......")
-                                    
                                 }})
+                        }) {
+                            Text("Confirm Image")
+                                .font(Font.custom("Papyrus", size: 16))
                         }.padding(.bottom, 10)
                     }
                     LoadingOverlay(hasShownLaunchView: $hasShownLaunchView)
                 }
             }
         .modifier(AlertViewMod(showAlert: alertVars.activateAlertBinding, activeAlert: alertVars.alertType))
-        .navigationBarItems(leading:
-            Button {
-                print("Back button tapped")
-                cardProgress.currentStep = 1
-                appState.currentScreen = .buildCard([.unsplashCollectionView])
-            } label: {
-                Image(systemName: "chevron.left").foregroundColor(.blue)
-                Text("Back")
-            }.disabled(gettingRecord.isShowingActivityIndicator))
         }
     }
     

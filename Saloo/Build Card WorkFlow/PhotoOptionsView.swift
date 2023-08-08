@@ -34,7 +34,7 @@ struct PhotoOptionsView: View {
                     chosenImagesObject.chosenImageB = nil
                     chosenImagesObject.chosenImageC = nil
                     chosenImagesObject.chosenImageD = nil
-                }, title: "Photo Options")
+                }, titleContent: .text("Photo Options"))
                 ZStack {
                     VStack {
                         Text("Saloo has curated professional photos for each holiday and special occassion.Would you like to use one of these as your card's primary photo, or use a personal one?")
@@ -59,10 +59,12 @@ struct PhotoOptionsView: View {
                         MiniCollageMenu()
                             .padding(.bottom, 5)
                         Button(action: {
+                            if collageImage.chosenStyle == 0 {collageImage.chosenStyle = 1}
                             cardProgress.currentStep = 1
                             appState.currentScreen = .buildCard([.occasionsMenu])
                         }) {
                             Text("Confirm Selection")
+                                .font(Font.custom("Papyrus", size: 16))
                                 .frame(height: 20)
                         }
                     }

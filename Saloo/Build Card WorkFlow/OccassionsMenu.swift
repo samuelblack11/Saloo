@@ -50,7 +50,7 @@ struct OccassionsMenu: View {
         // Hold cmd + ctrl, then click space bar to show emoji menu
         NavigationView {
             VStack {
-                CustomNavigationBar(onBackButtonTap: {appState.currentScreen = .buildCard([.photoOptionsView])}, title: chosenObject.frontCoverIsPersonalPhoto == 0 ? "Choose Occasion": "Primary Photo")
+                CustomNavigationBar(onBackButtonTap: {appState.currentScreen = .buildCard([.photoOptionsView])}, titleContent: .text(chosenObject.frontCoverIsPersonalPhoto == 0 ? "Choose Occasion": "Primary Photo"))
                 ProgressBar()
                     .frame(height: 20)
                 ZStack {

@@ -58,17 +58,21 @@ class AppleMusicAPI {
         SKCloudServiceController().requestUserToken(forDeveloperToken: APIManager.shared.appleMusicDevToken) { (receivedToken, error) in
             print("----")
             print(receivedToken)
-            
             if let error = error {
                 print("Token Error...")
                 self.tokenError = true
                 AMAuthError.shared.errorMessage = error.localizedDescription
+                print(AMAuthError.shared.errorMessage)
                 APIManager.shared.getSecret(keyName: "appleMusicDevToken", forceGetFromAzure: true) { token4 in
+                    print("::::")
                     DispatchQueue.main.async {
+                        print("!!!!!")
+                        completionHandler(nil, error)
                         APIManager.shared.appleMusicDevToken = token4 ?? ""
-                        self.getUserToken { (token, error) in
-                            completionHandler(token, error) // Pass error4 instead of error
-                        }
+                        //self.getUserToken { (token, error) in
+                        //    print("^^^^^")
+                        //    completionHandler(token, error) // Pass error4 instead of error
+                        //}
                     }
                 }
             } else {

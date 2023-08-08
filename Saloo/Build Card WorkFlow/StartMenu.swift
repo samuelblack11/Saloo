@@ -48,10 +48,7 @@ struct StartMenu: View {
         NavigationView {
             ZStack {
                 VStack {
-                    Image("logo1024-noBackground")
-                        .resizable()
-                        .colorMultiply(colorScheme == .dark ? .white : appDelegate.appColor)
-                        .frame(maxWidth: UIScreen.screenWidth/8, maxHeight: UIScreen.screenHeight/15, alignment: .center)
+                    CustomNavigationBar(titleContent: .image("logo1024-noBackground"), showBackButton: false)
                     Text("Welcome To Saloo")
                         .foregroundColor(colorScheme == .dark ? .white : .black)
                         .font(Font.custom("Papyrus", size: 32))
@@ -90,7 +87,7 @@ struct StartMenu: View {
                 LoadingOverlay(hasShownLaunchView: $hasShownLaunchView)
             }
         }
-            .modifier(AlertViewMod(showAlert: alertVars.activateAlertBinding, activeAlert: alertVars.alertType))
+        .modifier(AlertViewMod(showAlert: alertVars.activateAlertBinding, activeAlert: alertVars.alertType, goToSettings: {DispatchQueue.main.async{AppState.shared.currentScreen = .preferences}}, updateMusicLaterPrompt: {DispatchQueue.main.async{alertVars.alertType = .updateMusicSubAnyTime; alertVars.activateAlert = true}}))
             .onAppear {
                 //deleteAllCoreCards()
                 cardProgress.currentStep = 1
@@ -100,7 +97,7 @@ struct StartMenu: View {
                     if (defaults.object(forKey: "MusicSubType") as? String)! == "Spotify" {appDelegate.musicSub.type = .Spotify}
                     if (defaults.object(forKey: "MusicSubType") as? String)! == "Neither" {appDelegate.musicSub.type = .Neither}
                 }
-                else{appState.currentScreen = .preferences}
+                else{appState.currentScreen = .startMenu}
             }
         }
     }

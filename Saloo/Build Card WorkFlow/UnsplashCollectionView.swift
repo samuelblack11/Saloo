@@ -37,6 +37,7 @@ struct UnsplashCollectionView: View {
     var body: some View {
         NavigationView {
             VStack {
+                CustomNavigationBar(onBackButtonTap: {chosenObject.pageCount = 1; appState.currentScreen = .buildCard([.occasionsMenu])}, titleContent: .text("Select Photo"))
                 ProgressBar().frame(height: 20)
                 ZStack {
                     ScrollView {
@@ -56,8 +57,6 @@ struct UnsplashCollectionView: View {
                                     }}
                             }
                         }
-                        .navigationTitle("Primary Photo")
-                        .navigationBarItems(leading:Button {chosenObject.pageCount = 1; appState.currentScreen = .buildCard([.occasionsMenu])} label: {Image(systemName: "chevron.left").foregroundColor(.blue); Text("Back")}.disabled(gettingRecord.isShowingActivityIndicator))
                         if setButtonStatus(imageObjects: imageObjectModel.imageObjects) == false {
                             Button("More...") {
                                 if networkMonitor.isConnected {

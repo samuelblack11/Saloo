@@ -36,7 +36,8 @@ class AppState: ObservableObject {
         // any other steps you have
     }
 
-    @Published var currentScreen: Screen = UserDefaults.standard.bool(forKey: "FirstLaunch") ? .preferences : .startMenu
+    //@Published var currentScreen: Screen = UserDefaults.standard.bool(forKey: "FirstLaunch") ? .preferences : .startMenu
+    @Published var currentScreen: Screen = .startMenu
 }
 
 struct ContentView: View {
@@ -98,7 +99,8 @@ struct ContentView: View {
                                     withAnimation {offsetLaunchView = -UIScreen.main.bounds.width}
                                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                                         hasShownLaunchView = true
-                                        appState.currentScreen = UserDefaults.standard.bool(forKey: "FirstLaunch") ? .preferences : .startMenu
+                                        appState.currentScreen = .startMenu
+                                        //appState.currentScreen = UserDefaults.standard.bool(forKey: "FirstLaunch") ? .preferences : .startMenu
                                     }
                                 }
                             }

@@ -49,6 +49,7 @@ struct WriteNoteView: View {
     var body: some View {
         NavigationView {
             VStack {
+                CustomNavigationBar(onBackButtonTap: {cardProgress.currentStep = 2; appState.currentScreen = .buildCard([.collageBuilder])}, titleContent: .text("Write Message"))
                 ProgressBar().frame(height: 20)
                     .frame(height: 20)
                 ZStack {
@@ -82,7 +83,7 @@ struct WriteNoteView: View {
                             set: {noteField.recipient.value = $0}
                         ), onEditingChanged: { isEditing in
                             if isEditing && noteField.recipient.value == "To:" {noteField.recipient.value = ""}
-                        }).border(Color.red, width: $noteField.recipient.hasReachedLimit.wrappedValue ? 1 : 0 )
+                        }).font(.custom("Papyrus", size: 16)).border(Color.red, width: $noteField.recipient.hasReachedLimit.wrappedValue ? 1 : 0 )
                         TextField("From:", text: Binding(
                             get: {
                                 if noteField.sender.value == "From:" {return ""} else {return noteField.sender.value}
@@ -90,7 +91,7 @@ struct WriteNoteView: View {
                             set: {noteField.sender.value = $0}
                         ), onEditingChanged: { isEditing in
                             if isEditing && noteField.sender.value == "From:" {noteField.sender.value = ""}
-                        })
+                        }).font(.custom("Papyrus", size: 16))
                         .border(Color.red, width: noteField.sender.hasReachedLimit ? 1 : 0 )
                         
                         TextField("Name Your Card", text: Binding(
@@ -100,9 +101,9 @@ struct WriteNoteView: View {
                             set: {noteField.cardName.value = $0}
                         ), onEditingChanged: { isEditing in
                             if isEditing && noteField.cardName.value == "Name Your Card" { noteField.cardName.value = ""}
-                        })
+                        }).font(.custom("Papyrus", size: 16))
                         .border(Color.red, width: noteField.cardName.hasReachedLimit ? 1 : 0 )
-                        Button("Confirm Note") {
+                        Button(action: {
                             let fullTextDetails = noteField.noteText.value + " " + noteField.recipient.value + " " + noteField.sender.value + " " + noteField.cardName.value
                             WriteNoteView.checkTextForOffensiveContent(text: fullTextDetails) { (textIsOffensive, error) in
                                 noteField.noteText = message
@@ -123,17 +124,18 @@ struct WriteNoteView: View {
                                         DispatchQueue.main.async{GettingRecord.shared.isLoadingAlert = false} ;cardProgress.currentStep = 4; appState.currentScreen = .buildCard([.finalizeCardView])}
                                 }
                             }
+                        }) {
+                            Text("Confirm Note")
+                                .font(Font.custom("Papyrus", size: 16))
                         }
                         .padding(.bottom, 30)
                     }
                     LoadingOverlay(hasShownLaunchView: $hasShownLaunchView)
                 }
             }
-            .navigationTitle("Write Your Message")
             .onAppear{
                 if noteField.noteText.value != "" && noteField.noteText.value != "Write Your Message Here"{message.value = noteField.noteText.value}
             }
-            .navigationBarItems(leading:Button {cardProgress.currentStep = 2; appState.currentScreen = .buildCard([.collageBuilder])} label: {Image(systemName: "chevron.left").foregroundColor(.blue); Text("Back")}.disabled(gettingRecord.isShowingActivityIndicator))
         }
         
         .modifier(AlertViewMod(showAlert: alertVars.activateAlertBinding, activeAlert: alertVars.alertType, alertDismissAction: {

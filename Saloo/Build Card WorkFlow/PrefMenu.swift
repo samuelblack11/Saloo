@@ -124,7 +124,7 @@ struct PrefMenu: View {
                 .onTapGesture {spotAuthLogic()}
                 Divider()
                 Text("I don't subscribe to either")
-                    .font(.system(size: 24))
+                    .font(Font.custom("Papyrus", size: 24))
                     .foregroundColor(colorScheme == .dark ? .white : .black)
                     .frame(height: listItemHeight)
                     .onTapGesture {appDelegate.musicSub.type = .Neither; defaults.set("Neither", forKey: "MusicSubType"); appState.currentScreen = .startMenu}
@@ -213,10 +213,11 @@ struct PrefMenu: View {
     var body: some View {
         NavigationStack {
             VStack {
-                CustomNavigationBar(onBackButtonTap: {appState.currentScreen = .startMenu}, title: "Settings")
+                CustomNavigationBar(onBackButtonTap: {appState.currentScreen = .startMenu}, titleContent: .text("Settings"))
+                    .frame(height: 60)                
+                //VStack(alignment: .center, spacing: 10) {subscriptionSection}
                 ZStack {
                     List {
-                        VStack(alignment: .center, spacing: 10) {subscriptionSection}
                         Section(header: VStack(alignment: .leading) {
                             Text("Music Preferences").font(.system(size: 20))
                             Text("Current Selection: \(currentSubSelection)")
@@ -455,7 +456,21 @@ extension PrefMenu {
     }
 
     func getAMUserToken(completion: @escaping () -> Void) {
+        print("AM USER TOKEN STATUS....")
         SKCloudServiceController.requestAuthorization {(status) in
+            print("Status....")
+            switch status {
+            case .notDetermined:
+                print("Not Determined")
+            case .denied:
+                print("Denied")
+            case .restricted:
+                print("Restricted")
+            case .authorized:
+                print("Authorized")
+            @unknown default:
+                print("Unknown Status")
+            }
             if status == .authorized {
                 amAPI.getUserToken { response, error in
                     print("Checking Token"); print(response); print("^^"); print(error)
@@ -464,11 +479,15 @@ extension PrefMenu {
                         alertVars.alertType = .amAuthFailed
                         alertVars.activateAlert = true
                     }
-                    
-                    
-                    
-                    completion()
+                completion()
                 }
+            }
+            else {
+                print("ELSE CALLED")
+                hideProgressView = true
+                alertVars.alertType = .amAuthFailed
+                alertVars.activateAlert = true
+                completion()
             }
         }
     }

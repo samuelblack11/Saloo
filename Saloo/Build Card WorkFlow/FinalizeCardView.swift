@@ -49,7 +49,7 @@ struct FinalizeCardView: View {
     @EnvironmentObject var linkURL: LinkURL
 
     var saveButton: some View {
-        Button("Save Card") {
+        Button(action: {
             Task {saveCard(noteField: noteField, chosenOccassion: chosenOccassion, an1: annotation.text1, an2: annotation.text2, an2URL: annotation.text2URL.absoluteString, an3: annotation.text3, an4: annotation.text4, chosenObject: chosenObject, collageImage: collageImage, songID: chosenSong.id, spotID: chosenSong.spotID, spotName: chosenSong.spotName, spotArtistName: chosenSong.spotArtistName, songName: chosenSong.name, songArtistName: chosenSong.artistName, songAlbumName: chosenSong.songAlbumName, songArtImageData: chosenSong.artwork, songPreviewURL: chosenSong.songPreviewURL, songDuration: String(chosenSong.durationInSeconds), inclMusic: addMusic.addMusic, spotImageData: chosenSong.spotImageData, spotSongDuration: String(chosenSong.spotSongDuration), spotPreviewURL: chosenSong.spotPreviewURL, songAddedUsing: chosenSong.songAddedUsing, cardType: cardType, appleAlbumArtist: chosenSong.appleAlbumArtist,spotAlbumArtist: chosenSong.spotAlbumArtist, salooUserID: (UserDefaults.standard.object(forKey: "SalooUserID") as? String)!, appleSongURL: chosenSong.appleSongURL, spotSongURL: chosenSong.spotSongURL)
                 DispatchQueue.main.async{GettingRecord.shared.isLoadingAlert = true}
                 DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
@@ -58,13 +58,16 @@ struct FinalizeCardView: View {
                     alertVars.activateAlert = true
                 }
             }
+        }) {
+            Text("Save Card")
+                .font(Font.custom("Papyrus", size: 16))
         }
         .frame(height: UIScreen.screenHeight/20)
         .disabled(saveAndShareIsActive)
     }
     
     var saveAndShareButton: some View {
-        Button("Save & Share") {
+        Button(action: {
             if networkMonitor.isConnected {
                 DispatchQueue.main.async{GettingRecord.shared.isLoadingAlert = true}
                 enableShare = true
@@ -76,13 +79,30 @@ struct FinalizeCardView: View {
                 alertVars.alertType = .showFailedToShare
                 alertVars.activateAlert = true
             }
-            
-        }
+        }) {Text("Save & Share")
+                .font(Font.custom("Papyrus", size: 16))
+            }
     }
+    
+
+    func resetFieldsAndNavigateToStartMenu() {
+        noteField.noteText = MaximumText(limit: 225, value:  "Write Your Message Here")
+        noteField.recipient = MaximumText(limit: 20, value: "To:")
+        noteField.sender = MaximumText(limit: 20, value: "From:")
+        noteField.cardName = MaximumText(limit: 20, value: "Name Your Card")
+        chosenImagesObject.chosenImageA = nil
+        chosenImagesObject.chosenImageB = nil
+        chosenImagesObject.chosenImageC = nil
+        chosenImagesObject.chosenImageD = nil
+        appState.currentScreen = .startMenu
+    }
+
     
     var body: some View {
         NavigationView {
             VStack {
+                if addMusic.addMusic{CustomNavigationBar(onBackButtonTap: {cardProgress.currentStep = 3; appState.currentScreen = .buildCard([.musicSearchView])}, titleContent: .text("Finalize Card"), rightButtonAction: resetFieldsAndNavigateToStartMenu)}
+                else{CustomNavigationBar(onBackButtonTap: {cardProgress.currentStep = 3; appState.currentScreen = .buildCard([.writeNoteView])}, titleContent: .text("Finalize Card"), rightButtonAction: resetFieldsAndNavigateToStartMenu)}
                 ProgressBar().frame(height: 20)
                     .frame(height: 20)
                 GeometryReader { geometry in
@@ -97,27 +117,6 @@ struct FinalizeCardView: View {
                         }
                     }
                     .onAppear {safeAreaHeight = geometry.size.height}
-                }
-                .toolbar {
-                    ToolbarItemGroup(placement: .navigationBarLeading) {
-                        if addMusic.addMusic == false {
-                            Button {if addMusic.addMusic{cardProgress.currentStep = 4; appState.currentScreen = .buildCard([.musicSearchView])} else {cardProgress.currentStep = 3; appState.currentScreen = .buildCard([.writeNoteView])}}label: {Image(systemName: "chevron.left").foregroundColor(.blue)
-                                Text("Back")}
-                        }
-                    }
-                    ToolbarItemGroup(placement: .navigationBarTrailing) {
-                        Button {
-                            noteField.noteText = MaximumText(limit: 225, value:  "Write Your Message Here")
-                            noteField.recipient = MaximumText(limit: 20, value: "To:")
-                            noteField.sender = MaximumText(limit: 20, value: "From:")
-                            noteField.cardName = MaximumText(limit: 20, value: "Name Your Card")
-                            chosenImagesObject.chosenImageA = nil
-                            chosenImagesObject.chosenImageB = nil
-                            chosenImagesObject.chosenImageC = nil
-                            chosenImagesObject.chosenImageD = nil
-                            appState.currentScreen = .startMenu} label: {Image(systemName: "menucard.fill").foregroundColor(.blue)
-                            Text("Menu")}
-                    }
                 }
             }
             .sheet(isPresented: $isShowingMessageComposer) {

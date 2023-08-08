@@ -164,7 +164,7 @@ extension View {
 }
 
 enum ActiveAlert {
-    case failedConnection, signInFailure, explicitPhoto, offensiveText, namesNotEntered, showCardComplete, showFailedToShare, addMusicPrompt, spotAuthFailed, amAuthFailed, AMSongNotAvailable, gettingRecord, userBanned, reportComplete, deleteCard, mustSelectPic, musicAuthSuccessful, spotNeedPremium, switchSpotAccounts, loginToiCloud, spotPasswordReset, deleteAccount
+    case failedConnection, signInFailure, explicitPhoto, offensiveText, namesNotEntered, showCardComplete, showFailedToShare, addMusicPrompt, spotAuthFailed, amAuthFailed, AMSongNotAvailable, gettingRecord, userBanned, reportComplete, deleteCard, mustSelectPic, musicAuthSuccessful, spotNeedPremium, switchSpotAccounts, loginToiCloud, spotPasswordReset, deleteAccount, addMusicSubOnFirstLogin, updateMusicSubAnyTime
 }
 
 struct AlertViewMod: ViewModifier {
@@ -176,6 +176,8 @@ struct AlertViewMod: ViewModifier {
     var secondDismissAction: (() -> Void)?
     var switchSpotAccounts: (() -> Void)?
     var keepSpotAccount: (() -> Void)?
+    var goToSettings: (() -> Void)?
+    var updateMusicLaterPrompt: (() -> Void)?
 
     @State var cardToDelete: CoreCard?
     
@@ -195,9 +197,13 @@ struct AlertViewMod: ViewModifier {
                             })
                         }
                     }))
+                    
+                case .updateMusicSubAnyTime:
+                    return Alert(title: Text("No Worries!"), message: Text("You can update your music preferences in the Settings menu at any time."), dismissButton: .default(Text("Ok")))
+                case .addMusicSubOnFirstLogin:
+                    return Alert(title: Text("Would you like to connect your music subscription to Saloo?"), message: Text("This will create a better greeting card experience for you and your recipients."), primaryButton: .default(Text("Yes"), action: {goToSettings?()}), secondaryButton: .default(Text("No"), action: {updateMusicLaterPrompt?()}))
                 case .musicAuthSuccessful:
                     return Alert(title: Text("You're All Set 🎶"), dismissButton: .default(Text("Ok")))
-                    
                 case .deleteAccount:
                     return Alert(title: Text("Are you sure you want to delete your account?"), message: Text("This will delete all of your cards and invalidate the links associated with them."), primaryButton: .default(Text("Yes"), action: {deleteAccountAction?()}), secondaryButton: .default(Text("No"), action: {}))
                     

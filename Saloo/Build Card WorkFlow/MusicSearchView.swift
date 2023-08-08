@@ -69,6 +69,7 @@ struct MusicSearchView: View {
     var body: some View {
         NavigationStack {
             VStack {
+                CustomNavigationBar(onBackButtonTap: {cardProgress.currentStep = 3; appState.currentScreen = .buildCard([.writeNoteView])}, titleContent: .text("Select Your Song"))
                 ProgressBar().frame(height: 20)
                     .frame(height: 20)
                 ZStack {
@@ -173,8 +174,6 @@ struct MusicSearchView: View {
                             alertVars.alertType = .failedConnection
                             alertVars.activateAlert = true}}
                 }
-                .navigationBarItems(leading:Button {cardProgress.currentStep = 3; appState.currentScreen = .buildCard([.writeNoteView])} label: {Image(systemName: "chevron.left").foregroundColor(.blue); Text("Back")}.disabled(gettingRecord.isShowingActivityIndicator))
-                .navigationTitle("Select Your Song")
                 .popover(isPresented: $showAPV) {AMPlayerView(songID: chosenSong.id, songName: chosenSong.name, songArtistName: chosenSong.artistName, songArtImageData: chosenSong.artwork, songDuration: chosenSong.durationInSeconds, songPreviewURL: chosenSong.songPreviewURL, confirmButton: true, chosenCard: $emptyCard, deferToPreview: $deferToPreview, showAPV: $showAPV, isLoading: $isLoading, songURL: chosenSong.appleSongURL)
                         .presentationDetents([.fraction(0.435)])
                 }

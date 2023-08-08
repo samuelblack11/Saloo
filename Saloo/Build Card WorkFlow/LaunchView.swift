@@ -38,7 +38,11 @@ struct LaunchView: View {
                 LoadingOverlay(hasShownLaunchView: $hasShownLaunchView)
             }
             .background(appDelegate.appColor)
-            .modifier(AlertViewMod(showAlert: alertVars.activateAlertBinding, activeAlert: alertVars.alertType))
+            .modifier(AlertViewMod(showAlert: alertVars.activateAlertBinding, activeAlert: alertVars.alertType,
+                                   goToSettings: {DispatchQueue.main.async{AppState.shared.currentScreen = .preferences}},
+                                   updateMusicLaterPrompt: {alertVars.alertType = .updateMusicSubAnyTime}
+                                  
+                    ))
         }
     }
 }
@@ -80,9 +84,14 @@ struct SignInButtonView: View {
                                 signInSuccess = true
                                 UserSession.shared.updateLoginStatus()
                                 UserDefaults.standard.register(defaults: ["FirstLaunch": true])
-                                AppState.shared.currentScreen = .preferences
+                                //AppState.shared.currentScreen = .preferences
+                                AppState.shared.currentScreen = .startMenu
                                 isPresentedFromECardView = false
                                 cardFromShare = nil
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 2.8) {
+                                    alertVars.alertType = .addMusicSubOnFirstLogin
+                                    alertVars.activateAlert = true
+                                }
                             default:
                                 break
                             }

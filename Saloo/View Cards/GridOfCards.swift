@@ -96,11 +96,31 @@ struct GridofCards: View {
         case .draftbox: return coreCard.recipient
         }
     }
+    
+    struct SearchBar: View {
+        @Binding var text: String
+        var body: some View {
+            ZStack(alignment: .leading) {
+                TextField("Search by Card Name", text: $text)
+                    .font(Font.custom("Papyrus", size: 16))
+                    .padding(7)
+                    .padding(.leading, 30) // padding to position the text after the icon
+                    .background(Color(.systemGray6))
+                    .cornerRadius(8)
+                
+                Image(systemName: "magnifyingglass")
+                    .foregroundColor(.gray)
+                    .padding(.leading, 10) // padding to position the icon
+            }
+            .padding(.horizontal)
+        }
+    }
 
     var body: some View {
         NavigationView {
             VStack {
-                CustomNavigationBar(onBackButtonTap: {appState.currentScreen = .startMenu}, title: whichBoxVal == .inbox ? "Cards from Others" : "Cards from Me")
+                CustomNavigationBar(onBackButtonTap: {appState.currentScreen = .startMenu}, titleContent: whichBoxVal == .inbox ? .text("Cards from Others") : .text("Cards from Me"))
+                SearchBar(text: $searchText)
                 ZStack {
                     ScrollView {
                         sortResults
@@ -109,6 +129,7 @@ struct GridofCards: View {
                                 cardView(for: gridCard, shareable: false)
                             }
                         }
+                       // .searchable(text: $searchText, prompt: "Search by Card Name")
                     }
                     LoadingOverlay(hasShownLaunchView: $hasShownLaunchView)
                 }
@@ -125,7 +146,6 @@ struct GridofCards: View {
         .modifier(AlertViewMod(showAlert: alertVars.activateAlertBinding, activeAlert: alertVars.alertType, alertDismissAction: {
             deleteCoreCard(coreCard: cardToDelete!)}))
         // "Search by \(sortByValue)"
-        .searchable(text: $searchText, prompt: "Search by Card Name")
         .sheet(isPresented: $isShowingMessageComposer) {MessageComposerView(linkURL: URL(string: linkURL.linkURL)!, fromFinalize: false)}
     }
     
@@ -257,7 +277,7 @@ extension GridofCards {
     var sortResults: some View {
         VStack {
             HStack {
-                Text("Sort By:").padding(.leading, 5).font(Font.custom(sortByValue, size: 12))
+                Text("Sort By:").padding(.leading, 5).font(Font.custom("Papyrus", size: 16))
                 Picker("", selection: $sortByValue) {ForEach(sortOptions, id:\.self) {sortOption in Text(sortOption)}}
                 Spacer()
             }

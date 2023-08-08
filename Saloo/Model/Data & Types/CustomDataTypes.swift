@@ -13,46 +13,72 @@ import Network
 import Security
 import MessageUI
 
+enum TitleContent {
+    case text(String)
+    case image(String)
+}
+
 struct CustomNavigationBar: View {
-    let onBackButtonTap: () -> Void
-    let title: String
+    var onBackButtonTap: (() -> Void)?
+    var titleContent: TitleContent
+    var rightButtonAction: (() -> Void)?
+    var showBackButton: Bool = true
+
     @Environment(\.colorScheme) var colorScheme
     @EnvironmentObject var gettingRecord: GettingRecord
+    @EnvironmentObject var appDelegate: AppDelegate
 
     var body: some View {
         HStack {
-            Button(action: onBackButtonTap) {
-                HStack {
-                    Image(systemName: "chevron.left").foregroundColor(.blue)
-                    Text("Back")
-                        .foregroundColor(.blue)
+            if showBackButton {
+                Button(action: onBackButtonTap ?? {}) {
+                    HStack {
+                        Image(systemName: "chevron.left").foregroundColor(.blue)
+                        Text("Back")
+                            .foregroundColor(.blue)
+                            .font(Font.custom("Papyrus", size: 16))
+                    }
                 }
+                .disabled(gettingRecord.isShowingActivityIndicator)
+                .padding(.leading, 10)
+            } else {
+                Spacer().frame(width: 80) // Adjust width as needed to balance out spacing if there's no back button.
             }
-            .disabled(gettingRecord.isShowingActivityIndicator)
-            .padding(.leading, 10)
 
             Spacer()
 
-            Text(title)
-                .foregroundColor(colorScheme == .dark ? Color.white : Color.black)
-                .font(Font.custom("Papyrus", size: 20))
+            switch titleContent {
+            case .text(let title):
+                Text(title)
+                    .foregroundColor(colorScheme == .dark ? Color.white : Color.black)
+                    .font(Font.custom("Papyrus", size: 20))
+            case .image(let imageName):
+                Image(imageName)
+                    .resizable()
+                    .colorMultiply(colorScheme == .dark ? .white : appDelegate.appColor)
+                    .frame(maxWidth: UIScreen.screenWidth/8, maxHeight: UIScreen.screenHeight/15, alignment: .center)
+            }
 
             Spacer()
 
-            // Dummy view to balance the width of the back button.
-            HStack {
-                Image(systemName: "chevron.left")
-                    .opacity(0)  // make it invisible
-                Text("Back")
-                    .opacity(0)  // make it invisible
+            if let rightAction = rightButtonAction {
+                Button(action: rightAction) {
+                    Image(systemName: "menucard.fill").foregroundColor(.blue)
+                    Text("Menu")
+                        .font(Font.custom("Papyrus", size: 16))
+                }
+                .padding(.trailing, 10)
+            } else {
+                Spacer().frame(width: 80) // Adjust width as needed to balance out spacing if there's no right content.
             }
-            .padding(.trailing, 10)
         }
         .padding(.top, UIApplication.shared.windows.first?.safeAreaInsets.top)
-        .background(Color(UIColor.systemBackground))  // This matches the system background color. Change as needed.
-        .shadow(color: Color.black.opacity(0.1), radius: 2, x: 0, y: 2) // Optional shadow for aesthetics
+        .background(Color(UIColor.systemBackground))
+        .shadow(color: Color.black.opacity(0.1), radius: 2, x: 0, y: 2)
     }
 }
+
+
 
 
 

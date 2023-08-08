@@ -25,8 +25,8 @@ struct MiniCollageMenu: View {
     @EnvironmentObject var appState: AppState
     @State private var hasShownLaunchView: Bool = true
     @State private var selectedStyle: Int? = nil
-    var miniWidth = UIScreen.screenWidth/4
-    var miniHeight = UIScreen.screenHeight/8
+    var miniWidth = UIScreen.screenHeight/9
+    var miniHeight = UIScreen.screenHeight/9
     var body: some View {
                 VStack {
                     HStack {
@@ -81,12 +81,22 @@ struct BorderedStyleModifier: ViewModifier {
             if style == selectedStyle {
                 content
                     .border(color, width: width)
-                    .overlay(Text("Style \(style)").foregroundColor(.white).font(.title), alignment: .center)
+                    .overlay(
+                        VStack(spacing: 0) {
+                            Text("Style")
+                                .foregroundColor(.white)
+                                .font(.title)
+                            Text("\(style)")
+                                .foregroundColor(.white)
+                                .font(.title)
+                        }, alignment: .center
+                    )
             } else {
                 content
             }
         }
     }
 }
+
 
 
