@@ -31,7 +31,7 @@ struct WriteNoteView: View {
     @EnvironmentObject var cardProgress: CardProgress
     @Environment(\.colorScheme) var colorScheme
 
-    var fonts = ["Zapfino","Papyrus","American-Typewriter-Bold"]
+    var fonts = ["Zapfino", "Papyrus", "American-Typewriter-Bold", "Bradley Hand", "Chalkduster", "Noteworthy", "Marker Felt", "Snell Roundhand", "Baskerville", "Copperplate", "Cochin", "Didot"]
     var fontMenu: some View {
         HStack {
             Text("Choose Font Here:  ")

@@ -70,18 +70,51 @@ struct StartMenu: View {
                         .multilineTextAlignment(.center)
                     List {
                         Button(action: {appState.currentScreen = .buildCard([.photoOptionsView])}) {
-                            Text("Build a Card").font(Font.custom("Papyrus", size: 18)).frame(maxWidth: .infinity, alignment: .leading).foregroundColor(.primary)
+                            VStack(alignment: .leading) {
+                                Text("Build a Card")
+                                    .font(Font.custom("Papyrus", size: 18))
+                                    .foregroundColor(.primary)
+                                Text("Combine photos, a personal message, and music to create a unique greeting card experience")
+                                    .font(Font.custom("Papyrus", size: 14))
+                                    .foregroundColor(.secondary)
+                            }
+                            .frame(maxWidth: .infinity, alignment: .leading)
                         }
                         Button(action: {screenManager.advance(); appState.currentScreen = .inbox}) {
-                            Text("Cards from Others").font(Font.custom("Papyrus", size: 18)).frame(maxWidth: .infinity, alignment: .leading).foregroundColor(.primary)
+                            VStack(alignment: .leading) {
+                                Text("Cards from Others")
+                                    .font(Font.custom("Papyrus", size: 18))
+                                    .foregroundColor(.primary)
+                                Text("View cards you've received")
+                                    .font(Font.custom("Papyrus", size: 14))
+                                    .foregroundColor(.secondary)
+                            }
+                            .frame(maxWidth: .infinity, alignment: .leading)
                         }
                         Button(action: {screenManager.advance(); appState.currentScreen = .outbox}) {
-                            Text("Cards from Me").font(Font.custom("Papyrus", size: 18)).frame(maxWidth: .infinity, alignment: .leading).foregroundColor(.primary)
+                            VStack(alignment: .leading) {
+                                Text("Cards from Me")
+                                    .font(Font.custom("Papyrus", size: 18))
+                                    .foregroundColor(.primary)
+                                Text("View cards you've created")
+                                    .font(Font.custom("Papyrus", size: 14))
+                                    .foregroundColor(.secondary)
+                            }
+                            .frame(maxWidth: .infinity, alignment: .leading)
                         }
                         Button(action: {appState.currentScreen = .preferences}) {
-                            Text("Settings").font(Font.custom("Papyrus", size: 18)).frame(maxWidth: .infinity, alignment: .leading).foregroundColor(.primary)
+                            VStack(alignment: .leading) {
+                                Text("Settings")
+                                    .font(Font.custom("Papyrus", size: 18))
+                                    .foregroundColor(.primary)
+                                Text("Update music preferences and more")
+                                    .font(Font.custom("Papyrus", size: 14))
+                                    .foregroundColor(.secondary)
+                            }
+                            .frame(maxWidth: .infinity, alignment: .leading)
                         }
                     }
+
 
                 }
                 LoadingOverlay(hasShownLaunchView: $hasShownLaunchView)
