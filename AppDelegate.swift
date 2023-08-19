@@ -24,7 +24,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, ObservableObject {
     @Published var showProgViewOnAcceptShare = false
     @Published var chosenGridCardType: String?
     var songFilterForSearchRegex = ["\\(live\\)", "\\[live\\]", "live at", "live in", "live from", "\\(mixed\\)", "\\[mixed\\]"]
-    var songFilterForMatchRegex = ["\\(live\\)", "\\[live\\]", "live at", "live in", "live from", "\\(mixed\\)", "\\[mixed\\]", "- single", "\\(deluxe\\)", "\\(deluxe edition\\)", "\\(remastered\\)", "- .*Remastered",  "- .*remastered", "\\- EP", "\\- ep","\\(standard version\\)"]
+    var songFilterForMatchRegex = ["\\(live\\)", "\\[live\\]", "live at", "live in", "live from", "\\(mixed\\)", "\\[mixed\\]", "- single", "\\(deluxe\\)", "\\(deluxe edition\\)", "\\- Remastered \\d{4}", "\\- remastered \\d{4}", "\\(remastered\\)", "- Remastered",  "- remastered", "\\- EP", "\\- ep","\\(standard version\\)"]
+
 
     var waitingToAcceptRecord = false
     var counter = 0

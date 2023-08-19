@@ -107,7 +107,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
             SpotifyManager.shared.gotToAppInAppStore = true
             return
         }
-        else if url.scheme == "saloo" {
+        else if url.scheme == "saloo" && !url.absoluteString.contains("spotify") {
                 let uniqueName = url.absoluteString.replacingOccurrences(of: "saloo://", with: "")
                 if !uniqueName.isEmpty {
                     // handle uniqueName here
@@ -151,7 +151,14 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
                         print(result)
                         self.parseRecord(record: result)
                     }}
-                else {print("No matching record found.");         DispatchQueue.main.async{GettingRecord.shared.isLoadingAlert = false}}
+                else {print("No matching record found.")
+                    DispatchQueue.main.async{
+                        GettingRecord.shared.isLoadingAlert = false
+                        AlertVars.shared.alertType = .cardDoesntExist
+                        AlertVars.shared.activateAlert = true
+                    }
+                    
+                }
             }
         }
     }
@@ -165,6 +172,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
         if let urlContext = connectionOptions.urlContexts.first {
             if urlContext.url.scheme == "saloo" {
                 let uniqueName = urlContext.url.absoluteString.replacingOccurrences(of: "saloo://", with: "")
+                print("UNIQUENAME \(uniqueName)")
                 if !uniqueName.isEmpty {fetchRecord(withUniqueName: uniqueName)}
             }
         }

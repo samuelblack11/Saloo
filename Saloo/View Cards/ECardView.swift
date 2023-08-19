@@ -183,7 +183,7 @@ struct eCardView: View {
             primaryPhotoView(aspectRatio: .fit,
                       maxWidth: .infinity,
                       maxHeight: .infinity)
-            annotationView()
+            //annotationView()
         }
         .onAppear{print(unsplashImageURL)}
     }
@@ -193,8 +193,8 @@ struct eCardView: View {
             VStack {
                 primaryPhotoView(aspectRatio: .fill,
                           maxWidth: geometry.size.width,
-                          maxHeight: geometry.size.height * 0.85)
-                annotationView()
+                          maxHeight: geometry.size.height)
+                //annotationView()
             }
         }
         .onAppear{print(unsplashImageURL)}
@@ -229,8 +229,8 @@ struct eCardView: View {
             VStack {
                 primaryPhotoView(aspectRatio: .fill,
                           maxWidth: geometry.size.width,
-                          maxHeight: geometry.size.height * 0.85)
-                annotationView()
+                          maxHeight: geometry.size.height)
+                //annotationView()
             }
         }
         .onAppear{print(unsplashImageURL)}
@@ -243,7 +243,7 @@ struct eCardView: View {
             primaryPhotoView(aspectRatio: .fit,
                       maxWidth: UIScreen.main.bounds.height / 2.2,
                       maxHeight: UIScreen.main.bounds.height / 2.3)
-            annotationView()
+            //annotationView()
         }
         .onAppear{print(unsplashImageURL)}
     }

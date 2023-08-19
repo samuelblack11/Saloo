@@ -164,7 +164,7 @@ extension View {
 }
 
 enum ActiveAlert {
-    case failedConnection, signInFailure, explicitPhoto, offensiveText, namesNotEntered, showCardComplete, showFailedToShare, addMusicPrompt, spotAuthFailed, amAuthFailed, AMSongNotAvailable, gettingRecord, userBanned, reportComplete, deleteCard, mustSelectPic, musicAuthSuccessful, spotNeedPremium, switchSpotAccounts, loginToiCloud, spotPasswordReset, deleteAccount, addMusicSubOnFirstLogin, updateMusicSubAnyTime
+    case failedConnection, signInFailure, explicitPhoto, offensiveText, namesNotEntered, showCardComplete, showFailedToShare, addMusicPrompt, spotAuthFailed, amAuthFailed, AMSongNotAvailable, gettingRecord, userBanned, reportComplete, deleteCard, mustSelectPic, musicAuthSuccessful, spotNeedPremium, switchSpotAccounts, loginToiCloud, spotPasswordReset, deleteAccount, addMusicSubOnFirstLogin, updateMusicSubAnyTime, cardDoesntExist
 }
 
 struct AlertViewMod: ViewModifier {
@@ -200,6 +200,8 @@ struct AlertViewMod: ViewModifier {
                     
                 case .updateMusicSubAnyTime:
                     return Alert(title: Text("No Worries!"), message: Text("You can update your music preferences in the Settings menu at any time."), dismissButton: .default(Text("Ok")))
+                case .cardDoesntExist:
+                    return Alert(title: Text("Whoops!"), message: Text("This card no longer exists ☹️"), dismissButton: .default(Text("Ok")))
                 case .addMusicSubOnFirstLogin:
                     return Alert(title: Text("Would you like to connect your music subscription to Saloo?"), message: Text("This will create a better greeting card experience for you and your recipients."), primaryButton: .default(Text("Yes"), action: {goToSettings?()}), secondaryButton: .default(Text("No"), action: {updateMusicLaterPrompt?()}))
                 case .musicAuthSuccessful:

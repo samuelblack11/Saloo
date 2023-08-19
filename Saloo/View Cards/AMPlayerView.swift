@@ -103,6 +103,7 @@ struct AMPlayerView: View {
                         showGrid = true
                         chosenCard = nil
             } label: {Image(systemName: "chevron.left").foregroundColor(.blue); Text("Back")}.disabled(gettingRecord.isShowingActivityIndicator))
+            .navigationBarHidden(fromFinalize)
     }
     
     var AMPlayerView: some View {

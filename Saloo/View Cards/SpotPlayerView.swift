@@ -87,6 +87,7 @@ struct SpotPlayerView: View {
             .onDisappear{spotifyManager.appRemote?.playerAPI?.pause()}
             .navigationBarItems(leading:Button {chosenCard = nil; if fromFinalize {cardProgress.currentStep = 4; appState.currentScreen = .buildCard([.musicSearchView])}
             } label: {Image(systemName: "chevron.left").foregroundColor(.blue); Text("Back")}.disabled(gettingRecord.isShowingActivityIndicator))
+            .navigationBarHidden(fromFinalize)
             // Show an alert if showAlert is true
             .alert(isPresented: $showFailedConnectionAlert) {
             Alert(title: Text("Network Error"), message: Text("Sorry, we weren't able to connect to the internet. Please reconnect and try again."), dismissButton: .default(Text("OK")))
