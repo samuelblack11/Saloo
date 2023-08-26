@@ -87,7 +87,7 @@ struct GridofCards: View {
     
     
 
-    var sortOptions = ["Date","Card Name","Occassion"]
+    var sortOptions = ["Date (New to Old)", "Date (Old to New)","Card Name","Occassion","Sender"]
     
     func determineDisplayName(coreCard: CoreCard) -> String {
         switch whichBoxVal {
@@ -135,7 +135,6 @@ struct GridofCards: View {
                 }
             }
             .onAppear{
-            print("Grid Appeared...")
             fetchCurrentUserRecordID()
             loadCards()
                 
@@ -173,7 +172,7 @@ struct GridofCards: View {
                     Image(systemName: "greetingcard.fill").foregroundColor(Color("SalooTheme")).font(.system(size: 24))
                 }
             }
-            .onTapGesture {print("gridCard Card Name...\(gridCard.cardName)")}
+            .onTapGesture {}
                 Divider().padding(.bottom, 5)
                 HStack(spacing: 3) {
                     Text(determineDisplayName(coreCard: gridCard)).font(.system(size: 8)).minimumScaleFactor(0.1)
@@ -268,9 +267,11 @@ extension GridofCards {
 
     func sortedCards(_ cards: [CoreCard], sortBy: String) -> [CoreCard] {
         var sortedCards = cards
-        if sortBy == "Date" {sortedCards.sort {$0.date < $1.date}}
+        if sortBy == "Date (New to Old)" {sortedCards.sort {$0.date > $1.date}}
+        if sortBy == "Date (Old to New)" {sortedCards.sort {$0.date < $1.date}}
         if sortBy == "Card Name" {sortedCards.sort {$0.cardName < $1.cardName}}
         if sortBy == "Occasion" {sortedCards.sort {$0.occassion < $1.occassion}}
+        if sortBy == "Sender" {sortedCards.sort {$0.sender ?? "" < $1.sender ?? ""}}
         return sortedCards
     }
     

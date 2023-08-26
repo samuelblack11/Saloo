@@ -56,6 +56,7 @@ struct StartMenu: View {
                         //.font(.headline)
                         .padding(.top, 10)
                     Text("🎈🎂🥳❤️🥂💍🎓")
+                    Text("")
                     Text("Connect with loved ones, share memories")
                         //.font(.caption)
                         .foregroundColor(colorScheme == .dark ? .white : .black)

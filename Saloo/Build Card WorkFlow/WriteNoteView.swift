@@ -139,8 +139,6 @@ struct WriteNoteView: View {
         }
         
         .modifier(AlertViewMod(showAlert: alertVars.activateAlertBinding, activeAlert: alertVars.alertType, alertDismissAction: {
-            print("Called alertDismissAction....")
-            print(noteField.noteText.value)
             addMusic.addMusic = true
             appDelegate.musicSub.timeToAddMusic = true
             checkRequiredFields()
@@ -160,8 +158,6 @@ struct WriteNoteView: View {
 extension WriteNoteView {
     
     func annotateIfNeeded() {
-        print("annotateIfNeeded was Called")
-        print(chosenObject.frontCoverIsPersonalPhoto)
         if chosenObject.frontCoverIsPersonalPhoto == 0 {
             annotation.text1 = "Photograph by"
             annotation.text2 = String(chosenObject.coverImagePhotographer)
@@ -209,10 +205,7 @@ extension WriteNoteView {
                 return
             }
             
-            print("Checkpoint3")
             let responseDataString = String(data: data, encoding: .utf8)
-            print("Response data string: \(responseDataString ?? "No data string")")
-
             do {
                 if let responseData = try JSONSerialization.jsonObject(with: data) as? [String: Any],
                    let classification = responseData["Classification"] as? [String: Any],
@@ -225,16 +218,8 @@ extension WriteNoteView {
                    
                    let category3 = classification["Category3"] as? [String: Any],
                    let score3 = category3["Score"] as? Double {
-                    
-                    print("Checkpoint4")
-
-                    print("Classification Scores:")
-                    print("Score1: \(score1)")
-                    print("Score2: \(score2)")
-                    print("Score3: \(score3)")
                     let maxScore = max(score1, score2, score3)
                     // seems to max out at 0.98799 with something particularly offensive
-                    print("Max Score...\(maxScore)")
                     if maxScore >= 0.99 {completion(true, nil)}
                     else{completion(false,nil)}
                 } else {

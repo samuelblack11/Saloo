@@ -196,8 +196,7 @@ class CardsForDisplay: ObservableObject {
         print("Adding card with uniqueName: \(card.uniqueName)")
         switch box {
         case .inbox:
-            print("Current cards in inbox:")
-            self.inboxCards.forEach { print($0.uniqueName) }
+            //self.inboxCards.forEach {}
             if !self.inboxCards.contains(where: { $0.uniqueName == card.uniqueName }) {
                 self.inboxCards.append(card)
                 self.parseRecord(record: record) { (coreCard, record) in
@@ -215,14 +214,8 @@ class CardsForDisplay: ObservableObject {
             }
         case .outbox:
             print("Current cards in outbox:")
-            self.outboxCards.forEach {
-                print("--------")
-                print($0.uniqueName)
-                print(card.uniqueName)
-                print(!self.outboxCards.contains(where: { $0.uniqueName == card.uniqueName }))
-            }
+            //self.outboxCards.forEach {}
             if !self.outboxCards.contains(where: { $0.uniqueName == card.uniqueName }) {
-                print("NOT IN LIST")
                 self.outboxCards.append(card)
                 self.parseRecord(record: record) { (coreCard, record) in
                     if coreCard != nil {
@@ -238,7 +231,7 @@ class CardsForDisplay: ObservableObject {
             }
         case .draftbox:
             print("Current cards in draftbox:")
-            self.draftboxCards.forEach { print($0.uniqueName) }
+            //self.draftboxCards.forEach {}
             if !self.draftboxCards.contains(where: { $0.uniqueName == card.uniqueName }) {
                 self.draftboxCards.append(card)
             }
@@ -275,8 +268,6 @@ class CardsForDisplay: ObservableObject {
         if box == .outbox {deleteFromDB(uniqueName: card.uniqueName, dataBase: PersistenceController.shared.cloudKitContainer.publicCloudDatabase)}
         deleteFromDB(uniqueName: card.uniqueName, dataBase: PersistenceController.shared.cloudKitContainer.privateCloudDatabase)
         let context = PersistenceController.shared.persistentContainer.viewContext
-        print("DELETING \(card.message)")
-        print("DELETING \(card.uniqueName)")
         context.delete(card)
         do {try context.save(); print("Successfully deleted card from Core Data and saved context.")}
         catch {print("Error saving context after deleting: \(error)")}
@@ -337,7 +328,6 @@ class CardsForDisplay: ObservableObject {
     
     
     func deleteFromDB(uniqueName: String, dataBase: CKDatabase) {
-        print("Called deleteFromPublic")
         let predicate = NSPredicate(format: "CD_uniqueName == %@", uniqueName)
         let query = CKQuery(recordType: "CD_CoreCard", predicate: predicate)
         
@@ -364,18 +354,14 @@ class CardsForDisplay: ObservableObject {
 
     
     func syncCloudKitAndCoreData() {
-        print("Called syncCloudKitAndCoreData")
         let privateDatabase = PersistenceController.shared.cloudKitContainer.privateCloudDatabase
         let publicDatabase = PersistenceController.shared.cloudKitContainer.publicCloudDatabase
-        
         syncPrivateDatabaseWithCoreData(database: privateDatabase)
         syncPublicDatabaseWithCoreData(database: publicDatabase)
     }
 
     
     func syncPrivateDatabaseWithCoreData(database: CKDatabase) {
-        print("DATABASE")
-        print(database.databaseScope.rawValue)
         let predicate = NSPredicate(value: true)
         let query = CKQuery(recordType: "CD_CoreCard", predicate: predicate)
 
@@ -384,7 +370,6 @@ class CardsForDisplay: ObservableObject {
                 print("CloudKit fetch error: \(error.localizedDescription)")
                 return
             }
-            print("Check1")
             guard let records = records else { return }
 
             // Fetch all uniqueNames from CloudKit and filter out empty ones
@@ -401,7 +386,6 @@ class CardsForDisplay: ObservableObject {
                 let validCardsFromCore = cardsFromCore.filter { !$0.uniqueName.isEmpty }
 
                 let coreDataUniqueNames = validCardsFromCore.map { $0.uniqueName }
-                print("Check2")
                 print(coreDataUniqueNames)
                 
                 // Find uniqueNames that exist in CloudKit but not in Core Data and delete them
@@ -411,12 +395,9 @@ class CardsForDisplay: ObservableObject {
                         else {print("Deleted record: \(recordID?.recordName ?? "unknown")")}
                     }
                 }
-                print("Check3")
                 
                 // Find Core Data records that don't exist in CloudKit and upload them
                 for card in validCardsFromCore where !validCloudKitUniqueNames.map({ $0.0 }).contains(card.uniqueName) {
-                    print("Check4")
-                    print(card.uniqueName)
                     self.coreCardToRecord(card: card) { cardRecord in
                         self.saveRecord(with: cardRecord!, for: database)
                     }
@@ -434,7 +415,6 @@ class CardsForDisplay: ObservableObject {
             return
         }
         
-        print("PUBLIC DATABASE")
         print(database.databaseScope.rawValue)
         let predicate = NSPredicate(format: "CD_salooUserID = %@", currentUserID)
         let query = CKQuery(recordType: "CD_CoreCard", predicate: predicate)
@@ -489,7 +469,6 @@ class CardsForDisplay: ObservableObject {
     func coreCardToRecord(card: CoreCard, completion: @escaping (CKRecord?) -> Void) {
         let recordID = CKRecord.ID(recordName: card.uniqueName)
         let record = CKRecord(recordType: "CD_CoreCard", recordID: recordID)
-        print("Check5")
         record["CD_occassion"] = card.occassion
         record["CD_recipient"] = card.recipient
         record["CD_sender"] = card.sender
@@ -527,7 +506,6 @@ class CardsForDisplay: ObservableObject {
         record["CD_salooUserID"] = card.salooUserID
         record["CD_coverSizeDetails"] = card.coverSizeDetails
         record["CD_unsplashImageURL"] = card.unsplashImageURL
-        print("Check6")
         if let collage = card.collage {
             let temporaryDirectoryURL = FileManager.default.temporaryDirectory
             let fileURL = temporaryDirectoryURL.appendingPathComponent(UUID().uuidString)
@@ -561,8 +539,6 @@ class CardsForDisplay: ObservableObject {
               } else if let records = records {
                   let group = DispatchGroup()
                   for record in records {
-                      print("RECORD......")
-                      print(record)
                       group.enter()
                       self.parseRecord(record: record) { (coreCard, record) in
                           if coreCard != nil {
@@ -595,8 +571,6 @@ class CardsForDisplay: ObservableObject {
     
     
     func loadCoreCards(completion: @escaping () -> Void) {
-        print("LoadCoreCards called...")
-        print(self.inboxCards)
         isLoading = true
         let request = CoreCard.createFetchRequest()
         let sort = NSSortDescriptor(key: "date", ascending: false)
@@ -628,7 +602,6 @@ class CardsForDisplay: ObservableObject {
         }
         let context = PersistenceController.shared.persistentContainer.viewContext
         let coreCard = CoreCard(context: context)
-        print("Parsing Record....")
         DispatchQueue.main.async() {
             coreCard.occassion = record.object(forKey: "CD_occassion") as! String
             coreCard.recipient = record.object(forKey: "CD_recipient") as! String
@@ -711,7 +684,7 @@ class CardsForDisplay: ObservableObject {
                     dispatchGroup.leave()
                 }
             }
-            dispatchGroup.notify(queue: .main) {DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) { print("getRecord complete..."); completion(coreCard, record)}}
+            dispatchGroup.notify(queue: .main) {DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) {completion(coreCard, record)}}
         }
     }
 }
@@ -1016,10 +989,6 @@ class UCVImageObjectModel: ObservableObject {
     
     func getPhotosFromCollection(collectionID: String, page_num: Int) {
         PhotoAPI.getPhotosFromCollection(collectionID: collectionID, page_num: page_num, completionHandler: { (response, error) in
-            print(".....")
-            print(collectionID)
-            print(page_num)
-            print(response)
             if response != nil {
                 DispatchQueue.main.async {
                     for picture in response! {
@@ -1105,7 +1074,6 @@ class APIManager: ObservableObject {
 
     func getSecret(keyName: String, forceGetFromAzure: Bool?, completion: @escaping (String?) -> Void) {
         let fullURL = baseURL + "?keyName=\(keyName)"
-        print(fullURL)
         guard let url = URL(string: fullURL) else {fatalError("Invalid URL")}
         
         if forceGetFromAzure == false {
@@ -1196,7 +1164,6 @@ class APIManager: ObservableObject {
         }
         
         let valueData = item as! Data
-        print("Got Key \(String(data: valueData, encoding: .utf8)) for \(key)")
         return String(data: valueData, encoding: .utf8)
     }
 }
@@ -1208,7 +1175,7 @@ class CollectionManager: ObservableObject {
     
     let titleToType = [
         "Birthday 🎈": CollectionType.yearRound,
-        "Postcard ✈️": CollectionType.yearRound,
+        "Travel ✈️": CollectionType.yearRound,
         "Wedding and Anniversary 💒": CollectionType.yearRound,
         "Graduation 🎓": CollectionType.yearRound,
         "Christmas 🎄": CollectionType.winter,
@@ -1252,7 +1219,6 @@ class CollectionManager: ObservableObject {
                     self.collections = allCollections
                 }
             } else if error != nil {
-                print("No Response!")
                 debugPrint(error?.localizedDescription)
             }
         })
@@ -1323,7 +1289,6 @@ class SpotifyManager: ObservableObject {
     
     func verifySubType(completion: @escaping (Bool) -> Void){
         SpotifyAPI.shared.getCurrentUserProfile(accessToken: self.access_token) { (profile, error) in
-            print("----")
             if let subType = profile?.product {self.accessType = subType}
             if self.accessType != "premium" {completion(false)}
             else{completion(true)}
@@ -1334,7 +1299,6 @@ class SpotifyManager: ObservableObject {
 
         if NetworkMonitor.shared.isConnected {
             if auth_code.isEmpty || auth_code == "AuthFailed" || auth_code == "password-reset" || auth_code == "signup"{
-                print("auth_code is empty")
                 requestSpotAuth {response in
                     self.authForRedirect = response!
                     self.showWebView = true
@@ -1342,24 +1306,20 @@ class SpotifyManager: ObservableObject {
                 }
             }
             else if hasTokenExpired() {
-                print("Token Expired...")
                 refresh_token = (defaults.object(forKey: "SpotifyRefreshToken") as? String)!
                 self.getSpotTokenViaRefresh{success in }
                 completion(true)
             }
             else {
-                print("no new token needed...")
                 completion(true)
             }
         } else {
-            print("Else called in udpateSpotCredentials...")
             self.noInternet?()
             completion(false)
         }
     }
 
     func getSpotToken(completion: @escaping (Bool) -> Void) {
-        print("getSpotToken called")
         SpotifyAPI.shared.getToken(authCode: auth_code) { (response, error) in
             let success = self.processTokenRequest(response: response, error: error)
             self.instantiateAppRemote()
@@ -1368,7 +1328,6 @@ class SpotifyManager: ObservableObject {
     }
 
     func getSpotTokenViaRefresh(completion: @escaping (Bool) -> Void) {
-        print("getSpotTokenViaRefresh called")
         SpotifyAPI.shared.getTokenViaRefresh(refresh_token: refresh_token) { (response, error) in
             let success = self.processTokenRequest(response: response, error: error)
             self.instantiateAppRemote()
@@ -1403,11 +1362,8 @@ class SpotifyManager: ObservableObject {
     }
 
     func requestSpotAuth(completion: @escaping (String?) -> Void) {
-        print("called....requestSpotAuth")
         invalidAuthCode = false
         SpotifyAPI.shared.requestAuth(completionHandler: {(response, error) in
-            print("in request spot auth....")
-            print(response)
             if response != nil {
                 DispatchQueue.main.async {
                     if response!.contains("https://www.salooapp.com/?code="){}
@@ -1420,32 +1376,6 @@ class SpotifyManager: ObservableObject {
         })
         
     }
-
-    
-    //func requestSpotAuth(completion: @escaping (String?) -> Void) {
-    //    print("called....requestSpotAuth")
-    //    invalidAuthCode = false
-    //    SpotifyAPI.shared.requestAuth(completionHandler: {(response, error) in
-    //        print("in request spot auth....")
-    //        print(response)
-    //        if response != nil {
-    //            DispatchQueue.main.async {
-    //                if response!.contains("https://www.salooapp.com/?code="){self.authForRedirect = "https://accounts.spotify.com/authorize?"; self.showWebView = true
-     //                   self.refreshAccessToken = true
-     //                   completion("https://accounts.spotify.com/authorize?")
-     ////               }
-     //               else{self.authForRedirect = response!; self.showWebView = true
-     //                   self.refreshAccessToken = true
-      //                  completion(response)
-     ////               }
-     //           }
-      //      }
-     //       else{completion(nil)}
-     //   })
-        
-   // }
-  
-    
     
     func instantiateAppRemote() {
         self.appRemote = SPTAppRemote(configuration: self.config!, logLevel: .debug)
@@ -1453,7 +1383,6 @@ class SpotifyManager: ObservableObject {
             self.appRemote?.connectionParameters.accessToken = (UserDefaults.standard.object(forKey: "SpotifyAccessToken") as? String)!
             self.appRemote?.delegate = self.spotPlayerDelegate
             appRemote?.connect()
-            print("instantiated app remote...")
         }
     }
     
@@ -1462,7 +1391,6 @@ class SpotifyManager: ObservableObject {
     var defaultCallback: SPTAppRemoteCallback? {
         get {
             return {[self] _, error in
-                print("defaultCallBack Running...")
                 if let error = error {print(error.localizedDescription)}
             }
         }
@@ -1472,14 +1400,9 @@ class SpotifyManager: ObservableObject {
 
 class SpotPlayerViewDelegate: NSObject, SPTAppRemoteDelegate, SPTAppRemotePlayerStateDelegate  {
     func appRemoteDidEstablishConnection(_ appRemote: SPTAppRemote) {
-        print("Connected appRemote")
         if let playerAPI = SpotifyManager.shared.appRemote?.playerAPI {
-            print("Check1")
             playerAPI.delegate = SpotifyManager.shared.spotPlayerDelegate
-            print("Check2")
             playerAPI.subscribe { (result, error) in
-                print("subscribteResult")
-                print(result)
                 if let error = error {print("Error subscribing to player state changes: \(error)")}
         }
     }
@@ -1499,11 +1422,7 @@ class SpotPlayerViewDelegate: NSObject, SPTAppRemoteDelegate, SPTAppRemotePlayer
     
     func playerStateDidChange(_ playerState: SPTAppRemotePlayerState) {
         var salooURI = "spotify:track:\(SpotifyManager.shared.currentTrackId)"
-        print("Called playerStateDidChange")
-        print(salooURI)
-        print(playerState.track.uri)
         if salooURI != playerState.track.uri {
-            print("Track changed to: \(playerState.track.name) by \(playerState.track.artist.name)")
             SpotifyManager.shared.appRemote?.disconnect()
             SpotifyManager.shared.resetPlayerToStart = true
         }
@@ -1526,7 +1445,6 @@ class RateLimiter {
     func executeFunction(function: @escaping () -> Void) {
         let currentTimestamp = Date().timeIntervalSince1970
         var delay: Double = 0.0
-        print("called executeFunction")
         executionQueue.sync {
             // Remove timestamps older than 1 second
             executionTimestamps = executionTimestamps.filter { currentTimestamp - $0 < 1 }

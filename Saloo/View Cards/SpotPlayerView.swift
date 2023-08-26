@@ -68,7 +68,7 @@ struct SpotPlayerView: View {
         SpotPlayerView2
             .onAppear{
                     if let songIdUnwrapped = songID {spotifyManager.currentTrackId = songIdUnwrapped}
-                    else { print("songID is nil")}
+                    else {}
                     spotifyManager.updateCredentialsIfNeeded{success in
                         spotifyManager.verifySubType{isPremium in
                             if !isPremium {
@@ -296,7 +296,7 @@ struct SpotPlayerView: View {
     func playSongFromLastPosition(clickedRestart: Bool) {
         let trackURI = "spotify:track:\(songID)"
         var startAt = Int()
-        if clickedRestart {print("START AT 0"); startAt = 0}
+        if clickedRestart {startAt = 0}
         else {startAt = currentPlaybackPosition}
         spotifyManager.appRemote?.authorizeAndPlayURI(trackURI)
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) { // delay to ensure track has started playing
@@ -386,26 +386,22 @@ struct SpotPlayerView: View {
             var albumIndex = 0
             func processAlbum() {
                 guard albumIndex < albums!.count else {
-                    print("called guard statement")
                     // All albums processed or foundMatch4 is true
                     completion(foundMatch); return
                 }
                 let album = albums![albumIndex]
                 albumIndex += 1
-                print("Got Album...\(album.name)")
                 let spotAlbumID = album.id // use the album ID from the current iteration
                 SpotifyAPI.shared.searchForAlbum(albumId: spotAlbumID, authToken: spotifyManager.access_token) { (albumResponse, error) in
                     if let album = albumResponse {
                         spotImageURL = album.images[2].url
                         getSpotAlbumTracks(spotAlbumID: spotAlbumID, AMString: AMString, completion: { foundMatch4 in
-                            print("---foundMatch4: \(foundMatch4)")
                             if foundMatch4 == true {foundMatch = true; completion(foundMatch)}
                             else {processAlbum()}
                         })
-                    } else {print("fail1");processAlbum()}
+                    } else {processAlbum()}
                 }
             }
-            print("fail2")
             processAlbum()
         })
     }
@@ -417,18 +413,15 @@ struct SpotPlayerView: View {
             print("Got Track...\(song.name)")
             var allArtists = concatAllArtists(song: song)
             let SPOTString = cleanMusicData.compileMusicString(songOrAlbum: song.name, artist: allArtists, removeList: appDelegate.songFilterForMatchRegex)
-            print("Track Name....AMString: \(AMString) && SPOTString: \(SPOTString)")
             if cleanMusicData.containsSameWords(AMString, SPOTString) && foundMatch == false {
                 foundMatch = true
-                print("SSSSS")
-                print(allArtists)
                 let artURL = URL(string: spotImageURL!)
                 let _ = getURLData(url: artURL!, completionHandler: {(artResponse, error2) in
                     spotName = song.name
                     spotArtistName = allArtists
                     songID = song.id
                     if let songIdUnwrapped = songID {spotifyManager.currentTrackId = songIdUnwrapped}
-                    else { print("songID is nil")}
+                    else {}
                     let blankString: String? = ""
                     var songPrev: String?
                     if song.preview_url != nil {songPrev = song.preview_url}
@@ -488,7 +481,6 @@ struct SpotPlayerView: View {
 
     func redirectToAppStore() {
         DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-            print("+++")
             if let isConnected = spotifyManager.appRemote?.isConnected, !isConnected {
                 self.showProgressView = false
                 self.isSpotifyInstalled = false

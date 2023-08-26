@@ -36,7 +36,6 @@ class PhotoAPI {
         var url: URL{ return URL(string: URLString)!}
     }
     class func getUserCollections(username: String, completionHandler: @escaping ([PhotoCollection]?,Error?) -> Void) {
-        print("called getUserCollection")
         let url = Endpoints.user(apiKey: APIManager.shared.unsplashAPIKey, user: username).url
         var request = URLRequest(url: url)
         request.httpMethod = "GET"
@@ -52,8 +51,7 @@ class PhotoAPI {
                 DispatchQueue.main.async {completionHandler(collections, nil)}
                 }
             catch {
-                    print("Invalid Response")
-                    print("Request failed: \(error)")
+                print("Request failed: \(error.localizedDescription)")
                     DispatchQueue.main.async {completionHandler(nil, error)}
                 }
             }
@@ -74,30 +72,16 @@ class PhotoAPI {
             }
             do {
                 let pics = try JSONDecoder().decode([ResultDetails].self, from: data!)
-                print("****")
-                print(pics.count)
                 DispatchQueue.main.async {completionHandler(pics, nil)}
                 }
             catch {
-                    print("Invalid Response")
-                    print("Request failed: \(error)")
+                print("Request failed: \(error.localizedDescription)")
                     DispatchQueue.main.async {completionHandler(nil, error)}
                 }
             }
         )
         task.resume()
     }
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
     
     //Must make this a class func in order to call the function properly in ImportPhotoViewController
     class func getPhoto(pageNum: Int, userSearch: String, completionHandler: @escaping ([ResultDetails]?,Error?) -> Void) {
@@ -135,13 +119,7 @@ class PhotoAPI {
             do {
                 // Create JSONDecoder instance and invoke decode function, passing in type of value to decode from the supplied JSON object and the JSON object to decode
                 let pics = try JSONDecoder().decode(PicResponse.self, from: data!)
-                print("***")
-                print(pics)
-                if pics.results.count == 0 {
-                    print("No results for that search......")
-                }
-                    print("Valid Response")
-                    print("------------")
+                if pics.results.count == 0 {}
                     DispatchQueue.main.async {
                         completionHandler(pics.results, nil)
                    }
@@ -194,20 +172,13 @@ class PhotoAPI {
             do {
                 // Create JSONDecoder instance and invoke decode function, passing in type of value to decode from the supplied JSON object and the JSON object to decode
                 let pics = try JSONDecoder().decode(PicResponse.self, from: data!)
-                print("***")
-                print(pics)
-                if pics.results.count == 0 {
-                    print("No results for that search......")
-                }
-                    print("Valid Response")
-                    print("------------")
+                if pics.results.count == 0 {}
                     DispatchQueue.main.async {
                         completionHandler(pics.results, nil)
                    }
                 }
                 catch {
-                    print("Invalid Response")
-                    print("Request failed: \(error)")
+                    print("Request failed: \(error.localizedDescription)")
                     DispatchQueue.main.async {
                         completionHandler(nil, error)
                     }
@@ -231,8 +202,6 @@ class PhotoAPI {
         let task = URLSession.shared.dataTask(with: request, completionHandler: { (data, response, error)
             // Completion Handler is Below
              in
-            print("pingDownloadURL Data Returned.....")
-            print(String(data: data!, encoding: .utf8))
             if error != nil {
                 DispatchQueue.main.async {
                     completionHandler(nil, error)
@@ -247,8 +216,7 @@ class PhotoAPI {
                    }
                 }
                 catch {
-                    print("Invalid Response")
-                    print("Request failed: \(error)")
+                    print("Request failed: \(error.localizedDescription)")
                     DispatchQueue.main.async {
                         completionHandler(nil, error)
                     }

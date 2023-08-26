@@ -99,15 +99,9 @@ struct OccassionsMenu: View {
                                 menuSection(for: "Birthday 🎈")
                                 menuSection(for: "Wedding and Anniversary 💒")
                                 menuSection(for: "Baby Shower 🐣")
-                                menuSection(for: "Postcard ✈️")
+                                menuSection(for: "Travel ✈️")
                                 menuSection(for: "Thinking of You 💭")
                                 menuSection(for: "Graduation 🎓")
-                            }
-                            Section(header: Text("Summer Holidays")) {
-                                menuSection(for: "Juneteenth ✊🏿")
-                                menuSection(for: "Pride 🏳️‍🌈")
-                                menuSection(for: "Father's Day 🍻")
-                                menuSection(for: "4th of July 🇺🇸")
                             }
                             Section(header: Text("Fall Holidays")) {
                                 menuSection(for: "Rosh Hashanah 🔯")
@@ -128,6 +122,12 @@ struct OccassionsMenu: View {
                                 menuSection(for: "Eid al-Fitr ☪️")
                                 menuSection(for: "Cinco De Mayo 🇲🇽")
                                 menuSection(for: "Mother's Day 🌸")
+                                menuSection(for: "Father's Day 🍻")
+                            }
+                            Section(header: Text("Summer Holidays")) {
+                                menuSection(for: "Juneteenth ✊🏿")
+                                menuSection(for: "Pride 🏳️‍🌈")
+                                menuSection(for: "4th of July 🇺🇸")
                             }
                         }
                     }
@@ -141,8 +141,7 @@ struct OccassionsMenu: View {
             }
             if apiManager.unsplashAPIKey == "" {
                 isLoadingMenu = true
-                apiManager.getSecret(keyName: "unsplashAPIKey", forceGetFromAzure: false){keyval in print("UnsplashAPIKey is \(String(describing: keyval))")
-                    isLoadingMenu = false
+                apiManager.getSecret(keyName: "unsplashAPIKey", forceGetFromAzure: false){keyval in isLoadingMenu = false
                 }
             }
         }
@@ -163,9 +162,7 @@ extension OccassionsMenu {
         let collection = collectionManager.collections.first(where: { $0.title == collectionTitle })
         
         return Button(action: {
-            print(collection)
             if let collection = collection, networkMonitor.isConnected {
-                print(collection.id)
                 frontCoverIsPersonalPhoto = 0
                 self.chosenOccassion.occassion = collectionTitle
                 self.chosenOccassion.collectionID = collection.id
@@ -192,7 +189,6 @@ extension OccassionsMenu {
             let imageSize = image.size
             size = imageSize
         }
-        print("Image Size....")
         widthToHeightRatio = size.width/size.height
         return (size, widthToHeightRatio)
     }
@@ -271,10 +267,8 @@ struct ProgressBar: View {
             }
             .frame(height: 20)
             .onChange(of: cardProgress.currentStep) { newValue in
-                print("--------\(newValue)")
                 if newValue > cardProgress.maxStep {
                     cardProgress.maxStep = newValue
-                    print("MaxStep == \(cardProgress.maxStep)")
                 }
             }
         }

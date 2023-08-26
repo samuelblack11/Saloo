@@ -85,23 +85,13 @@ struct eCardView: View {
         }
         .id(cardType)
         .onAppear {
-            print("$$$$")
-            print(spotPreviewURL)
-            print(songPreviewURL)
             if CloudRecord.shared.theRecord != nil {
                 CloudRecord.shared.theRecord!
-                
-                
-                //do {try saveToCoreDataIfNeeded(coreCard: appState.cardFromShare!)}
-                //catch let SaveError.missingValueForKey(key) {print("Missing value for key: \(key)"); //GettingRecord.shared.shareFail = true
-                //    ErrorMessageViewModel.shared.errorMessage = key}
-                //catch let error {print("An error occurred: \(error)")}
             }
             DispatchQueue.main.async {
                 let noPreview = (spotPreviewURL ?? "").isEmpty && (songPreviewURL ?? "").isEmpty
                 if appDelegate.musicSub.type == .Neither && noPreview {
                     cardType = "noMusicNoGift"
-                    print("preview logic true")
                 }
             }
         }
@@ -131,7 +121,6 @@ struct eCardView: View {
                     .frame(maxHeight: UIScreen.screenHeight/2.1)
                     HStack {CollageView(); MusicView}
                 }
-                .onAppear{print("MusicNoGiftView Appeared...")}
             }
         }.padding(.horizontal, screenPadding)
     }
@@ -185,7 +174,6 @@ struct eCardView: View {
                       maxHeight: .infinity)
             //annotationView()
         }
-        .onAppear{print(unsplashImageURL)}
     }
 
     func CoverViewWide1() -> some View {
@@ -198,7 +186,7 @@ struct eCardView: View {
             }
         }
         .onAppear{print(unsplashImageURL)}
-        .frame(width: UIScreen.main.bounds.width/1.05, height: UIScreen.main.bounds.height / 4.0)
+        .frame(width: UIScreen.main.bounds.width/1.05, height: UIScreen.main.bounds.height / 4.1)
         .clipped() // This will clip the VStack to its bounds
     }
 
@@ -233,8 +221,7 @@ struct eCardView: View {
                 //annotationView()
             }
         }
-        .onAppear{print(unsplashImageURL)}
-        .frame(width: UIScreen.main.bounds.width/1.05, height: UIScreen.main.bounds.height / 3.1)
+        .frame(width: UIScreen.main.bounds.width/1.05, height: UIScreen.main.bounds.height / 3.2)
         .clipped() // This will clip the VStack to its bounds
     }
 
@@ -245,7 +232,6 @@ struct eCardView: View {
                       maxHeight: UIScreen.main.bounds.height / 2.3)
             //annotationView()
         }
-        .onAppear{print(unsplashImageURL)}
     }
 
     func NoteView() -> some View {

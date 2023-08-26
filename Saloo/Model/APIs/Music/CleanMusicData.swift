@@ -16,47 +16,28 @@ class CleanMusicData {
     func compileMusicString(songOrAlbum: String, artist: String?, removeList: [String]) -> String {
         // musicString is songName followed by artistName
         var cleanString = String()
-        print("##")
-        print(songOrAlbum)
-        print(artist)
-        
-        
-        
         if artist != nil {
             let songOrAlbumNameOnly = removeArtistsFromSongOrAlbum(songOrAlbum: songOrAlbum).0
             let artistsInArtistField = removeArtistsFromSongOrAlbum(songOrAlbum: artist!).0
             let artistsInSongOrAlbumName = removeArtistsFromSongOrAlbum(songOrAlbum: songOrAlbum).1
-            
-            print("++")
-            print(songOrAlbumNameOnly)
-            print(artistsInArtistField)
-            print(artistsInSongOrAlbumName)
             cleanString = songOrAlbumNameOnly + " " + artistsInArtistField + " " + artistsInSongOrAlbumName
         }
         else {
-            print("else called...")
             cleanString = removeArtistsFromSongOrAlbum(songOrAlbum: songOrAlbum).0
-            print(cleanString)
         }
         
 
         cleanString = cleanMusicString(input: cleanString, removeList: removeList)
-        print("FINAL")
-        print(cleanString)
         return cleanString
     }
     
     
     func cleanMusicString(input: String, removeList: [String]) -> String {
-        
-        //print("CleanMusicString Called...")
-        //print("-----")
-        //print(input)
+
         var cleanString = removeAccents(from: input)
         cleanString = removeSubstrings(from: cleanString, removeList: removeList)
         cleanString = removeSpecialCharacters(from: cleanString)
         cleanString = convertMultipleSpacesToSingleSpace(cleanString)//.replacingOccurrences(of: " ", with: "%20")
-        //print(cleanString)
         return cleanString
     }
     
@@ -89,9 +70,6 @@ class CleanMusicData {
     
     //func removeArtistsFromSongOrAlbum(songOrAlbum: String, songArtist: String?) -> (String, String) {
     func removeArtistsFromSongOrAlbum(songOrAlbum: String) -> (String, String) {
-        //print("removeArtistsFromSongOrAlbum called...")
-        print(songOrAlbum)
-        //print(songOrAlbum.lowercased())
         var songOrAlbumString = songOrAlbum.replacingOccurrences(of: "[", with: "(").replacingOccurrences(of: "]", with: ")")
         var artistsInSongOrAlbumName = String()
         
@@ -101,27 +79,18 @@ class CleanMusicData {
 
         for (index, featString) in featStrings.enumerated() {
             if songOrAlbum.lowercased().contains(featString) {
-                print("contains feat string")
                 let songComponents = songOrAlbum.lowercased().components(separatedBy: featString)
-                print(songComponents)
                 songOrAlbumString = songComponents[0]
                 artistsInSongOrAlbumName = songComponents[1].components(separatedBy: endStrings[index])[0]
                 artistsInSongOrAlbumName = artistsInSongOrAlbumName.replacingOccurrences(of: "&", with: "")
-                print(songOrAlbumString)
-                print(artistsInSongOrAlbumName)
                 if songComponents[1].components(separatedBy: endStrings[index]).count > 1 {
                     let songOrAlbumStringPt2 = songComponents[1].components(separatedBy: endStrings[index])[1]
                     songOrAlbumString = songOrAlbumString + " " + songOrAlbumStringPt2
                 }
                 break
             }
-            //else {print("Else called...");songOrAlbumString = songOrAlbum}
         }
-
-        
         //songOrAlbumString = (songOrAlbumString + " " + cleanSongArtistName + artistsInSongOrAlbumName)
-        //print("songOrAlbumString....")
-        //print(songOrAlbumString)
         return (songOrAlbumString,artistsInSongOrAlbumName)
     }
     
@@ -152,7 +121,6 @@ class CleanMusicData {
         let words1 = str1.split(separator: " ").map { String($0) }
         let words2 = str2.split(separator: " ").map { String($0) }
         // Check if both arrays contain the same set of words
-        print("ContainsSameWords is \(Set(words1) == Set(words2))")
         return Set(words1) == Set(words2)
     }
     

@@ -37,7 +37,7 @@ struct PhotoOptionsView: View {
                 }, titleContent: .text("Photo Options"))
                 ZStack {
                     VStack {
-                        Text("Saloo has curated professional photos for each holiday and special occassion.Would you like to use one of these as your card's primary photo, or use a personal one?")
+                        Text("Saloo has curated professional photos for holidays and special occassions. Would you like to use one of these as your card's primary photo, or use a personal one?")
                             .foregroundColor(colorScheme == .dark ? .white : .black)
                             .font(Font.custom("Papyrus", size: 16))
                             .textCase(.none)
@@ -50,7 +50,7 @@ struct PhotoOptionsView: View {
                             .textCase(.none)
                             .multilineTextAlignment(.center)
                         RadioButtonGroup(items: ["Use Professional Photo", "Use Personal Photo"], selectedId: $chosenObject.frontCoverIsPersonalPhoto)
-                        Text("You'll also make a collage of personal photos.\nWhich of the below options would you like to use?")
+                        Text("You'll also make a collage of personal photos.\nWhich collage style would you like to use? (tap one)")
                             .foregroundColor(colorScheme == .dark ? .white : .black)
                             .font(Font.custom("Papyrus", size: 16))
                             .textCase(.none)

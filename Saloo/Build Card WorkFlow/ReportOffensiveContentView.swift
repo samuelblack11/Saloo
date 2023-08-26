@@ -48,7 +48,6 @@ struct ReportOffensiveContentView: View {
         let urlString = "https://salooreportoffensivecontent.azurewebsites.net/api/SalooReportOffensiveContent"
         
         guard let url = URL(string: urlString) else {
-            print("Invalid URL")
             return
         }
         
@@ -57,7 +56,6 @@ struct ReportOffensiveContentView: View {
         // Your Report object would need to be converted to JSON
         let encoder = JSONEncoder()
         guard let reportData = try? encoder.encode(report) else {
-            print("Failed to encode report")
             return
         }
         request.httpBody = reportData

@@ -49,10 +49,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, ObservableObject {
     }
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-            print("didFinishLaunchingWithOptions called...")
            // Check if the app is launching from a terminated state
            if let launchOptions = launchOptions, launchOptions[UIApplication.LaunchOptionsKey.annotation] == nil {
-               print("isLaunchingFromClosed")
                isLaunchingFromClosed = true
            } else {isLaunchingFromClosed = false}
            

@@ -17,7 +17,6 @@ class AppleMusicAPI {
     let cleanMusicData = CleanMusicData()
 
     func fetchUserStorefront(userToken: String, completionHandler: @escaping (AMStoreFrontResponse?,Error?) -> Void) -> String{
-        print("User Token...\(userToken)")
         let userStoreFront = String()
         let musicURL = URL(string: "https://api.music.apple.com/v1/me/storefront")!
         var musicRequest = URLRequest(url: musicURL)
@@ -30,15 +29,11 @@ class AppleMusicAPI {
 
             guard error == nil else { return }
                 let jsonString = String(data: data!, encoding: String.Encoding.utf8)!
-                print("UserStoreFront....***")
-                print(jsonString)
             do {
                 let response = try JSONDecoder().decode(AMStoreFrontResponse.self, from: data!)
-                print(";;;\(response)")
                 DispatchQueue.main.async {completionHandler(response, nil)}
                 }
             catch {
-                print("Invalid Response")
                 print("Request failed: \(error)")
                 DispatchQueue.main.async {completionHandler(nil, error)}
                 }
@@ -52,21 +47,15 @@ class AppleMusicAPI {
 
     
     func getUserToken(completionHandler: @escaping (String?, Error?) -> Void) {
-        print("AMDevToken...")
         print(APIManager.shared.appleMusicDevToken)
         
         SKCloudServiceController().requestUserToken(forDeveloperToken: APIManager.shared.appleMusicDevToken) { (receivedToken, error) in
-            print("----")
-            print(receivedToken)
             if let error = error {
-                print("Token Error...")
                 self.tokenError = true
                 AMAuthError.shared.errorMessage = error.localizedDescription
                 print(AMAuthError.shared.errorMessage)
                 APIManager.shared.getSecret(keyName: "appleMusicDevToken", forceGetFromAzure: true) { token4 in
-                    print("::::")
                     DispatchQueue.main.async {
-                        print("!!!!!")
                         completionHandler(nil, error)
                         APIManager.shared.appleMusicDevToken = token4 ?? ""
                         //self.getUserToken { (token, error) in
@@ -76,7 +65,6 @@ class AppleMusicAPI {
                     }
                 }
             } else {
-                print("receivedToken....\(receivedToken!)")
                 self.taskToken = receivedToken!
                 completionHandler(receivedToken, nil)
             }
@@ -97,15 +85,12 @@ class AppleMusicAPI {
             URLSession.shared.dataTask(with: musicRequest) { (data, response, error) in
                 guard error == nil else {return}
                 if let jsonObj = try? JSONSerialization.jsonObject(with: data!, options: []) as? [String: Any] {
-                    print("Running searchAppleMusic Function....")
-                    print(jsonObj)
                 }
                     do {
                     let songResponse = try JSONDecoder().decode(SongsReponse.self, from: data!)
                     DispatchQueue.main.async {completionHandler(songResponse.results.songs.data, nil)}
                     }
                 catch {
-                    print("Invalid Response")
                     print("Request failed: \(error)")
                     DispatchQueue.main.async {completionHandler(nil, error)}
                     }
@@ -123,21 +108,12 @@ class AppleMusicAPI {
         // Set up the search query
         let lock = DispatchSemaphore(value: 1)
         let searchURL = "https://api.music.apple.com/v1/catalog/\(storeFrontID)/search"
-        print("PreClean:")
-        print(albumAndArtist)
         var searchTerm = cleanMusicData.compileMusicString(songOrAlbum: albumAndArtist, artist: nil, removeList: AppDelegate().songFilterForMatchRegex).replacingOccurrences(of: " ", with: "%20")
-        print("PostClean:")
-        print(searchTerm)
         let searchType = "albums"
-        print("searchForAlbum SearchTerm....")
         var fullURL = "\(searchURL)?term=\(searchTerm)&types=\(searchType)&limit=25"
         if let offset = offset {
-            print("Adding offset")
             fullURL += "&offset=\(offset)"
         }
-
-        print(fullURL)
-        
         // Set up the request
         var request = URLRequest(url: URL(string: fullURL)!)
         request.httpMethod = "GET"
@@ -148,18 +124,14 @@ class AppleMusicAPI {
         URLSession.shared.dataTask(with: request) { (data, response, error) in
             guard error == nil else {return}
             if let jsonObj = try? JSONSerialization.jsonObject(with: data!, options: []) as? [String: Any] {
-            print("AM SearchForAlbum JsonObj....")
-            print(jsonObj)
             }
             do {
                 let response = try JSONDecoder().decode(AlbumResponse.self, from: data!)
                 //print("@@@")
                 //print(response.results.albums.data)
-                print("searchForAlbum was successful...")
                 DispatchQueue.main.async {completion(response, nil)}
             }
              catch {
-                 print("searchForAlbum was *not* successful...")
                 DispatchQueue.main.async {completion(nil, error)}
             }
             lock.signal()
@@ -179,13 +151,9 @@ class AppleMusicAPI {
         let task = URLSession.shared.dataTask(with: request) { (data, response, error) in
             guard error == nil else {return}
             if let jsonObj = try? JSONSerialization.jsonObject(with: data!, options: []) as? [String: Any] {
-                print("AM GetAlbumTracks JSONObj....")
-                //print(jsonObj)
             }
             do {
                 let response = try JSONDecoder().decode(TrackResponse.self, from: data!)
-                print("!!!")
-                //print(response)
                 DispatchQueue.main.async {completion(response, nil)}
             }
              catch {

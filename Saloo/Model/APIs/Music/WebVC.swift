@@ -39,23 +39,18 @@ class WebVC: UIViewController, WKNavigationDelegate {
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        //print("called view will disapper")
-        //print((defaults.object(forKey: "SpotifyAuthCode") as? String))
         //if (defaults.object(forKey: "SpotifyAuthCode") as? String) == nil {
         //    self.delegate?.sendDataToFirstViewController(strCode: "")
         //}
         if (defaults.object(forKey: "SpotifyAuthCode") as? String) == "AuthFailed" {
-            print("AuthFailed...")
             self.defaults.set("AuthFailed", forKey: "SpotifyAuthCode")
             self.delegate?.sendDataToFirstViewController(strCode: "AuthFailed")
         }
         else if (defaults.object(forKey: "SpotifyAuthCode") as? String) == "password-reset" {
-            print("Password Reset...")
             self.defaults.set("password-reset", forKey: "SpotifyAuthCode")
             self.delegate?.sendDataToFirstViewController(strCode: "password-reset")
         }
         else if (defaults.object(forKey: "SpotifyAuthCode") as? String) == "signup" {
-            print("Signup...")
             self.defaults.set("signup", forKey: "SpotifyAuthCode")
             self.delegate?.sendDataToFirstViewController(strCode: "signup")
         }
@@ -63,8 +58,6 @@ class WebVC: UIViewController, WKNavigationDelegate {
     
     
     override func viewDidLoad() {
-        //print("%%%")
-        //print(authURL)
         let url = URL(string: authURL!)!
         webView.load(URLRequest(url: url))
         webView.allowsBackForwardNavigationGestures = true
@@ -74,10 +67,7 @@ class WebVC: UIViewController, WKNavigationDelegate {
     
     override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
         if let key = change?[NSKeyValueChangeKey.newKey] {
-            //print("observeValue \(key)")
             let key_string = "\(key)"
-            print("-----")
-            print(key_string)
             if key_string.contains("password-reset") {
                 self.delegate?.sendDataToFirstViewController(strCode: "password-reset")
                 self.defaults.set("password-reset", forKey: "SpotifyAuthCode")
@@ -95,8 +85,6 @@ class WebVC: UIViewController, WKNavigationDelegate {
                     let redirectURL = self.webView.url!.absoluteString
                     let splitRedirectURL = redirectURL.components(separatedBy: "code=")
                     let authCode = splitRedirectURL[1]
-                    //print("<<<<")
-                    //print(authCode)
                     self.defaults.set(authCode, forKey: "SpotifyAuthCode")
                     self.delegate?.sendDataToFirstViewController(strCode: authCode)
                     self.dismiss(animated: true)
@@ -106,7 +94,6 @@ class WebVC: UIViewController, WKNavigationDelegate {
     }
     
     func webView(_ webView: WKWebView, didReceiveServerRedirectForProvisionalNavigation navigation: WKNavigation!) {
-        print("redirect received. The accounts.spotify url was the input, and it converted to the redirectURI after Spotify Login")
         if (defaults.object(forKey: "SpotifyAuthCode") as? String) != "password-reset" && (defaults.object(forKey: "SpotifyAuthCode") as? String) != "signup"  {
             self.dismiss(animated: true)
         }
@@ -130,7 +117,6 @@ struct WebVCView: UIViewControllerRepresentable {
         
         func sendDataToFirstViewController(strCode: String?) {
             //guard let provider = strCode else {return}
-            print("Received Auth code:....\(strCode!)")
             self.parent.authCode = strCode
         }
         

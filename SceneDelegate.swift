@@ -37,9 +37,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
               let path = components.path else {
             return
         }
-        print("$$$$$$$$$$")
-        print(userActivity.webpageURL)
-
         // Handle the universal link URL
         // Use the path to present appropriate content in your app
     }
@@ -84,7 +81,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
     func sceneDidBecomeActive(_ scene: UIScene) {
         // Handle the URL if one was stored when the app was launched
         if let url = launchedURL, let windowScene = scene as? UIWindowScene {
-            print("Set scene in SceneDidBecomeActive")
             //self.displayCard(windowScene: windowScene)
             launchedURL = nil // Clear the stored URL
         }
@@ -100,10 +96,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
     }
     
     func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
-        print("called* openURLContexts")
         guard let url = URLContexts.first?.url else { return }
         if url.absoluteString == "spotify://" {
-            print("goToSpotInAppStore about to change")
             SpotifyManager.shared.gotToAppInAppStore = true
             return
         }
@@ -112,7 +106,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
                 if !uniqueName.isEmpty {
                     // handle uniqueName here
                     // use uniqueName to fetch the required information or do necessary action
-                    print("***\(uniqueName)")
                     fetchRecord(withUniqueName: uniqueName)
                 }
                 return
@@ -122,7 +115,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
         let container = CKContainer.default()
         container.fetchShareMetadata(with: url) { metadata, error in
             guard error == nil, let metadata = metadata else {
-                print("-----")
                 print("An error occurred: \(error?.localizedDescription ?? "unknown error")")
                 return
             }
@@ -133,11 +125,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
     func fetchRecord(withUniqueName uniqueName: String) {
         DispatchQueue.main.async{GettingRecord.shared.isLoadingAlert = true}
         //if ChosenCoreCard.shared.chosenCard != nil {ChosenCoreCard.shared.chosenCard = nil}
-        print("called fetch")
         let predicate = NSPredicate(format: "CD_uniqueName == %@", uniqueName)
         let query = CKQuery(recordType: "CD_CoreCard", predicate: predicate)
         let publicDatabase = PersistenceController.shared.cloudKitContainer.publicCloudDatabase
-        print("pre-perform")
         publicDatabase.perform(query, inZoneWith: nil) { results, error in
             if let error = error {
                 // Handle the error here
@@ -147,8 +137,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
                     // Process your results here
                     for result in results {
                         // Do something with each result
-                        print("THE RESULT")
-                        print(result)
                         self.parseRecord(record: result)
                     }}
                 else {print("No matching record found.")
@@ -167,19 +155,16 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
 
 
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
-        print("called* willConnectTo")
         // Check if the app launched from an inactive state with a URL
         if let urlContext = connectionOptions.urlContexts.first {
             if urlContext.url.scheme == "saloo" {
                 let uniqueName = urlContext.url.absoluteString.replacingOccurrences(of: "saloo://", with: "")
-                print("UNIQUENAME \(uniqueName)")
                 if !uniqueName.isEmpty {fetchRecord(withUniqueName: uniqueName)}
             }
         }
     }
     
     private func displayCard(windowScene: UIWindowScene, record: CKRecord, uniqueName: String) {
-        print("called* displayCard")
         guard self.gotRecord && self.connectToScene else { return }
         if self.appDelegate.musicSub.type == .Neither {self.updateMusicSubType()}
         //AppState.shared.currentScreen = .startMenu
@@ -190,7 +175,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
     }
     
     func parseRecord(record: CKRecord?) {
-        print("Parsing Record in sceneDelegate....")
         DispatchQueue.main.async() {
             self.getCurrentUserID()
             self.coreCard.occassion = record?.object(forKey: "CD_occassion") as! String
@@ -260,8 +244,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
                             let coverImageData = try Data(contentsOf: asset.fileURL!)
                             DispatchQueue.main.async {
                                 self.coreCard.coverImage = coverImageData
-                                print("GOT CK ASSET")
-                                print(coverImageData)
                                 self.determineWhichBox {}
                                 // Leave the group after the data is loaded
                                 dispatchGroup.leave()
@@ -297,9 +279,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) {
                     self.gotRecord = true
                     self.checkIfRecordAddedToStore = true
-                    print("getRecord complete...")
                     if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene {
-                        print("Trying to handle Display after parseRecord...")
                         self.displayCard(windowScene: windowScene, record: record!, uniqueName: self.coreCard.uniqueName)
                     }
                 }
@@ -315,12 +295,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
     func determineWhichBox(completion: @escaping () -> Void) {
         let thisUsersID = self.defaults.object(forKey: "SalooUserID") as? String
         if self.coreCard.creator == thisUsersID {
-            print("Creator = recordname")
             self.whichBoxForCKAccept = .outbox
             completion()
         }
         else {
-            print("Creator != recordname")
             self.whichBoxForCKAccept = .inbox
             completion()
         }

@@ -141,7 +141,7 @@ struct MusicSearchView: View {
                                 }
                                 Spacer()
                             }
-                            .onTapGesture {DispatchQueue.main.async {isLoading = true}; print("Playing \(song.name)");createChosenSong(song: song)}
+                            .onTapGesture {DispatchQueue.main.async {isLoading = true};createChosenSong(song: song)}
                         }
                     }
                     if isLoading {
@@ -200,7 +200,6 @@ extension MusicSearchView {
     }
 
     func getSpotAlbum() {
-        print("CheckPoint1")
         var cleanAlbumName = String()
         var artistsInAlbumName = String()
         cleanAlbumName = cleanMusicData.compileMusicString(songOrAlbum: chosenSong.songAlbumName, artist: nil, removeList: appDelegate.songFilterForSearchRegex)
@@ -209,18 +208,11 @@ extension MusicSearchView {
         let totalAlbums = 150
         let totalOffsets = totalAlbums / pageSize
         let group1 = DispatchGroup()
-        print("CheckPoint2")
         print(cleanAlbumName)
         for offset in 0..<totalOffsets {
             group1.enter()
-            print("CheckPoint3")
             DispatchQueue.global().async {
                 SpotifyAPI.shared.getAlbumIDUsingNameOnly(albumName: cleanAlbumName, offset: offset * pageSize, authToken: spotifyManager.access_token) { albumResponse, error in
-                    print("CheckPoint4")
-                    print("albumName: \(cleanAlbumName), offset: \(offset * pageSize), authToken: \(spotifyManager.access_token)")
-                    print(albumResponse)
-                    print("---")
-                    print(error)
                     if let error = error as? URLError, error.code == .notConnectedToInternet {
                         alertVars.alertType = .failedConnection
                         alertVars.activateAlert = true
@@ -229,13 +221,10 @@ extension MusicSearchView {
                         let group2 = DispatchGroup()
                         for album in albumResponse {
                             group2.enter()
-                            print("CheckPoint5")
-                            print("Current Album...\(album.name)")
                             DispatchQueue.global().async {
                                 SpotifyAPI.shared.getAlbumTracks(albumId: album.id, authToken: spotifyManager.access_token) { response, error in
                                     if let trackList = response {
                                         for track in trackList {
-                                            print("----Track \(track.name)")
                                             if chosenSong.spotName == track.name {
                                                 var allArtists = String()
                                                 if album.artists.count > 1 {
@@ -243,7 +232,6 @@ extension MusicSearchView {
                                                 } else {
                                                     allArtists = album.artists[0].name
                                                 }
-                                                print("Appended...\(allArtists)")
                                                 albumArtistList.append(allArtists)
                                             }
                                         }
@@ -261,18 +249,14 @@ extension MusicSearchView {
                     }
                 }
             }
-            print("Album Group Complete of \(totalOffsets)")
         }
 
         group1.notify(queue: DispatchQueue.main) {
             var foundMatch = false
             let words = cleanMusicData.cleanMusicString(input: chosenSong.spotArtistName, removeList:appDelegate.songFilterForSearchRegex).components(separatedBy: " ")
-            print("notified")
             for artistGroup in albumArtistList {
                 for word in words {
                     if artistGroup.contains(word) {
-                        print("contains word called")
-                        print(artistGroup)
                         chosenSong.spotAlbumArtist = artistGroup
                         foundMatch = true
                         UIApplication.shared.endEditing()
@@ -286,7 +270,6 @@ extension MusicSearchView {
             }
             // Check if albumArtistList is not empty before attempting to access its elements
             if !foundMatch && !albumArtistList.isEmpty {
-                print("called !foundMatch")
                 chosenSong.spotAlbumArtist = albumArtistList[0]
                 chosenSong.spotAlbumArtist = albumArtistList.first ?? ""
                 UIApplication.shared.endEditing()
@@ -303,30 +286,21 @@ extension MusicSearchView {
         var songFound = false
         var albumArtistList: [String] = []
         SKCloudServiceController.requestAuthorization {(status) in if status == .authorized {
-            print("{{{{"); print(albumAndArtistForSearch)
             let group1 = DispatchGroup()
             group1.enter()
             DispatchQueue.global().async {
                 AppleMusicAPI().searchForAlbum(albumAndArtist: albumAndArtistForSearch, storeFrontID: storeFront, offset: nil, userToken: userToken, completion: { (response, error) in
                     if response != nil {
-                        print("Album Search Response....")
                         if let albumList = response?.results.albums.data {
-                            print("# of Albums in Response: \(albumList.count)")
                             let group2 = DispatchGroup()
                         outerLoop: for album in albumList {
-                            print("Album Object: "); print(album)
                             group2.enter()
                             DispatchQueue.global().async {
                                 AppleMusicAPI().getAlbumTracks(albumId: album.id, storefrontId: storeFront, userToken: userToken, completion: { (response, error) in
                                     if response != nil {
                                         if let trackList = response?.data {
                                             for track in trackList {
-                                                print("--- \(chosenSong.artistName)")
-                                                print(track.attributes.artistName)
                                                 if chosenSong.name == track.attributes.name && songFound == false {
-                                                    print("Weak Check - Found Song on Album:")
-                                                    print(track.attributes.name)
-                                                    print(album.attributes.artistName)
                                                     albumArtistList.append(album.attributes.artistName)
                                                 }}}
                                         group2.leave()
@@ -337,13 +311,8 @@ extension MusicSearchView {
                             var foundMatch = false;print("notified")
                             let words = cleanMusicData.cleanMusicString(input: chosenSong.artistName, removeList:appDelegate.songFilterForSearchRegex).components(separatedBy: " ")
                             for artistGroup in albumArtistList {
-                                print(artistGroup)
-                                print("The Words...")
-                                print(words)
                                 for word in words {
                                     if artistGroup.contains(word) && songFound == false {
-                                        print("Strong Check - Found Match:")
-                                        print(artistGroup)
                                         chosenSong.appleAlbumArtist = artistGroup
                                         foundMatch = true; break
                                     }
@@ -351,39 +320,29 @@ extension MusicSearchView {
                                 if foundMatch { break }
                             }
                             if !foundMatch {
-                                print("called !foundMatch")
                                 chosenSong.appleAlbumArtist = albumArtistList[0]
                                 chosenSong.appleAlbumArtist = albumArtistList.first ?? ""
                             }}}
                     else {
-                        print("Error when searching with Album + Artist..."); print(error?.localizedDescription)
                         AppleMusicAPI().searchForAlbum(albumAndArtist: albumForSearch, storeFrontID: storeFront, offset: nil, userToken: userToken, completion: { (response, error) in
                             if response != nil {
-                                print("Album Search Response....")
                                 if let albumList = response?.results.albums.data {
-                                    print("# of Albums in Response: \(albumList.count)")
                                     for album in albumList {
-                                        print("Album Object: \(album)")
                                         AppleMusicAPI().getAlbumTracks(albumId: album.id, storefrontId: storeFront, userToken: userToken, completion: { (response, error) in
                                             if response != nil {
                                                 if let trackList = response?.data {
                                                     for track in trackList {
                                                         if chosenSong.name == track.attributes.name {
-                                                            print("Found Song on Album:")
-                                                            print(track.attributes.name)
                                                             chosenSong.appleAlbumArtist = album.attributes.artistName
                                                             break
                                                         }}}}})}}}
-                            else {print("Error When Searching with Just Album Name"); print(error?.localizedDescription)
-                            }})
+                            else {}})
                     }
                 })}}}}
 
     
  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     func searchWithSpotify() {
-        print("searchWithSpotifyCalled...")
-        print(spotifyManager.access_token)
         if spotifyManager.access_token == "" || spotifyManager.access_token == nil {DispatchQueue.main.async {isLoading = true}; spotifyManager.updateCredentialsIfNeeded{success in
             spotifyManager.verifySubType{isPremium in
                 if !isPremium {
@@ -395,18 +354,13 @@ extension MusicSearchView {
             }
         }
         else {
-            print("Else called...")
             performSPOTSearch()
-            
-            
         }
     }
     
     
     func performSPOTSearch() {
         DispatchQueue.main.async {isLoading = true}
-        print("!!!")
-        print(spotifyManager.access_token)
         let songTerm = cleanMusicData.cleanMusicString(input: self.songSearch, removeList: appDelegate.songFilterForSearchRegex)
         let artistTerm = cleanMusicData.cleanMusicString(input: self.artistSearch, removeList: appDelegate.songFilterForSearchRegex)
         SpotifyAPI.shared.searchSpotify(songTerm, artistName: artistTerm, authToken: spotifyManager.access_token, completionHandler: {(response, error) in
@@ -414,8 +368,6 @@ extension MusicSearchView {
                 searchResults = []
                 DispatchQueue.main.async {
                     for song in response! {
-                        print("^^^")
-                        print(song)
                         var artURL: URL? = nil
 
                         if let imageURL = song.album?.images[safe: 2]?.url {artURL = URL(string: imageURL)}
@@ -479,7 +431,6 @@ extension MusicSearchView {
         SKCloudServiceController.requestAuthorization {(status) in
             if status == .authorized {
                 amAPI.getUserToken { response, error in
-                    print("Checking Token"); print(response); print("^^"); print(error)
                     completion()
                 }
             }
@@ -501,8 +452,6 @@ extension MusicSearchView {
     
     func performAMSearch() {
         DispatchQueue.main.async {isLoading = true}
-        print("---")
-        print("isLoading...\(isLoading)");
         SKCloudServiceController.requestAuthorization {(status) in if status == .authorized {
             let amSearch = cleanMusicData.cleanMusicString(input: self.songSearch, removeList: appDelegate.songFilterForSearchRegex)
             self.searchResults = AppleMusicAPI().searchAppleMusic(amSearch, storeFrontID: amAPI.storeFrontID!, userToken: amAPI.taskToken!, completionHandler: { (response, error) in
@@ -513,14 +462,10 @@ extension MusicSearchView {
                             var songPrev: String?
                             if song.attributes.previews.count > 0 {songPrev = song.attributes.previews[0].url}
                             else {songPrev = blankString}
-                            print("Search With AM called...")
                             let artURL = URL(string:song.attributes.artwork.url.replacingOccurrences(of: "{w}", with: "80").replacingOccurrences(of: "{h}", with: "80"))
                             let _ = getURLData(url: artURL!, completionHandler: { (artResponse, error2) in
-                                print("Song Name is...\(song.attributes.name)")
                                 let songForList = SongForList(id: song.attributes.playParams.id, name: song.attributes.name, artistName: song.attributes.artistName, albumName: song.attributes.albumName,artImageData: artResponse!, durationInMillis: song.attributes.durationInMillis, isPlaying: false, previewURL: songPrev!, disc_number: song.attributes.discNumber, url: song.attributes.url)
                                 if cleanMusicData.containsString(listOfSubStrings: appDelegate.songFilterForSearchRegex, songName: songForList.name) || cleanMusicData.containsString(listOfSubStrings: appDelegate.songFilterForSearchRegex, songName: songForList.albumName){
-                                print("Did Not Append....")
-                                print(songForList.name)
                             }
                             else {searchResults.append(songForList)}
                             })}; DispatchQueue.main.async {isLoading = false}}
@@ -533,8 +478,6 @@ extension MusicSearchView {
 
         songProgress = 0.0; isPlaying = true
         if appDelegate.musicSub.type == .Spotify {
-            print("Chosen Song URL Is...")
-            print(song.url)
             chosenSong.spotID = song.id
             chosenSong.spotName = song.name
             chosenSong.spotArtistName = song.artistName
@@ -546,9 +489,7 @@ extension MusicSearchView {
             chosenSong.songAddedUsing = "Spotify"
             chosenSong.spotSongURL = song.url
             if networkMonitor.isConnected{
-                print("Checking network & credentials before getSpotAlbum...")
-                print(spotifyManager.access_token)
-                if !spotifyManager.access_token.isEmpty {print("Going to get album");getSpotAlbum()}
+                if !spotifyManager.access_token.isEmpty {getSpotAlbum()}
                 else {spotifyManager.updateCredentialsIfNeeded{_ in
                     spotifyManager.verifySubType{isPremium in
                         if !isPremium {
@@ -569,9 +510,6 @@ extension MusicSearchView {
             }
         }
         if appDelegate.musicSub.type == .Apple {
-            print("Chosen Song URL Is...")
-            print(song.url)
-            //print(song.external_urls[0]!.spotify)
             chosenSong.id = song.id
             chosenSong.name = song.name
             chosenSong.artistName = song.artistName

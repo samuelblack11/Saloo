@@ -126,10 +126,9 @@ extension PersistenceController {
                 DispatchQueue.main.async {
                     print("Context saved after both CloudKit operations completed")
                     do {try PersistenceController.shared.persistentContainer.viewContext.save(with: .addCoreCard)}
-                    catch {print("PERSISTENCE ERROR>>>>>>"); print(error.localizedDescription)}
+                    catch {print(error.localizedDescription)}
                     createdCoreCard = coreCard
                     completion(createdCoreCard)
-                    print("Save Successful")
                 }
             }
         }
@@ -137,10 +136,7 @@ extension PersistenceController {
         
     
     func saveRecord(with record: CKRecord, for database: CKDatabase, using group: DispatchGroup, fileURL: URL?, fileURL2: URL?) {
-        print("Save1")
         group.enter()
-        print("Save2")
-
         // Starting the background task
         var backgroundTaskId: UIBackgroundTaskIdentifier = .invalid
         backgroundTaskId = UIApplication.shared.beginBackgroundTask {
@@ -172,9 +168,7 @@ extension PersistenceController {
                 do {try FileManager.default.removeItem(at: fileURL2!)}
                 catch {print("Failed to remove temporary image file: \(error)")}
             }
-            print("Save3")
             group.leave()
-            print("Save4")
         }
     }
 
@@ -186,7 +180,6 @@ extension PersistenceController {
         var filteredCards: [CoreCard] = []
         do {
             cardsFromCore = try PersistenceController.shared.persistentContainer.viewContext.fetch(request)
-            //print("START MENU Got \(cardsFromCore.count) Cards From Core")
         }
         catch {print("Fetch failed")}
         return cardsFromCore

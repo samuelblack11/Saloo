@@ -133,11 +133,28 @@ struct PrefMenu: View {
 
     private var privacySection: some View {
         VStack(alignment: .leading) {
-            Link("Privacy Policy", destination: URL(string: "https://www.salooapp.com/privacy-policy")!)
-                .foregroundColor(Color.blue)
-                .padding()
+            Button(action: {
+                if let url = URL(string: "https://www.salooapp.com/terms-license") {
+                    UIApplication.shared.open(url)
+                }
+            }) {
+                Text("Terms of Use & License Agreement")
+                    .foregroundColor(Color.blue)
+            }
+            .padding()
+            Divider()
+            Button(action: {
+                if let url = URL(string: "https://www.salooapp.com/privacy-policy") {
+                    UIApplication.shared.open(url)
+                }
+            }) {
+                Text("Privacy Policy")
+                    .foregroundColor(Color.blue)
+            }
+            .padding()
         }
     }
+
 
     private var accountSection: some View {
         VStack(alignment: .leading) {
@@ -167,11 +184,8 @@ struct PrefMenu: View {
             .onReceive(Just(authCode)) { newAuthCode in
                 if let unwrappedAuthCode = newAuthCode, !unwrappedAuthCode.isEmpty {
                     spotifyManager.auth_code = newAuthCode!
-                    print("++++++")
                     print(newAuthCode!)
                         spotifyManager.getSpotToken { success in
-                            print("getSpotToken Completion Handler...")
-                            print(newAuthCode)
                             if newAuthCode == "AuthFailed" {
                                 currentSubSelection = "Neither"
                                 appDelegate.musicSub.type = .Neither
@@ -179,8 +193,6 @@ struct PrefMenu: View {
                                 alertVars.activateAlert = true
                             }
                             else {
-                                print("getSpotToken completion called...")
-                                print(success)
                                 spotifyManager.verifySubType { isPremium in
                                     if isPremium {
                                         currentSubSelection = "Spotify"
@@ -225,7 +237,7 @@ struct PrefMenu: View {
                                 .font(Font.custom("Papyrus", size: 16))
                             .textCase(.none) })
                         {musicPreferenceSection}
-                        Section(header: Text("Privacy Policy").font(.system(size: 20))) {privacySection}
+                        Section(header: Text("Policies & Agreements").font(.system(size: 20))) {privacySection}
                         Section(header: Text("Account").font(.system(size: 20))) {accountSection}
                         Section(header: Text("Music Service Links").font(.system(size: 20))) {musicServiceLinksSection}
                     }
@@ -280,7 +292,6 @@ extension PrefMenu {
 
     }
     func deleteFromPrivate(database: CKDatabase, completion: @escaping () -> Void) {
-        print("called delete from private")
         let predicate = NSPredicate(value: true)
         let query = CKQuery(recordType: "CD_CoreCard", predicate: predicate)
         database.perform(query, inZoneWith: nil) { (records, error) in
@@ -303,7 +314,6 @@ extension PrefMenu {
     }
     
     func deleteFromPublic(database: CKDatabase, completion: @escaping () -> Void) {
-        print("called delete from public")
         let predicate = NSPredicate(format: "CD_salooUserID == %@", CardsForDisplay.shared.userID!)
         let query = CKQuery(recordType: "CD_CoreCard", predicate: predicate)
         database.perform(query, inZoneWith: nil) { (records, error) in
@@ -329,8 +339,6 @@ extension PrefMenu {
     
     func clearUserDefaults() {
         if let appDomain = Bundle.main.bundleIdentifier {
-            print("**")
-            print(appDomain)
             UserDefaults.standard.removePersistentDomain(forName: appDomain)
             UserDefaults.standard.synchronize()
         }
@@ -361,14 +369,11 @@ extension PrefMenu {
         self.defaults.set("", forKey: "SpotifyRefreshToken")
         self.defaults.set("", forKey: "SpotifyAuthCode")
         self.defaults.set("Neither", forKey: "MusicSubType")
-        print("_-------")
-        print(spotifyManager.authForRedirect)
         completion()
     }
     
     
     func spotAuthLogic() {
-        print("called spotAuthLogic........")
         musicColor = .green
         hideProgressView = false
         apiManager.initializeSpotifyManager {
@@ -380,7 +385,6 @@ extension PrefMenu {
                 if success {
                     spotifyManager.verifySubType { isPremium in
                         if isPremium {
-                            print("isPremium...\(isPremium)")
                             currentSubSelection = "Spotify"
                             appDelegate.musicSub.type = .Spotify
                             defaults.set("Spotify", forKey: "MusicSubType")
@@ -456,9 +460,7 @@ extension PrefMenu {
     }
 
     func getAMUserToken(completion: @escaping () -> Void) {
-        print("AM USER TOKEN STATUS....")
         SKCloudServiceController.requestAuthorization {(status) in
-            print("Status....")
             switch status {
             case .notDetermined:
                 print("Not Determined")
@@ -473,7 +475,6 @@ extension PrefMenu {
             }
             if status == .authorized {
                 amAPI.getUserToken { response, error in
-                    print("Checking Token"); print(response); print("^^"); print(error)
                     if response == nil {
                         hideProgressView = true
                         alertVars.alertType = .amAuthFailed
@@ -483,7 +484,6 @@ extension PrefMenu {
                 }
             }
             else {
-                print("ELSE CALLED")
                 hideProgressView = true
                 alertVars.alertType = .amAuthFailed
                 alertVars.activateAlert = true

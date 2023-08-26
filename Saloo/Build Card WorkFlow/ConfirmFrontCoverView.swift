@@ -44,12 +44,8 @@ struct ConfirmFrontCoverView: View {
                             cardProgress.currentStep = 2
                             appState.currentScreen = .buildCard([.collageBuilder])
                             PhotoAPI.pingDownloadURL(downloadLocation: chosenObject.downloadLocation, completionHandler: { (response, error) in
-                                if response != nil {
-                                    //debugPrint("Ping Success!.......")
-                                    //debugPrint(response)
-                                }
+                                if response != nil {}
                                 if response == nil {
-                                    //debugPrint("Ping Failed!.......")
                                 }})
                         }) {
                             Text("Confirm Image")

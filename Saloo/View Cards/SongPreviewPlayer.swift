@@ -100,14 +100,11 @@ struct SongPreviewPlayer: View {
             .onAppear {
                 if songPreviewURL == nil || songPreviewURL!.isEmpty {chosenCard?.cardType = "noMusicNoGift"}
                 startCheckingPlaybackState()
-                print("PREVIEW PLAYER APPEARED....")
                 if !appDelegate.isPlayerCreated {
-                    print("Did Create player...")
                     createPlayer()
                     appDelegate.isPlayerCreated = true
                 }
                 else {
-                    print("Else Called...")
                     audioManager.activateAudioSession()
                     let playerItem = AVPlayerItem(url: URL(string: songPreviewURL!)!)
                     avPlayer.player = AVPlayer.init(playerItem: playerItem)
@@ -116,8 +113,6 @@ struct SongPreviewPlayer: View {
             }
             .navigationBarItems(leading:Button {
                 avPlayer.player! .pause();avPlayer.player!.replaceCurrentItem(with: nil)
-                print("isSignedIn?")
-                print(UserSession.shared.isSignedIn)
                 if UserSession.shared.isSignedIn == false {showLoginView = true}
                 else{chosenCard = nil}
             } label: {Image(systemName: "chevron.left").foregroundColor(.blue); Text("Back")}.disabled(gettingRecord.isShowingActivityIndicator))
@@ -198,6 +193,7 @@ struct SongPreviewPlayer: View {
                 Button {
                     isPlaying.toggle()
                     if avPlayer.player!.timeControlStatus.rawValue == 2 {avPlayer.player!.pause()}
+                    else if songProgress == Double(30) {avPlayer.player!.seek(to: .zero); avPlayer.player!.play()}
                     else {avPlayer.player!.play()}
                 } label: {
                     ZStack {

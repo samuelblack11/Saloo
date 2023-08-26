@@ -34,6 +34,15 @@ struct LaunchView: View {
                     SignInButtonView(isPresentedFromECardView: $isPresentedFromECardView, cardFromShare: $cardFromShare)
                         .onAppear{cardsForDisplay.fetchFromCloudKit()}
                         //.onAppear{cardsForDisplay.deleteAllFromDB(dataBase: PersistenceController.shared.cloudKitContainer.privateCloudDatabase)}
+                    HStack {
+                        Link("Terms of Use & License Agreement", destination: URL(string: "https://www.salooapp.com/terms-license")!)
+                            .foregroundColor(Color.white)
+                            .padding()
+                        Spacer()
+                        Link("Privacy Policy", destination: URL(string: "https://www.salooapp.com/privacy-policy")!)
+                            .foregroundColor(Color.white)
+                            .padding()
+                    } 
                 }
                 LoadingOverlay(hasShownLaunchView: $hasShownLaunchView)
             }
@@ -65,19 +74,14 @@ struct SignInButtonView: View {
                         request.requestedScopes = [.fullName, .email]
                     },
                     onCompletion: { result in
-                        print("RESULT")
                         switch result {
                         case .success(let authResults):
                             // Successful authorization
                             switch authResults.credential {
                             case let appleIDCredential as ASAuthorizationAppleIDCredential:
                                 let userId = appleIDCredential.user
-                                print("User id is \(userId)")
                                 self.defaults.set(userId, forKey: "SalooUserID")
-                                print(self.defaults.object(forKey: "SalooUserID"))
                                 createUser(userID: userId) { (createdUser, error) in
-                                    print("CreateUser completion  called...")
-                                    print(createdUser)
                                     cardsForDisplay.userID = userId
                                     userSession.salooID = userId
                                 }
@@ -116,7 +120,6 @@ extension SignInButtonView {
 
         guard let url = URL(string: "https://saloouserstatus.azurewebsites.net/create_user") else {
             // Handle invalid URL error
-            print("Invalid URL")
             completion(false, nil)
             return
         }

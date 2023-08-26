@@ -71,7 +71,7 @@ struct CollageBuilder: View {
     }
     
     var body: some View {
-            let pinchText = collageImage.chosenStyle != 1 ? "Pinch the images to zoom in or out" : "Pinch the image to zoom in or out"
+            let pinchText = collageImage.chosenStyle != 1 ? "Pinch the images to zoom and size them to the frame" : "Pinch the image to zoom and size it to the frame"
          let dragText = collageImage.chosenStyle != 1 ? "Drag the images within their frames to position them how you prefer" : "Drag the image within the frame to position it how you prefer"
 
         NavigationStack {
@@ -373,8 +373,7 @@ extension CollageBuilder {
         
         //chosenImagesObject.imagePlaceHolder = Image(systemName: "rays")
         
-        print("called load image.....")
-        guard let chosenImage = chosenImage else {return print("loadImage() failed....")}
+        guard let chosenImage = chosenImage else {return}
         if imageNumber == 1 {imageA = Image(uiImage: chosenImage); collageImage.image1 = chosenImage.pngData()!}
         if imageNumber == 2 {imageB = Image(uiImage: chosenImage); collageImage.image2 = chosenImage.pngData()!}
         if imageNumber == 3 {imageC = Image(uiImage: chosenImage); collageImage.image3 = chosenImage.pngData()!}
@@ -414,7 +413,6 @@ extension View {
         let view = controller.view
         
         let targetSize = controller.view.intrinsicContentSize
-        print("Target Size: \(targetSize)")
         view?.bounds = CGRect(origin: .zero, size: targetSize)
         view?.backgroundColor = .clear
         

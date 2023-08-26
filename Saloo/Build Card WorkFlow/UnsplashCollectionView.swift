@@ -60,7 +60,6 @@ struct UnsplashCollectionView: View {
                         if setButtonStatus(imageObjects: imageObjectModel.imageObjects) == false {
                             Button("More...") {
                                 if networkMonitor.isConnected {
-                                    //imageObjectModel.getMorePhotos(chosenObject: chosenObject); print("page count: \(chosenObject.pageCount)")
                                     chosenObject.pageCount = chosenObject.pageCount + 1
                                     //imageObjectModel.imageObjects = []
                                     imageObjectModel.getPhotosFromCollection(collectionID: chosenOccassion.collectionID, page_num: chosenObject.pageCount)
@@ -100,8 +99,6 @@ extension UnsplashCollectionView {
         var disableButton: Bool?
         if (imageObjects.count * chosenObject.pageCount) < (30 * chosenObject.pageCount) {disableButton = true}
         else {disableButton = false}
-        print("---")
-        print(imageObjects.count)
         return disableButton!
     }
     
@@ -112,17 +109,12 @@ extension UnsplashCollectionView {
             let imageSize = image.size
             size = imageSize
         }
-        print("Image Size....")
         widthToHeightRatio = size.width/size.height
-        print(size)
-        print(widthToHeightRatio)
         return (size, widthToHeightRatio)
     }
     
 
     func handleTap(index: Int) async throws {
-        print("handle tap has been called....")
-        print(imageObjectModel.imageObjects[index])
             do {
                 let imageObjects = imageObjectModel.imageObjects
                 let (data1, _) = try await URLSession.shared.data(from: imageObjects[index].smallImageURL)
@@ -135,7 +127,6 @@ extension UnsplashCollectionView {
                 let (size, ratio) = getCoverSize()
                 chosenObject.coverSizeDetails = "\(size.width),\(size.height),\(ratio)"
                 //chosenObject.imageID = imageObjects[index].
-                print("Tap Handled....")
                 appState.currentScreen = .buildCard([.confirmFrontCoverView])
             }
         catch {debugPrint("Error handling tap .... : \(error)")}

@@ -86,10 +86,8 @@ struct AMPlayerView: View {
                 }
             }
             .onAppear{
-                print("AM PLAYER APPEARED....")
                 if songArtImageData == nil || (songArtImageData != nil && songArtImageData!.isEmpty) {
                 if networkMonitor.isConnected{
-                    print("calling get storefront and token")
                     getAMUserTokenAndStoreFront{}}
                 else{activeAlert = .noConnection}
             }
@@ -98,7 +96,6 @@ struct AMPlayerView: View {
 
             .navigationBarItems(leading:Button {
                 if fromFinalize {musicPlayer.pause(); cardProgress.currentStep = 4; appState.currentScreen = .buildCard([.musicSearchView])}
-                        print("Calling completion...")
                         musicPlayer.pause()
                         showGrid = true
                         chosenCard = nil
@@ -195,18 +192,13 @@ struct AMPlayerView: View {
             if networkMonitor.isConnected {
                 self.musicPlayer.setQueue(with: [songID!]);
                 self.musicPlayer.play()
-                print("Song ID....")
-                print(songID)
                 if self.musicPlayer.playbackState.rawValue == 0 && songID != "" {print("NotPlaying..."); self.disableSelect = true; activeAlert = .songNotAvailable}
-                print("<<<<\(self.musicPlayer.playbackState.rawValue)")
             }
             else {activeAlert = .noConnection}
             startCheckingPlaybackState()
         }
         .onDisappear{
-            print("AMPlayerView did disappear")
             self.musicPlayer.pause(); self.$musicPlayer.wrappedValue.currentPlaybackTime = 0}
-        
     }
     
     @ViewBuilder var selectButton: some View {
@@ -245,7 +237,6 @@ extension AMPlayerView {
     
     
     func getAMUserTokenAndStoreFront(completion: @escaping () -> Void) {
-        print("called getAMUserToken")
         getAMUserToken {[self] in self.getAMStoreFront(completion: completion)}
     }
 
@@ -253,7 +244,6 @@ extension AMPlayerView {
         SKCloudServiceController.requestAuthorization {(status) in
             if status == .authorized {
                 amAPI.getUserToken { response, error in
-                    print("Checking Token"); print(response); print("^^"); print(error)
                     completion()
                 }
             }
@@ -266,10 +256,7 @@ extension AMPlayerView {
                 amAPI.fetchUserStorefront(userToken: amAPI.taskToken!) { response, error in
                     amAPI.storeFrontID = response!.data[0].id
                     if songName! == "" {
-                        print("attempting convert...")
                         convertSong(offset: nil)
-                        
-                        
                     }
                     completion()
                 }
@@ -289,15 +276,12 @@ extension AMPlayerView {
         amAPI.searchForAlbum(albumAndArtist:  "\(songAlbumName!) \(spotAlbumArtist!)", storeFrontID: amAPI.storeFrontID!, offset: offset, userToken: amAPI.taskToken!, completion: {(albumResponse, error) in
                 print(error?.localizedDescription as Any)
                 if error != nil {
-                    print("search did fail...")
-                    print(songPreviewURL)
                     DispatchQueue.main.async {
                         
                         foundMatch = "searchFailed"
                         if songPreviewURL == nil || songPreviewURL == "" {CardPrep.shared.objectWillChange.send()
                             ; cardPrep.cardType = "noMusicNoGift"}
                         else {
-                            print("Defer to preview")
                             deferToPreview = true
                         }
                     }
@@ -312,20 +296,14 @@ extension AMPlayerView {
                     for (albumIndex, album) in albumList.enumerated() {
                         //group.enter()
                         group.enter()
-                        print("Album Object from AM...")
-                        print("----\(album.attributes.name)----\(album.id)")
                         AppleMusicAPI().getAlbumTracks(albumId: album.id, storefrontId: amAPI.storeFrontID!, userToken: amAPI.taskToken!, completion: { (trackResponse, error) in
                             defer { group.leave() }
                             if trackResponse != nil {
                                 if let trackList = trackResponse?.data {
                                     for (trackIndex, track) in trackList.enumerated() {
-                                        print("Track Index....\(trackIndex) of \(trackList.count - 1)")
-                                        print("Album Index....\(albumIndex) of \(albumList.count - 1)")
                                         let cleanAMString = cleanMusicData.compileMusicString(songOrAlbum: track.attributes.name, artist: track.attributes.artistName, removeList: appDelegate.songFilterForMatchRegex)
                                         if cleanMusicData.containsSameWords(cleanAMString, cleanSpotString) && foundMatch != "foundMatch" {
                                             foundMatch = "foundMatch"
-                                            print("SSSSS")
-                                            print(Double(track.attributes.durationInMillis) * 0.001)
                                             let artURL = URL(string:album.attributes.artwork.url.replacingOccurrences(of: "{w}", with: "80").replacingOccurrences(of: "{h}", with: "80"))
                                             let _ = getURLData(url: artURL!, completionHandler: { (artResponse, error2) in
                                                 songName = track.attributes.name
@@ -349,7 +327,6 @@ extension AMPlayerView {
                                                 musicPlayer.play()
                                             })}
                                         if trackIndex == trackList.count - 1 && albumIndex == albumList.count - 1 {
-                                            print("Trigerred Found Match Check...")
                                             triggerFoundMatchCheck = true}
                                     }
                                 }}
@@ -357,14 +334,11 @@ extension AMPlayerView {
                     group.notify(queue: .main) {
                         // This code is executed after all the requests have been completed
                         if (triggerFoundMatchCheck && foundMatch == "isSearching") {
-                            print("search did fail...")
-                            print(songPreviewURL == "")
                             DispatchQueue.main.async {
                                 foundMatch = "searchFailed"
                                 if songPreviewURL == nil || songPreviewURL == "" {CardPrep.shared.objectWillChange.send()
                                     ; cardPrep.cardType = "noMusicNoGift"}
                                 else {
-                                    print("Defer to preview")
                                     deferToPreview = true
                                 }
                             }
