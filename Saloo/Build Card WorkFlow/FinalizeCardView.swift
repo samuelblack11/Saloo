@@ -93,6 +93,7 @@ struct FinalizeCardView: View {
         chosenImagesObject.chosenImageB = nil
         chosenImagesObject.chosenImageC = nil
         chosenImagesObject.chosenImageD = nil
+        chosenSong.reset()
         appState.currentScreen = .startMenu
     }
 
@@ -152,7 +153,7 @@ extension FinalizeCardView {
             chosenImagesObject.chosenImageB = nil
             chosenImagesObject.chosenImageC = nil
             chosenImagesObject.chosenImageD = nil
-
+            chosenSong.reset()
         }))
     }
 

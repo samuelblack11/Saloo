@@ -717,7 +717,31 @@ class ChosenSong: ObservableObject {
     @Published var discNumber = Int()
     @Published var appleSongURL = String()
     @Published var spotSongURL = String()
+}
 
+extension ChosenSong {
+    func reset() {
+        id = ""
+        name = ""
+        artistName = ""
+        artwork = Data()
+        isPlaying = false
+        durationInSeconds = 0.0
+        songPreviewURL = ""
+        songAlbumName = ""
+        spotID = ""
+        spotName = ""
+        spotArtistName = ""
+        spotImageData = Data()
+        spotSongDuration = 0.0
+        spotPreviewURL = ""
+        songAddedUsing = ""
+        appleAlbumArtist = ""
+        spotAlbumArtist = ""
+        discNumber = 0
+        appleSongURL = ""
+        spotSongURL = ""
+    }
 }
 
 class CloudRecord: ObservableObject {

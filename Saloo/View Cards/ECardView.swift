@@ -95,6 +95,7 @@ struct eCardView: View {
                 }
             }
         }
+        //.onDisappear{songName = "";spotName = ""}
         .fullScreenCover(isPresented: $showLoginView) {LaunchView(isFirstLaunch: true, isPresentedFromECardView: $showLoginView, cardFromShare: $chosenCard)}
     }
     

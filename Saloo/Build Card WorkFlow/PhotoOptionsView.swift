@@ -23,17 +23,20 @@ struct PhotoOptionsView: View {
     @Environment(\.colorScheme) var colorScheme
     @EnvironmentObject var appState: AppState
     @EnvironmentObject var cardProgress: CardProgress
+    @EnvironmentObject var chosenSong: ChosenSong
     @EnvironmentObject var chosenImagesObject: ChosenImages
 
     var body: some View {
         NavigationView {
             VStack {
                 CustomNavigationBar(onBackButtonTap: {
-                    cardProgress.currentStep = 1; cardProgress.maxStep = 1; appState.currentScreen = .startMenu
+                    cardProgress.currentStep = 1; cardProgress.maxStep = 1
                     chosenImagesObject.chosenImageA = nil
                     chosenImagesObject.chosenImageB = nil
                     chosenImagesObject.chosenImageC = nil
                     chosenImagesObject.chosenImageD = nil
+                    chosenSong.reset()
+                    appState.currentScreen = .startMenu
                 }, titleContent: .text("Photo Options"))
                 ZStack {
                     VStack {

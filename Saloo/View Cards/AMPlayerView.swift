@@ -277,7 +277,6 @@ extension AMPlayerView {
                 print(error?.localizedDescription as Any)
                 if error != nil {
                     DispatchQueue.main.async {
-                        
                         foundMatch = "searchFailed"
                         if songPreviewURL == nil || songPreviewURL == "" {CardPrep.shared.objectWillChange.send()
                             ; cardPrep.cardType = "noMusicNoGift"}
