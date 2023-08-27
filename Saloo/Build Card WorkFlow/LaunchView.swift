@@ -34,15 +34,6 @@ struct LaunchView: View {
                     SignInButtonView(isPresentedFromECardView: $isPresentedFromECardView, cardFromShare: $cardFromShare)
                         .onAppear{cardsForDisplay.fetchFromCloudKit()}
                         //.onAppear{cardsForDisplay.deleteAllFromDB(dataBase: PersistenceController.shared.cloudKitContainer.privateCloudDatabase)}
-                    HStack {
-                        Link("Terms of Use & License Agreement", destination: URL(string: "https://www.salooapp.com/terms-license")!)
-                            .foregroundColor(Color.white)
-                            .padding()
-                        Spacer()
-                        Link("Privacy Policy", destination: URL(string: "https://www.salooapp.com/privacy-policy")!)
-                            .foregroundColor(Color.white)
-                            .padding()
-                    } 
                 }
                 LoadingOverlay(hasShownLaunchView: $hasShownLaunchView)
             }
@@ -66,7 +57,7 @@ struct SignInButtonView: View {
     @Binding var isPresentedFromECardView: Bool
     @Binding var cardFromShare: CoreCard?
     var body: some View {
-        VStack {
+        VStack(spacing: 5) {
             Spacer()
             SignInWithAppleButton(
                     .signIn,
@@ -106,11 +97,16 @@ struct SignInButtonView: View {
                             alertVars.activateAlert = true
                         }
                 })
-                .frame(height: 55, alignment: .center)
-                .padding(.bottom, 35)
-                .padding(.leading, 35)
-                .padding(.trailing, 35)
+                .frame(height: 60, alignment: .center)
+                .padding(.bottom, 25)
+                Link("Terms of Use & License Agreement", destination: URL(string: "https://www.salooapp.com/terms-license")!)
+                    .foregroundColor(Color.white)
+                Link("Privacy Policy", destination: URL(string: "https://www.salooapp.com/privacy-policy")!)
+                    .foregroundColor(Color.white)
+                    .padding(.bottom, 15)
         }
+        .padding(.leading, 35)
+        .padding(.trailing, 35)
     }
     
 }

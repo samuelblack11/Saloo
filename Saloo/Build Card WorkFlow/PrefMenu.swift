@@ -141,7 +141,6 @@ struct PrefMenu: View {
                 Text("Terms of Use & License Agreement")
                     .foregroundColor(Color.blue)
             }
-            .padding()
             Divider()
             Button(action: {
                 if let url = URL(string: "https://www.salooapp.com/privacy-policy") {
@@ -151,7 +150,6 @@ struct PrefMenu: View {
                 Text("Privacy Policy")
                     .foregroundColor(Color.blue)
             }
-            .padding()
         }
     }
 
@@ -163,7 +161,6 @@ struct PrefMenu: View {
                 alertVars.activateAlert = true
             })
             {Text("Delete My Account").foregroundColor(Color.red)}
-                .padding()
         }
     }
 
