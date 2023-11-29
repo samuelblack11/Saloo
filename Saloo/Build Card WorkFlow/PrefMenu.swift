@@ -123,7 +123,7 @@ struct PrefMenu: View {
                 .frame(height: listItemHeight)
                 .onTapGesture {spotAuthLogic()}
                 Divider()
-                Text("I don't subscribe to either")
+                Text("None")
                     .font(Font.custom("Papyrus", size: 24))
                     .foregroundColor(colorScheme == .dark ? .white : .black)
                     .frame(height: listItemHeight)
@@ -229,7 +229,7 @@ struct PrefMenu: View {
                     List {
                         Section(header: VStack(alignment: .leading) {
                             Text("Music Preferences").font(.system(size: 20))
-                            Text("Current Selection: \(currentSubSelection)")
+                            Text("Current Selection: \(currentSubSelection == "Neither" ? "None" : currentSubSelection)")
                                 .foregroundColor(colorScheme == .dark ? .white : .black)
                                 .font(Font.custom("Papyrus", size: 16))
                             .textCase(.none) })

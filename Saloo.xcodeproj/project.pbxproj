@@ -656,7 +656,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 1.06;
 				OTHER_LDFLAGS = (
 					"-framework",
 					"\"QuartzCore\"",
@@ -711,7 +711,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 1.06;
 				OTHER_LDFLAGS = (
 					"-framework",
 					"\"QuartzCore\"",

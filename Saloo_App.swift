@@ -203,7 +203,7 @@ struct AlertViewMod: ViewModifier {
                 case .cardDoesntExist:
                     return Alert(title: Text("Whoops!"), message: Text("This card no longer exists ☹️"), dismissButton: .default(Text("Ok")))
                 case .addMusicSubOnFirstLogin:
-                    return Alert(title: Text("Would you like to connect your music subscription to Saloo?"), message: Text("This will create a better greeting card experience for you and your recipients."), primaryButton: .default(Text("Yes"), action: {goToSettings?()}), secondaryButton: .default(Text("No"), action: {updateMusicLaterPrompt?()}))
+                    return Alert(title: Text("Would you like to connect your Apple Music subscription to Saloo?"), message: Text("This will create a better greeting card experience for you and your recipients."), primaryButton: .default(Text("Yes"), action: {goToSettings?()}), secondaryButton: .default(Text("No"), action: {updateMusicLaterPrompt?()}))
                 case .musicAuthSuccessful:
                     return Alert(title: Text("You're All Set 🎶"), dismissButton: .default(Text("Ok")))
                 case .deleteAccount:
