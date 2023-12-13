@@ -24,8 +24,9 @@ iOS Version Required: 13.7
 XCode Version Required: 13.3
 
 <p float="left">
-  <img src="/assets/birthdayCovers.jpg" alt="Alt text for the image" width="200" height="300"/>
-  <img src="/assets/sample1.jpg" alt="Alt text for the image" width="200" height="300"/>
-  <img src="/assets/sample2.jpg" alt="Alt text for the image" width="200" height="300"/>
+  <img src="/assets/birthdayCovers.jpg" alt="Alt text for the image" width="200" height="300"/><br>
+  <img src="/assets/sample1.png" alt="Alt text for the image" width="200" height="300"/><br>
+  <img src="/assets/sample2.png" alt="Alt text for the image" width="200" height="300"/>
 </p>
+
 
