@@ -50,6 +50,7 @@
 		C2950E892A4B6693001E175F /* MiniCollageMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2950E862A4B6693001E175F /* MiniCollageMenu.swift */; };
 		C2B650CA287AFFF90002E252 /* CloudKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C2B650C9287AFFF90002E252 /* CloudKit.framework */; };
 		C2BC52DB2A1EE55B000BAF60 /* ReportOffensiveContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2BC52DA2A1EE55B000BAF60 /* ReportOffensiveContentView.swift */; };
+		C2EC682E2B2E60D500B7EDA3 /* APIManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2EC682D2B2E60D500B7EDA3 /* APIManager.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -117,6 +118,7 @@
 		C2950E862A4B6693001E175F /* MiniCollageMenu.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MiniCollageMenu.swift; sourceTree = "<group>"; };
 		C2B650C9287AFFF90002E252 /* CloudKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CloudKit.framework; path = System/Library/Frameworks/CloudKit.framework; sourceTree = SDKROOT; };
 		C2BC52DA2A1EE55B000BAF60 /* ReportOffensiveContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReportOffensiveContentView.swift; sourceTree = "<group>"; };
+		C2EC682D2B2E60D500B7EDA3 /* APIManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIManager.swift; sourceTree = "<group>"; };
 		EA0978C9D748CE0611B19D5A /* Pods-GreetMe-2.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-GreetMe-2.release.xcconfig"; path = "Target Support Files/Pods-GreetMe-2/Pods-GreetMe-2.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -243,6 +245,7 @@
 			children = (
 				C22A5CBE2980B1C1006A0A8B /* Music */,
 				C22A5CBF2980B1DE006A0A8B /* Unsplash */,
+				C2EC682D2B2E60D500B7EDA3 /* APIManager.swift */,
 			);
 			path = APIs;
 			sourceTree = "<group>";
@@ -485,6 +488,7 @@
 				260F68FC281DBEA0002E864B /* UnsplashResponse.swift in Sources */,
 				C2582A3E296F7171009F8FEC /* AppleMusicAPI.swift in Sources */,
 				26A72180281DB8D500ADAE44 /* Saloo_App.swift in Sources */,
+				C2EC682E2B2E60D500B7EDA3 /* APIManager.swift in Sources */,
 				C271B2E729702D2200760B23 /* AMResponses.swift in Sources */,
 				C26890AC299E571D00EA63A4 /* AMPlayerView.swift in Sources */,
 				C22A84EA29667929001244CC /* SceneDelegate.swift in Sources */,

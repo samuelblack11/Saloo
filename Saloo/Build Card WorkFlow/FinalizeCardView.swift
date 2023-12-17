@@ -179,6 +179,7 @@ extension FinalizeCardView {
 
 
 
+
     func sendViaMessages(richLinkURL: URL) {
         if MFMessageComposeViewController.canSendText() && MFMessageComposeViewController.canSendAttachments() {
             let messageComposer = MFMessageComposeViewController()

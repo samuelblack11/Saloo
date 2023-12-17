@@ -74,7 +74,7 @@ struct Saloo_App: App {
                         else {appState.currentScreen = .login}
                         // Check if user is banned when the app comes to foreground
                         if let salooUserID = (UserDefaults.standard.object(forKey: "SalooUserID") as? String) {
-                            checkUserBanned(userId: salooUserID) { (isBanned, error) in
+                            APIManager.shared.checkUserBanned(userId: salooUserID) { (isBanned, error) in
                                 print("Checking banned status...isBanned = \(isBanned)")
                                 if isBanned == true {alertVars.alertType = .userBanned; alertVars.activateAlert = true}
                                 // Other error handling goes here
@@ -111,49 +111,6 @@ struct Saloo_App: App {
                 alertVars.alertType = .loginToiCloud; alertVars.activateAlert = true
             }
         }
-    }
-    
-    func checkUserBanned(userId: String, completion: @escaping (Bool, Error?) -> Void) {
-        guard let url = URL(string: "https://saloouserstatus.azurewebsites.net/is_banned?user_id=\(userId)") else {
-            // Handle invalid URL error
-            print("Invalid URL")
-            completion(false, nil)
-            return
-        }
-
-        
-        let task = URLSession.shared.dataTask(with: url) { (data, response, error) in
-            if let error = error {
-                // Handle error
-                completion(false, error)
-                return
-            }
-
-            if let data = data {
-                do {
-                    if let responseDict = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any] {
-                        let value: Optional<Any> = responseDict["is_banned"]
-                        if let stringValue = value as? String {
-                            let stringValue2 = stringValue.lowercased()
-                            if let isBanned = Bool(stringValue2) {
-                                completion(isBanned, nil)
-                                return
-                            }
-                        }
-                    }
-                }
-                catch {
-                    // Handle JSON parsing error
-                    completion(false, error)
-                    return
-                }
-            }
-
-            // Invalid response or data
-            completion(false, nil)
-        }
-
-        task.resume()
     }
 }
 

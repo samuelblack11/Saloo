@@ -371,7 +371,7 @@ extension MusicSearchView {
                         var artURL: URL? = nil
 
                         if let imageURL = song.album?.images[safe: 2]?.url {artURL = URL(string: imageURL)}
-                        else  {artURL = URL(string: "https://storage.googleapis.com/pr-newsroom-wp/1/2018/11/Spotify_Logo_RGB_Green.png")}
+                        else  {artURL = URL(string: APIManager.shared.spotArtURL)}
                         
                         let _ = getURLData(url: artURL!, completionHandler: {(artResponse, error2) in
                             let blankString: String? = ""

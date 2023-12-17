@@ -96,9 +96,7 @@ struct ReportOffensiveContentView: View {
         }.resume()
 
     }
-
-                   
-                   
+    
     func createReportObject(userName: String, userEmail: String, userComments: String, card: CoreCard) -> Report {
         let report = Report(userName: userName, userEmail: userEmail, userComments: userComments, salooUserID: card.salooUserID,
                             id:card.id.debugDescription,

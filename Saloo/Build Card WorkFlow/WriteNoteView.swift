@@ -184,7 +184,6 @@ extension WriteNoteView {
     }
     
     
-    static let subscriptionKey = "644c31910b4c473e9117a5127ceb3895"
     static let endpoint = "https://saloocontentmoderator2.cognitiveservices.azure.com/"
     static let textModerationEndpoint = "https://eastus.api.cognitive.microsoft.com/contentmoderator/moderate/v1.0/ProcessText/Screen"
     static let textBase = endpoint + "contentmoderator/moderate/v1.0/ProcessText/Screen?classify=true"
@@ -197,7 +196,7 @@ extension WriteNoteView {
         request.httpMethod = "POST"
         request.httpBody = text.data(using: .utf8) // Send the text directly as data
         request.addValue("text/plain", forHTTPHeaderField: "Content-Type")
-        request.addValue(subscriptionKey, forHTTPHeaderField: "Ocp-Apim-Subscription-Key")
+        request.addValue(APIManager.shared.contentModSubKey, forHTTPHeaderField: "Ocp-Apim-Subscription-Key")
         // Make the request
         let task = URLSession.shared.dataTask(with: request) { data, response, error in
             guard let data = data, error == nil else {
