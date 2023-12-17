@@ -1,0 +1,771 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 55;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		260F68F5281DBDCD002E864B /* OccassionsMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 260F68F4281DBDCD002E864B /* OccassionsMenu.swift */; };
+		260F68F7281DBDD2002E864B /* UnsplashCollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 260F68F6281DBDD2002E864B /* UnsplashCollectionView.swift */; };
+		260F68FA281DBE61002E864B /* PhotoAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 260F68F9281DBE61002E864B /* PhotoAPI.swift */; };
+		260F68FC281DBEA0002E864B /* UnsplashResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 260F68FB281DBEA0002E864B /* UnsplashResponse.swift */; };
+		260F68FE281DBEBD002E864B /* PingDownloadResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 260F68FD281DBEBD002E864B /* PingDownloadResponse.swift */; };
+		260F6907281DC0E3002E864B /* LaunchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 260F6906281DC0E3002E864B /* LaunchView.swift */; };
+		26A72180281DB8D500ADAE44 /* Saloo_App.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26A7217F281DB8D500ADAE44 /* Saloo_App.swift */; };
+		26A72184281DB8D900ADAE44 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 26A72183281DB8D900ADAE44 /* Assets.xcassets */; };
+		26A72187281DB8D900ADAE44 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 26A72186281DB8D900ADAE44 /* Preview Assets.xcassets */; };
+		26A7218C281DB8D900ADAE44 /* Saloo.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 26A7218A281DB8D900ADAE44 /* Saloo.xcdatamodeld */; };
+		26AD8127281F05160069C3F0 /* WriteNoteView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26AD8126281F05160069C3F0 /* WriteNoteView.swift */; };
+		26AD8129281F05310069C3F0 /* FinalizeCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26AD8128281F05310069C3F0 /* FinalizeCardView.swift */; };
+		26AD812B281F119A0069C3F0 /* ConfirmFrontCoverView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26AD812A281F119A0069C3F0 /* ConfirmFrontCoverView.swift */; };
+		C2075AFD295FDBA70048ECEB /* CollageBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2075AFC295FDBA70048ECEB /* CollageBuilder.swift */; };
+		C2075AFF295FDBC60048ECEB /* ImagePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2075AFE295FDBC60048ECEB /* ImagePicker.swift */; };
+		C208A3FC2A387C1F00F87739 /* AppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = C208A3FB2A387C1F00F87739 /* AppState.swift */; };
+		C20DEF602986C9F30080AE03 /* SpotifyAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = C20DEF5F2986C9F30080AE03 /* SpotifyAPI.swift */; };
+		C217021029AC0C9500BE48DC /* SongPreviewPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = C217020F29AC0C9500BE48DC /* SongPreviewPlayer.swift */; };
+		C21EACE02998525000401DC8 /* WebVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = C21EACDF2998525000401DC8 /* WebVC.swift */; };
+		C225A84B29873B4D008FC699 /* SpotifyiOS.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C225A84A29873B4D008FC699 /* SpotifyiOS.framework */; };
+		C225A8512989E074008FC699 /* SpotResponses.swift in Sources */ = {isa = PBXBuildFile; fileRef = C225A8502989E074008FC699 /* SpotResponses.swift */; };
+		C22A180B296CF60600A7E9B8 /* StartMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = C22A180A296CF60600A7E9B8 /* StartMenu.swift */; };
+		C22A180D296D010800A7E9B8 /* MusicSearchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C22A180C296D010800A7E9B8 /* MusicSearchView.swift */; };
+		C22A84DB29666123001244CC /* PersistenceController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C22A84DA29666123001244CC /* PersistenceController.swift */; };
+		C22A84DF29666C23001244CC /* PersistenceController+Card.swift in Sources */ = {isa = PBXBuildFile; fileRef = C22A84DE29666C23001244CC /* PersistenceController+Card.swift */; };
+		C22A84E129666C84001244CC /* CoreDataHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = C22A84E029666C84001244CC /* CoreDataHelper.swift */; };
+		C22A84EA29667929001244CC /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C22A84E929667929001244CC /* SceneDelegate.swift */; };
+		C22CAE4A298EAA3F003302C4 /* PrefMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = C22CAE49298EAA3F003302C4 /* PrefMenu.swift */; };
+		C237E6E1294E453600E472AD /* GridOfCards.swift in Sources */ = {isa = PBXBuildFile; fileRef = C237E6E0294E453600E472AD /* GridOfCards.swift */; };
+		C23A9D222897ECA90059B97C /* Card.swift in Sources */ = {isa = PBXBuildFile; fileRef = C23A9D212897ECA90059B97C /* Card.swift */; };
+		C24B3ABB29574A3D00884E4D /* CustomDataTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = C24B3ABA29574A3D00884E4D /* CustomDataTypes.swift */; };
+		C2582A3B296E5841009F8FEC /* eCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2582A3A296E5841009F8FEC /* eCardView.swift */; };
+		C2582A3E296F7171009F8FEC /* AppleMusicAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2582A3D296F7171009F8FEC /* AppleMusicAPI.swift */; };
+		C26890AC299E571D00EA63A4 /* AMPlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C26890AB299E571D00EA63A4 /* AMPlayerView.swift */; };
+		C26890B0299E572900EA63A4 /* SpotPlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C26890AF299E572900EA63A4 /* SpotPlayerView.swift */; };
+		C271B2E729702D2200760B23 /* AMResponses.swift in Sources */ = {isa = PBXBuildFile; fileRef = C271B2E629702D2200760B23 /* AMResponses.swift */; };
+		C27430FC286335F000E17B19 /* CameraCapture.swift in Sources */ = {isa = PBXBuildFile; fileRef = C27430FB286335F000E17B19 /* CameraCapture.swift */; };
+		C2764CEB2A06A9CA0083819B /* CleanMusicData.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2764CEA2A06A9CA0083819B /* CleanMusicData.swift */; };
+		C28B13F828E3E106008E2C4C /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C28B13F728E3E106008E2C4C /* AppDelegate.swift */; };
+		C2950E822A4B6221001E175F /* PhotoOptionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2950E812A4B6221001E175F /* PhotoOptionsView.swift */; };
+		C2950E892A4B6693001E175F /* MiniCollageMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2950E862A4B6693001E175F /* MiniCollageMenu.swift */; };
+		C2B650CA287AFFF90002E252 /* CloudKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C2B650C9287AFFF90002E252 /* CloudKit.framework */; };
+		C2BC52DB2A1EE55B000BAF60 /* ReportOffensiveContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2BC52DA2A1EE55B000BAF60 /* ReportOffensiveContentView.swift */; };
+		C2EC682E2B2E60D500B7EDA3 /* APIManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2EC682D2B2E60D500B7EDA3 /* APIManager.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		C217B030294FE5F200544B17 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = C217B029294FE5F200544B17 /* Pods.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = EF9B20CE03311E74EFCF470F4F9C59F5;
+			remoteInfo = "Pods-GreetMe-2";
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		260F68F4281DBDCD002E864B /* OccassionsMenu.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OccassionsMenu.swift; sourceTree = "<group>"; };
+		260F68F6281DBDD2002E864B /* UnsplashCollectionView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UnsplashCollectionView.swift; sourceTree = "<group>"; };
+		260F68F9281DBE61002E864B /* PhotoAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoAPI.swift; sourceTree = "<group>"; };
+		260F68FB281DBEA0002E864B /* UnsplashResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnsplashResponse.swift; sourceTree = "<group>"; };
+		260F68FD281DBEBD002E864B /* PingDownloadResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PingDownloadResponse.swift; sourceTree = "<group>"; };
+		260F6906281DC0E3002E864B /* LaunchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LaunchView.swift; sourceTree = "<group>"; };
+		260F6908281DEAE7002E864B /* Saloo.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Saloo.entitlements; sourceTree = "<group>"; };
+		2650FFCD285C9C340020980E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		26A7217C281DB8D500ADAE44 /* Saloo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Saloo.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		26A7217F281DB8D500ADAE44 /* Saloo_App.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Saloo_App.swift; sourceTree = "<group>"; };
+		26A72183281DB8D900ADAE44 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		26A72186281DB8D900ADAE44 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		26A7218B281DB8D900ADAE44 /* Saloo.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Saloo.xcdatamodel; sourceTree = "<group>"; };
+		26AD8126281F05160069C3F0 /* WriteNoteView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WriteNoteView.swift; sourceTree = "<group>"; };
+		26AD8128281F05310069C3F0 /* FinalizeCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FinalizeCardView.swift; sourceTree = "<group>"; };
+		26AD812A281F119A0069C3F0 /* ConfirmFrontCoverView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfirmFrontCoverView.swift; sourceTree = "<group>"; };
+		93AAAE1CF8AE1CB82C760293 /* Pods-GreetMe-2.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-GreetMe-2.debug.xcconfig"; path = "Target Support Files/Pods-GreetMe-2/Pods-GreetMe-2.debug.xcconfig"; sourceTree = "<group>"; };
+		C2075AFC295FDBA70048ECEB /* CollageBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollageBuilder.swift; sourceTree = "<group>"; };
+		C2075AFE295FDBC60048ECEB /* ImagePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagePicker.swift; sourceTree = "<group>"; };
+		C208A3FB2A387C1F00F87739 /* AppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppState.swift; sourceTree = "<group>"; };
+		C20DEF5F2986C9F30080AE03 /* SpotifyAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpotifyAPI.swift; sourceTree = "<group>"; };
+		C20DEF672986D4FD0080AE03 /* Saloo-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Saloo-Bridging-Header.h"; sourceTree = "<group>"; };
+		C217020F29AC0C9500BE48DC /* SongPreviewPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SongPreviewPlayer.swift; sourceTree = "<group>"; };
+		C217B029294FE5F200544B17 /* Pods.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Pods.xcodeproj; path = Pods/Pods.xcodeproj; sourceTree = "<group>"; };
+		C21EACDF2998525000401DC8 /* WebVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebVC.swift; sourceTree = "<group>"; };
+		C223EB7B2A59DAE7002EFA23 /* DancingScript-VariableFont_wght.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "DancingScript-VariableFont_wght.ttf"; sourceTree = "<group>"; };
+		C223EB7D2A59DAEE002EFA23 /* AmaticSC-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "AmaticSC-Regular.ttf"; sourceTree = "<group>"; };
+		C225A84A29873B4D008FC699 /* SpotifyiOS.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = SpotifyiOS.framework; sourceTree = "<group>"; };
+		C225A8502989E074008FC699 /* SpotResponses.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpotResponses.swift; sourceTree = "<group>"; };
+		C22A180A296CF60600A7E9B8 /* StartMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartMenu.swift; sourceTree = "<group>"; };
+		C22A180C296D010800A7E9B8 /* MusicSearchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MusicSearchView.swift; sourceTree = "<group>"; };
+		C22A84DA29666123001244CC /* PersistenceController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersistenceController.swift; sourceTree = "<group>"; };
+		C22A84DE29666C23001244CC /* PersistenceController+Card.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PersistenceController+Card.swift"; sourceTree = "<group>"; };
+		C22A84E029666C84001244CC /* CoreDataHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataHelper.swift; sourceTree = "<group>"; };
+		C22A84E929667929001244CC /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
+		C22CAE49298EAA3F003302C4 /* PrefMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrefMenu.swift; sourceTree = "<group>"; };
+		C237E6E0294E453600E472AD /* GridOfCards.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GridOfCards.swift; sourceTree = "<group>"; };
+		C23A9D212897ECA90059B97C /* Card.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Card.swift; sourceTree = "<group>"; };
+		C2453EC22A5D6CB100FC15D1 /* SalooUpdatedModel.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = SalooUpdatedModel.xcdatamodel; sourceTree = "<group>"; };
+		C2453EC42A5D6CFA00FC15D1 /* Saloo2.0.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Saloo2.0.xcdatamodel; sourceTree = "<group>"; };
+		C24B3ABA29574A3D00884E4D /* CustomDataTypes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomDataTypes.swift; sourceTree = "<group>"; };
+		C2531B2D2A5D6D450096C185 /* SalooNewModel.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = SalooNewModel.xcdatamodel; sourceTree = "<group>"; };
+		C2582A3A296E5841009F8FEC /* eCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = eCardView.swift; sourceTree = "<group>"; };
+		C2582A3D296F7171009F8FEC /* AppleMusicAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppleMusicAPI.swift; sourceTree = "<group>"; };
+		C26890AB299E571D00EA63A4 /* AMPlayerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AMPlayerView.swift; sourceTree = "<group>"; };
+		C26890AF299E572900EA63A4 /* SpotPlayerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpotPlayerView.swift; sourceTree = "<group>"; };
+		C271B2E629702D2200760B23 /* AMResponses.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AMResponses.swift; sourceTree = "<group>"; };
+		C27430FB286335F000E17B19 /* CameraCapture.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraCapture.swift; sourceTree = "<group>"; };
+		C2764CEA2A06A9CA0083819B /* CleanMusicData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CleanMusicData.swift; sourceTree = "<group>"; };
+		C28B13F728E3E106008E2C4C /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		C2950E812A4B6221001E175F /* PhotoOptionsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoOptionsView.swift; sourceTree = "<group>"; };
+		C2950E862A4B6693001E175F /* MiniCollageMenu.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MiniCollageMenu.swift; sourceTree = "<group>"; };
+		C2B650C9287AFFF90002E252 /* CloudKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CloudKit.framework; path = System/Library/Frameworks/CloudKit.framework; sourceTree = SDKROOT; };
+		C2BC52DA2A1EE55B000BAF60 /* ReportOffensiveContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReportOffensiveContentView.swift; sourceTree = "<group>"; };
+		C2EC682D2B2E60D500B7EDA3 /* APIManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIManager.swift; sourceTree = "<group>"; };
+		EA0978C9D748CE0611B19D5A /* Pods-GreetMe-2.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-GreetMe-2.release.xcconfig"; path = "Target Support Files/Pods-GreetMe-2/Pods-GreetMe-2.release.xcconfig"; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		26A72179281DB8D500ADAE44 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C2B650CA287AFFF90002E252 /* CloudKit.framework in Frameworks */,
+				C225A84B29873B4D008FC699 /* SpotifyiOS.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		260F6901281DBF28002E864B /* Build Card WorkFlow */ = {
+			isa = PBXGroup;
+			children = (
+				C22CAE49298EAA3F003302C4 /* PrefMenu.swift */,
+				C22A180A296CF60600A7E9B8 /* StartMenu.swift */,
+				260F6906281DC0E3002E864B /* LaunchView.swift */,
+				260F68F4281DBDCD002E864B /* OccassionsMenu.swift */,
+				C2950E812A4B6221001E175F /* PhotoOptionsView.swift */,
+				260F68F6281DBDD2002E864B /* UnsplashCollectionView.swift */,
+				26AD812A281F119A0069C3F0 /* ConfirmFrontCoverView.swift */,
+				C2950E862A4B6693001E175F /* MiniCollageMenu.swift */,
+				C2075AFC295FDBA70048ECEB /* CollageBuilder.swift */,
+				26AD8126281F05160069C3F0 /* WriteNoteView.swift */,
+				C22A180C296D010800A7E9B8 /* MusicSearchView.swift */,
+				26AD8128281F05310069C3F0 /* FinalizeCardView.swift */,
+				C2BC52DA2A1EE55B000BAF60 /* ReportOffensiveContentView.swift */,
+			);
+			path = "Build Card WorkFlow";
+			sourceTree = "<group>";
+		};
+		260F6902281DBF41002E864B /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				C2582A3C296F7151009F8FEC /* Persistence & CoreDate */,
+				C237E6E2294E5DB100E472AD /* Data & Types */,
+				C22A5CBC2980B193006A0A8B /* APIs */,
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
+		260F6905281DC024002E864B /* Other */ = {
+			isa = PBXGroup;
+			children = (
+				C223EB7D2A59DAEE002EFA23 /* AmaticSC-Regular.ttf */,
+				C223EB7B2A59DAE7002EFA23 /* DancingScript-VariableFont_wght.ttf */,
+				26A72183281DB8D900ADAE44 /* Assets.xcassets */,
+			);
+			path = Other;
+			sourceTree = "<group>";
+		};
+		26A72173281DB8D500ADAE44 = {
+			isa = PBXGroup;
+			children = (
+				C20DEF672986D4FD0080AE03 /* Saloo-Bridging-Header.h */,
+				26A7217F281DB8D500ADAE44 /* Saloo_App.swift */,
+				C208A3FB2A387C1F00F87739 /* AppState.swift */,
+				C28B13F728E3E106008E2C4C /* AppDelegate.swift */,
+				C22A84E929667929001244CC /* SceneDelegate.swift */,
+				26A7218A281DB8D900ADAE44 /* Saloo.xcdatamodeld */,
+				26A7217E281DB8D500ADAE44 /* Saloo */,
+				26A7217D281DB8D500ADAE44 /* Products */,
+				C2B650C8287AFFF90002E252 /* Frameworks */,
+				59C973DCA9F45EDFFEFA334A /* Pods */,
+			);
+			sourceTree = "<group>";
+		};
+		26A7217D281DB8D500ADAE44 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				26A7217C281DB8D500ADAE44 /* Saloo.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		26A7217E281DB8D500ADAE44 /* Saloo */ = {
+			isa = PBXGroup;
+			children = (
+				C225A84A29873B4D008FC699 /* SpotifyiOS.framework */,
+				2650FFCD285C9C340020980E /* Info.plist */,
+				260F6908281DEAE7002E864B /* Saloo.entitlements */,
+				260F6902281DBF41002E864B /* Model */,
+				260F6901281DBF28002E864B /* Build Card WorkFlow */,
+				C237E6E4294E5EA200E472AD /* View Cards */,
+				C2729FFB286FB80100FD6D0C /* PhotoLibrary & Camera */,
+				260F6905281DC024002E864B /* Other */,
+				26A72185281DB8D900ADAE44 /* Preview_Content */,
+			);
+			path = Saloo;
+			sourceTree = "<group>";
+		};
+		26A72185281DB8D900ADAE44 /* Preview_Content */ = {
+			isa = PBXGroup;
+			children = (
+				26A72186281DB8D900ADAE44 /* Preview Assets.xcassets */,
+			);
+			path = Preview_Content;
+			sourceTree = "<group>";
+		};
+		59C973DCA9F45EDFFEFA334A /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				93AAAE1CF8AE1CB82C760293 /* Pods-GreetMe-2.debug.xcconfig */,
+				EA0978C9D748CE0611B19D5A /* Pods-GreetMe-2.release.xcconfig */,
+			);
+			path = Pods;
+			sourceTree = "<group>";
+		};
+		C217B02A294FE5F200544B17 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				C217B031294FE5F200544B17 /* Pods_GreetMe_2.framework */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		C22A5CBC2980B193006A0A8B /* APIs */ = {
+			isa = PBXGroup;
+			children = (
+				C22A5CBE2980B1C1006A0A8B /* Music */,
+				C22A5CBF2980B1DE006A0A8B /* Unsplash */,
+				C2EC682D2B2E60D500B7EDA3 /* APIManager.swift */,
+			);
+			path = APIs;
+			sourceTree = "<group>";
+		};
+		C22A5CBE2980B1C1006A0A8B /* Music */ = {
+			isa = PBXGroup;
+			children = (
+				C2764CEA2A06A9CA0083819B /* CleanMusicData.swift */,
+				C2582A3D296F7171009F8FEC /* AppleMusicAPI.swift */,
+				C20DEF5F2986C9F30080AE03 /* SpotifyAPI.swift */,
+				C271B2E629702D2200760B23 /* AMResponses.swift */,
+				C225A8502989E074008FC699 /* SpotResponses.swift */,
+				C21EACDF2998525000401DC8 /* WebVC.swift */,
+			);
+			path = Music;
+			sourceTree = "<group>";
+		};
+		C22A5CBF2980B1DE006A0A8B /* Unsplash */ = {
+			isa = PBXGroup;
+			children = (
+				260F68F9281DBE61002E864B /* PhotoAPI.swift */,
+				260F68FB281DBEA0002E864B /* UnsplashResponse.swift */,
+				260F68FD281DBEBD002E864B /* PingDownloadResponse.swift */,
+			);
+			path = Unsplash;
+			sourceTree = "<group>";
+		};
+		C237E6E2294E5DB100E472AD /* Data & Types */ = {
+			isa = PBXGroup;
+			children = (
+				C24B3ABA29574A3D00884E4D /* CustomDataTypes.swift */,
+				C23A9D212897ECA90059B97C /* Card.swift */,
+			);
+			path = "Data & Types";
+			sourceTree = "<group>";
+		};
+		C237E6E4294E5EA200E472AD /* View Cards */ = {
+			isa = PBXGroup;
+			children = (
+				C237E6E0294E453600E472AD /* GridOfCards.swift */,
+				C2582A3A296E5841009F8FEC /* eCardView.swift */,
+				C26890AB299E571D00EA63A4 /* AMPlayerView.swift */,
+				C26890AF299E572900EA63A4 /* SpotPlayerView.swift */,
+				C217020F29AC0C9500BE48DC /* SongPreviewPlayer.swift */,
+			);
+			path = "View Cards";
+			sourceTree = "<group>";
+		};
+		C2582A3C296F7151009F8FEC /* Persistence & CoreDate */ = {
+			isa = PBXGroup;
+			children = (
+				C22A84DA29666123001244CC /* PersistenceController.swift */,
+				C22A84DE29666C23001244CC /* PersistenceController+Card.swift */,
+				C22A84E029666C84001244CC /* CoreDataHelper.swift */,
+			);
+			path = "Persistence & CoreDate";
+			sourceTree = "<group>";
+		};
+		C2729FFB286FB80100FD6D0C /* PhotoLibrary & Camera */ = {
+			isa = PBXGroup;
+			children = (
+				C27430FB286335F000E17B19 /* CameraCapture.swift */,
+				C2075AFE295FDBC60048ECEB /* ImagePicker.swift */,
+			);
+			path = "PhotoLibrary & Camera";
+			sourceTree = "<group>";
+		};
+		C2B650C8287AFFF90002E252 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				C217B029294FE5F200544B17 /* Pods.xcodeproj */,
+				C2B650C9287AFFF90002E252 /* CloudKit.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		26A7217B281DB8D500ADAE44 /* Saloo */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 26A7218F281DB8D900ADAE44 /* Build configuration list for PBXNativeTarget "Saloo" */;
+			buildPhases = (
+				92B30C402BD17A20430D5838 /* [CP] Check Pods Manifest.lock */,
+				26A72178281DB8D500ADAE44 /* Sources */,
+				26A72179281DB8D500ADAE44 /* Frameworks */,
+				26A7217A281DB8D500ADAE44 /* Resources */,
+				AA954B75BF6956AE1AD85B1E /* [CP] Embed Pods Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = Saloo;
+			packageProductDependencies = (
+			);
+			productName = "GreetMe-2";
+			productReference = 26A7217C281DB8D500ADAE44 /* Saloo.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		26A72174281DB8D500ADAE44 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1330;
+				LastUpgradeCheck = 1330;
+				TargetAttributes = {
+					26A7217B281DB8D500ADAE44 = {
+						CreatedOnToolsVersion = 13.3;
+					};
+				};
+			};
+			buildConfigurationList = 26A72177281DB8D500ADAE44 /* Build configuration list for PBXProject "Saloo" */;
+			compatibilityVersion = "Xcode 13.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 26A72173281DB8D500ADAE44;
+			packageReferences = (
+			);
+			productRefGroup = 26A7217D281DB8D500ADAE44 /* Products */;
+			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = C217B02A294FE5F200544B17 /* Products */;
+					ProjectRef = C217B029294FE5F200544B17 /* Pods.xcodeproj */;
+				},
+			);
+			projectRoot = "";
+			targets = (
+				26A7217B281DB8D500ADAE44 /* Saloo */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		C217B031294FE5F200544B17 /* Pods_GreetMe_2.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = Pods_GreetMe_2.framework;
+			remoteRef = C217B030294FE5F200544B17 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
+
+/* Begin PBXResourcesBuildPhase section */
+		26A7217A281DB8D500ADAE44 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				26A72187281DB8D900ADAE44 /* Preview Assets.xcassets in Resources */,
+				26A72184281DB8D900ADAE44 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		92B30C402BD17A20430D5838 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-GreetMe-2-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		AA954B75BF6956AE1AD85B1E /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-GreetMe-2/Pods-GreetMe-2-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-GreetMe-2/Pods-GreetMe-2-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-GreetMe-2/Pods-GreetMe-2-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		26A72178281DB8D500ADAE44 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C225A8512989E074008FC699 /* SpotResponses.swift in Sources */,
+				260F68F7281DBDD2002E864B /* UnsplashCollectionView.swift in Sources */,
+				260F68FE281DBEBD002E864B /* PingDownloadResponse.swift in Sources */,
+				C217021029AC0C9500BE48DC /* SongPreviewPlayer.swift in Sources */,
+				C237E6E1294E453600E472AD /* GridOfCards.swift in Sources */,
+				C2764CEB2A06A9CA0083819B /* CleanMusicData.swift in Sources */,
+				C2BC52DB2A1EE55B000BAF60 /* ReportOffensiveContentView.swift in Sources */,
+				C20DEF602986C9F30080AE03 /* SpotifyAPI.swift in Sources */,
+				C28B13F828E3E106008E2C4C /* AppDelegate.swift in Sources */,
+				26A7218C281DB8D900ADAE44 /* Saloo.xcdatamodeld in Sources */,
+				C24B3ABB29574A3D00884E4D /* CustomDataTypes.swift in Sources */,
+				C2075AFF295FDBC60048ECEB /* ImagePicker.swift in Sources */,
+				C22A180B296CF60600A7E9B8 /* StartMenu.swift in Sources */,
+				C22A84E129666C84001244CC /* CoreDataHelper.swift in Sources */,
+				C27430FC286335F000E17B19 /* CameraCapture.swift in Sources */,
+				C22A180D296D010800A7E9B8 /* MusicSearchView.swift in Sources */,
+				26AD8127281F05160069C3F0 /* WriteNoteView.swift in Sources */,
+				C2950E892A4B6693001E175F /* MiniCollageMenu.swift in Sources */,
+				26AD812B281F119A0069C3F0 /* ConfirmFrontCoverView.swift in Sources */,
+				C208A3FC2A387C1F00F87739 /* AppState.swift in Sources */,
+				26AD8129281F05310069C3F0 /* FinalizeCardView.swift in Sources */,
+				260F68F5281DBDCD002E864B /* OccassionsMenu.swift in Sources */,
+				260F68FA281DBE61002E864B /* PhotoAPI.swift in Sources */,
+				C21EACE02998525000401DC8 /* WebVC.swift in Sources */,
+				C2950E822A4B6221001E175F /* PhotoOptionsView.swift in Sources */,
+				C26890B0299E572900EA63A4 /* SpotPlayerView.swift in Sources */,
+				C23A9D222897ECA90059B97C /* Card.swift in Sources */,
+				C2075AFD295FDBA70048ECEB /* CollageBuilder.swift in Sources */,
+				260F6907281DC0E3002E864B /* LaunchView.swift in Sources */,
+				260F68FC281DBEA0002E864B /* UnsplashResponse.swift in Sources */,
+				C2582A3E296F7171009F8FEC /* AppleMusicAPI.swift in Sources */,
+				26A72180281DB8D500ADAE44 /* Saloo_App.swift in Sources */,
+				C2EC682E2B2E60D500B7EDA3 /* APIManager.swift in Sources */,
+				C271B2E729702D2200760B23 /* AMResponses.swift in Sources */,
+				C26890AC299E571D00EA63A4 /* AMPlayerView.swift in Sources */,
+				C22A84EA29667929001244CC /* SceneDelegate.swift in Sources */,
+				C22A84DF29666C23001244CC /* PersistenceController+Card.swift in Sources */,
+				C2582A3B296E5841009F8FEC /* eCardView.swift in Sources */,
+				C22CAE4A298EAA3F003302C4 /* PrefMenu.swift in Sources */,
+				C22A84DB29666123001244CC /* PersistenceController.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		26A7218D281DB8D900ADAE44 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.2;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				OTHER_LDFLAGS = (
+					ObjC,
+					"-ObjC",
+				);
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		26A7218E281DB8D900ADAE44 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.2;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				OTHER_LDFLAGS = (
+					ObjC,
+					"-ObjC",
+				);
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		26A72190281DB8D900ADAE44 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 93AAAE1CF8AE1CB82C760293 /* Pods-GreetMe-2.debug.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = Saloo/Saloo.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = Saloo/Preview_Content/;
+				DEVELOPMENT_TEAM = 9AVZUF22VY;
+				ENABLE_PREVIEWS = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Saloo",
+				);
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Saloo/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Saloo;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.social-networking";
+				INFOPLIST_KEY_NSAppleMusicUsageDescription = "Access to Music Library to include song previews in greetings cards";
+				INFOPLIST_KEY_NSCameraUsageDescription = "Use Camera for Front Cover Image";
+				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "Add Photos Taken from Camera to Photo Library";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "User Photos for Front Cover";
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 16.2;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.06;
+				OTHER_LDFLAGS = (
+					"-framework",
+					"\"QuartzCore\"",
+					"-framework",
+					"\"UIKit\"",
+					"-ObjC",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.Saloo.saloo;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = "Saloo-Bridging-Header.h";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		26A72191281DB8D900ADAE44 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = EA0978C9D748CE0611B19D5A /* Pods-GreetMe-2.release.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = Saloo/Saloo.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = Saloo/Preview_Content/;
+				DEVELOPMENT_TEAM = 9AVZUF22VY;
+				ENABLE_PREVIEWS = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Saloo",
+				);
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Saloo/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Saloo;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.social-networking";
+				INFOPLIST_KEY_NSAppleMusicUsageDescription = "Access to Music Library to include song previews in greetings cards";
+				INFOPLIST_KEY_NSCameraUsageDescription = "Use Camera for Front Cover Image";
+				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "Add Photos Taken from Camera to Photo Library";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "User Photos for Front Cover";
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 16.2;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.06;
+				OTHER_LDFLAGS = (
+					"-framework",
+					"\"QuartzCore\"",
+					"-framework",
+					"\"UIKit\"",
+					"-ObjC",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.Saloo.saloo;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = "Saloo-Bridging-Header.h";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		26A72177281DB8D500ADAE44 /* Build configuration list for PBXProject "Saloo" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				26A7218D281DB8D900ADAE44 /* Debug */,
+				26A7218E281DB8D900ADAE44 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		26A7218F281DB8D900ADAE44 /* Build configuration list for PBXNativeTarget "Saloo" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				26A72190281DB8D900ADAE44 /* Debug */,
+				26A72191281DB8D900ADAE44 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCVersionGroup section */
+		26A7218A281DB8D900ADAE44 /* Saloo.xcdatamodeld */ = {
+			isa = XCVersionGroup;
+			children = (
+				C2531B2D2A5D6D450096C185 /* SalooNewModel.xcdatamodel */,
+				C2453EC42A5D6CFA00FC15D1 /* Saloo2.0.xcdatamodel */,
+				C2453EC22A5D6CB100FC15D1 /* SalooUpdatedModel.xcdatamodel */,
+				26A7218B281DB8D900ADAE44 /* Saloo.xcdatamodel */,
+			);
+			currentVersion = 26A7218B281DB8D900ADAE44 /* Saloo.xcdatamodel */;
+			path = Saloo.xcdatamodeld;
+			sourceTree = "<group>";
+			versionGroupType = wrapper.xcdatamodel;
+		};
+/* End XCVersionGroup section */
+	};
+	rootObject = 26A72174281DB8D500ADAE44 /* Project object */;
+}

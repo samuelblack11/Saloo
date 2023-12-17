@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="21513" systemVersion="21G72" minimumToolsVersion="Automatic" sourceLanguage="Swift" usedWithCloudKit="YES" userDefinedModelVersionIdentifier="">
+    <entity name="CoreCard" representedClassName=".CoreCard" syncable="YES">
+        <attribute name="an1" optional="YES" attributeType="String"/>
+        <attribute name="an2" optional="YES" attributeType="String"/>
+        <attribute name="an2URL" optional="YES" attributeType="String"/>
+        <attribute name="an3" optional="YES" attributeType="String"/>
+        <attribute name="an4" optional="YES" attributeType="String"/>
+        <attribute name="appleAlbumArtist" optional="YES" attributeType="String"/>
+        <attribute name="appleSongURL" optional="YES" attributeType="String"/>
+        <attribute name="associatedRecord" optional="YES" attributeType="Transformable"/>
+        <attribute name="cardName" optional="YES" attributeType="String"/>
+        <attribute name="cardType" optional="YES" attributeType="String"/>
+        <attribute name="collage" optional="YES" attributeType="Binary"/>
+        <attribute name="coverImage" optional="YES" attributeType="Binary"/>
+        <attribute name="coverSizeDetails" optional="YES" attributeType="String"/>
+        <attribute name="creator" optional="YES" attributeType="String"/>
+        <attribute name="date" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="font" optional="YES" attributeType="String"/>
+        <attribute name="inclMusic" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
+        <attribute name="message" optional="YES" attributeType="String"/>
+        <attribute name="occassion" optional="YES" attributeType="String"/>
+        <attribute name="recipient" optional="YES" attributeType="String"/>
+        <attribute name="recordID" optional="YES" attributeType="String"/>
+        <attribute name="salooUserID" optional="YES" attributeType="String"/>
+        <attribute name="sender" optional="YES" attributeType="String"/>
+        <attribute name="sharedRecordID" optional="YES" attributeType="String"/>
+        <attribute name="songAddedUsing" optional="YES" attributeType="String"/>
+        <attribute name="songAlbumName" optional="YES" attributeType="String"/>
+        <attribute name="songArtImageData" optional="YES" attributeType="Binary"/>
+        <attribute name="songArtistName" optional="YES" attributeType="String"/>
+        <attribute name="songDuration" optional="YES" attributeType="String"/>
+        <attribute name="songID" optional="YES" attributeType="String"/>
+        <attribute name="songName" optional="YES" attributeType="String"/>
+        <attribute name="songPreviewURL" optional="YES" attributeType="String"/>
+        <attribute name="spotAlbumArtist" optional="YES" attributeType="String"/>
+        <attribute name="spotArtistName" optional="YES" attributeType="String"/>
+        <attribute name="spotID" optional="YES" attributeType="String"/>
+        <attribute name="spotImageData" optional="YES" attributeType="Binary"/>
+        <attribute name="spotName" optional="YES" attributeType="String"/>
+        <attribute name="spotPreviewURL" optional="YES" attributeType="String"/>
+        <attribute name="spotSongDuration" optional="YES" attributeType="String"/>
+        <attribute name="spotSongURL" optional="YES" attributeType="String"/>
+        <attribute name="uniqueName" optional="YES" attributeType="String"/>
+        <attribute name="unsplashImageURL" optional="YES" attributeType="String"/>
+    </entity>
+</model>

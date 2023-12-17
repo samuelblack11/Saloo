@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Bucket
+   uuid = "7AF6CDEE-DF24-430C-9914-792646A01D61"
+   type = "0"
+   version = "2.0">
+   <Breakpoints>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "2F818A1A-CD9C-42DE-A57E-E9BFAA6AE8C0"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "GreetMe-2/Menus/ShowPriorCardsView.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "22"
+            endingLineNumber = "22"
+            landmarkName = "ShowPriorCardsView"
+            landmarkType = "14">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "A25BBA1F-711C-4A76-BF62-EF1FC050A98F"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "GreetMe-2/Menus/Outbox.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "44"
+            endingLineNumber = "44"
+            landmarkName = "body"
+            landmarkType = "24">
+            <Locations>
+               <Location
+                  uuid = "A25BBA1F-711C-4A76-BF62-EF1FC050A98F - f55896062971ee73"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(2) await resume partial function for closure #1 @Sendable () async throws -&gt; () in closure #2 () -&gt; () in GreetMe_2.Outbox.body.getter : some"
+                  moduleName = "GreetMe-2"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/samblack/Desktop/iOS%20Developer/GreetMe-2/GreetMe-2/Menus/Outbox.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "44"
+                  endingLineNumber = "44"
+                  offsetFromSymbolStart = "80">
+               </Location>
+               <Location
+                  uuid = "A25BBA1F-711C-4A76-BF62-EF1FC050A98F - f3cf52dd865f36db"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(3) suspend resume partial function for closure #1 @Sendable () async throws -&gt; () in closure #2 () -&gt; () in GreetMe_2.Outbox.body.getter : some"
+                  moduleName = "GreetMe-2"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/samblack/Desktop/iOS%20Developer/GreetMe-2/GreetMe-2/Menus/Outbox.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "41"
+                  endingLineNumber = "41"
+                  offsetFromSymbolStart = "44">
+               </Location>
+               <Location
+                  uuid = "A25BBA1F-711C-4A76-BF62-EF1FC050A98F - 3a20fe29da21be64"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(7) suspend resume partial function for closure #1 @Sendable () async throws -&gt; () in closure #2 () -&gt; () in GreetMe_2.Outbox.body.getter : some"
+                  moduleName = "GreetMe-2"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/samblack/Desktop/iOS%20Developer/GreetMe-2/GreetMe-2/Menus/Outbox.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "44"
+                  endingLineNumber = "44"
+                  offsetFromSymbolStart = "80">
+               </Location>
+               <Location
+                  uuid = "A25BBA1F-711C-4A76-BF62-EF1FC050A98F - ccfea504d1351c65"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(8) suspend resume partial function for closure #1 @Sendable () async throws -&gt; () in closure #2 () -&gt; () in GreetMe_2.Outbox.body.getter : some"
+                  moduleName = "GreetMe-2"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/samblack/Desktop/iOS%20Developer/GreetMe-2/GreetMe-2/Menus/Outbox.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "44"
+                  endingLineNumber = "44"
+                  offsetFromSymbolStart = "80">
+               </Location>
+               <Location
+                  uuid = "A25BBA1F-711C-4A76-BF62-EF1FC050A98F - 5eb451ffc5d96262"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(9) suspend resume partial function for closure #1 @Sendable () async throws -&gt; () in closure #2 () -&gt; () in GreetMe_2.Outbox.body.getter : some"
+                  moduleName = "GreetMe-2"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/samblack/Desktop/iOS%20Developer/GreetMe-2/GreetMe-2/Menus/Outbox.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "44"
+                  endingLineNumber = "44"
+                  offsetFromSymbolStart = "80">
+               </Location>
+               <Location
+                  uuid = "A25BBA1F-711C-4A76-BF62-EF1FC050A98F - 6f8639d9435a1bb7"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(10) suspend resume partial function for closure #1 @Sendable () async throws -&gt; () in closure #2 () -&gt; () in GreetMe_2.Outbox.body.getter : some"
+                  moduleName = "GreetMe-2"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/samblack/Desktop/iOS%20Developer/GreetMe-2/GreetMe-2/Menus/Outbox.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "44"
+                  endingLineNumber = "44"
+                  offsetFromSymbolStart = "80">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+   </Breakpoints>
+</Bucket>
