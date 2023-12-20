@@ -33,9 +33,9 @@ struct ConfirmFrontCoverView: View {
                             .padding(.top, 50)
                         VStack(spacing: 0) {
                             Text("Photo By ").font(Font.custom("Papyrus", size: 16))
-                            Link(String(chosenObject.coverImagePhotographer), destination: URL(string: "https://unsplash.com/@\(chosenObject.coverImageUserName)")!).font(Font.custom("Papyrus", size: 16))
+                            Link(String(chosenObject.coverImagePhotographer), destination: URL(string: "https://unsplash.com/@\(chosenObject.coverImageUserName)?utm_source=salooGreetings&utm_medium=referral")!).font(Font.custom("Papyrus", size: 16))
                             Text(" On ").font(Font.custom("Papyrus", size: 16))
-                            Link("Unsplash", destination: URL(string: "https://unsplash.com")!).font(Font.custom("Papyrus", size: 16))
+                            Link("Unsplash", destination: URL(string: "https://unsplash.com?utm_source=salooGreetings&utm_medium=referral")!).font(Font.custom("Papyrus", size: 16))
                         }
                         Spacer()
                         

@@ -112,16 +112,16 @@ struct PrefMenu: View {
                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.3){getAMUserTokenAndStoreFront{}}
                     }
                 }
-                Divider()
-                HStack{
-                    Image("SpotifyLogo")
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: UIScreen.main.bounds.width/divideByVal, height: listItemHeight)
-                        .clipped()
-                }
-                .frame(height: listItemHeight)
-                .onTapGesture {spotAuthLogic()}
+                //Divider()
+                //HStack{
+                //    Image("SpotifyLogo")
+                //        .resizable()
+                //        .scaledToFit()
+                //        .frame(width: UIScreen.main.bounds.width/divideByVal, height: listItemHeight)
+                //        .clipped()
+                //}
+                //.frame(height: listItemHeight)
+                //.onTapGesture {spotAuthLogic()}
                 Divider()
                 Text("None")
                     .font(Font.custom("Papyrus", size: 24))
@@ -169,10 +169,10 @@ struct PrefMenu: View {
             Button(action: {
                 openAppOrAppStore(scheme: "music://", appStore: "https://apps.apple.com/app/spotify-music-and-podcasts/id324684580")
             }) {Text("Visit the Music App")}
-            Divider()
-            Button(action: {
-                openAppOrAppStore(scheme: "spotify://", appStore: "https://apps.apple.com/app/spotify-music-and-podcasts/id324684580")
-            }) {Text("Visit the Spotify App")}
+            //Divider()
+            //Button(action: {
+            //    openAppOrAppStore(scheme: "spotify://", appStore: "https://apps.apple.com/app/spotify-music-and-podcasts/id324684580")
+            //}) {Text("Visit the Spotify App")}
         }
     }
 

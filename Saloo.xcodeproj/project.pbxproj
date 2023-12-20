@@ -42,6 +42,7 @@
 		C2582A3E296F7171009F8FEC /* AppleMusicAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2582A3D296F7171009F8FEC /* AppleMusicAPI.swift */; };
 		C26890AC299E571D00EA63A4 /* AMPlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C26890AB299E571D00EA63A4 /* AMPlayerView.swift */; };
 		C26890B0299E572900EA63A4 /* SpotPlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C26890AF299E572900EA63A4 /* SpotPlayerView.swift */; };
+		C26A01942B2FB5850038FAFD /* MSAL in Frameworks */ = {isa = PBXBuildFile; productRef = C26A01932B2FB5850038FAFD /* MSAL */; };
 		C271B2E729702D2200760B23 /* AMResponses.swift in Sources */ = {isa = PBXBuildFile; fileRef = C271B2E629702D2200760B23 /* AMResponses.swift */; };
 		C27430FC286335F000E17B19 /* CameraCapture.swift in Sources */ = {isa = PBXBuildFile; fileRef = C27430FB286335F000E17B19 /* CameraCapture.swift */; };
 		C2764CEB2A06A9CA0083819B /* CleanMusicData.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2764CEA2A06A9CA0083819B /* CleanMusicData.swift */; };
@@ -128,6 +129,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				C2B650CA287AFFF90002E252 /* CloudKit.framework in Frameworks */,
+				C26A01942B2FB5850038FAFD /* MSAL in Frameworks */,
 				C225A84B29873B4D008FC699 /* SpotifyiOS.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -341,6 +343,7 @@
 			);
 			name = Saloo;
 			packageProductDependencies = (
+				C26A01932B2FB5850038FAFD /* MSAL */,
 			);
 			productName = "GreetMe-2";
 			productReference = 26A7217C281DB8D500ADAE44 /* Saloo.app */;
@@ -371,6 +374,7 @@
 			);
 			mainGroup = 26A72173281DB8D500ADAE44;
 			packageReferences = (
+				C26A01922B2FB5850038FAFD /* XCRemoteSwiftPackageReference "microsoft-authentication-library-for-objc" */,
 			);
 			productRefGroup = 26A7217D281DB8D500ADAE44 /* Products */;
 			projectDirPath = "";
@@ -632,10 +636,12 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = Saloo/Saloo.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_STYLE = Manual;
+				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_ASSET_PATHS = Saloo/Preview_Content/;
-				DEVELOPMENT_TEAM = 9AVZUF22VY;
+				DEVELOPMENT_TEAM = "";
+				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = 9AVZUF22VY;
 				ENABLE_PREVIEWS = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -658,7 +664,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.06;
+				MARKETING_VERSION = 2.0;
 				OTHER_LDFLAGS = (
 					"-framework",
 					"\"QuartzCore\"",
@@ -669,6 +675,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.Saloo.saloo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = Sam;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_OBJC_BRIDGING_HEADER = "Saloo-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
@@ -684,10 +691,12 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = Saloo/Saloo.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_STYLE = Manual;
+				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_ASSET_PATHS = Saloo/Preview_Content/;
-				DEVELOPMENT_TEAM = 9AVZUF22VY;
+				DEVELOPMENT_TEAM = "";
+				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = 9AVZUF22VY;
 				ENABLE_PREVIEWS = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -710,7 +719,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.06;
+				MARKETING_VERSION = 2.0;
 				OTHER_LDFLAGS = (
 					"-framework",
 					"\"QuartzCore\"",
@@ -721,6 +730,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.Saloo.saloo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = Sam;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_OBJC_BRIDGING_HEADER = "Saloo-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
@@ -750,6 +760,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		C26A01922B2FB5850038FAFD /* XCRemoteSwiftPackageReference "microsoft-authentication-library-for-objc" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/AzureAD/microsoft-authentication-library-for-objc.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.0.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		C26A01932B2FB5850038FAFD /* MSAL */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = C26A01922B2FB5850038FAFD /* XCRemoteSwiftPackageReference "microsoft-authentication-library-for-objc" */;
+			productName = MSAL;
+		};
+/* End XCSwiftPackageProductDependency section */
 
 /* Begin XCVersionGroup section */
 		26A7218A281DB8D900ADAE44 /* Saloo.xcdatamodeld */ = {

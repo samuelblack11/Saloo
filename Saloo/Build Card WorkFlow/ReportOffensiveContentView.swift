@@ -44,58 +44,58 @@ struct ReportOffensiveContentView: View {
     }
     
     func sendReportToAzure(report: Report) {
-        // The URL of your Azure Function
+        // Retrieve the HTTP Auth token from the APIManager's shared instance
+        guard let httpAuthToken = APIManager.shared.httpAuthToken else {
+            print("HTTP Auth Token is not available")
+            return
+        }
+
         let urlString = "https://salooreportoffensivecontent.azurewebsites.net/api/SalooReportOffensiveContent"
-        
         guard let url = URL(string: urlString) else {
             return
         }
-        
+
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
-        // Your Report object would need to be converted to JSON
         let encoder = JSONEncoder()
         guard let reportData = try? encoder.encode(report) else {
             return
         }
+
         request.httpBody = reportData
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
-        
+        request.addValue("Bearer \(httpAuthToken)", forHTTPHeaderField: "Authorization")  // Use the HTTP Auth token
+
         URLSession.shared.dataTask(with: request) { data, response, error in
             if let data = data {
                 let str = String(data: data, encoding: .utf8)
                 print("Response data: \(str ?? "")")
             }
-            
-            // check for fundamental networking error
+
             guard error == nil else {
                 print("Error: \(error!.localizedDescription)")
                 return
             }
-            
-            // check for http errors
+
             if let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode != 200 {
                 print("HTTP Error: \(httpResponse.statusCode)")
                 return
             }
-            
-            // check for data
+
             guard let data = data else {
                 print("No data received.")
                 return
             }
-            
+
             do {
-                // if you're expecting a JSON response, you can convert it to a Swift object here
-                //let responseObj = try JSONDecoder().decode(SomeType.self, from: data)
-                //print("Response: \(responseObj)")
+                // Process response data if needed
             } catch let parseError {
                 print("Parsing Error: \(parseError)")
             }
-            
-        }.resume()
 
+        }.resume()
     }
+
     
     func createReportObject(userName: String, userEmail: String, userComments: String, card: CoreCard) -> Report {
         let report = Report(userName: userName, userEmail: userEmail, userComments: userComments, salooUserID: card.salooUserID,

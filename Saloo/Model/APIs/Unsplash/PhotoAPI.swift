@@ -18,21 +18,21 @@ class PhotoAPI {
         case pingDownloadForTrigger(apiKey: String, downloadLocation: String)
         case user(apiKey: String, user: String)
         case collectionPhotos(apiKey: String, collectionID: String, page_num: Int)
-
-        var URLString: String{
+        var URLString: String {
+            let utmParameters = "?utm_source=salooGreetings&utm_medium=referral"
             switch self {
-                case .searchedWords(let apiKey, let page_num, let userSearch ):
-                return "https://api.unsplash.com/search/photos?" + "page=\(page_num)&per_page=50&query=\(userSearch)&client_id=\(apiKey)"
-                case .pingDownloadForTrigger(let apiKey, let downloadLocation):
-                    return downloadLocation + "&client_id=\(apiKey)"
-                case .collection(let apiKey, let page_num, let collectionID ):
-                    return "https://api.unsplash.com/search/photos?" + "id=\(collectionID)&page=\(page_num)&per_page=50&client_id=\(apiKey)"
-                case .user(let apiKey, let user):
-                    return "https://api.unsplash.com/users/\(user)/collections?&client_id=\(apiKey)"
-                case .collectionPhotos(let apiKey, let collectionID, let page_num):
-                    return "https://api.unsplash.com/collections/\(collectionID)/photos?page=\(page_num)&per_page=100&client_id=\(apiKey)"
-                }
+            case .searchedWords(let apiKey, let page_num, let userSearch):
+                return "https://api.unsplash.com/search/photos?page=\(page_num)&per_page=50&query=\(userSearch)&client_id=\(apiKey)" + utmParameters
+            case .pingDownloadForTrigger(let apiKey, let downloadLocation):
+                return downloadLocation + "&client_id=\(apiKey)" + utmParameters
+            case .collection(let apiKey, let page_num, let collectionID):
+                return "https://api.unsplash.com/search/photos?id=\(collectionID)&page=\(page_num)&per_page=50&client_id=\(apiKey)" + utmParameters
+            case .user(let apiKey, let user):
+                return "https://api.unsplash.com/users/\(user)/collections?client_id=\(apiKey)" + utmParameters
+            case .collectionPhotos(let apiKey, let collectionID, let page_num):
+                return "https://api.unsplash.com/collections/\(collectionID)/photos?page=\(page_num)&per_page=100&client_id=\(apiKey)" + utmParameters
             }
+        }
         var url: URL{ return URL(string: URLString)!}
     }
     class func getUserCollections(username: String, completionHandler: @escaping ([PhotoCollection]?,Error?) -> Void) {

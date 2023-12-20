@@ -161,7 +161,7 @@ extension WriteNoteView {
         if chosenObject.frontCoverIsPersonalPhoto == 0 {
             annotation.text1 = "Photograph by"
             annotation.text2 = String(chosenObject.coverImagePhotographer)
-            annotation.text2URL = URL(string: "https://unsplash.com/@\(chosenObject.coverImageUserName)")!
+            annotation.text2URL = URL(string: "https://unsplash.com/@\(chosenObject.coverImageUserName)?utm_source=salooGreetings&utm_medium=referral")!
             annotation.text3 = " On "
             annotation.text4 = "Unsplash"
         }
@@ -187,40 +187,52 @@ extension WriteNoteView {
     static let endpoint = "https://saloocontentmoderator2.cognitiveservices.azure.com/"
     static let textModerationEndpoint = "https://eastus.api.cognitive.microsoft.com/contentmoderator/moderate/v1.0/ProcessText/Screen"
     static let textBase = endpoint + "contentmoderator/moderate/v1.0/ProcessText/Screen?classify=true"
+
     static func checkTextForOffensiveContent(text: String, completion: @escaping (Bool?, Error?) -> Void) {
-        // Endpoint for Microsoft's Content Moderator API (text moderation)
-        guard let url = URL(string: textBase) else { return }
-        DispatchQueue.main.async{GettingRecord.shared.isLoadingAlert = true}
-        // Prepare the URL request
+        // Retrieve the HTTP Auth token from the APIManager's shared instance
+        guard let httpAuthToken = APIManager.shared.httpAuthToken else {
+            DispatchQueue.main.async {
+                GettingRecord.shared.isLoadingAlert = false
+                completion(nil, NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "HTTP Auth Token is not available"]))
+            }
+            return
+        }
+
+        guard let url = URL(string: textBase) else {
+            DispatchQueue.main.async {
+                GettingRecord.shared.isLoadingAlert = false
+                completion(nil, NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Invalid URL"]))
+            }
+            return
+        }
+
+        DispatchQueue.main.async { GettingRecord.shared.isLoadingAlert = true }
+
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.httpBody = text.data(using: .utf8) // Send the text directly as data
         request.addValue("text/plain", forHTTPHeaderField: "Content-Type")
+        request.addValue("Bearer \(httpAuthToken)", forHTTPHeaderField: "Authorization")  // Use the HTTP Auth token
         request.addValue(APIManager.shared.contentModSubKey, forHTTPHeaderField: "Ocp-Apim-Subscription-Key")
-        // Make the request
+
         let task = URLSession.shared.dataTask(with: request) { data, response, error in
+            DispatchQueue.main.async { GettingRecord.shared.isLoadingAlert = false }
             guard let data = data, error == nil else {
                 completion(nil, error)
                 return
             }
-            
-            let responseDataString = String(data: data, encoding: .utf8)
             do {
                 if let responseData = try JSONSerialization.jsonObject(with: data) as? [String: Any],
                    let classification = responseData["Classification"] as? [String: Any],
-                   
                    let category1 = classification["Category1"] as? [String: Any],
                    let score1 = category1["Score"] as? Double,
-                   
                    let category2 = classification["Category2"] as? [String: Any],
                    let score2 = category2["Score"] as? Double,
-                   
                    let category3 = classification["Category3"] as? [String: Any],
                    let score3 = category3["Score"] as? Double {
                     let maxScore = max(score1, score2, score3)
-                    // seems to max out at 0.98799 with something particularly offensive
-                    if maxScore >= 0.99 {completion(true, nil)}
-                    else{completion(false,nil)}
+                    if maxScore >= 0.99 { completion(true, nil) }
+                    else { completion(false, nil) }
                 } else {
                     let error = NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Failed to parse JSON or extract classification scores"])
                     completion(false, error)
@@ -231,4 +243,5 @@ extension WriteNoteView {
         }
         task.resume()
     }
+
 }

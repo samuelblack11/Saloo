@@ -2,41 +2,6 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>CFBundleURLTypes</key>
-	<array>
-		<dict>
-			<key>CFBundleURLName</key>
-			<string></string>
-			<key>CFBundleURLSchemes</key>
-			<array>
-				<string>spotify</string>
-			</array>
-		</dict>
-		<dict>
-			<key>CFBundleURLName</key>
-			<string></string>
-			<key>CFBundleURLSchemes</key>
-			<array>
-				<string>spotify</string>
-			</array>
-		</dict>
-		<dict>
-			<key>CFBundleURLName</key>
-			<string>com.Saloo.saloo</string>
-			<key>CFBundleURLSchemes</key>
-			<array>
-				<string>saloo</string>
-			</array>
-		</dict>
-		<dict>
-			<key>CFBundleURLName</key>
-			<string>com.spotify.iOS-SDK-Quick-Start</string>
-			<key>CFBundleURLSchemes</key>
-			<array>
-				<string>spotify-ios-quick-start</string>
-			</array>
-		</dict>
-	</array>
 	<key>CKSharingSupported</key>
 	<true/>
 	<key>LSApplicationQueriesSchemes</key>

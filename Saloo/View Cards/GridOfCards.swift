@@ -231,23 +231,23 @@ extension GridofCards {
         }
     
     func createLink(uniqueName: String) {
-        var components = URLComponents()
-        components.scheme = "https"
-        components.host = "saloocardshare.azurewebsites.net"
-        
-        let queryItems = [
-            URLQueryItem(name: "uniqueName", value: uniqueName)
-        ]
-        
-        components.queryItems = queryItems
+          var components = URLComponents()
+          components.scheme = "https"
+          components.host = "saloocardshare.azurewebsites.net"
+          
+          let queryItems = [
+              URLQueryItem(name: "uniqueName", value: uniqueName)
+          ]
+          
+          components.queryItems = queryItems
 
-        if let richLinkURL = components.url {
-            linkURL.linkURL = richLinkURL.absoluteString
-            sendViaMessages(richLinkURL: richLinkURL)
-        } else {
-            print("Failed to create rich link URL")
-        }
-    }
+          if let richLinkURL = components.url {
+              linkURL.linkURL = richLinkURL.absoluteString
+              sendViaMessages(richLinkURL: richLinkURL)
+          } else {
+              print("Failed to create rich link URL")
+          }
+      }
 
 
 

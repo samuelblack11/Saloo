@@ -7,6 +7,7 @@
 import Foundation
 import SwiftUI
 import AuthenticationServices
+import Security
 
 struct LaunchView: View {
     @State var isFirstLaunch: Bool
@@ -105,9 +106,31 @@ struct SignInButtonView: View {
                     .foregroundColor(Color.white)
                     .padding(.bottom, 15)
         }
+        //.onAppear{deleteAllKeychainItems()}
         .padding(.leading, 35)
         .padding(.trailing, 35)
     }
+    
+
+    func deleteAllKeychainItems() {
+        let secItemClasses = [kSecClassGenericPassword,
+                              kSecClassInternetPassword,
+                              kSecClassCertificate,
+                              kSecClassKey,
+                              kSecClassIdentity]
+        
+        for secItemClass in secItemClasses {
+            let query: [String: Any] = [kSecClass as String: secItemClass]
+            let status = SecItemDelete(query as CFDictionary)
+            
+            if status == errSecSuccess || status == errSecItemNotFound {
+                print("Successfully deleted or no items found for class \(secItemClass)")
+            } else {
+                print("Error deleting items for class \(secItemClass): \(status)")
+            }
+        }
+    }
+
     
 }
 

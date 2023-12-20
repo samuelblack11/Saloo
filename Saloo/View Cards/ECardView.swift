@@ -160,7 +160,7 @@ struct eCardView: View {
                 HStack(spacing: 0) {
                     Text(text3)
                         .font(Font.custom("Papyrus", size: 7))
-                    Link(text4, destination: URL(string: "https://unsplash.com")!)
+                    Link(text4, destination: URL(string: "https://unsplash.com?utm_source=salooGreetings&utm_medium=referral")!)
                         .font(Font.custom("Papyrus", size: 8))
                 }
             }
