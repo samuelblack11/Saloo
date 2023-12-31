@@ -61,6 +61,7 @@ struct Saloo_App: App {
                 .environmentObject(ChosenCoreCard.shared)
                 .environmentObject(ImageLoader.shared)
                 .environmentObject(CardPrep.shared)
+                .environmentObject(Config.shared)
                 .onChange(of: scenePhase) { newPhase in
                     if newPhase == .active {
                         if UserSession.shared.isSignedIn{

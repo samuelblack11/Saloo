@@ -1068,7 +1068,7 @@ class CollectionManager: ObservableObject {
 
     
     func createOccassionsFromUserCollections() {
-        PhotoAPI.getUserCollections(username: APIManager.shared.unsplashUserName, completionHandler: { (response, error) in
+        PhotoAPI.getUserCollections(username: Config.shared.unsplashUserName, completionHandler: { (response, error) in
             if response != nil {
                 var allCollections = [CollectionPair2]()
 
@@ -1085,6 +1085,7 @@ class CollectionManager: ObservableObject {
                     self.collections = allCollections
                 }
             } else if error != nil {
+                print("error creating collections...")
                 debugPrint(error?.localizedDescription)
             }
         })

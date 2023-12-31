@@ -1,0 +1,19 @@
+{
+  "name": "azure-keyvault-node-app",
+  "version": "1.0.0",
+  "description": "Node.js app to interact with Azure Key Vault",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js"
+  },
+  "engines": {
+    "node": "18.x"
+  },
+  "dependencies": {
+    "@azure/identity": "^1.5.2",
+    "@azure/keyvault-secrets": "^4.3.0",
+    "dotenv": "^16.3.1",
+    "express": "^4.17.1",
+    "express-basic-auth": "^1.2.1"
+  }
+}

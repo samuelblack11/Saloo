@@ -118,7 +118,7 @@ struct SignInButtonView: View {
                               kSecClassCertificate,
                               kSecClassKey,
                               kSecClassIdentity]
-        
+        print("RUnning Delete from Keychain...")
         for secItemClass in secItemClasses {
             let query: [String: Any] = [kSecClass as String: secItemClass]
             let status = SecItemDelete(query as CFDictionary)

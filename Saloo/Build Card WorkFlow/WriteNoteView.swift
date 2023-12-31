@@ -184,19 +184,11 @@ extension WriteNoteView {
     }
     
     
-    static let endpoint = "https://saloocontentmoderator2.cognitiveservices.azure.com/"
-    static let textModerationEndpoint = "https://eastus.api.cognitive.microsoft.com/contentmoderator/moderate/v1.0/ProcessText/Screen"
-    static let textBase = endpoint + "contentmoderator/moderate/v1.0/ProcessText/Screen?classify=true"
+    static let endpoint = Config.shared.contentModEndpoint
+    static let textModerationEndpoint = Config.shared.contentModTextEndpoint
+    static let textBase = endpoint + Config.shared.contentModText
 
     static func checkTextForOffensiveContent(text: String, completion: @escaping (Bool?, Error?) -> Void) {
-        // Retrieve the HTTP Auth token from the APIManager's shared instance
-        guard let httpAuthToken = APIManager.shared.httpAuthToken else {
-            DispatchQueue.main.async {
-                GettingRecord.shared.isLoadingAlert = false
-                completion(nil, NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "HTTP Auth Token is not available"]))
-            }
-            return
-        }
 
         guard let url = URL(string: textBase) else {
             DispatchQueue.main.async {
@@ -212,8 +204,7 @@ extension WriteNoteView {
         request.httpMethod = "POST"
         request.httpBody = text.data(using: .utf8) // Send the text directly as data
         request.addValue("text/plain", forHTTPHeaderField: "Content-Type")
-        request.addValue("Bearer \(httpAuthToken)", forHTTPHeaderField: "Authorization")  // Use the HTTP Auth token
-        request.addValue(APIManager.shared.contentModSubKey, forHTTPHeaderField: "Ocp-Apim-Subscription-Key")
+        request.addValue(Config.shared.contentModSubKey, forHTTPHeaderField: "Ocp-Apim-Subscription-Key")
 
         let task = URLSession.shared.dataTask(with: request) { data, response, error in
             DispatchQueue.main.async { GettingRecord.shared.isLoadingAlert = false }

@@ -161,7 +161,7 @@ extension FinalizeCardView {
     func createLink(uniqueName: String) {
           var components = URLComponents()
           components.scheme = "https"
-          components.host = "saloocardshare.azurewebsites.net"
+          components.host = Config.shared.shareURL
           
           let queryItems = [
               URLQueryItem(name: "uniqueName", value: uniqueName)

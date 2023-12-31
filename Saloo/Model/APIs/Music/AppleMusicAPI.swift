@@ -44,32 +44,27 @@ class AppleMusicAPI {
         return userStoreFront
     }
     
-
-    
     func getUserToken(completionHandler: @escaping (String?, Error?) -> Void) {
         print(APIManager.shared.appleMusicDevToken)
         
         SKCloudServiceController().requestUserToken(forDeveloperToken: APIManager.shared.appleMusicDevToken) { (receivedToken, error) in
-            if let error = error {
-                self.tokenError = true
-                AMAuthError.shared.errorMessage = error.localizedDescription
-                print(AMAuthError.shared.errorMessage)
-                APIManager.shared.getSecret(keyName: "appleMusicDevToken", forceGetFromAzure: true) { token4 in
-                    DispatchQueue.main.async {
-                        completionHandler(nil, error)
-                        APIManager.shared.appleMusicDevToken = token4 ?? ""
-                        //self.getUserToken { (token, error) in
-                        //    print("^^^^^")
-                        //    completionHandler(token, error) // Pass error4 instead of error
-                        //}
-                    }
+            DispatchQueue.main.async {
+                if let error = error {
+                    print("Error getting user token: \(error.localizedDescription)")
+                    // Handle the error more appropriately here
+                    completionHandler(nil, error)
+                } else if let receivedToken = receivedToken {
+                    print("else if receivedToken called")
+                    self.taskToken = receivedToken
+                    completionHandler(receivedToken, nil)
+                } else {
+                    let error = NSError(domain: "YourErrorDomain", code: 0, userInfo: [NSLocalizedDescriptionKey: "Unknown error occurred"])
+                    completionHandler(nil, error)
                 }
-            } else {
-                self.taskToken = receivedToken!
-                completionHandler(receivedToken, nil)
             }
         }
     }
+
 
     
     

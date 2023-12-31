@@ -233,7 +233,7 @@ extension GridofCards {
     func createLink(uniqueName: String) {
           var components = URLComponents()
           components.scheme = "https"
-          components.host = "saloocardshare.azurewebsites.net"
+          components.host = Config.shared.shareURL
           
           let queryItems = [
               URLQueryItem(name: "uniqueName", value: uniqueName)
@@ -252,6 +252,10 @@ extension GridofCards {
 
 
     func sendViaMessages(richLinkURL: URL) {
+        print("---")
+        print(richLinkURL)
+        print(MFMessageComposeViewController.canSendText())
+        print(MFMessageComposeViewController.canSendAttachments())
         if MFMessageComposeViewController.canSendText() && MFMessageComposeViewController.canSendAttachments() {
             let messageComposer = MFMessageComposeViewController()
             messageComposer.body = richLinkURL.absoluteString
@@ -263,8 +267,6 @@ extension GridofCards {
         }
     }
     
-
-
     func sortedCards(_ cards: [CoreCard], sortBy: String) -> [CoreCard] {
         var sortedCards = cards
         if sortBy == "Date (New to Old)" {sortedCards.sort {$0.date > $1.date}}

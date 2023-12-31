@@ -43,6 +43,7 @@
 		C26890AC299E571D00EA63A4 /* AMPlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C26890AB299E571D00EA63A4 /* AMPlayerView.swift */; };
 		C26890B0299E572900EA63A4 /* SpotPlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C26890AF299E572900EA63A4 /* SpotPlayerView.swift */; };
 		C26A01942B2FB5850038FAFD /* MSAL in Frameworks */ = {isa = PBXBuildFile; productRef = C26A01932B2FB5850038FAFD /* MSAL */; };
+		C27137CD2B41AE8500C7A0F4 /* Config.swift in Sources */ = {isa = PBXBuildFile; fileRef = C27137CC2B41AE8500C7A0F4 /* Config.swift */; };
 		C271B2E729702D2200760B23 /* AMResponses.swift in Sources */ = {isa = PBXBuildFile; fileRef = C271B2E629702D2200760B23 /* AMResponses.swift */; };
 		C27430FC286335F000E17B19 /* CameraCapture.swift in Sources */ = {isa = PBXBuildFile; fileRef = C27430FB286335F000E17B19 /* CameraCapture.swift */; };
 		C2764CEB2A06A9CA0083819B /* CleanMusicData.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2764CEA2A06A9CA0083819B /* CleanMusicData.swift */; };
@@ -111,6 +112,7 @@
 		C2582A3D296F7171009F8FEC /* AppleMusicAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppleMusicAPI.swift; sourceTree = "<group>"; };
 		C26890AB299E571D00EA63A4 /* AMPlayerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AMPlayerView.swift; sourceTree = "<group>"; };
 		C26890AF299E572900EA63A4 /* SpotPlayerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpotPlayerView.swift; sourceTree = "<group>"; };
+		C27137CC2B41AE8500C7A0F4 /* Config.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Config.swift; sourceTree = "<group>"; };
 		C271B2E629702D2200760B23 /* AMResponses.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AMResponses.swift; sourceTree = "<group>"; };
 		C27430FB286335F000E17B19 /* CameraCapture.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraCapture.swift; sourceTree = "<group>"; };
 		C2764CEA2A06A9CA0083819B /* CleanMusicData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CleanMusicData.swift; sourceTree = "<group>"; };
@@ -248,6 +250,7 @@
 				C22A5CBE2980B1C1006A0A8B /* Music */,
 				C22A5CBF2980B1DE006A0A8B /* Unsplash */,
 				C2EC682D2B2E60D500B7EDA3 /* APIManager.swift */,
+				C27137CC2B41AE8500C7A0F4 /* Config.swift */,
 			);
 			path = APIs;
 			sourceTree = "<group>";
@@ -477,6 +480,7 @@
 				C27430FC286335F000E17B19 /* CameraCapture.swift in Sources */,
 				C22A180D296D010800A7E9B8 /* MusicSearchView.swift in Sources */,
 				26AD8127281F05160069C3F0 /* WriteNoteView.swift in Sources */,
+				C27137CD2B41AE8500C7A0F4 /* Config.swift in Sources */,
 				C2950E892A4B6693001E175F /* MiniCollageMenu.swift in Sources */,
 				26AD812B281F119A0069C3F0 /* ConfirmFrontCoverView.swift in Sources */,
 				C208A3FC2A387C1F00F87739 /* AppState.swift in Sources */,
@@ -636,12 +640,10 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = Saloo/Saloo.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				CODE_SIGN_STYLE = Manual;
+				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_ASSET_PATHS = Saloo/Preview_Content/;
-				DEVELOPMENT_TEAM = "";
-				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = 9AVZUF22VY;
+				DEVELOPMENT_TEAM = 9AVZUF22VY;
 				ENABLE_PREVIEWS = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -675,7 +677,6 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.Saloo.saloo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
-				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = Sam;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_OBJC_BRIDGING_HEADER = "Saloo-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
@@ -691,12 +692,10 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = Saloo/Saloo.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				CODE_SIGN_STYLE = Manual;
+				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_ASSET_PATHS = Saloo/Preview_Content/;
-				DEVELOPMENT_TEAM = "";
-				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = 9AVZUF22VY;
+				DEVELOPMENT_TEAM = 9AVZUF22VY;
 				ENABLE_PREVIEWS = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -730,7 +729,6 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.Saloo.saloo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
-				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = Sam;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_OBJC_BRIDGING_HEADER = "Saloo-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;

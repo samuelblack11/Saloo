@@ -472,7 +472,11 @@ extension PrefMenu {
             }
             if status == .authorized {
                 amAPI.getUserToken { response, error in
+                    print("RESPONSE")
+                    print(response)
+                    print(error)
                     if response == nil {
+                        print("Response is nil somehow")
                         hideProgressView = true
                         alertVars.alertType = .amAuthFailed
                         alertVars.activateAlert = true

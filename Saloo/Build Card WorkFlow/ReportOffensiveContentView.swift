@@ -44,13 +44,9 @@ struct ReportOffensiveContentView: View {
     }
     
     func sendReportToAzure(report: Report) {
-        // Retrieve the HTTP Auth token from the APIManager's shared instance
-        guard let httpAuthToken = APIManager.shared.httpAuthToken else {
-            print("HTTP Auth Token is not available")
-            return
-        }
 
-        let urlString = "https://salooreportoffensivecontent.azurewebsites.net/api/SalooReportOffensiveContent"
+
+        let urlString = Config.shared.reportOContentURL
         guard let url = URL(string: urlString) else {
             return
         }
@@ -64,7 +60,6 @@ struct ReportOffensiveContentView: View {
 
         request.httpBody = reportData
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.addValue("Bearer \(httpAuthToken)", forHTTPHeaderField: "Authorization")  // Use the HTTP Auth token
 
         URLSession.shared.dataTask(with: request) { data, response, error in
             if let data = data {
