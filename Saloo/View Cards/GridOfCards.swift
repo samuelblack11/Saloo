@@ -252,10 +252,6 @@ extension GridofCards {
 
 
     func sendViaMessages(richLinkURL: URL) {
-        print("---")
-        print(richLinkURL)
-        print(MFMessageComposeViewController.canSendText())
-        print(MFMessageComposeViewController.canSendAttachments())
         if MFMessageComposeViewController.canSendText() && MFMessageComposeViewController.canSendAttachments() {
             let messageComposer = MFMessageComposeViewController()
             messageComposer.body = richLinkURL.absoluteString

@@ -52,7 +52,7 @@ class AppleMusicAPI {
                 if let error = error {
                     print("Error getting user token: \(error.localizedDescription)")
                     // Handle the error more appropriately here
-                    completionHandler(nil, error)
+                    completionHandler("", error)
                 } else if let receivedToken = receivedToken {
                     print("else if receivedToken called")
                     self.taskToken = receivedToken

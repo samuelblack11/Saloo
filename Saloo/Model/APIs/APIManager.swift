@@ -39,7 +39,6 @@ class APIManager: ObservableObject {
         guard let url = URL(string: fullURL) else {
             fatalError("Invalid URL")
         }
-        print("getSecret called for \(keyName), URL: \(fullURL)")
 
         // First, try to get the key from the keychain
         if let storedKey = loadFromKeychain(key: keyName), forceGetFromAzure != true {
@@ -117,15 +116,6 @@ class APIManager: ObservableObject {
                 completion(nil)
                 return
             }
-            
-            if let httpResponse = response as? HTTPURLResponse {
-                print("HTTP Response: \(httpResponse.statusCode)")
-            }
-            
-            if let responseString = String(data: data!, encoding: .utf8) {
-                print("Raw Response: \(responseString)")
-            }
-
 
             guard let data = data else {
                 print("No data received")
@@ -189,8 +179,6 @@ class APIManager: ObservableObject {
         }
         
         let valueData = item as! Data
-        print("loaded from keychain...")
-        print(String(data: valueData, encoding: .utf8))
         return String(data: valueData, encoding: .utf8)
     }
     
@@ -412,14 +400,6 @@ struct ContentModerator {
                 completion(nil, error)
                 return
             }
-            
-            if let httpResponse = response as? HTTPURLResponse {
-                print("HTTP Response Status code: \(httpResponse.statusCode)")
-            }
-            
-            let responseString = String(data: data, encoding: .utf8)
-            print("Response Data: \(responseString ?? "No Data")")
-
             
             do {
                 // Parse the JSON response

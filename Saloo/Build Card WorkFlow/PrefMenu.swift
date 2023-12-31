@@ -457,34 +457,39 @@ extension PrefMenu {
     }
 
     func getAMUserToken(completion: @escaping () -> Void) {
-        SKCloudServiceController.requestAuthorization {(status) in
+        SKCloudServiceController.requestAuthorization { (status) in
             switch status {
-            case .notDetermined:
-                print("Not Determined")
-            case .denied:
-                print("Denied")
-            case .restricted:
-                print("Restricted")
             case .authorized:
                 print("Authorized")
-            @unknown default:
-                print("Unknown Status")
-            }
-            if status == .authorized {
                 amAPI.getUserToken { response, error in
-                    print("RESPONSE")
-                    print(response)
-                    print(error)
-                    if response == nil {
-                        print("Response is nil somehow")
+                    if let error = error {
+                        print("Error getting user token: \(error.localizedDescription)")
+                        // Handle the error appropriately
+                        hideProgressView = true
+                        alertVars.alertType = .amAuthFailed
+                        alertVars.activateAlert = true
+                    } else if let response = response {
+                        print("RESPONSE: \(response)")
+                        // Continue with processing the response
+                    } else {
+                        print("Response is nil and no error was provided")
                         hideProgressView = true
                         alertVars.alertType = .amAuthFailed
                         alertVars.activateAlert = true
                     }
-                completion()
+                    completion()
                 }
-            }
-            else {
+            case .notDetermined:
+                print("Not Determined")
+                fallthrough // To handle common behavior for non-authorized statuses
+            case .denied, .restricted:
+                print("Access Denied or Restricted")
+                hideProgressView = true
+                alertVars.alertType = .amAuthFailed
+                alertVars.activateAlert = true
+                completion()
+            @unknown default:
+                print("Unknown Status")
                 hideProgressView = true
                 alertVars.alertType = .amAuthFailed
                 alertVars.activateAlert = true
@@ -494,28 +499,41 @@ extension PrefMenu {
     }
 
     func getAMStoreFront(completion: @escaping () -> Void) {
-        SKCloudServiceController.requestAuthorization {(status) in
+        SKCloudServiceController.requestAuthorization { (status) in
             if status == .authorized {
-                amAPI.fetchUserStorefront(userToken: amAPI.taskToken!) { response, error in
-                    amAPI.storeFrontID = response!.data[0].id
-                    currentSubSelection = "Apple Music"
-                    appDelegate.musicSub.type = .Apple
-                    defaults.set("Apple Music", forKey: "MusicSubType")
-                    hideProgressView = true
-                    alertVars.alertType = .musicAuthSuccessful
-                    alertVars.activateAlert = true
-                    appState.currentScreen = .startMenu
+                guard let userToken = amAPI.taskToken else {
+                    // Handle the case where taskToken is nil
+                    print("Error: taskToken is nil")
+                    // Set appropriate error handling here
+                    return
+                }
+                amAPI.fetchUserStorefront(userToken: userToken) { response, error in
+                    if let response = response {
+                        amAPI.storeFrontID = response.data[0].id
+                        currentSubSelection = "Apple Music"
+                        appDelegate.musicSub.type = .Apple
+                        defaults.set("Apple Music", forKey: "MusicSubType")
+                        hideProgressView = true
+                        alertVars.alertType = .musicAuthSuccessful
+                        alertVars.activateAlert = true
+                        appState.currentScreen = .startMenu
+                    } else {
+                        // Handle the case where response is nil or there is an error
+                        print("Error fetching user storefront: \(error?.localizedDescription ?? "Unknown error")")
+                        // Set appropriate error handling here
+                    }
                     completion()
                 }
-            }
-            else {
+            } else {
                 currentSubSelection = "Neither"
                 appDelegate.musicSub.type = .Neither
                 alertVars.alertType = .amAuthFailed
                 alertVars.activateAlert = true
+                // Call completion here if needed
             }
         }
     }
+
 
     func checkAMTokenError(completion: @escaping () -> Void) {
         Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { timer in
