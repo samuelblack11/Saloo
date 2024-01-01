@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>A Greeting From Saloo</title>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="A Greeting from Saloo" />
+    <meta property="og:description" content="Saloo Landing Page" />
+    <meta property="og:image" content="https://sampleurl.com/logoimage/logo1024.png"/>
+    <style>
+        body {
+            background-color: #393E5E;
+            font-family: Arial, sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            flex-direction: column;
+        }
+        .header-text {
+            color: #FFFFFF;
+            font-size: 3em; /* Increased font size for the header */
+            margin-bottom: 0.5em;
+        }
+        .app-link {
+            color: #FFFFFF;
+            font-size: 2.3em; /* Smaller font size for hyperlinked text */
+            margin-bottom: 1em;
+        }
+        .app-link a {
+            color: #FFFFFF;
+            text-decoration: underline;
+        }
+        .app-link a:hover {
+            color: #dddddd;
+        }
+        .logo {
+            width: 80%;
+            max-width: 600px;
+        }
+    </style>
+    <meta property="og:url" content="https://sampleurl.com/"/>
+    <script>
+        function openApp() {
+            var urlParams = new URLSearchParams(window.location.search);
+            var uniqueName = urlParams.get('uniqueName');
+            if(uniqueName) {
+                window.location.href = 'saloo://?uniqueName=' + uniqueName;
+            }
+        }
+    </script>
+</head>
+<body>
+    <div class="header-text">View your Card in the App</div>
+    <div class="app-link">
+        <a href="#" onclick="openApp()">Open in Saloo</a>
+    </div>
+    <div class="app-link">Don't have the app? Download it 
+        <a href="http://apps.apple.com/us/app/saloo-greetings/idnumber?mt=8">here</a>
+    </div>
+    <img class="logo" src="https://sampleurl.com//logoimage/logo1024.png" alt="App Logo">
+</body>
+</html>

@@ -14,14 +14,6 @@
 		</dict>
 		<dict>
 			<key>CFBundleURLName</key>
-			<string></string>
-			<key>CFBundleURLSchemes</key>
-			<array>
-				<string>spotify</string>
-			</array>
-		</dict>
-		<dict>
-			<key>CFBundleURLName</key>
 			<string>com.Saloo.saloo</string>
 			<key>CFBundleURLSchemes</key>
 			<array>

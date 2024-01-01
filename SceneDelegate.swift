@@ -37,9 +37,54 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
               let path = components.path else {
             return
         }
-        // Handle the universal link URL
-        // Use the path to present appropriate content in your app
+
+        // Additional logic to handle the uniqueName parameter
+        if let queryItems = components.queryItems,
+           let uniqueNameItem = queryItems.first(where: { $0.name == "uniqueName" }),
+           let uniqueName = uniqueNameItem.value {
+            // Now you have the uniqueName, handle it as needed
+            fetchRecord(withUniqueName: uniqueName)
+        }
     }
+
+    
+    func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
+        if let url = URLContexts.first?.url {
+            if url.absoluteString == "spotify://" {
+                SpotifyManager.shared.gotToAppInAppStore = true
+                return
+            }
+            else if url.scheme == "saloo" && !url.absoluteString.contains("spotify") {
+                handleIncomingURL(url)
+                return
+            }
+
+            let container = CKContainer.default()
+            container.fetchShareMetadata(with: url) { metadata, error in
+                guard error == nil, let metadata = metadata else {
+                    print("An error occurred: \(error?.localizedDescription ?? "unknown error")")
+                    return
+                }
+            }
+        }
+    }
+
+    
+    
+    private func handleIncomingURL(_ url: URL) {
+        guard url.scheme == "saloo",
+              let components = NSURLComponents(url: url, resolvingAgainstBaseURL: true),
+              let queryItems = components.queryItems else {
+            return
+        }
+
+        if let uniqueNameItem = queryItems.first(where: { $0.name == "uniqueName" }),
+           let uniqueName = uniqueNameItem.value {
+            fetchRecord(withUniqueName: uniqueName)
+        }
+    }
+
+    
     
     func fetchAllCoreCards(completion: @escaping ([CKRecord]?, Error?) -> Void) {
         let predicate = NSPredicate(value: true)
@@ -94,33 +139,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
             if (defaults.object(forKey: "MusicSubType") as? String)! == "Neither" {appDelegate.musicSub.type = .Neither}
         }
     }
-    
-    func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
-        guard let url = URLContexts.first?.url else { return }
-        if url.absoluteString == "spotify://" {
-            SpotifyManager.shared.gotToAppInAppStore = true
-            return
-        }
-        else if url.scheme == "saloo" && !url.absoluteString.contains("spotify") {
-                let uniqueName = url.absoluteString.replacingOccurrences(of: "saloo://", with: "")
-                if !uniqueName.isEmpty {
-                    // handle uniqueName here
-                    // use uniqueName to fetch the required information or do necessary action
-                    fetchRecord(withUniqueName: uniqueName)
-                }
-                return
-            }
-
-
-        let container = CKContainer.default()
-        container.fetchShareMetadata(with: url) { metadata, error in
-            guard error == nil, let metadata = metadata else {
-                print("An error occurred: \(error?.localizedDescription ?? "unknown error")")
-                return
-            }
-        }
-    }
-    
     
     func fetchRecord(withUniqueName uniqueName: String) {
         DispatchQueue.main.async{GettingRecord.shared.isLoadingAlert = true}

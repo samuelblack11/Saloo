@@ -61,7 +61,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, ObservableObject {
                      options: UIScene.ConnectionOptions) -> UISceneConfiguration {
         let configuration = UISceneConfiguration(name: "Default Configuration", sessionRole: connectingSceneSession.role)
         configuration.delegateClass = SceneDelegate.self
-        print("connecting scene session....")
         return configuration
     }
 }

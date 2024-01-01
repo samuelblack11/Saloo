@@ -1,12 +1,12 @@
 {
-  "name": "your-app-name",
+  "name": "Saloo",
   "version": "1.0.0",
-  "description": "A simple Node.js app converted from Flask",
+  "description": "Host WebPage for Greeting Card Redirect",
   "main": "app.js",
   "scripts": {
     "start": "node app.js"
   },
-  "author": "Your Name",
+  "author": "Sam",
   "license": "ISC",
   "dependencies": {
     "express": "^4.17.1",
