@@ -61,8 +61,6 @@ class APIManager: ObservableObject {
 
     func fetchAndUpdateKeyFromAzure(url: URL, keyName: String, completion: @escaping (String?) -> Void) {
         self.fetchSecretFromURL(url: url) { value in
-            print("----")
-            print(value)
             if let value = value {
                 self.saveToKeychain(key: keyName, value: value)
                 completion(value)
@@ -183,14 +181,11 @@ class APIManager: ObservableObject {
     }
     
     func initializeAM(completion: @escaping () -> Void) {
-        print("Initializing AM...")
-
         self.getSecret(keyName: "appleMusicDevToken", forceGetFromAzure: false) { keyval in
             if let keyValue = keyval {
                 print("Received key from initial getSecret call.")
                 DispatchQueue.main.async {
                     self.appleMusicDevToken = keyValue
-                    print("Apple Music Dev Token set: \(self.appleMusicDevToken)")
                     completion()
                 }
             } else {
@@ -198,7 +193,6 @@ class APIManager: ObservableObject {
                 self.getSecret(keyName: "appleMusicDevToken", forceGetFromAzure: true) { keyval2 in
                     DispatchQueue.main.async {
                         self.appleMusicDevToken = keyval2 ?? ""
-                        print("Apple Music Dev Token set after forceGetFromAzure: \(self.appleMusicDevToken)")
                         completion()
                     }
                 }
@@ -212,7 +206,7 @@ class APIManager: ObservableObject {
             self.getSecret(keyName: "spotClientIdentifier", forceGetFromAzure: false) { keyval in
                 DispatchQueue.main.async {
                 self.spotClientIdentifier = keyval!
-                    self.getSecret(keyName: "spotSecretKey", forceGetFromAzure: false){keyval in print("spotSecretKey is \(String(describing: keyval))")
+                    self.getSecret(keyName: "spotSecretKey", forceGetFromAzure: false){keyval in
                         self.spotSecretKey = keyval!
                         SpotifyManager.shared.initializeConfiguration()
                         completion()
@@ -247,7 +241,6 @@ class APIManager: ObservableObject {
 
         let task = URLSession.shared.dataTask(with: request) { _, response, _ in
             if let httpResponse = response as? HTTPURLResponse {
-                print("verified unsplash key...")
                 completion(httpResponse.statusCode == 200)
             } else {
                 completion(false)
