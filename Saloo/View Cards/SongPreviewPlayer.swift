@@ -91,12 +91,8 @@ struct SongPreviewPlayer: View {
     @EnvironmentObject var appState: AppState
     @State private var showLoginView = false
 
-    
-    //@State var audioManager = AudioSessionManager()
     var body: some View {
-        //NavigationView {
         PreviewPlayerView()
-        //}
             .onAppear {
                 if songPreviewURL == nil || songPreviewURL!.isEmpty {chosenCard?.cardType = "noMusicNoGift"}
                 startCheckingPlaybackState()
@@ -133,7 +129,6 @@ struct SongPreviewPlayer: View {
     }
     
     func createPlayer() {
-        //let sessionManager = AudioSessionManager.shared
         do {
             try audioManager.activateAudioSession()
             let playerItem = AVPlayerItem(url: URL(string: songPreviewURL!)!)
@@ -152,15 +147,12 @@ struct SongPreviewPlayer: View {
                 case .paused, .waitingToPlayAtSpecifiedRate:
                     self.isPlaying = false
                 @unknown default:
-                    // Handle any future cases.
                     print("Unknown AVPlayer timeControlStatus.")
                 }
             } else {self.isPlaying = false}
         }
     }
     
-    
-
     func PreviewPlayerView() -> some View {
         let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
         return  VStack(alignment: .center) {
@@ -209,11 +201,7 @@ struct SongPreviewPlayer: View {
             }
             ProgressView(value: songProgress, total: Double(30))
                 .onReceive(timer) {_ in
-                    
-                    //if songProgress < 30 && avPlayer.player!.timeControlStatus.rawValue == 2 {songProgress += 1}
                     songProgress = CMTimeGetSeconds(avPlayer.player!.currentItem?.currentTime() ?? .zero) + 1
-                    //if songProgress < 30 && avPlayer.player!.timeControlStatus.rawValue == 2 {songProgress = CMTimeGetSeconds(avPlayer.player!.currentItem?.currentTime() ?? .zero)}
-                    //print("Song Progress: \(songProgress)")
                 }
             HStack{
                 Text(convertToMinutes(seconds:Int(songProgress)))
@@ -236,12 +224,4 @@ struct SongPreviewPlayer: View {
         let completeTime = String("\(m):\(s)")
         return completeTime
     }
-    
-    //func convertToMinutes(seconds: Int) -> String {
-    //    let m = seconds / 60
-    //    let s = seconds % 60
-    //    let completeTime = String(format: "%d:%02d", m, s)
-    //    return completeTime
-    //}
-
 }

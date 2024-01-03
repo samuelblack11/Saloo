@@ -35,8 +35,6 @@ struct eCardView: View {
     @State var songAddedUsing: String?
     @EnvironmentObject var imageLoader: ImageLoader
     @EnvironmentObject var appState: AppState
-
-    //@State var player: AVPlayer?
     @State var selectedPreviewURL: String?
     @State var eCardType: eCardType = .musicNoGift
     @State var cardType: String
@@ -95,7 +93,6 @@ struct eCardView: View {
                 }
             }
         }
-        //.onDisappear{songName = "";spotName = ""}
         .fullScreenCover(isPresented: $showLoginView) {LaunchView(isFirstLaunch: true, isPresentedFromECardView: $showLoginView, cardFromShare: $chosenCard)}
     }
     
@@ -147,33 +144,11 @@ struct eCardView: View {
         }.padding(.horizontal, screenPadding)
     }
     
-    
-    
-    func annotationView() -> some View {
-        return
-        VStack {
-            Text(text1)
-                .font(Font.custom("Papyrus", size: 8))
-            HStack(spacing:0){
-                Link(text2, destination: text2URL)
-                    .font(Font.custom("Papyrus", size: 8))
-                HStack(spacing: 0) {
-                    Text(text3)
-                        .font(Font.custom("Papyrus", size: 7))
-                    Link(text4, destination: URL(string: "https://unsplash.com?utm_source=salooGreetings&utm_medium=referral")!)
-                        .font(Font.custom("Papyrus", size: 8))
-                }
-            }
-        }
-    }
-    
-    
     func CoverView() -> some View {
         VStack {
             primaryPhotoView(aspectRatio: .fit,
                       maxWidth: .infinity,
                       maxHeight: .infinity)
-            //annotationView()
         }
     }
 
@@ -183,25 +158,29 @@ struct eCardView: View {
                 primaryPhotoView(aspectRatio: .fill,
                           maxWidth: geometry.size.width,
                           maxHeight: geometry.size.height)
-                //annotationView()
             }
         }
-        .onAppear{print(unsplashImageURL)}
         .frame(width: UIScreen.main.bounds.width/1.05, height: UIScreen.main.bounds.height / 4.1)
-        .clipped() // This will clip the VStack to its bounds
+        .clipped()
     }
 
 
     func primaryPhotoView(aspectRatio: ContentMode, maxWidth: CGFloat, maxHeight: CGFloat) -> some View {
         Group {
             if unsplashImageURL != "https://salooapp.com" {
-                AsyncImage(url: URL(string: unsplashImageURL!)) { image in
-                    image.resizable()
-                        .aspectRatio(contentMode: aspectRatio)
-                        .frame(maxWidth: maxWidth, maxHeight: maxHeight)
-                        .clipped()
-                } placeholder: {
-                    ProgressView()
+                Button(action: {
+                    if let url = URL(string: "\(text2URL.absoluteString)") {
+                        UIApplication.shared.open(url)
+                    }
+                }) {
+                    AsyncImage(url: URL(string: unsplashImageURL!)) { image in
+                        image.resizable()
+                            .aspectRatio(contentMode: aspectRatio)
+                            .frame(maxWidth: maxWidth, maxHeight: maxHeight)
+                            .clipped()
+                    } placeholder: {
+                        ProgressView()
+                    }
                 }
             } else if let coverUIImage = UIImage(data: coverImageIfPersonal!) {
                 Image(uiImage: coverUIImage)
@@ -219,11 +198,10 @@ struct eCardView: View {
                 primaryPhotoView(aspectRatio: .fill,
                           maxWidth: geometry.size.width,
                           maxHeight: geometry.size.height)
-                //annotationView()
             }
         }
         .frame(width: UIScreen.main.bounds.width/1.05, height: UIScreen.main.bounds.height / 3.2)
-        .clipped() // This will clip the VStack to its bounds
+        .clipped()
     }
 
     func CoverViewTall() -> some View {
@@ -231,7 +209,6 @@ struct eCardView: View {
             primaryPhotoView(aspectRatio: .fit,
                       maxWidth: UIScreen.main.bounds.height / 2.2,
                       maxHeight: UIScreen.main.bounds.height / 2.3)
-            //annotationView()
         }
     }
 
@@ -309,8 +286,6 @@ extension eCardView {
         }
     }
     
-    
-        
         private func string(for permission: CKShare.ParticipantPermission) -> String {
           switch permission {
           case .unknown:

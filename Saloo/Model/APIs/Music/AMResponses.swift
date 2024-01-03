@@ -8,7 +8,6 @@
 import Foundation
 import UIKit
 
-
 struct StoreFront: Decodable {
     let data: StoreFrontData
 }
@@ -30,7 +29,6 @@ struct Attributes: Decodable {
     // must convert to string
     let supportedLanguageTags: [String]
 }
-
 
 struct SongsReponse: Decodable {
     let results: SongResults
@@ -92,11 +90,9 @@ struct AMAlbumData: Decodable {
     let data: [EachAMAlbum]
 }
 
-
 struct EachAMAlbum: Decodable {
     let id: String
     let attributes: AMAlbumAttributes
-    //let relationshiups: AlbumRelationships
 }
 
 struct AMAlbumAttributes: Decodable {
@@ -112,8 +108,6 @@ struct AlbumRelationships: Codable {
 
 struct TrackResponse: Codable {
     let data: [Track]
-    //let href: String?
-    //let next: String?
 }
 
 struct Track: Codable {

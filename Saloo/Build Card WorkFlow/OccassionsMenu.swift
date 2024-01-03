@@ -68,7 +68,6 @@ struct OccassionsMenu: View {
                             }
                             )
                             {Text("Select from Photo Library ")
-                                //.listRowBackground(appDelegate.appColor)
                                     .onTapGesture {self.showCameraCapture = false; self.showImagePicker = true}
                                     .fullScreenCover(isPresented: $showImagePicker){ImagePicker(image: $coverImageFromLibrary, explicitPhotoAlert: $explicitPhotoAlert, isImageLoading: $isImageLoading)}
                                     .onChange(of: coverImageFromLibrary) { _ in loadImage(pic: coverImageFromLibrary!)
@@ -79,7 +78,6 @@ struct OccassionsMenu: View {
                                         chosenOccassion.occassion = "None"; chosenOccassion.collectionID = "None"
                                     }
                                 Text("Take Photo with Camera 📸 ")
-                                //.listRowBackground(appDelegate.appColor)
                                     .onTapGesture {
                                         self.showImagePicker = false
                                         self.showCameraCapture = true
@@ -146,10 +144,6 @@ struct OccassionsMenu: View {
             }
         }
         .modifier(AlertViewMod(showAlert: alertVars.activateAlertBinding, activeAlert: alertVars.alertType))
-
-        //.alert(isPresented: $explicitPhotoAlert) {
-        //    Alert(title: Text("Error"), message: Text("The selected image contains explicit content and cannot be used."), dismissButton: .default(Text("OK")))
-        //}
         .font(.headline)
         .listStyle(GroupedListStyle())
         }
@@ -203,10 +197,7 @@ extension OccassionsMenu {
         let (size, ratio) = getImageSize()
         chosenObject.coverSizeDetails = "\(size.width),\(size.height),\(ratio)"
     }
-
 }
-
-
 
 struct ProgressBar: View {
     @EnvironmentObject var appDelegate: AppDelegate
@@ -251,10 +242,7 @@ struct ProgressBar: View {
                 HStack(spacing: 0) {
                     ForEach(0..<steps.count) { index in
                         Button(action: {
-                            // Call the corresponding action
-                            if index <= cardProgress.maxStep {
-                                self.actions[index](index)
-                            }
+                            if index <= cardProgress.maxStep {self.actions[index](index)}
                         }) {
                             Text(steps[index])
                         }

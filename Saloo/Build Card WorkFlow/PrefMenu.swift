@@ -19,10 +19,8 @@ struct PrefMenu: View {
     @Environment(\.colorScheme) var colorScheme
     @Environment(\.scenePhase) var scenePhase
     @State private var appWentToBackground = false
-
     @EnvironmentObject var appDelegate: AppDelegate
     @EnvironmentObject var sceneDelegate: SceneDelegate
-    //@UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     let defaults = UserDefaults.standard
     @State var currentSubSelection: String
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -34,7 +32,6 @@ struct PrefMenu: View {
     var amAPI = AppleMusicAPI()
     @State private var authCode: String? = ""
     @State private var ranAMStoreFront = false
-    //@State var spotifyAuth = SpotifyAuth()
     @EnvironmentObject var spotifyManager: SpotifyManager
     @State private var tokenCounter = 0
     let config = SPTConfiguration(clientID: APIManager.shared.spotClientIdentifier, redirectURL: URL(string: "saloo://")!)
@@ -224,7 +221,6 @@ struct PrefMenu: View {
             VStack {
                 CustomNavigationBar(onBackButtonTap: {appState.currentScreen = .startMenu}, titleContent: .text("Settings"))
                     .frame(height: 60)                
-                //VStack(alignment: .center, spacing: 10) {subscriptionSection}
                 ZStack {
                     List {
                         Section(header: VStack(alignment: .leading) {
@@ -416,11 +412,6 @@ extension PrefMenu {
         }
     }
     
-    
-    
-    
-    
-    
     func openAppOrAppStore(scheme: String, appStore: String) {
         if let url = URL(string: scheme) {
             UIApplication.shared.open(url, options: [:]) { (success) in
@@ -502,9 +493,7 @@ extension PrefMenu {
         SKCloudServiceController.requestAuthorization { (status) in
             if status == .authorized {
                 guard let userToken = amAPI.taskToken else {
-                    // Handle the case where taskToken is nil
                     print("Error: taskToken is nil")
-                    // Set appropriate error handling here
                     return
                 }
                 amAPI.fetchUserStorefront(userToken: userToken) { response, error in
@@ -518,9 +507,7 @@ extension PrefMenu {
                         alertVars.activateAlert = true
                         appState.currentScreen = .startMenu
                     } else {
-                        // Handle the case where response is nil or there is an error
                         print("Error fetching user storefront: \(error?.localizedDescription ?? "Unknown error")")
-                        // Set appropriate error handling here
                     }
                     completion()
                 }
@@ -529,7 +516,6 @@ extension PrefMenu {
                 appDelegate.musicSub.type = .Neither
                 alertVars.alertType = .amAuthFailed
                 alertVars.activateAlert = true
-                // Call completion here if needed
             }
         }
     }
@@ -551,7 +537,6 @@ extension PrefMenu {
     }
     
  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
 
 }
 extension View {

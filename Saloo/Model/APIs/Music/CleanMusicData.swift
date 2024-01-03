@@ -12,7 +12,6 @@ import SystemConfiguration
 class CleanMusicData {
     @EnvironmentObject var appDelegate: AppDelegate
 
-    
     func compileMusicString(songOrAlbum: String, artist: String?, removeList: [String]) -> String {
         // musicString is songName followed by artistName
         var cleanString = String()
@@ -31,7 +30,6 @@ class CleanMusicData {
         return cleanString
     }
     
-    
     func cleanMusicString(input: String, removeList: [String]) -> String {
 
         var cleanString = removeAccents(from: input)
@@ -41,7 +39,6 @@ class CleanMusicData {
         return cleanString
     }
     
-
     func isNetworkAvailable() -> Bool {
         var zeroAddress = sockaddr_in()
         zeroAddress.sin_len = UInt8(MemoryLayout.size(ofValue: zeroAddress))
@@ -65,15 +62,11 @@ class CleanMusicData {
         
         return (isReachable && !needsConnection)
     }
-
     
-    
-    //func removeArtistsFromSongOrAlbum(songOrAlbum: String, songArtist: String?) -> (String, String) {
     func removeArtistsFromSongOrAlbum(songOrAlbum: String) -> (String, String) {
         var songOrAlbumString = songOrAlbum.replacingOccurrences(of: "[", with: "(").replacingOccurrences(of: "]", with: ")")
         var artistsInSongOrAlbumName = String()
         
-
         let featStrings = ["(feat.", "[feat."]
         let endStrings = [")", "]"]
 
@@ -90,7 +83,6 @@ class CleanMusicData {
                 break
             }
         }
-        //songOrAlbumString = (songOrAlbumString + " " + cleanSongArtistName + artistsInSongOrAlbumName)
         return (songOrAlbumString,artistsInSongOrAlbumName)
     }
     
@@ -112,9 +104,6 @@ class CleanMusicData {
         }
         return result
     }
-
-    
-
     
     func containsSameWords(_ str1: String, _ str2: String) -> Bool {
         // Split both strings into arrays of words
@@ -129,7 +118,6 @@ class CleanMusicData {
         return string.replacingOccurrences(of: pattern, with: " ", options: .regularExpression, range: nil)
         let allowedCharacters = CharacterSet.whitespacesAndNewlines.union(CharacterSet(charactersIn: "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"))
         let newString = string.components(separatedBy: allowedCharacters.inverted).joined(separator: "")
-        //return newString
     }
     
     func removeAccents(from input: String) -> String {

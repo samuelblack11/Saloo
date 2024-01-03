@@ -66,12 +66,12 @@ struct WriteNoteView: View {
                             .font(Font.custom(noteField.font, size: 16))
                         fontMenu
                         Text("Enter the following details to save your card")
-                            .font(.custom("Papyrus", size: 12)) // Adjust size as needed
+                            .font(.custom("Papyrus", size: 12))
                             .foregroundColor(.gray)
                             .textCase(.none)
                             .multilineTextAlignment(.center)
                         Text("This will not appear in the card")
-                            .font(.custom("Papyrus", size: 12)) // Adjust size as needed
+                            .font(.custom("Papyrus", size: 12))
                             .foregroundColor(.gray)
                             .textCase(.none)
                             .multilineTextAlignment(.center)
@@ -202,7 +202,7 @@ extension WriteNoteView {
 
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
-        request.httpBody = text.data(using: .utf8) // Send the text directly as data
+        request.httpBody = text.data(using: .utf8)
         request.addValue("text/plain", forHTTPHeaderField: "Content-Type")
         request.addValue(Config.shared.contentModSubKey, forHTTPHeaderField: "Ocp-Apim-Subscription-Key")
 

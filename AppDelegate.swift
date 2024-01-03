@@ -10,8 +10,6 @@ import SwiftUI
 import CloudKit
 import UIKit
 
-
-
 class AppDelegate: UIResponder, UIApplicationDelegate, ObservableObject {
     @State var acceptedShare: CKShare?
     @State var coreCard: CoreCard?
@@ -20,19 +18,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate, ObservableObject {
     @Published var deferToPreview = false
     @State var gotRecord = false
     @Published var showGrid = false
-    //@Published var chosenGridCard: CoreCard? = nil
     @Published var showProgViewOnAcceptShare = false
     @Published var chosenGridCardType: String?
     var songFilterForSearchRegex = ["\\(live\\)", "\\[live\\]", "live at", "live in", "live from", "\\(mixed\\)", "\\[mixed\\]"]
     var songFilterForMatchRegex = ["\\(live\\)", "\\[live\\]", "live at", "live in", "live from", "\\(mixed\\)", "\\[mixed\\]", "- single", "\\(deluxe\\)", "\\(deluxe edition\\)", "\\- Remastered \\d{4}", "\\- remastered \\d{4}", "\\(remastered\\)", "- Remastered",  "- remastered", "\\- EP", "\\- ep","\\(standard version\\)"]
-
 
     var waitingToAcceptRecord = false
     var counter = 0
     var checkIfRecordAddedToStore = true
     @State var userID = String()
     var whichBoxForCKAccept: InOut.SendReceive?
-
     let appColor = Color("SalooTheme")
     @Published var isLaunchingFromClosed = true
     @Published var isPlayerCreated = false
@@ -65,14 +60,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, ObservableObject {
     }
 }
 
-
 extension Color {
     init(hex: String) {
         let scanner = Scanner(string: hex)
         var rgbValue: UInt64 = 0
-
         scanner.scanHexInt64(&rgbValue)
-
         let red = Double((rgbValue & 0xFF0000) >> 16) / 255.0
         let green = Double((rgbValue & 0x00FF00) >> 8) / 255.0
         let blue = Double(rgbValue & 0x0000FF) / 255.0

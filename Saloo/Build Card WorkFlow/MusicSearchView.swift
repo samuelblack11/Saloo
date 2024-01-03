@@ -21,7 +21,6 @@ struct MusicSearchView: View {
     @State private var songSearch = ""
     @State private var artistSearch = ""
     @State private var albumSearch = ""
-    //@State private var storeFrontID = "us"
     @State private var userToken = ""
     @State private var searchResults: [SongForList] = []
     @EnvironmentObject var networkMonitor: NetworkMonitor
@@ -82,7 +81,7 @@ struct MusicSearchView: View {
                                 Image("SpotifyIcon")
                                     .resizable()
                                     .aspectRatio(contentMode: .fit)
-                                    .frame(height: 24) // height as per your text field
+                                    .frame(height: 24)
                                 Button("Search"){
                                     if networkMonitor.isConnected {searchWithSpotify()}
                                     else {
@@ -134,7 +133,7 @@ struct MusicSearchView: View {
                                 Image(uiImage: UIImage(data: song.artImageData)!)
                                     .resizable()
                                     .aspectRatio(contentMode: .fit)
-                                    .frame(width: 64, height: 64)  // <-- Fixed size
+                                    .frame(width: 64, height: 64)
                                 VStack(alignment: .leading) {
                                     Text(song.name).font(.headline).lineLimit(2)
                                     Text(song.artistName).font(.caption).foregroundColor(.secondary).lineLimit(1)
@@ -181,13 +180,10 @@ struct MusicSearchView: View {
                         .presentationDetents([.fraction(0.435)])
                 }
                 .modifier(AlertViewMod(showAlert: alertVars.activateAlertBinding, activeAlert: alertVars.alertType, alertDismissAction: {
-                // code to dismiss your view
                 showAPV = false
                 }))
-            //environmentObject(spotifyAuth)
             .sheet(isPresented: $showWebView){WebVCView(authURLForView: spotifyManager.authForRedirect, authCode: $authCode)}
         }
-        //.environmentObject(spotifyAuth)
     }
 
 }
@@ -401,7 +397,6 @@ extension MusicSearchView {
                             }
                             let songForList = SongForList(id: song.id, name: song.name, artistName: allArtists, albumName: song.album!.name, artImageData: artResponseforSFL!, durationInMillis: song.duration_ms, isPlaying: false, previewURL: songPrev!, disc_number: song.disc_number, url: (song.external_urls?.spotify!)!)
                             if song.restrictions?.reason == nil {
-                                //if containsString(listOfSubStrings: songKeyWordsToFilterOut, songName: songForList.name) || containsString(listOfSubStrings: songKeyWordsToFilterOut, songName: songForList.albumName) || song.album?.album_type == "single" {
                                 if cleanMusicData.containsString(listOfSubStrings: appDelegate.songFilterForSearchRegex, songName: songForList.name) || cleanMusicData.containsString(listOfSubStrings: appDelegate.songFilterForSearchRegex, songName: songForList.albumName) {
                                     print("Contains prohibited substring")
                                 }
@@ -447,8 +442,6 @@ extension MusicSearchView {
             }
         }
     }
-    
-
     
     func performAMSearch() {
         DispatchQueue.main.async {isLoading = true}
@@ -496,11 +489,9 @@ extension MusicSearchView {
                             alertVars.alertType = .spotNeedPremium
                             alertVars.activateAlert = true
                             DispatchQueue.main.async {isLoading = false}
-                            
                         }
                         else {getSpotAlbum()}
                     }
-                    
                 }}
             }
             else{
@@ -524,7 +515,6 @@ extension MusicSearchView {
             else{
                 alertVars.alertType = .failedConnection
                 alertVars.activateAlert = true
-                
             }
             UIApplication.shared.endEditing()
             showAPV = true
@@ -532,7 +522,6 @@ extension MusicSearchView {
             isPlaying = false
         }
     }
- 
 }
 
 extension UIApplication {
@@ -541,7 +530,6 @@ extension UIApplication {
     }
 }
 
-            
 extension Collection {
     subscript (safe index: Index) -> Element? {
         return indices.contains(index) ? self[index] : nil

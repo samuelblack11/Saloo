@@ -52,19 +52,15 @@ struct StartMenu: View {
                     Text("Welcome To Saloo")
                         .foregroundColor(colorScheme == .dark ? .white : .black)
                         .font(Font.custom("Papyrus", size: 32))
-                        //.font(.system(size: 32))
-                        //.font(.headline)
                         .padding(.top, 10)
                     Text("🎈🎂🥳❤️🥂💍🎓")
                     Text("")
                     Text("Connect with loved ones, share memories")
-                        //.font(.caption)
                         .foregroundColor(colorScheme == .dark ? .white : .black)
                         .font(Font.custom("Papyrus", size: 16))
                         .textCase(.none)
                         .multilineTextAlignment(.center)
                     Text("and celebrate holidays and special occassions")
-                        //.font(.caption)
                         .foregroundColor(colorScheme == .dark ? .white : .black)
                         .font(Font.custom("Papyrus", size: 16))
                         .textCase(.none)
@@ -123,7 +119,6 @@ struct StartMenu: View {
         }
         .modifier(AlertViewMod(showAlert: alertVars.activateAlertBinding, activeAlert: alertVars.alertType, goToSettings: {DispatchQueue.main.async{AppState.shared.currentScreen = .preferences}}, updateMusicLaterPrompt: {DispatchQueue.main.async{alertVars.alertType = .updateMusicSubAnyTime; alertVars.activateAlert = true}}))
             .onAppear {
-                //deleteAllCoreCards()
                 cardProgress.currentStep = 1
                 cardProgress.maxStep = 1
                 if (defaults.object(forKey: "MusicSubType") as? String) != nil {
@@ -143,7 +138,6 @@ extension StartMenu {
         }
         
     }
-    
     
     func deleteCoreCard(coreCard: CoreCard) {
         do {PersistenceController.shared.persistentContainer.viewContext.delete(coreCard);try PersistenceController.shared.persistentContainer.viewContext.save()}

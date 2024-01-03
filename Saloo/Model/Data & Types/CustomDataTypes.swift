@@ -42,7 +42,7 @@ struct CustomNavigationBar: View {
                 .disabled(gettingRecord.isShowingActivityIndicator)
                 .padding(.leading, 10)
             } else {
-                Spacer().frame(width: 80) // Adjust width as needed to balance out spacing if there's no back button.
+                Spacer().frame(width: 80)
             }
 
             Spacer()
@@ -69,7 +69,7 @@ struct CustomNavigationBar: View {
                 }
                 .padding(.trailing, 10)
             } else {
-                Spacer().frame(width: 80) // Adjust width as needed to balance out spacing if there's no right content.
+                Spacer().frame(width: 80)
             }
         }
         .padding(.top, UIApplication.shared.windows.first?.safeAreaInsets.top)
@@ -77,10 +77,6 @@ struct CustomNavigationBar: View {
         .shadow(color: Color.black.opacity(0.1), radius: 2, x: 0, y: 2)
     }
 }
-
-
-
-
 
 struct ChosenCollection {@State var occassion: String!; @State var collectionID: String!}
 class ChosenCoreCard: ObservableObject {
@@ -115,7 +111,6 @@ class NetworkMonitor: ObservableObject {
         monitor.start(queue: queue)
     }
 }
-
 
 struct SongForList: Hashable {
      var id: String
@@ -153,8 +148,6 @@ struct User: Codable {
     let isBanned: Bool
 }
 
-
-
 class CoreCardWrapper: ObservableObject {
     @Published var enableShare = false
     @Published var coreCard = CoreCard()
@@ -167,20 +160,9 @@ class ScreenManager: ObservableObject {
     let ids = Array(1...5)
     // The current index in the ID array
     @Published var currentIndex = 0
-
     var currentId: Int { ids[currentIndex] }
-
-    func advance() {
-        print("Pre-Advance Index \(currentIndex)")
-        currentIndex = (currentIndex + 1) % ids.count
-        print("Post-Advance Index \(currentIndex)")
-    }
+    func advance() {currentIndex = (currentIndex + 1) % ids.count}
 }
-
-
-
-
-
 
 class CardsForDisplay: ObservableObject {
     static let shared = CardsForDisplay()
@@ -196,7 +178,6 @@ class CardsForDisplay: ObservableObject {
         print("Adding card with uniqueName: \(card.uniqueName)")
         switch box {
         case .inbox:
-            //self.inboxCards.forEach {}
             if !self.inboxCards.contains(where: { $0.uniqueName == card.uniqueName }) {
                 self.inboxCards.append(card)
                 self.parseRecord(record: record) { (coreCard, record) in
@@ -214,7 +195,6 @@ class CardsForDisplay: ObservableObject {
             }
         case .outbox:
             print("Current cards in outbox:")
-            //self.outboxCards.forEach {}
             if !self.outboxCards.contains(where: { $0.uniqueName == card.uniqueName }) {
                 self.outboxCards.append(card)
                 self.parseRecord(record: record) { (coreCard, record) in
@@ -231,7 +211,6 @@ class CardsForDisplay: ObservableObject {
             }
         case .draftbox:
             print("Current cards in draftbox:")
-            //self.draftboxCards.forEach {}
             if !self.draftboxCards.contains(where: { $0.uniqueName == card.uniqueName }) {
                 self.draftboxCards.append(card)
             }
@@ -242,7 +221,6 @@ class CardsForDisplay: ObservableObject {
     
     func saveRecord(with record: CKRecord, for database: CKDatabase) {
         var backgroundTask: UIBackgroundTaskIdentifier = .invalid
-        
         backgroundTask = UIApplication.shared.beginBackgroundTask {
             // End the task if time expires.
             UIApplication.shared.endBackgroundTask(backgroundTask)
@@ -255,15 +233,12 @@ class CardsForDisplay: ObservableObject {
             } else {
                 print("Record Saved Successfully to \(database.databaseScope == .public ? "Public" : "Private") Database!")
             }
-            
             // Mark the task as complete and end it.
             UIApplication.shared.endBackgroundTask(backgroundTask)
             backgroundTask = .invalid
         }
     }
 
-    
-    
     func deleteCoreCard(card: CoreCard, box: InOut.SendReceive) {
         if box == .outbox {deleteFromDB(uniqueName: card.uniqueName, dataBase: PersistenceController.shared.cloudKitContainer.publicCloudDatabase)}
         deleteFromDB(uniqueName: card.uniqueName, dataBase: PersistenceController.shared.cloudKitContainer.privateCloudDatabase)
@@ -315,18 +290,6 @@ class CardsForDisplay: ObservableObject {
         }
     }
 
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
     func deleteFromDB(uniqueName: String, dataBase: CKDatabase) {
         let predicate = NSPredicate(format: "CD_uniqueName == %@", uniqueName)
         let query = CKQuery(recordType: "CD_CoreCard", predicate: predicate)
@@ -351,8 +314,6 @@ class CardsForDisplay: ObservableObject {
             }
     }
 
-
-    
     func syncCloudKitAndCoreData() {
         let privateDatabase = PersistenceController.shared.cloudKitContainer.privateCloudDatabase
         let publicDatabase = PersistenceController.shared.cloudKitContainer.publicCloudDatabase
@@ -360,7 +321,6 @@ class CardsForDisplay: ObservableObject {
         syncPublicDatabaseWithCoreData(database: publicDatabase)
     }
 
-    
     func syncPrivateDatabaseWithCoreData(database: CKDatabase) {
         let predicate = NSPredicate(value: true)
         let query = CKQuery(recordType: "CD_CoreCard", predicate: predicate)
@@ -462,9 +422,6 @@ class CardsForDisplay: ObservableObject {
             }
         }
     }
-
-
-
 
     func coreCardToRecord(card: CoreCard, completion: @escaping (CKRecord?) -> Void) {
         let recordID = CKRecord.ID(recordName: card.uniqueName)
@@ -590,7 +547,6 @@ class CardsForDisplay: ObservableObject {
                 self.isLoading = false
                 completion()
             }
-            //}
         }
     }
 
@@ -762,9 +718,6 @@ class ChosenCoverImageObject: ObservableObject {
     @Published var index = Int()
     @Published var frontCoverIsPersonalPhoto = Int()
     @Published var pageCount = 1
-    //func hash(into hasher: inout Hasher) {
-    //    hasher.combine(downloadLocation)
-    //}
 }
 
 class NoteField: ObservableObject  {
@@ -784,7 +737,6 @@ class CardProgress: ObservableObject {
     @Published var currentStep = 1
     @Published var maxStep = 1
 }
-
 
 class MaximumText: ObservableObject {
     // variable for character limit
@@ -831,8 +783,6 @@ class Annotation: ObservableObject {
     @Published var text4 = String()
 }
 
-//class CollageImage: ObservableObject {@Published var collageImage = UIImage()}
-
 class CollageImage: ObservableObject {
     static let shared = CollageImage()
     @Published var chosenStyle = Int()
@@ -844,15 +794,11 @@ class CollageImage: ObservableObject {
 
 }
 
-
 class AddMusic: ObservableObject {
     static let shared = AddMusic()
     @Published var addMusic: Bool = false
     
 }
-
-
-
 
 public class ChosenImages: ObservableObject {
     static let shared = ChosenImages()
@@ -892,7 +838,6 @@ class UserSession: ObservableObject {
     }
 }
 
-
 class UnmanagedPlaceHolder: NSObject {}
 
 class ChosenCollageStyle: ObservableObject {@Published var chosenStyle: Int?}
@@ -926,7 +871,6 @@ class AlertVars: ObservableObject {
     
 }
 
-
 class CollageBlocksAndViews {
 
     func blockForStyle() -> some View {return GeometryReader {geometry in HStack(spacing: 0) {Rectangle().fill(Color.gray).border(Color.black)}}}
@@ -936,7 +880,6 @@ class CollageBlocksAndViews {
     func twoShortOneLong(block: some View) -> some View {return HStack(spacing:0){VStack(spacing:0){block; block}; block}}
     func twoNarrowOneWide(block: some View) -> some View {return VStack(spacing:0){HStack(spacing:0){block; block}; block}}
     func fourPhoto(block: some View) -> some View {return VStack(spacing:0){HStack(spacing:0){block; block}; HStack(spacing:0){block; block}}}
-    
 }
 
 enum ActiveSheet: Identifiable, Equatable {
@@ -962,12 +905,7 @@ enum ActiveSheet: Identifiable, Equatable {
             return "\(self)"
         }
     }
-    
-    
-    
-
 }
-
 
 enum eCardType {
     case musicAndGift
@@ -976,13 +914,11 @@ enum eCardType {
     case noMusicNoGift
 }
 
-
 class CardPrep: ObservableObject {
     static let shared = CardPrep()
     var chosenSong =  ChosenSong()
     var cardType = String()
 }
-
 
 class ImageLoader: ObservableObject {
     static let shared = ImageLoader()
@@ -1007,18 +943,17 @@ class ImageLoader: ObservableObject {
     }
 }
 
-
 class UCVImageObjectModel: ObservableObject {
     @Published var imageObjects: [CoverImageObject] = []
-    
+    //let utmParameters = "?utm_source=salooGreetings&utm_medium=referral"
     func getPhotosFromCollection(collectionID: String, page_num: Int) {
         PhotoAPI.getPhotosFromCollection(collectionID: collectionID, page_num: page_num, completionHandler: { (response, error) in
             if response != nil {
                 DispatchQueue.main.async {
                     for picture in response! {
                         if picture.urls.small != nil && picture.user.username != nil && picture.user.name != nil && picture.links.download_location != nil {
-                            let thisPicture = picture.urls.small
-                            let imageURL = URL(string: thisPicture!)
+                            let thisPicture = picture.urls.small! //+ self.utmParameters
+                            let imageURL = URL(string: thisPicture)
                             let newObj = CoverImageObject.init(coverImage: nil, smallImageURL: imageURL!, coverImagePhotographer: picture.user.name!, coverImageUserName: picture.user.username!, downloadLocation: picture.links.download_location!, index: self.imageObjects.count)
                             self.imageObjects.append(newObj)
                     }}
@@ -1029,10 +964,6 @@ class UCVImageObjectModel: ObservableObject {
         })
     }
 }
-
-
-
-
 
 class CollectionManager: ObservableObject {
     static let shared = CollectionManager()
@@ -1066,7 +997,6 @@ class CollectionManager: ObservableObject {
         "Thinking of You 💭": CollectionType.yearRound
     ]
 
-    
     func createOccassionsFromUserCollections() {
         PhotoAPI.getUserCollections(username: Config.shared.unsplashUserName, completionHandler: { (response, error) in
             if response != nil {
@@ -1091,10 +1021,7 @@ class CollectionManager: ObservableObject {
         })
     }
 
-
-
 }
-
 
 class LinkURL: ObservableObject {
     static let shared = LinkURL()
@@ -1296,7 +1223,6 @@ class SpotPlayerViewDelegate: NSObject, SPTAppRemoteDelegate, SPTAppRemotePlayer
     }
 }
 
-
 import Foundation
 
 class RateLimiter {
@@ -1341,8 +1267,6 @@ class RateLimiter {
         }
     }
 }
-
-
 
 struct CodableCoreCard: Codable, Identifiable {
     var id: String
@@ -1398,12 +1322,10 @@ class ErrorMessageViewModel: ObservableObject {
 
 }
 
-
 struct MessageComposerView: UIViewControllerRepresentable {
     
     let linkURL: URL
     let fromFinalize: Bool
-    //let coverImage: Data
     func makeUIViewController(context: UIViewControllerRepresentableContext<MessageComposerView>) -> MFMessageComposeViewController {
         let controller = MFMessageComposeViewController()
         
@@ -1411,7 +1333,6 @@ struct MessageComposerView: UIViewControllerRepresentable {
             // Modify this with the appropriate deepLinkURL and image
             let deepLinkURL = linkURL
             controller.body = deepLinkURL.absoluteString
-            //controller.addAttachmentData(coverImage, typeIdentifier: "public.data", filename: "image.jpg")
         }
         
         controller.messageComposeDelegate = context.coordinator

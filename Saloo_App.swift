@@ -12,7 +12,6 @@ struct Saloo_App: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate3
     @StateObject var appDelegate = AppDelegate()
     @StateObject var sceneDelegate = SceneDelegate()
-    
     @ObservedObject var alertVars = AlertVars.shared
     let persistenceController = PersistenceController.shared
     @State private var isCountdownShown: Bool = false
@@ -66,10 +65,7 @@ struct Saloo_App: App {
                     if newPhase == .active {
                         if UserSession.shared.isSignedIn{
                             if CardsForDisplay.shared.needToLoadCards(){CardsForDisplay.shared.loadCoreCards{
-                                //CardsForDisplay.shared.fetchFromCloudKit()
-                                //if !CardsForDisplay.shared.inboxCards.isEmpty && !CardsForDisplay.shared.outboxCards.isEmpty {
-                                    CardsForDisplay.shared.syncCloudKitAndCoreData()
-                                //}
+                                CardsForDisplay.shared.syncCloudKitAndCoreData()
                             }}
                         }
                         else {appState.currentScreen = .login}
@@ -78,7 +74,6 @@ struct Saloo_App: App {
                             APIManager.shared.checkUserBanned(userId: salooUserID) { (isBanned, error) in
                                 print("Checking banned status...isBanned = \(isBanned)")
                                 if isBanned == true {alertVars.alertType = .userBanned; alertVars.activateAlert = true}
-                                // Other error handling goes here
                             }
                         }
                         else{print("no salooUserID due to first launch")}
@@ -136,16 +131,13 @@ struct AlertViewMod: ViewModifier {
     var keepSpotAccount: (() -> Void)?
     var goToSettings: (() -> Void)?
     var updateMusicLaterPrompt: (() -> Void)?
-
     @State var cardToDelete: CoreCard?
-    
     func body(content: Content) -> some View {
         content
             .alert(isPresented: $showAlert) {
                 switch activeAlert {
                 case .loginToiCloud:
                     return Alert(title: Text("iCloud Account Required"), message: Text("Please login to iCloud to continue"), dismissButton: .default(Text("Go to Settings"), action: {
-                        //guard let settingsUrl = URL(string: UIApplication.openSettingsURLString) else {
                         guard let settingsUrl = URL(string: "App-prefs:root=CASTLE") else {
                             return
                         }

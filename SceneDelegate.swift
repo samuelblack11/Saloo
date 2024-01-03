@@ -24,7 +24,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
     var waitingToAcceptRecord = false
     @ObservedObject var appDelegate = AppDelegate()
     @ObservedObject var networkMonitor = NetworkMonitor()
-    //var hideProgViewOnAcceptShare: Bool = true
     let defaults = UserDefaults.standard
     var counter = 0
     var launchedURL: URL?
@@ -37,16 +36,13 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
               let path = components.path else {
             return
         }
-
         // Additional logic to handle the uniqueName parameter
         if let queryItems = components.queryItems,
            let uniqueNameItem = queryItems.first(where: { $0.name == "uniqueName" }),
            let uniqueName = uniqueNameItem.value {
-            // Now you have the uniqueName, handle it as needed
             fetchRecord(withUniqueName: uniqueName)
         }
     }
-
     
     func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
         if let url = URLContexts.first?.url {
@@ -58,7 +54,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
                 handleIncomingURL(url)
                 return
             }
-
             let container = CKContainer.default()
             container.fetchShareMetadata(with: url) { metadata, error in
                 guard error == nil, let metadata = metadata else {
@@ -69,8 +64,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
         }
     }
 
-    
-    
     private func handleIncomingURL(_ url: URL) {
         guard url.scheme == "saloo",
               let components = NSURLComponents(url: url, resolvingAgainstBaseURL: true),
@@ -83,17 +76,12 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
             fetchRecord(withUniqueName: uniqueName)
         }
     }
-
-    
     
     func fetchAllCoreCards(completion: @escaping ([CKRecord]?, Error?) -> Void) {
         let predicate = NSPredicate(value: true)
         let query = CKQuery(recordType: "CD_CoreCard", predicate: predicate)
-        
         let operation = CKQueryOperation(query: query)
-        //operation.desiredKeys = ["recordID", "CD_spotID", "CD_songID", "CD_songName"] // add all the keys you want to fetch
-        operation.resultsLimit = 50 // Adjust this as needed
-        
+        operation.resultsLimit = 50
         var newRecords = [CKRecord]()
         
         // This block will be called for every record fetched
@@ -118,15 +106,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
         publicDatabase.add(operation)
     }
 
-    
-    
-
-    
-
     func sceneDidBecomeActive(_ scene: UIScene) {
         // Handle the URL if one was stored when the app was launched
         if let url = launchedURL, let windowScene = scene as? UIWindowScene {
-            //self.displayCard(windowScene: windowScene)
             launchedURL = nil // Clear the stored URL
         }
     }
@@ -142,19 +124,15 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
     
     func fetchRecord(withUniqueName uniqueName: String) {
         DispatchQueue.main.async{GettingRecord.shared.isLoadingAlert = true}
-        //if ChosenCoreCard.shared.chosenCard != nil {ChosenCoreCard.shared.chosenCard = nil}
         let predicate = NSPredicate(format: "CD_uniqueName == %@", uniqueName)
         let query = CKQuery(recordType: "CD_CoreCard", predicate: predicate)
         let publicDatabase = PersistenceController.shared.cloudKitContainer.publicCloudDatabase
         publicDatabase.perform(query, inZoneWith: nil) { results, error in
             if let error = error {
-                // Handle the error here
                 print("An error occurred: \(error.localizedDescription)")
             } else {
                 if let results = results, !results.isEmpty {
-                    // Process your results here
                     for result in results {
-                        // Do something with each result
                         self.parseRecord(record: result)
                     }}
                 else {print("No matching record found.")
@@ -169,9 +147,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
         }
     }
 
-
-
-
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         // Check if the app launched from an inactive state with a URL
         if let urlContext = connectionOptions.urlContexts.first {
@@ -185,7 +160,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
     private func displayCard(windowScene: UIWindowScene, record: CKRecord, uniqueName: String) {
         guard self.gotRecord && self.connectToScene else { return }
         if self.appDelegate.musicSub.type == .Neither {self.updateMusicSubType()}
-        //AppState.shared.currentScreen = .startMenu
         CardsForDisplay.shared.addCoreCard(card: self.coreCard, box: self.whichBoxForCKAccept!, record: record)
         DispatchQueue.main.async{GettingRecord.shared.isLoadingAlert = false}
         AppState.shared.cardFromShare = self.coreCard
@@ -249,7 +223,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
                     catch {
                         print("Failed to read data from CKAsset: \(error)")
                         // Be sure to leave the group even if an error occurs,
-                        // otherwise your app could hang indefinitely
+                        // otherwise app could hang indefinitely
                         dispatchGroup.leave()
                     }
                 }
@@ -271,7 +245,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
                             print("Failed to read data from CKAsset: \(error)")
                             self.determineWhichBox {}
                             // Be sure to leave the group even if an error occurs,
-                            // otherwise your app could hang indefinitely
+                            // otherwise app could hang indefinitely
                             dispatchGroup.leave()
                         }
                     }

@@ -45,10 +45,8 @@ struct UnsplashCollectionView: View {
                             ForEach(imageObjectModel.imageObjects, id: \.self.id) {photoObj in
                                 AsyncImage(url: photoObj.smallImageURL) { image in
                                     image.resizable()} placeholder: {ZStack{Color.gray; ProgressView()}}
-                                    //.frame(width: 125, height: 125)
                                     .frame(width: UIScreen.screenWidth/3, height: UIScreen.screenWidth/3)
                                     .onTapGesture {Task {
-                                        //try? await handleTap(index: photoObj.index)
                                         if networkMonitor.isConnected{try? await handleTap(index: photoObj.index)}
                                         else{
                                             alertVars.alertType = .failedConnection
@@ -61,7 +59,6 @@ struct UnsplashCollectionView: View {
                             Button("More...") {
                                 if networkMonitor.isConnected {
                                     chosenObject.pageCount = chosenObject.pageCount + 1
-                                    //imageObjectModel.imageObjects = []
                                     imageObjectModel.getPhotosFromCollection(collectionID: chosenOccassion.collectionID, page_num: chosenObject.pageCount)
                                 }
                                 else {
@@ -70,7 +67,7 @@ struct UnsplashCollectionView: View {
                                     
                                 }
                                 
-                            }//.disabled(setButtonStatus(imageObjects: imageObjectModel.imageObjects))
+                            }
                         }
                     }
                     .modifier(AlertViewMod(showAlert: alertVars.activateAlertBinding, activeAlert: alertVars.alertType))
@@ -112,7 +109,6 @@ extension UnsplashCollectionView {
         widthToHeightRatio = size.width/size.height
         return (size, widthToHeightRatio)
     }
-    
 
     func handleTap(index: Int) async throws {
             do {
@@ -126,7 +122,6 @@ extension UnsplashCollectionView {
                 chosenObject.index = index
                 let (size, ratio) = getCoverSize()
                 chosenObject.coverSizeDetails = "\(size.width),\(size.height),\(ratio)"
-                //chosenObject.imageID = imageObjects[index].
                 appState.currentScreen = .buildCard([.confirmFrontCoverView])
             }
         catch {debugPrint("Error handling tap .... : \(error)")}

@@ -11,7 +11,6 @@ import CoreData
 import CloudKit
 import MessageUI
 
-
 struct FinalizeCardView: View {
     @ObservedObject var alertVars = AlertVars.shared
     @EnvironmentObject var chosenImagesObject: ChosenImages
@@ -28,7 +27,6 @@ struct FinalizeCardView: View {
     @State var cardRecord: CKRecord!
     @State var createdCard: CoreCard?
     @State private var shareFromGrid = false
-    //@Binding var cardForExport: Data!
     @State private var showActivityController = false
     @State var activityItemsArray: [Any] = []
     @State var saveAndShareIsActive = false
@@ -120,7 +118,6 @@ struct FinalizeCardView: View {
                 }
             }
             .sheet(isPresented: $isShowingMessageComposer) {
-                // Your MessageComposer view
                 MessageComposerView(linkURL: URL(string: linkURL.linkURL)!, fromFinalize: true)
             }
             .modifier(AlertViewMod(showAlert: alertVars.activateAlertBinding, activeAlert: alertVars.alertType, alertDismissAction: {appState.currentScreen = .startMenu}))
@@ -181,8 +178,6 @@ extension FinalizeCardView {
         if MFMessageComposeViewController.canSendText() && MFMessageComposeViewController.canSendAttachments() {
             let messageComposer = MFMessageComposeViewController()
             messageComposer.body = richLinkURL.absoluteString
-            
-            // Present the message composer view controller
             DispatchQueue.main.async{GettingRecord.shared.isLoadingAlert = false}
             isShowingMessageComposer = true
         } else {
@@ -207,5 +202,3 @@ struct ActivityView: UIViewControllerRepresentable {
     func updateUIViewController(_ uiViewController: UIActivityViewController,
                                 context: UIViewControllerRepresentableContext<ActivityView>) {}
     }
-    
-

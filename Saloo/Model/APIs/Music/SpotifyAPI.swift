@@ -27,27 +27,17 @@ class SpotifyAPI {
     
     func searchSpotify(_ songName: String!, artistName: String!, authToken: String,  completionHandler: @escaping ([SpotItem]?,Error?) -> Void) -> [SongForList] {
         let songs = [SongForList]()
-        //let searchTermClean = (searchTerm.replacingOccurrences(of: " ", with: "%20"))
         let songNameClean = cleanMusicData.cleanMusicString(input: songName, removeList: AppDelegate().songFilterForSearchRegex).replacingOccurrences(of: " ", with: "%20")
         let artistNameClean = cleanMusicData.cleanMusicString(input: artistName, removeList: AppDelegate().songFilterForSearchRegex).replacingOccurrences(of: " ", with: "%20")
-        //let spotURL = URL(string:"https://api.spotify.com/v1/search?q=\(searchTermClean)&type=\(type)&market=ES&limit=50&offset=5")
-        //let spotURL = URL(string:"https://api.spotify.com/v1/search?q=track:\(songNameClean)&artist:\(artistNameClean)&type=track&market=ES&limit=50&offset=5")
         let spotURL = URL(string:"https://api.spotify.com/v1/search?q=\(songNameClean)+\(artistNameClean)&type=track&market=ES&limit=50&offset=0")
-        
-        
         var spotRequest = URLRequest(url: spotURL!)
         spotRequest.httpMethod = "GET"
         spotRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
         spotRequest.addValue("Bearer \(authToken)", forHTTPHeaderField: "Authorization")
         URLSession.shared.dataTask(with: spotRequest) { (data, response, error) in
-            //guard error == nil else {return}
-            
-            
             if let jsonObj = try? JSONSerialization.jsonObject(with: data!, options: []) as? [String: Any] {
             }
             do {
-                //print("+++???")
-                //print(String(data: data!, encoding: .utf8))
                 let songResponse = try JSONDecoder().decode(SpotResponse.self, from: data!)
                 DispatchQueue.main.async {completionHandler(songResponse.tracks.items, nil)}
             }
@@ -61,31 +51,18 @@ class SpotifyAPI {
     
     func getAlbumIDUsingNameOnly(albumName: String, offset: Int?, authToken: String,   completion: @escaping ([SpotifyAlbum]?, Error?) -> Void) {
         let formattedAlbumName = cleanMusicData.cleanMusicString(input: albumName, removeList: AppDelegate().songFilterForMatchRegex).replacingOccurrences(of: " ", with: "%20")
-        
-        
-        //print("===")
-        //print(albumName)
-        //print(formattedAlbumName)
-        
         let urlString = "https://api.spotify.com/v1/search?q=album:\(formattedAlbumName)%20&type=album&market=US&offset=\(offset!)&limit=50"
-        
-        //print("URL String...\(urlString)")
-        
         var request = URLRequest(url: URL(string: urlString)!)
         request.httpMethod = "GET"
         request.addValue("Bearer \(authToken)", forHTTPHeaderField: "Authorization")
         let task = try URLSession.shared.dataTask(with: request) { (data, response, error) in
-            //guard error == nil else {return}
             if let jsonObj = try? JSONSerialization.jsonObject(with: data!, options: []) as? [String: Any] {
             }
             do {
                 let decoder = JSONDecoder()
                 let albums = try decoder.decode(SpotifyAlbumResponse.self, from: data!)
-                //print("???")
-                //print(albums)
                 completion(albums.albums.items, error)
             } catch let error {
-                //print("^^^")
                 print(error.localizedDescription)
                 completion(nil, error)
             }
@@ -114,11 +91,7 @@ class SpotifyAPI {
         
         task.resume()
     }
-    
-    
-    
-    
-    
+
     func getAlbumID(albumName: String, artistName: String, authToken: String,   completion: @escaping ([SpotifyAlbum]?, Error?) -> Void) {
         
         var formattedAlbumName = cleanMusicData.cleanMusicString(input: albumName, removeList: AppDelegate().songFilterForSearchRegex).replacingOccurrences(of: " ", with: "%20")
@@ -136,12 +109,6 @@ class SpotifyAPI {
                 do {
                     let albums = try JSONDecoder().decode(SpotifyAlbumResponse.self, from: data!)
                     DispatchQueue.main.async {completion(albums.albums.items, nil)}
-                    //let jsonResponse = try JSONSerialization.jsonObject(with: data!, options: []) as? [String: Any]
-                    //if let albums = jsonResponse?["albums"] as? [String: Any], let items = albums["items"] as? [[String: Any]], let firstAlbum = items.first {
-                    //    let albumID = firstAlbum["id"] as? String
-                    //    completion(albumID)
-                    //    return
-                    //}
                 } catch let error {
                     DispatchQueue.main.async {
                         print(error.localizedDescription)
@@ -165,11 +132,8 @@ class SpotifyAPI {
         return list
     }
 
-
-    
     func getAlbumTracks(albumId: String, authToken: String, completion: @escaping ([SpotItem]?, Error?) -> Void) {
         var tracksList: [SpotItem] = []; var totalTracks: Int?; var offsetList: [Int] = []
-        //let urlString = "https://api.spotify.com/v1/albums/\(albumId)/tracks"
         let urlString = "https://api.spotify.com/v1/albums/\(albumId)/tracks?limit=50"
 
         guard let url = URL(string: urlString) else {
@@ -195,14 +159,9 @@ class SpotifyAPI {
                 if offsetList.count > 0 {
                     let dispatchGroup = DispatchGroup()
                     dispatchGroup.enter()
-                    //let urlString = "https://api.spotify.com/v1/albums/\(albumId)/tracks?offset=\(offsetList[0])&limit=\(offsetList.last! + 20 - offsetList[0])"
                     let maxLimit = 50
                     let limit = min(offsetList.last! + 20 - offsetList[0], maxLimit)
-                    //let urlString = "https://api.spotify.com/v1/albums/\(albumId)/tracks?offset=\(offsetList[0])&limit=\(limit)"
                     let urlString = "https://api.spotify.com/v1/albums/\(albumId)/tracks?offset=\(offsetList[0])&limit=50"
-
-                    //let urlString = "https://api.spotify.com/v1/albums/\(albumId)/tracks?offset=\(offsetList[0])&limit=20"
-
                     guard let url = URL(string: urlString) else {
                         dispatchGroup.leave()
                         completion(nil, NSError(domain: "Invalid URL", code: 0, userInfo: nil))
@@ -246,7 +205,6 @@ class SpotifyAPI {
             let queryCode = URLQueryItem(name: "refresh_token", value: refresh_token)
             let queryRedirect = URLQueryItem(name: "redirect_uri", value: "https://salooapp.com")
             components!.queryItems = [queryGrant, queryCode, queryRedirect]
-            //components!.queryItems = [queryGrant, queryCode, queryRedirect,queryRedirect]
             var spotRequest = URLRequest(url: (components?.url!)!)
             spotRequest.httpMethod = "POST"
             spotRequest.setValue("Basic \(auth_val)", forHTTPHeaderField: "Authorization")
@@ -286,11 +244,6 @@ class SpotifyAPI {
 
         let session = URLSession.shared
         let task = session.dataTask(with: request) { (data, response, error) in
-            //if let data = data {
-           //     let dataString = String(data: data, encoding: .utf8)
-            //    print(dataString ?? "Data could not be printed as a string")
-            //}
-            
             if let jsonObj = try? JSONSerialization.jsonObject(with: data!, options: []) as? [String: Any] {
             }
             
@@ -323,8 +276,6 @@ class SpotifyAPI {
         task.resume()
     }
 
-
-        
         func getToken(authCode: String, completionHandler: @escaping (SpotTokenResponse?,Error?) -> Void) {
             let auth_val = Data("\(APIManager.shared.spotClientIdentifier):\(APIManager.shared.spotSecretKey)".utf8).base64EncodedString()
             let spotURL = URL(string:"https://accounts.spotify.com/api/token")
@@ -366,8 +317,6 @@ class SpotifyAPI {
             let queryResponseType = URLQueryItem(name: "response_type", value: "code")
             let queryRedirect = URLQueryItem(name: "redirect_uri", value: "https://salooapp.com")
             let allScopes = URLQueryItem(name: "scope", value:"user-read-private user-read-playback-state app-remote-control streaming user-modify-playback-state user-read-currently-playing")
-            //let queryCodeMethod = URLQueryItem(name: "code_challenge_method", value: "S256")
-            //let queryCodeChallenge = URLQueryItem(name: "code_challenge", value: "")
             components!.queryItems = [queryResponseType, queryClientID, queryRedirect, allScopes]
             var spotRequest = URLRequest(url: components!.url!)
             spotRequest.httpMethod = "GET"
@@ -388,4 +337,3 @@ class SpotifyAPI {
             .resume()
         }
     }
-    

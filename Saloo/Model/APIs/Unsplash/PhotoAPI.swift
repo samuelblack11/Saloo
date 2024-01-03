@@ -17,12 +17,11 @@ class PhotoAPI {
         case user(apiKey: String, user: String)
         case collectionPhotos(apiKey: String, collectionID: String, page_num: Int)
         var URLString: String {
-            let utmParameters = "?utm_source=salooGreetings&utm_medium=referral"
             switch self {
             case .pingDownloadForTrigger(let apiKey, let downloadLocation):
                 return downloadLocation + "&client_id=\(apiKey)"
             case .collection(let apiKey, let page_num, let collectionID):
-                return "https://api.unsplash.com/search/photos?id=\(collectionID)&page=\(page_num)&per_page=50&client_id=\(apiKey)" + utmParameters
+                return "https://api.unsplash.com/search/photos?id=\(collectionID)&page=\(page_num)&per_page=50&client_id=\(apiKey)"
             case .user(let apiKey, let user):
                 return "https://api.unsplash.com/users/\(user)/collections?client_id=\(apiKey)"
             case .collectionPhotos(let apiKey, let collectionID, let page_num):
@@ -119,12 +118,9 @@ class PhotoAPI {
        task.resume()
 }
     
-    
-    
-    class func pingDownloadURL(downloadLocation: String,  completionHandler: @escaping (PingDownloadResponse?,Error?) -> Void) {
+    class func pingDownloadURL(downloadLocation: String, completionHandler: @escaping (PingDownloadResponse?,Error?) -> Void) {
         
         let urlString = Endpoints.pingDownloadForTrigger(apiKey: APIManager.shared.unsplashAPIKey, downloadLocation: downloadLocation)
-        print(urlString)
         let url = urlString.url
         var request = URLRequest(url: url)
         request.httpMethod = "GET"
@@ -132,7 +128,7 @@ class PhotoAPI {
         request.setValue("v1", forHTTPHeaderField: "Accept-Version")
         let task = URLSession.shared.dataTask(with: request, completionHandler: { (data, response, error)
             // Completion Handler is Below
-             in
+            in
             if error != nil {
                 DispatchQueue.main.async {
                     completionHandler(nil, error)
@@ -155,4 +151,5 @@ class PhotoAPI {
         })
        task.resume()
     }
+
 }

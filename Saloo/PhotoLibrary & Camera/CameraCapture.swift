@@ -29,9 +29,7 @@ struct CameraCapture: UIViewControllerRepresentable {
          return pickerController
      }
 
-     func updateUIViewController(_ uiViewController: UIImagePickerController, context: Context) {
-         // Nothing to update here
-     }
+     func updateUIViewController(_ uiViewController: UIImagePickerController, context: Context) {}
 
 }
 
@@ -118,4 +116,3 @@ class ImagePickerViewCoordinator: NSObject, UINavigationControllerDelegate, UIIm
         self.isPresented = false
     }
 }
-

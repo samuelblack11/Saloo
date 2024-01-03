@@ -64,10 +64,6 @@ class AppleMusicAPI {
             }
         }
     }
-
-
-    
-    
     
     func searchAppleMusic(_ searchTerm: String!, storeFrontID: String, userToken: String, completionHandler: @escaping ([Song]?,Error?) -> Void) -> [SongForList] {
             let lock = DispatchSemaphore(value: 1)
@@ -95,9 +91,6 @@ class AppleMusicAPI {
         lock.wait()
         return songs
     }
-    
-
-    
     
     func searchForAlbum(albumAndArtist: String, storeFrontID: String, offset: Int?,  userToken: String, completion: @escaping (AlbumResponse?, Error?) -> Void) {
         // Set up the search query
@@ -132,8 +125,6 @@ class AppleMusicAPI {
             lock.signal()
         }.resume()
     }
-    
-    
     
     func getAlbumTracks(albumId: String, storefrontId: String, userToken: String,completion: @escaping (TrackResponse?, Error?) -> Void) {
         let lock = DispatchSemaphore(value: 1)

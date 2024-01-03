@@ -37,8 +37,6 @@ struct GridofCards: View {
     @State private var nameToDisplay: String?
     @State private var userID = UserDefaults.standard.object(forKey: "SalooUserID") as? String
     @State private var displayCard = false
-    //@State var chosenCard: CoreCard?
-    //@EnvironmentObject var chosenCardParent: ChosenCoreCard
     @State var cardToReport: CoreCard?
     @State var cardToReportThenDelete: CoreCard?
     @State var cardToDelete: CoreCard?
@@ -55,9 +53,6 @@ struct GridofCards: View {
 
     var cardsFilteredBySearch: [CoreCard] {
         if searchText.isEmpty { return coreCards}
-        //else if sortByValue == "Card Name" {return privateCards.filter { $0.cardName.contains(searchText)}}
-        //else if sortByValue == "Date" {return privateCards.filter { $0.cardName.contains(searchText)}}
-        //else if sortByValue == "Occassion" {return privateCards.filter { $0.occassion!.contains(searchText)}}
         else {return coreCards.filter {$0.cardName.contains(searchText)}}
     }
     @State var cardSelectionNumber: Int?
@@ -104,13 +99,13 @@ struct GridofCards: View {
                 TextField("Search by Card Name", text: $text)
                     .font(Font.custom("Papyrus", size: 16))
                     .padding(7)
-                    .padding(.leading, 30) // padding to position the text after the icon
+                    .padding(.leading, 30)
                     .background(Color(.systemGray6))
                     .cornerRadius(8)
                 
                 Image(systemName: "magnifyingglass")
                     .foregroundColor(.gray)
-                    .padding(.leading, 10) // padding to position the icon
+                    .padding(.leading, 10)
             }
             .padding(.horizontal)
         }
@@ -129,7 +124,6 @@ struct GridofCards: View {
                                 cardView(for: gridCard, shareable: false)
                             }
                         }
-                       // .searchable(text: $searchText, prompt: "Search by Card Name")
                     }
                     LoadingOverlay(hasShownLaunchView: $hasShownLaunchView)
                 }
@@ -144,7 +138,6 @@ struct GridofCards: View {
         }
         .modifier(AlertViewMod(showAlert: alertVars.activateAlertBinding, activeAlert: alertVars.alertType, alertDismissAction: {
             deleteCoreCard(coreCard: cardToDelete!)}))
-        // "Search by \(sortByValue)"
         .sheet(isPresented: $isShowingMessageComposer) {MessageComposerView(linkURL: URL(string: linkURL.linkURL)!, fromFinalize: false)}
     }
     
@@ -188,7 +181,6 @@ struct GridofCards: View {
         }
 }
 
-// MARK: Returns CKShare participant permission, methods and properties to share
 extension GridofCards {
     
     private func loadCards() {
@@ -255,8 +247,6 @@ extension GridofCards {
         if MFMessageComposeViewController.canSendText() && MFMessageComposeViewController.canSendAttachments() {
             let messageComposer = MFMessageComposeViewController()
             messageComposer.body = richLinkURL.absoluteString
-            
-            // Present the message composer view controller
             isShowingMessageComposer = true
         } else {
             print("Cannot send message")
@@ -287,9 +277,6 @@ extension GridofCards {
             }
         }
     }
-    
-    
-
     
     func deleteCoreCard(coreCard: CoreCard) {
         cardsForDisplayEnv.deleteCoreCard(card: coreCard, box: whichBoxVal)

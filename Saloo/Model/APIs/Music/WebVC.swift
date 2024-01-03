@@ -18,14 +18,11 @@ class WebVC: UIViewController, WKNavigationDelegate {
     let defaults = UserDefaults.standard
     var webView: WKWebView!
     var authURL: String?
-    //var del: MyDataSendingDelegateProtocol
-    //let spotAuth = SpotifyAuth()
     var delegate: MyDataSendingDelegateProtocol? = nil
     @ObservedObject var sceneDelegate = SceneDelegate()
 
     init(authURL: String) {
         self.authURL = authURL
-        //self.delegate = delegate
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -39,9 +36,6 @@ class WebVC: UIViewController, WKNavigationDelegate {
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        //if (defaults.object(forKey: "SpotifyAuthCode") as? String) == nil {
-        //    self.delegate?.sendDataToFirstViewController(strCode: "")
-        //}
         if (defaults.object(forKey: "SpotifyAuthCode") as? String) == "AuthFailed" {
             self.defaults.set("AuthFailed", forKey: "SpotifyAuthCode")
             self.delegate?.sendDataToFirstViewController(strCode: "AuthFailed")
@@ -55,7 +49,6 @@ class WebVC: UIViewController, WKNavigationDelegate {
             self.delegate?.sendDataToFirstViewController(strCode: "signup")
         }
     }
-    
     
     override func viewDidLoad() {
         let url = URL(string: authURL!)!
@@ -72,13 +65,11 @@ class WebVC: UIViewController, WKNavigationDelegate {
                 self.delegate?.sendDataToFirstViewController(strCode: "password-reset")
                 self.defaults.set("password-reset", forKey: "SpotifyAuthCode")
                 webView.removeObserver(self, forKeyPath: "URL")
-                //self.dismiss(animated: true)
             }
             else if key_string.contains("signup") {
                 self.delegate?.sendDataToFirstViewController(strCode: "signup")
                 self.defaults.set("signup", forKey: "SpotifyAuthCode")
                 webView.removeObserver(self, forKeyPath: "URL")
-                //self.dismiss(animated: true)
             }
             else if key_string.contains("code=") {
                 DispatchQueue.main.async {
@@ -101,7 +92,6 @@ class WebVC: UIViewController, WKNavigationDelegate {
             
         }
     }
-    
 }
 
 
@@ -116,10 +106,8 @@ struct WebVCView: UIViewControllerRepresentable {
         
         
         func sendDataToFirstViewController(strCode: String?) {
-            //guard let provider = strCode else {return}
             self.parent.authCode = strCode
         }
-        
     }
     
     func makeUIViewController(context: Context) -> WebVC {
@@ -129,8 +117,6 @@ struct WebVCView: UIViewControllerRepresentable {
         return vc
     }
     
-
-    
     func updateUIViewController(_ uiViewController: WebVC, context: Context) {
         //Updates the state of the specified view controller with new information from SwiftUI.
     }
@@ -138,11 +124,8 @@ struct WebVCView: UIViewControllerRepresentable {
     func makeCoordinator() -> Coordinator {
         Coordinator(self)
     }
-
 }
 
 protocol MyDataSendingDelegateProtocol {
     func sendDataToFirstViewController(strCode: String?)
 }
-
-

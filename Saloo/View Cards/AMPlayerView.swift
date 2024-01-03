@@ -42,11 +42,9 @@ struct AMPlayerView: View {
     @State var showGrid = false
     @State var coreCard: CoreCard?
     @State var accessedViaGrid = true
-    //@State var whichBoxVal: InOut.SendReceive = .inbox
     @State var appleAlbumArtist: String?
     @State var spotAlbumArtist: String?
     @State var levDistances: [Int] = []
-    //@State var foundMatch = "isSearching"
     @State var breakTrigger1 = false
     @Binding var chosenCard: CoreCard?
     @Binding var deferToPreview: Bool
@@ -105,13 +103,11 @@ struct AMPlayerView: View {
     
     var AMPlayerView: some View {
         VStack(alignment: .center) {
-            //if songArtImageData != nil {Image(uiImage: UIImage(data: songArtImageData!)!)}
             if let songArtImageData = songArtImageData, let uiImage = UIImage(data: songArtImageData) {
                         Image(uiImage: uiImage)
                             .resizable()
                             .aspectRatio(contentMode: .fit)
                             .frame(maxWidth: UIScreen.screenHeight/6, maxHeight: UIScreen.screenHeight/6)
-                            //.frame(width: 64, height: 64)
                     }
             if let name = songName, let urlString = songURL, let url = URL(string: urlString) {
                 Link(name, destination: url)
@@ -165,24 +161,21 @@ struct AMPlayerView: View {
                 Image("AMIcon")
                     .resizable()
                     .aspectRatio(contentMode: .fit)
-                    .frame(height: 24) // height as per your text field
-                    .padding([.top, .leading]), // add padding to top and leading
-                alignment: .bottomTrailing //
+                    .frame(height: 24)
+                    .padding([.top, .leading]),
+                alignment: .bottomTrailing
             )
 
             ProgressView(value: songProgress, total: songDuration!)
                 .onReceive(timer) {_ in
-                    //if songProgress < songDuration! && musicPlayer.playbackState.rawValue == 1 {songProgress += 1}
                     songProgress = musicPlayer.currentPlaybackTime
                     if songProgress == songDuration {musicPlayer.pause()}
                 }
             HStack{
-                //if songProgress > 0.0 {
                     Text(convertToMinutes(seconds:Int(songProgress)))
                     Spacer()
                     Text(convertToMinutes(seconds: Int(songDuration!)-Int(songProgress)))
                         .padding(.trailing, 10)
-                //}
             }
             if confirmButton == true {selectButton}
         }
@@ -215,7 +208,6 @@ struct AMPlayerView: View {
                 appState.currentScreen = .buildCard([.finalizeCardView])
             }
         } label: {Text("Select Song For Card").foregroundColor(.blue).disabled(disableSelect)}
-        //else {Text("")}
     }
     
     func convertToMinutes(seconds: Int) -> String {
@@ -265,14 +257,8 @@ extension AMPlayerView {
     }
 
     func convertSong(offset: Int?) {
-        var foundMatch = "isSearching" // Move this variable to the outer loop
+        var foundMatch = "isSearching"
         var triggerFoundMatchCheck = false
-        //let offsetVals: [Int?] = [nil, 25, 50, 75]
-        //let group = DispatchGroup()
-        //outerLoop: for offsetVal in offsetVals {
-        //    print("Offsetval....\(offsetVal)")
-        //    group.enter()
-        
         amAPI.searchForAlbum(albumAndArtist:  "\(songAlbumName!) \(spotAlbumArtist!)", storeFrontID: amAPI.storeFrontID!, offset: offset, userToken: amAPI.taskToken!, completion: {(albumResponse, error) in
                 print(error?.localizedDescription as Any)
                 if error != nil {
@@ -286,14 +272,11 @@ extension AMPlayerView {
                     }
                 }
             else {
-                //if error != nil {foundMatch = "searchFailed"}
                 let cleanSpotString =  cleanMusicData.compileMusicString(songOrAlbum: spotName!, artist: spotArtistName!, removeList: appDelegate.songFilterForMatchRegex)
                 if let albumList = albumResponse?.results.albums.data {
                     let group = DispatchGroup()
-                    //let group2 = DispatchGroup()
                 //secondLoop:
                     for (albumIndex, album) in albumList.enumerated() {
-                        //group.enter()
                         group.enter()
                         AppleMusicAPI().getAlbumTracks(albumId: album.id, storefrontId: amAPI.storeFrontID!, userToken: amAPI.taskToken!, completion: { (trackResponse, error) in
                             defer { group.leave() }
@@ -354,5 +337,4 @@ extension AMPlayerView {
         }
         dataTask.resume()
     }
-
 }

@@ -43,12 +43,6 @@ struct CollageBuilder: View {
     @State private var imageNumber: Int?
     @Environment(\.displayScale) var displayScale
     @State var lastScaleValue: CGFloat = 1.0
-   // var minWidth = CGFloat(100)
-   // var maxWidth = CGFloat(300)
-    //var minHeight = CGFloat(100)
-    //var maxHeight = CGFloat(320)
-    //var width = UIScreen.screenWidth/2
-    //var height = UIScreen.screenHeight/3
     var width = UIScreen.screenWidth/1.25
     var height = UIScreen.screenHeight/2.1
     @State private var blockCount: Int?
@@ -92,7 +86,7 @@ struct CollageBuilder: View {
                             .textCase(.none)
                             .multilineTextAlignment(.center)
                         Spacer()
-                        collageView//.frame(width: UIScreen.screenHeight/4, height: UIScreen.screenHeight/4)
+                        collageView
                         Button(action: resetZoomAndOffset) {
                             Image(systemName: "arrow.uturn.left")
                                 .foregroundColor(.blue)
@@ -123,12 +117,10 @@ struct CollageBuilder: View {
                         .padding(.bottom, 30)
                     }
                     .onAppear{
-                        
                         countBlocks()
                         if chosenImagesObject.chosenImageA != nil {
                             imageA = Image(uiImage: chosenImagesObject.chosenImageA!)
                         }
-                        
                     }
                     .alert(isPresented: $explicitPhotoAlert) {
                         Alert(title: Text("Error"), message: Text("The selected image contains explicit content and cannot be used."), dismissButton: .default(Text("OK")))
@@ -202,7 +194,6 @@ extension CollageBuilder {
                     .resizable()
                     .scaledToFit()
                     .frame(width: w2, height: h2)
-                    //.clipped()
                     .scaleEffect(scale.wrappedValue, anchor: .center)
                     .gesture(
                         MagnificationGesture()
@@ -230,8 +221,6 @@ extension CollageBuilder {
                             }
                     )
                     .clipped()
-
-
             }
             .border(Color("SalooTheme"))
         }
@@ -246,16 +235,11 @@ extension CollageBuilder {
         }
     }
 
-
-    
     func calculateMinScale(frameSize: CGSize, imageSize: CGSize) -> CGFloat {
         let scaleX = frameSize.width / imageSize.width
         let scaleY = frameSize.height / imageSize.height
         return max(min(scaleX, scaleY), 1.0)
     }
-
-
-
 
     func block1() -> some View {
         return VStack {
@@ -324,7 +308,7 @@ extension CollageBuilder {
     
     func defineShapes() -> (String, String, String, String) {
         var shape1 = ""; var shape2 = ""; var shape3 = ""; var shape4 = ""
-        // List shape of each block for each collage styl e
+        // List shape of each block for each collage style
         if collageImage.chosenStyle == 1{shape1 = "largeSquare" }
         if collageImage.chosenStyle == 2{shape1 = "wide"; shape2 = "wide"}
         if collageImage.chosenStyle == 3{shape1 = "tall"; shape2 = "tall" }
@@ -370,9 +354,6 @@ extension CollageBuilder {
 
 
     func loadImage(chosenImage: UIImage?) {
-        
-        //chosenImagesObject.imagePlaceHolder = Image(systemName: "rays")
-        
         guard let chosenImage = chosenImage else {return}
         if imageNumber == 1 {imageA = Image(uiImage: chosenImage); collageImage.image1 = chosenImage.pngData()!}
         if imageNumber == 2 {imageB = Image(uiImage: chosenImage); collageImage.image2 = chosenImage.pngData()!}
@@ -385,8 +366,6 @@ extension CollageBuilder {
         let nonNilImages = images.compactMap { $0 }
         return images.count - nonNilImages.count
     }
-
-    
 }
 
 struct PhotoDetailView: UIViewRepresentable {
@@ -401,12 +380,9 @@ struct PhotoDetailView: UIViewRepresentable {
         return view
     }
 
-    func updateUIView(_ uiView: PDFView, context: Context) {
-        // empty
-    }
+    func updateUIView(_ uiView: PDFView, context: Context) {}
 }
 
-// 
 extension View {
     func snapshot() -> UIImage {
         let controller = UIHostingController(rootView: self)

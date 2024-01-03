@@ -14,8 +14,7 @@ struct ReportOffensiveContentView: View {
     @State private var reportComplete = false
     @ObservedObject var alertVars = AlertVars.shared
     @State private var showGrid = false
-    @Binding var card: CoreCard? // Assuming CoreCard is defined elsewhere
-    //@Binding var cardToReport: CoreCard?
+    @Binding var card: CoreCard?
     @EnvironmentObject var appState: AppState
     @EnvironmentObject var persistenceController: PersistenceController
     @EnvironmentObject var cardsForDisplayEnv: CardsForDisplay
@@ -82,11 +81,8 @@ struct ReportOffensiveContentView: View {
                 return
             }
 
-            do {
-                // Process response data if needed
-            } catch let parseError {
-                print("Parsing Error: \(parseError)")
-            }
+            do {}
+            catch let parseError {print("Parsing Error: \(parseError)")}
 
         }.resume()
     }

@@ -18,8 +18,6 @@ struct ConfirmFrontCoverView: View {
     @State private var hasShownLaunchView: Bool = true
     @EnvironmentObject var cardProgress: CardProgress
 
-
-
     var body: some View {
         NavigationView {
             VStack {
@@ -27,10 +25,14 @@ struct ConfirmFrontCoverView: View {
                 ProgressBar().frame(height: 20)
                 ZStack {
                     VStack {
-                        Image(uiImage: UIImage(data: chosenObject.coverImage)!)
-                            .resizable()
-                            .frame(width: 250, height: 250)
-                            .padding(.top, 50)
+                        Button(action: {
+                            if let url = URL(string: chosenObject.smallImageURLString) {UIApplication.shared.open(url)}
+                        }) {
+                            Image(uiImage: UIImage(data: chosenObject.coverImage)!)
+                                .resizable()
+                                .frame(width: 250, height: 250)
+                                .padding(.top, 50)
+                        }
                         VStack(spacing: 0) {
                             Text("Photo By ").font(Font.custom("Papyrus", size: 16))
                             Link(String(chosenObject.coverImagePhotographer), destination: URL(string: "https://unsplash.com/@\(chosenObject.coverImageUserName)?utm_source=salooGreetings&utm_medium=referral")!).font(Font.custom("Papyrus", size: 16))
@@ -38,8 +40,6 @@ struct ConfirmFrontCoverView: View {
                             Link("Unsplash", destination: URL(string: "https://unsplash.com?utm_source=salooGreetings&utm_medium=referral")!).font(Font.custom("Papyrus", size: 16))
                         }
                         Spacer()
-                        
-
                         Button(action: {
                             cardProgress.currentStep = 2
                             appState.currentScreen = .buildCard([.collageBuilder])
@@ -58,6 +58,4 @@ struct ConfirmFrontCoverView: View {
         .modifier(AlertViewMod(showAlert: alertVars.activateAlertBinding, activeAlert: alertVars.alertType))
         }
     }
-    
-    
 }

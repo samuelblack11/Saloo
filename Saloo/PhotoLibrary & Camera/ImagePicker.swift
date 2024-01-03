@@ -12,10 +12,8 @@ import SwiftUI
 struct ImagePicker: UIViewControllerRepresentable {
     @Binding var image: UIImage?
     @Environment(\.presentationMode) private var presentationMode
-    //@State private var showingAlert = false
     @Binding var explicitPhotoAlert: Bool
     @Binding var isImageLoading: Bool
-    
     
     func makeUIViewController(context: Context) -> PHPickerViewController {
         var config = PHPickerConfiguration()
@@ -71,12 +69,10 @@ struct ImagePicker: UIViewControllerRepresentable {
             if provider.canLoadObject(ofClass: UIImage.self) {
                 provider.loadObject(ofClass: UIImage.self) { image, _ in
                     DispatchQueue.main.async {
-                        //self.parent.image = image as? UIImage
-                        //guard let image = self.parent.image else { return }
+
                         guard let selectedImage = image as? UIImage else { return }
                         let targetSize = CGSize(width: 800, height: 800)
                         let resizedImage = self.resizeImage(image: selectedImage, targetSize: targetSize)
-                        //self.parent.image = resizedImage
 
                         // convert UIImage to base64 string
                         guard let imageData = resizedImage.jpegData(compressionQuality: 0.5) else { return }

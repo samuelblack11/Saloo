@@ -88,7 +88,6 @@ struct SpotPlayerView: View {
             .navigationBarItems(leading:Button {chosenCard = nil; if fromFinalize {cardProgress.currentStep = 4; appState.currentScreen = .buildCard([.musicSearchView])}
             } label: {Image(systemName: "chevron.left").foregroundColor(.blue); Text("Back")}.disabled(gettingRecord.isShowingActivityIndicator))
             .navigationBarHidden(fromFinalize)
-            // Show an alert if showAlert is true
             .alert(isPresented: $showFailedConnectionAlert) {
             Alert(title: Text("Network Error"), message: Text("Sorry, we weren't able to connect to the internet. Please reconnect and try again."), dismissButton: .default(Text("OK")))
         }
@@ -96,7 +95,6 @@ struct SpotPlayerView: View {
     
     @ViewBuilder var selectButton: some View {
         Button {
-            //disableTextField = true
             spotifyManager.appRemote?.playerAPI?.pause()
             songProgress = 0.0
             self.showSPV = false
@@ -111,9 +109,6 @@ struct SpotPlayerView: View {
         } label: {Text("Select Song For Card").foregroundColor(.blue)}
     }
     
-    
-    
-    
     func convertToMinutes(seconds: Int) -> String {
         let m = seconds / 60
         let s = String(format: "%02d", seconds % 60)
@@ -123,15 +118,12 @@ struct SpotPlayerView: View {
 
     var SpotPlayerView2: some View {
         ZStack {
-            //if showProgressView {ProgressView().progressViewStyle(.circular) .tint(.green).frame(maxWidth: UIScreen.screenHeight/9, maxHeight: UIScreen.screenHeight/9)}
             VStack(alignment: .center) {
-                //if songArtImageData != nil {Image(uiImage: UIImage(data: songArtImageData!)!) }
                 if let songArtImageData = songArtImageData, let uiImage = UIImage(data: songArtImageData) {
                     Image(uiImage: uiImage)
                         .resizable()
                         .aspectRatio(contentMode: .fit)
                         .frame(maxWidth: UIScreen.screenHeight/6, maxHeight: UIScreen.screenHeight/6)
-                        //.frame(width: 64, height: 64)
                 }
                 if let name = spotName, let urlString = songURL, let url = URL(string: urlString) {
                     Link(name, destination: url)
@@ -148,8 +140,6 @@ struct SpotPlayerView: View {
                     .multilineTextAlignment(.center)
                 HStack {
                     Spacer()
-
-                    // Nested HStack for buttons
                     HStack {
                         Button {
                             songProgress = 0.0
@@ -202,19 +192,16 @@ struct SpotPlayerView: View {
                             }
                         }
                         .frame(maxWidth: UIScreen.screenHeight/15, maxHeight: UIScreen.screenHeight/15)
-
-
                     }
-
                     Spacer()
                 }
                 .overlay(
                     Image("SpotifyIcon")
                         .resizable()
                         .aspectRatio(contentMode: .fit)
-                        .frame(height: 24) // height as per your text field
-                        .padding([.top, .leading]), // add padding to top and leading
-                    alignment: .bottomTrailing //
+                        .frame(height: 24)
+                        .padding([.top, .leading]),
+                    alignment: .bottomTrailing
                 )
 
                 ProgressView(value: songProgress, total: songDuration!)
@@ -241,7 +228,7 @@ struct SpotPlayerView: View {
                             .padding(.trailing, 10)
                     }
                     else if isSpotifyInstalled {
-                        ProgressView() // This is the built-in iOS activity indicator
+                        ProgressView()
                             .progressViewStyle(CircularProgressViewStyle(tint: .green))
                     }
                 }
@@ -270,7 +257,6 @@ struct SpotPlayerView: View {
                 print("Error: Could not retrieve player state.")
                 return
             }
-
             // If the song is playing, then start the timer
             if !playerState {
                 // Instantiate and start the timer, syncing every 10 secondsf
@@ -327,12 +313,7 @@ struct SpotPlayerView: View {
         }
     }
 
-
-    
-
-
     private func syncSongProgress() {
-        // Sync the song progress
         if let playerAPI = spotifyManager.appRemote?.playerAPI {
             playerAPI.getPlayerState { (result, error) -> Void in
                 guard error == nil else {
@@ -427,7 +408,6 @@ struct SpotPlayerView: View {
                     if song.preview_url != nil {songPrev = song.preview_url}
                     else {songPrev = blankString}
                     
-                    
                     songURL = song.external_urls?.spotify
                     songArtImageData = artResponse!
                     songDuration = Double(song.duration_ms) * 0.001
@@ -441,9 +421,6 @@ struct SpotPlayerView: View {
                     chosenCard?.spotSongDuration = String(Double(song.duration_ms) * 0.001)
                     do {try context.save(with: .addCoreCard)}
                     catch {print("Failed to save CoreCard: \(error)")}
-                    
-                    
-                    
                     
                     if networkMonitor.isConnected{playSong()}
                     else {showFailedConnectionAlert = true}
@@ -461,7 +438,6 @@ struct SpotPlayerView: View {
             if spotifyManager.appRemote?.isConnected == false {
                 spotifyManager.appRemote?.connect()
                 spotifyManager.appRemote?.authorizeAndPlayURI(trackURI)
-                //spotifyManager.appRemote?.connect()
                 DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                     spotifyManager.appRemote?.connect()
                     redirectToAppStore()
@@ -489,12 +465,6 @@ struct SpotPlayerView: View {
             }
         }
     }
-
-    
-    
-    
-    
-
 }
 
 extension SpotPlayerView {
@@ -504,7 +474,6 @@ extension SpotPlayerView {
             in print("Did Find Match? \(foundMatchBool)")
             if foundMatchBool == false {
                 if songPreviewURL == nil || songPreviewURL == "" {
-                    //chosenCard?.cardType = "noMusicNoGift"
                     CardPrep.shared.objectWillChange.send()
                     ; cardPrep.cardType = "noMusicNoGift"}
                 else {

@@ -77,7 +77,6 @@ class APIManager: ObservableObject {
         case "unsplashAPIKey":
             verifyUnsplashAPIKey(apiKey: apiKey, completion: completion)
         case "spotClientIdentifier":
-            // For Spotify, you need to verify using both Client Identifier and Secret Key
             // Fetch the other key (spotSecretKey) from the keychain or wherever it's stored
             if let clientSecret = loadFromKeychain(key: "spotSecretKey") {
                 verifySpotifyKey(clientId: apiKey, clientSecret: clientSecret, completion: completion)
@@ -85,7 +84,7 @@ class APIManager: ObservableObject {
                 completion(false)
             }
         case "spotSecretKey":
-            // Similarly, if verifying the secret key, you need the client identifier
+            // If verifying the secret key, you need the client identifier
             if let clientId = loadFromKeychain(key: "spotClientIdentifier") {
                 verifySpotifyKey(clientId: clientId, clientSecret: apiKey, completion: completion)
             } else {
@@ -98,7 +97,6 @@ class APIManager: ObservableObject {
     
     func fetchSecretFromURL(url: URL, completion: @escaping (String?) -> Void) {
         var request = URLRequest(url: url)
-
         // Encoding username and password for Basic Auth
         let loginString = String(format: "%@:%@", Config.shared.basicAuthUser, Config.shared.basicAuthPassword)
         let loginData = loginString.data(using: String.Encoding.utf8)!
@@ -216,7 +214,6 @@ class APIManager: ObservableObject {
         }
     }
     
-    
     func verifyAppleMusicDevToken(apiKey: String, completion: @escaping (Bool) -> Void) {
         let testURL = URL(string: "https://api.music.apple.com/v1/catalog/us/songs/203709340")!
 
@@ -269,7 +266,6 @@ class APIManager: ObservableObject {
         task.resume()
     }
     
-    
     func checkUserBanned(userId: String, completion: @escaping (Bool, Error?) -> Void) {
 
         let urlString = "\(Config.shared.userStatusURL)/is_banned?user_id=\(userId)"
@@ -311,7 +307,6 @@ class APIManager: ObservableObject {
                 // Invalid response or data
                 completion(false, nil)
             }
-            
             task.resume()
         }
     
@@ -411,5 +406,4 @@ struct ContentModerator {
         }
         task.resume()
     }
-
 }

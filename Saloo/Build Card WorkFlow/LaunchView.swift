@@ -28,13 +28,12 @@ struct LaunchView: View {
             ZStack {
                 appDelegate.appColor.ignoresSafeArea()
                 Image("logo1024")
-                    .resizable() // This will allow the image to be resized
-                    .aspectRatio(contentMode: .fit) // Maintain the aspect ratio of the image
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
                     .frame(maxWidth: UIScreen.screenWidth/2, maxHeight: UIScreen.screenHeight/3, alignment: .center)
                 if isFirstLaunch{
                     SignInButtonView(isPresentedFromECardView: $isPresentedFromECardView, cardFromShare: $cardFromShare)
                         .onAppear{cardsForDisplay.fetchFromCloudKit()}
-                        //.onAppear{cardsForDisplay.deleteAllFromDB(dataBase: PersistenceController.shared.cloudKitContainer.privateCloudDatabase)}
                 }
                 LoadingOverlay(hasShownLaunchView: $hasShownLaunchView)
             }
@@ -106,32 +105,9 @@ struct SignInButtonView: View {
                     .foregroundColor(Color.white)
                     .padding(.bottom, 15)
         }
-        //.onAppear{deleteAllKeychainItems()}
         .padding(.leading, 35)
         .padding(.trailing, 35)
     }
-    
-
-    func deleteAllKeychainItems() {
-        let secItemClasses = [kSecClassGenericPassword,
-                              kSecClassInternetPassword,
-                              kSecClassCertificate,
-                              kSecClassKey,
-                              kSecClassIdentity]
-        print("RUnning Delete from Keychain...")
-        for secItemClass in secItemClasses {
-            let query: [String: Any] = [kSecClass as String: secItemClass]
-            let status = SecItemDelete(query as CFDictionary)
-            
-            if status == errSecSuccess || status == errSecItemNotFound {
-                print("Successfully deleted or no items found for class \(secItemClass)")
-            } else {
-                print("Error deleting items for class \(secItemClass): \(status)")
-            }
-        }
-    }
-
-    
 }
 
 extension SignInButtonView {
