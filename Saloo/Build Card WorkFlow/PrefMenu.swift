@@ -460,7 +460,7 @@ extension PrefMenu {
                         alertVars.alertType = .amAuthFailed
                         alertVars.activateAlert = true
                     } else if let response = response {
-                        print("RESPONSE: \(response)")
+                        //print("---RESPONSE: \(response)")
                         // Continue with processing the response
                     } else {
                         print("Response is nil and no error was provided")

@@ -14,7 +14,7 @@
 		</dict>
 		<dict>
 			<key>CFBundleURLName</key>
-			<string>com.Saloo.saloo</string>
+			<string>com.Saloo.saloo2</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
 				<string>saloo</string>
@@ -62,5 +62,7 @@
 	<array>
 		<string>remote-notification</string>
 	</array>
+	<key>Privacy - Media Library Usage Description</key>
+	<string>This app requires access to your media library to incorporate Apple Music (if you are a subscriber)</string>
 </dict>
 </plist>

@@ -16,37 +16,42 @@ class AppleMusicAPI {
     @EnvironmentObject var appDelegate: AppDelegate
     let cleanMusicData = CleanMusicData()
 
-    func fetchUserStorefront(userToken: String, completionHandler: @escaping (AMStoreFrontResponse?,Error?) -> Void) -> String{
-        let userStoreFront = String()
+    func fetchUserStorefront(userToken: String, completionHandler: @escaping (AMStoreFrontResponse?, Error?) -> Void) {
+        print("--")
+        print(APIManager.shared.appleMusicDevToken)
         let musicURL = URL(string: "https://api.music.apple.com/v1/me/storefront")!
         var musicRequest = URLRequest(url: musicURL)
         musicRequest.httpMethod = "GET"
         musicRequest.addValue("Bearer \(APIManager.shared.appleMusicDevToken)", forHTTPHeaderField: "Authorization")
         musicRequest.addValue(userToken, forHTTPHeaderField: "Music-User-Token")
-        let lock = DispatchSemaphore(value: 0)
 
         URLSession.shared.dataTask(with: musicRequest) { (data, response, error) in
+            print("***")
+            print(response)
+            
+            // Early exit on error
+            if let error = error {
+                DispatchQueue.main.async { completionHandler(nil, error) }
+                return
+            }
 
-            guard error == nil else { return }
-                let jsonString = String(data: data!, encoding: String.Encoding.utf8)!
+            guard let data = data else {
+                DispatchQueue.main.async { completionHandler(nil, NSError(domain: "DataError", code: -1, userInfo: nil)) }
+                return
+            }
+
             do {
-                let response = try JSONDecoder().decode(AMStoreFrontResponse.self, from: data!)
-                DispatchQueue.main.async {completionHandler(response, nil)}
-                }
-            catch {
-                print("Request failed: \(error)")
-                DispatchQueue.main.async {completionHandler(nil, error)}
-                }
-                lock.signal()
-        }
-        .resume()
-        lock.wait()
-        return userStoreFront
+                let response = try JSONDecoder().decode(AMStoreFrontResponse.self, from: data)
+                DispatchQueue.main.async { completionHandler(response, nil) }
+            } catch {
+                print("---Request failed: \(error)")
+                DispatchQueue.main.async { completionHandler(nil, error) }
+            }
+        }.resume()
     }
+
     
     func getUserToken(completionHandler: @escaping (String?, Error?) -> Void) {
-        print(APIManager.shared.appleMusicDevToken)
-        
         SKCloudServiceController().requestUserToken(forDeveloperToken: APIManager.shared.appleMusicDevToken) { (receivedToken, error) in
             DispatchQueue.main.async {
                 if let error = error {
