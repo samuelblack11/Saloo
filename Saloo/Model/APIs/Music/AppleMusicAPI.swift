@@ -17,8 +17,6 @@ class AppleMusicAPI {
     let cleanMusicData = CleanMusicData()
 
     func fetchUserStorefront(userToken: String, completionHandler: @escaping (AMStoreFrontResponse?, Error?) -> Void) {
-        print("--")
-        print(APIManager.shared.appleMusicDevToken)
         let musicURL = URL(string: "https://api.music.apple.com/v1/me/storefront")!
         var musicRequest = URLRequest(url: musicURL)
         musicRequest.httpMethod = "GET"
@@ -26,9 +24,6 @@ class AppleMusicAPI {
         musicRequest.addValue(userToken, forHTTPHeaderField: "Music-User-Token")
 
         URLSession.shared.dataTask(with: musicRequest) { (data, response, error) in
-            print("***")
-            print(response)
-            
             // Early exit on error
             if let error = error {
                 DispatchQueue.main.async { completionHandler(nil, error) }

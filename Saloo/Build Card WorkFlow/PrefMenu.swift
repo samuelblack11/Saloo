@@ -178,7 +178,6 @@ struct PrefMenu: View {
             .onReceive(Just(authCode)) { newAuthCode in
                 if let unwrappedAuthCode = newAuthCode, !unwrappedAuthCode.isEmpty {
                     spotifyManager.auth_code = newAuthCode!
-                    print(newAuthCode!)
                         spotifyManager.getSpotToken { success in
                             if newAuthCode == "AuthFailed" {
                                 currentSubSelection = "Neither"

@@ -40,6 +40,7 @@
 		C24B3ABB29574A3D00884E4D /* CustomDataTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = C24B3ABA29574A3D00884E4D /* CustomDataTypes.swift */; };
 		C2582A3B296E5841009F8FEC /* eCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2582A3A296E5841009F8FEC /* eCardView.swift */; };
 		C2582A3E296F7171009F8FEC /* AppleMusicAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2582A3D296F7171009F8FEC /* AppleMusicAPI.swift */; };
+		C25BB0752B5B61AD00B45229 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C25BB0742B5B61AD00B45229 /* LaunchScreen.storyboard */; };
 		C26890AC299E571D00EA63A4 /* AMPlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C26890AB299E571D00EA63A4 /* AMPlayerView.swift */; };
 		C26890B0299E572900EA63A4 /* SpotPlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C26890AF299E572900EA63A4 /* SpotPlayerView.swift */; };
 		C26A01942B2FB5850038FAFD /* MSAL in Frameworks */ = {isa = PBXBuildFile; productRef = C26A01932B2FB5850038FAFD /* MSAL */; };
@@ -111,6 +112,7 @@
 		C2531B2D2A5D6D450096C185 /* SalooNewModel.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = SalooNewModel.xcdatamodel; sourceTree = "<group>"; };
 		C2582A3A296E5841009F8FEC /* eCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = eCardView.swift; sourceTree = "<group>"; };
 		C2582A3D296F7171009F8FEC /* AppleMusicAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppleMusicAPI.swift; sourceTree = "<group>"; };
+		C25BB0742B5B61AD00B45229 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
 		C26890AB299E571D00EA63A4 /* AMPlayerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AMPlayerView.swift; sourceTree = "<group>"; };
 		C26890AF299E572900EA63A4 /* SpotPlayerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpotPlayerView.swift; sourceTree = "<group>"; };
 		C27137CC2B41AE8500C7A0F4 /* Config.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Config.swift; sourceTree = "<group>"; };
@@ -147,6 +149,7 @@
 				C22CAE49298EAA3F003302C4 /* PrefMenu.swift */,
 				C22A180A296CF60600A7E9B8 /* StartMenu.swift */,
 				260F6906281DC0E3002E864B /* LaunchView.swift */,
+				C25BB0742B5B61AD00B45229 /* LaunchScreen.storyboard */,
 				260F68F4281DBDCD002E864B /* OccassionsMenu.swift */,
 				C2950E812A4B6221001E175F /* PhotoOptionsView.swift */,
 				260F68F6281DBDD2002E864B /* UnsplashCollectionView.swift */,
@@ -412,6 +415,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C25BB0752B5B61AD00B45229 /* LaunchScreen.storyboard in Resources */,
 				26A72187281DB8D900ADAE44 /* Preview Assets.xcassets in Resources */,
 				26A72184281DB8D900ADAE44 /* Assets.xcassets in Resources */,
 			);
@@ -661,16 +665,16 @@
 				INFOPLIST_KEY_NSAppleMusicUsageDescription = "Access to Music Library to include song previews in greetings cards";
 				INFOPLIST_KEY_NSCameraUsageDescription = "Use Camera for Front Cover Image";
 				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "Add Photos Taken from Camera to Photo Library";
-				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "User Photos for Front Cover";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "User Photos for Greeting Cards";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
-				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen.storyboard;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
-				IPHONEOS_DEPLOYMENT_TARGET = 17.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 3.0;
+				MARKETING_VERSION = 3.4;
 				OTHER_LDFLAGS = (
 					"-framework",
 					"\"QuartzCore\"",
@@ -718,16 +722,16 @@
 				INFOPLIST_KEY_NSAppleMusicUsageDescription = "Access to Music Library to include song previews in greetings cards";
 				INFOPLIST_KEY_NSCameraUsageDescription = "Use Camera for Front Cover Image";
 				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "Add Photos Taken from Camera to Photo Library";
-				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "User Photos for Front Cover";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "User Photos for Greeting Cards";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
-				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen.storyboard;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
-				IPHONEOS_DEPLOYMENT_TARGET = 17.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 3.0;
+				MARKETING_VERSION = 3.4;
 				OTHER_LDFLAGS = (
 					"-framework",
 					"\"QuartzCore\"",

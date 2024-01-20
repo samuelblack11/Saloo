@@ -148,6 +148,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
     }
 
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
+        print("called willconnectto")
         // Check if the app launched from an inactive state with a URL
         if let urlContext = connectionOptions.urlContexts.first {
             if urlContext.url.scheme == "saloo" {
