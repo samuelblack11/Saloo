@@ -28,7 +28,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
     var counter = 0
     var launchedURL: URL?
     var spotifyManager: SpotifyManager?
-    
+    var isColdStart = true
+    var pendingURL: URL?
+
     func scene(_ scene: UIScene, continue userActivity: NSUserActivity) {
         guard userActivity.activityType == NSUserActivityTypeBrowsingWeb,
               let incomingURL = userActivity.webpageURL,
@@ -40,7 +42,19 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
         if let queryItems = components.queryItems,
            let uniqueNameItem = queryItems.first(where: { $0.name == "uniqueName" }),
            let uniqueName = uniqueNameItem.value {
+            print("FetchRecord in continue called")
             fetchRecord(withUniqueName: uniqueName)
+        }
+    }
+    
+    func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
+        print("called willconnectto")
+        // Check if the app launched from an inactive state with a URL
+        if let urlContext = connectionOptions.urlContexts.first {
+            if urlContext.url.scheme == "saloo" {
+                let uniqueName = urlContext.url.absoluteString.replacingOccurrences(of: "saloo://", with: "")
+                if !uniqueName.isEmpty {self.pendingURL = urlContext.url}
+            }
         }
     }
     
@@ -51,7 +65,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
                 return
             }
             else if url.scheme == "saloo" && !url.absoluteString.contains("spotify") {
-                handleIncomingURL(url)
+                self.pendingURL = url
                 return
             }
             let container = CKContainer.default()
@@ -61,6 +75,17 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
                     return
                 }
             }
+        }
+    }
+    
+    func sceneDidBecomeActive(_ scene: UIScene) {
+        // Handle the URL if one was stored when the app was launched
+        if let url = launchedURL, let windowScene = scene as? UIWindowScene {
+            launchedURL = nil
+        }
+        if let url = pendingURL {
+            self.handleIncomingURL(url)
+            pendingURL = nil
         }
     }
 
@@ -73,9 +98,11 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
 
         if let uniqueNameItem = queryItems.first(where: { $0.name == "uniqueName" }),
            let uniqueName = uniqueNameItem.value {
-            fetchRecord(withUniqueName: uniqueName)
+            print("FETCHRECORD in handleIncomingURL Called")
+            self.fetchRecord(withUniqueName: uniqueName)
         }
     }
+    
     
     func fetchAllCoreCards(completion: @escaping ([CKRecord]?, Error?) -> Void) {
         let predicate = NSPredicate(value: true)
@@ -104,13 +131,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
         
         let publicDatabase = PersistenceController.shared.cloudKitContainer.publicCloudDatabase
         publicDatabase.add(operation)
-    }
-
-    func sceneDidBecomeActive(_ scene: UIScene) {
-        // Handle the URL if one was stored when the app was launched
-        if let url = launchedURL, let windowScene = scene as? UIWindowScene {
-            launchedURL = nil // Clear the stored URL
-        }
     }
 
     
@@ -143,17 +163,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
                     }
                     
                 }
-            }
-        }
-    }
-
-    func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
-        print("called willconnectto")
-        // Check if the app launched from an inactive state with a URL
-        if let urlContext = connectionOptions.urlContexts.first {
-            if urlContext.url.scheme == "saloo" {
-                let uniqueName = urlContext.url.absoluteString.replacingOccurrences(of: "saloo://", with: "")
-                if !uniqueName.isEmpty {fetchRecord(withUniqueName: uniqueName)}
             }
         }
     }
