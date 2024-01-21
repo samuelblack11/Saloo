@@ -36,7 +36,6 @@ struct eCardView: View {
     @EnvironmentObject var imageLoader: ImageLoader
     @EnvironmentObject var appState: AppState
     @State var selectedPreviewURL: String?
-    @State var eCardType: eCardType = .musicNoGift
     @State var cardType: String
     @State var coreCard: CoreCard?
     @State var accessedViaGrid = true
@@ -79,7 +78,6 @@ struct eCardView: View {
                 else {NoMusicNoGiftView.modifier(AlertViewMod(showAlert: alertVars.activateAlertBinding, activeAlert: alertVars.alertType))}
             }
             LoadingOverlay(hasShownLaunchView: $hasShownLaunchView)
-
         }
         .id(cardType)
         .onAppear {
@@ -89,6 +87,7 @@ struct eCardView: View {
             DispatchQueue.main.async {
                 let noPreview = (spotPreviewURL ?? "").isEmpty && (songPreviewURL ?? "").isEmpty
                 if appDelegate.musicSub.type == .Neither && noPreview {
+                    cardPrep.cardType = "noMusicNoGift"
                     cardType = "noMusicNoGift"
                 }
             }

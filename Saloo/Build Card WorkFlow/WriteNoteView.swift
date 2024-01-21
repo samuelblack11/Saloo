@@ -120,7 +120,9 @@ struct WriteNoteView: View {
                                         alertVars.alertType = .addMusicPrompt
                                         alertVars.activateAlert = true
                                     }
-                                    if appDelegate.musicSub.type == .Neither {checkRequiredFields(); annotateIfNeeded();CardPrep.shared.chosenSong = chosenSong;
+                                    if appDelegate.musicSub.type == .Neither {
+                                        CardPrep.shared.cardType = "noMusicNoGift"
+                                        checkRequiredFields(); annotateIfNeeded();CardPrep.shared.chosenSong = chosenSong;
                                         DispatchQueue.main.async{GettingRecord.shared.isLoadingAlert = false} ;cardProgress.currentStep = 4; appState.currentScreen = .buildCard([.finalizeCardView])}
                                 }
                             }
