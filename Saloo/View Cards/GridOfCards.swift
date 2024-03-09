@@ -147,7 +147,7 @@ struct GridofCards: View {
         VStack(spacing: 0) {
             VStack(spacing:1) {
                 VStack {
-                    if gridCard.unsplashImageURL != "https://salooapp.com" {
+                    if gridCard.unsplashImageURL != "https://apps.apple.com/us/app/saloo-greetings/id6476240440" {
                         AsyncImage(url: URL(string: gridCard.unsplashImageURL!)) { image in
                             image.resizable()} placeholder: {ProgressView()}
                     } else if let coverUIImage = UIImage(data: gridCard.coverImage!) {

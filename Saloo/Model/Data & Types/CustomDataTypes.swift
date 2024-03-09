@@ -778,7 +778,7 @@ class Annotation: ObservableObject {
     static let shared = Annotation()
     @Published var text1 = String()
     @Published var text2 = String()
-    @Published var text2URL = URL(string: "https://salooapp.com")!
+    @Published var text2URL = URL(string: "https://apps.apple.com/us/app/saloo-greetings/id6476240440")!
     @Published var text3 = String()
     @Published var text4 = String()
 }
@@ -1160,7 +1160,7 @@ class SpotifyManager: ObservableObject {
         SpotifyAPI.shared.requestAuth(completionHandler: {(response, error) in
             if response != nil {
                 DispatchQueue.main.async {
-                    if response!.contains("https://www.salooapp.com/?code="){}
+                    if response!.contains("https://www.google.com/?code="){}
                     else{self.authForRedirect = response!; self.showWebView = true}
                     self.refreshAccessToken = true
                     completion(response)

@@ -99,9 +99,9 @@ struct SignInButtonView: View {
                 })
                 .frame(height: 60, alignment: .center)
                 .padding(.bottom, 25)
-                Link("Terms of Use & License Agreement", destination: URL(string: "https://www.salooapp.com/terms-license")!)
+                Link("Terms of Use & License Agreement", destination: URL(string: Config.shared.termsURL)!)
                     .foregroundColor(Color.white)
-                Link("Privacy Policy", destination: URL(string: "https://www.salooapp.com/privacy-policy")!)
+                Link("Privacy Policy", destination: URL(string: Config.shared.privacyPolicyURL)!)
                     .foregroundColor(Color.white)
                     .padding(.bottom, 15)
         }

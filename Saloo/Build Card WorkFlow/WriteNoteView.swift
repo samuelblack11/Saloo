@@ -167,7 +167,7 @@ extension WriteNoteView {
             annotation.text3 = " On "
             annotation.text4 = "Unsplash"
         }
-        else {annotation.text2URL = URL(string: "https://salooapp.com")!}
+        else {annotation.text2URL = URL(string: "https://apps.apple.com/us/app/saloo-greetings/id6476240440")!}
     }
     
     func checkRequiredFields() {

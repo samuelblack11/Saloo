@@ -238,7 +238,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, ObservableObject {
                     }
                 }
             }
-            if self.coreCard.unsplashImageURL == "https://salooapp.com" {
+            if self.coreCard.unsplashImageURL == "https://apps.apple.com/us/app/saloo-greetings/id6476240440" {
                 dispatchGroup.enter()
                 if let asset = record?["CD_coverImageAsset"] as? CKAsset {
                     DispatchQueue.global(qos: .userInitiated).async {

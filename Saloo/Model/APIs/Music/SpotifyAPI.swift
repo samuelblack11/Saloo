@@ -203,7 +203,7 @@ class SpotifyAPI {
             var components = URLComponents(url: spotURL!, resolvingAgainstBaseURL: false)
             let queryGrant = URLQueryItem(name: "grant_type", value: "refresh_token")
             let queryCode = URLQueryItem(name: "refresh_token", value: refresh_token)
-            let queryRedirect = URLQueryItem(name: "redirect_uri", value: "https://salooapp.com")
+            let queryRedirect = URLQueryItem(name: "redirect_uri", value: "https://www.google.com")
             components!.queryItems = [queryGrant, queryCode, queryRedirect]
             var spotRequest = URLRequest(url: (components?.url!)!)
             spotRequest.httpMethod = "POST"
@@ -282,7 +282,7 @@ class SpotifyAPI {
             var components = URLComponents(url: spotURL!, resolvingAgainstBaseURL: false)
             let queryGrant = URLQueryItem(name: "grant_type", value: "authorization_code")
             let queryCode = URLQueryItem(name: "code", value: authCode)
-            let queryRedirect = URLQueryItem(name: "redirect_uri", value: "https://salooapp.com")
+            let queryRedirect = URLQueryItem(name: "redirect_uri", value: "https://www.google.com")
             components!.queryItems = [queryGrant, queryCode, queryRedirect,queryRedirect]
             print(components!.url)
             var spotRequest = URLRequest(url: (components?.url!)!)
@@ -315,7 +315,7 @@ class SpotifyAPI {
             var components = URLComponents(url: url!, resolvingAgainstBaseURL: false)
             let queryClientID = URLQueryItem(name: "client_id", value: APIManager.shared.spotClientIdentifier)
             let queryResponseType = URLQueryItem(name: "response_type", value: "code")
-            let queryRedirect = URLQueryItem(name: "redirect_uri", value: "https://salooapp.com")
+            let queryRedirect = URLQueryItem(name: "redirect_uri", value: "https://www.google.com")
             let allScopes = URLQueryItem(name: "scope", value:"user-read-private user-read-playback-state app-remote-control streaming user-modify-playback-state user-read-currently-playing")
             components!.queryItems = [queryResponseType, queryClientID, queryRedirect, allScopes]
             var spotRequest = URLRequest(url: components!.url!)

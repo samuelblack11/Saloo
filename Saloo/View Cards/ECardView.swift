@@ -166,7 +166,7 @@ struct eCardView: View {
 
     func primaryPhotoView(aspectRatio: ContentMode, maxWidth: CGFloat, maxHeight: CGFloat) -> some View {
         Group {
-            if unsplashImageURL != "https://salooapp.com" {
+            if unsplashImageURL != "https://apps.apple.com/us/app/saloo-greetings/id6476240440" {
                 Button(action: {
                     if let url = URL(string: "\(text2URL.absoluteString)") {
                         UIApplication.shared.open(url)

@@ -188,7 +188,7 @@ extension OccassionsMenu {
     }
     
     func handlePersonalPhotoSelection() {
-        chosenObject.smallImageURLString = "https://salooapp.com"
+        chosenObject.smallImageURLString = "https://apps.apple.com/us/app/saloo-greetings/id6476240440"
         chosenObject.coverImage = coverImage!.jpegData(compressionQuality: 1)!
         chosenObject.coverImagePhotographer = ""
         chosenObject.coverImageUserName = ""

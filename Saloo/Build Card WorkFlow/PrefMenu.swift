@@ -131,7 +131,7 @@ struct PrefMenu: View {
     private var privacySection: some View {
         VStack(alignment: .leading) {
             Button(action: {
-                if let url = URL(string: "https://www.salooapp.com/terms-license") {
+                if let url = URL(string: Config.shared.termsURL) {
                     UIApplication.shared.open(url)
                 }
             }) {
@@ -140,7 +140,7 @@ struct PrefMenu: View {
             }
             Divider()
             Button(action: {
-                if let url = URL(string: "https://www.salooapp.com/privacy-policy") {
+                if let url = URL(string: Config.shared.privacyPolicyURL) {
                     UIApplication.shared.open(url)
                 }
             }) {
